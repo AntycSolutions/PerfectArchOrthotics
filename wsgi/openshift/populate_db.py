@@ -28,9 +28,6 @@ def populate():
     eric.dependents.add(kid_two)
     eric.dependents.add(wife)
 
-    # Constants for claim model
-    CASH = Claim.PAYMENT_CHOICES[0][0]
-
     # Add prescriptions
     add_prescription(eric, timezone.now())
     add_prescription(eric, timezone.now())
@@ -44,21 +41,23 @@ def populate():
     add_prescription(jane, timezone.now())
     add_prescription(john, timezone.now())
 
+    # Constants for insurance model
+    DIRECT = Insurance.BILLING_CHOICES[0][0]
+    INDIRECT = Insurance.BILLING_CHOICES[1][0]
+    ORTHOTICS = Insurance.COVERAGE_TYPE[0][0]
+    COMPRESSION = Insurance.COVERAGE_TYPE[1][0]
+    ORTHO_SHOES = Insurance.COVERAGE_TYPE[2][0]
     # Add insurance
-    eric_insurance = add_insurance(eric, "Some_provider", "PN9999", "CN9999", 50)
-    chris_insurance = add_insurance(chris, "Some_provider", "PN9998", "CN9998", 50)
-    jay_insurance = add_insurance(jay, "Some_provider", "PN9997", "CN9997", 50)
-    dan_insurance = add_insurance(dan, "Some_provider", "PN9996", "CN9996", 50)
-    cloney_insurance = add_insurance(cloney, "Some_provider", "PN9995", "CN9995", 50)
-    jane_insurance = add_insurance(jane, "Some_provider", "PN9994", "CN9994", 50)
-    john_insurance = add_insurance(john, "Some_provider", "PN9994", "CN9994", 50)
+    eric_insurance = add_insurance(eric, "Some_provider", ORTHOTICS, "PN9999", "CN9999", 50, DIRECT)
+    chris_insurance = add_insurance(chris, "Some_provider", ORTHOTICS, "PN9998", "CN9998", 50, DIRECT)
+    jay_insurance = add_insurance(jay, "Some_provider", ORTHOTICS, "PN9997", "CN9997", 50, DIRECT)
+    dan_insurance = add_insurance(dan, "Some_provider", ORTHOTICS, "PN9996", "CN9996", 50, DIRECT)
+    cloney_insurance = add_insurance(cloney, "Some_provider", ORTHOTICS, "PN9995", "CN9995", 50, DIRECT)
+    jane_insurance = add_insurance(jane, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
+    john_insurance = add_insurance(john, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
 
-    # Constants for coverage model
-    DIRECT = Coverage.BILLING_CHOICES[0][0]
-    INDIRECT = Coverage.BILLING_CHOICES[1][0]
-    # Add coverages
-    eric_coverage = add_coverage(eric_insurance, 10000, 100, 50, DIRECT, datetime.date(2015, 1, 1))
-
+    # Constants for claim model
+    CASH = Claim.PAYMENT_CHOICES[0][0]
     # Add claims
     add_claim(eric, eric_insurance, timezone.now(), CASH)
     add_claim(chris, chris_insurance, timezone.now(), CASH)
@@ -76,11 +75,6 @@ def populate():
     add_admin("dan", password)
     add_admin("eric", password)
     add_admin("chris", password)
-
-
-def add_model_example():
-    # use <model>.objects.get_or_create here and take the 0th index [0]
-    pass
 
 
 def add_admin(username, password):
@@ -122,12 +116,15 @@ def add_prescription(client, dateAdded):
     return p[0]
 
 
-def add_insurance(client, provider, policyNumber, contractNumber, coveragePercent):
+def add_insurance(client, provider, coverageType, policyNumber, contractNumber, coveragePercent,
+                  billing):
     i = Insurance.objects.get_or_create(client=client,
                                         provider=provider,
+                                        coverageType=coverageType,
                                         policyNumber=policyNumber,
                                         contractNumber=contractNumber,
-                                        coveragePercent=coveragePercent)
+                                        coveragePercent=coveragePercent,
+                                        billing=billing)
     return i[0]
 
 
@@ -139,18 +136,6 @@ def add_claim(client, insurance, submittedDate, paymentType):
     return c[0]
 
 
-def add_coverage(insurance, maxCoverage, totalClaimed, coveragePercent, billing, rollOverDate):
-    coverageRemaining = maxCoverage - totalClaimed
-    c = Coverage.objects.get_or_create(insurance=insurance,
-                                       maxCoverage=maxCoverage,
-                                       totalClaimed=totalClaimed,
-                                       coverageRemaining=coverageRemaining,
-                                       coveragePercent=coveragePercent,
-                                       billing=billing,
-                                       rollOverDate=rollOverDate)
-    return c[0]
-
-
 # Start execution here!
 if __name__ == '__main__':
     print "Starting database population script"
@@ -158,7 +143,6 @@ if __name__ == '__main__':
     # from app.models import <model>, <model>
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
-    from clients.models import Client, Prescription, Insurance, Claim, \
-    Dependent, Coverage
+    from clients.models import Client, Prescription, Insurance, Claim, Dependent
     populate()
     print "Done populating database"
