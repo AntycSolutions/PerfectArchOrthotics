@@ -29,13 +29,13 @@ class Dependent(models.Model):
 
     MALE = 'Male'
     FEMALE = 'Female'
-    GENDER_CHOICES = ((MALE, 'M'),
-                      (FEMALE, 'F'))
+    GENDER_CHOICES = ((MALE, 'Male'),
+                      (FEMALE, 'Female'))
 
     firstName = models.CharField(max_length=128)
     lastName = models.CharField(max_length=128)
     relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     birthdate = models.DateField()
 
     def __unicode__(self):
@@ -71,8 +71,8 @@ class Client(models.Model):
 
     MALE = 'Male'
     FEMALE = 'Female'
-    GENDER_CHOICES = ((MALE, 'M'),
-                      (FEMALE, 'F'))
+    GENDER_CHOICES = ((MALE, 'Male'),
+                      (FEMALE, 'Female'))
 
     firstName = models.CharField(max_length=128, blank=True, default="")
     lastName = models.CharField(max_length=128, blank=True, default="")
@@ -85,14 +85,14 @@ class Client(models.Model):
     # will cover all RFC3696/5321-compliant email addresses
     email = models.EmailField(max_length=254, blank=True, null=True)
     birthdate = models.DateField()
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True)
     employer = models.CharField(max_length=128, blank=True, default="")
     credit = models.SmallIntegerField(default=0)
     notes = models.TextField(blank=True, default="")
-    dependents = models.ManyToManyField(Dependent)
+    dependents = models.ManyToManyField(Dependent, blank=True, null=True)
     # Foreign key relationships
     # insurance (foreign key on other table)
-    # Prescriptions (foreign key on other table)
+    # prescriptions (foreign key on other table)
     # invoices (foreign key on other table)
     # claims (foreign key on other table)
 
