@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'clients'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,8 +88,9 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 TEMPLATE_DIRS = (
-     os.path.join(BASE_DIR,'templates'),
+    TEMPLATE_DIRS,
 )
 
 # Database
@@ -126,3 +128,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 STATIC_URL = '/static/'
+
+STATIC_PATH = os.path.join(BASE_DIR, 'static')
+
+# TODO add this back, just missing the location of default django static files
+# makes the admin page look crappy if this is included now
+STATICFILES_DIRS = (
+    STATIC_PATH,
+)
