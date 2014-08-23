@@ -151,7 +151,7 @@ def add_coverage(insurance, maxCoverage, totalClaimed, coveragePercent, billing,
 # Start execution here!
 if __name__ == '__main__':
     print "Starting database population script"
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orthotics_project.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
     # from app.models import <model>, <model>
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
