@@ -9,13 +9,13 @@ def populate():
     MALE = Client.GENDER_CHOICES[0][0]
     FEMALE = Client.GENDER_CHOICES[1][0]
     # Add Clients
-    eric = add_client("Eric", "Klinger", "11408 44 ave", datetime.date(1988, 12, 30), MALE)
-    chris = add_client("Chris", "Klinger", "11408 44 ave", datetime.date(1991, 6, 14), MALE)
-    jay = add_client("Jason", "Mu", "4077 69ave", datetime.date(1980, 6, 14), MALE)
-    dan = add_client("Danny", "Mu", "13499 70ave", datetime.date(1983, 8, 14), MALE)
-    cloney = add_client("Cloney", "McStudent", "12345 42 ave", datetime.date(1993, 5, 22), MALE)
-    jane = add_client("Jane", "Doe", "2943 69 ave", datetime.date(1985, 12, 8), FEMALE)
-    john = add_client("John", "Doe", "2943 69 ave", datetime.date(1984, 8, 20), MALE)
+    eric = add_client("Eric", "Klinger", "11408 44 ave", "Edmonton", "T6J0Z2", "780 437 1514", datetime.date(1988, 12, 30), MALE)
+    chris = add_client("Chris", "Klinger", "11408 44 ave", "Edmonton", "T6J0Z2", "780 937 1077", datetime.date(1991, 6, 14), MALE)
+    jay = add_client("Jason", "Mu", "4077 69ave", "Edmonton", "blah", "number", datetime.date(1980, 6, 14), MALE)
+    dan = add_client("Danny", "Mu", "13499 70ave", "Edmonton", "blah", "number", datetime.date(1983, 8, 14), MALE)
+    cloney = add_client("Cloney", "McStudent", "12345 42 ave", "Providence", "blah", "number", datetime.date(1993, 5, 22), MALE)
+    jane = add_client("Jane", "Doe", "2943 69 ave", "Vancouver", "blah", "number", datetime.date(1985, 12, 8), FEMALE)
+    john = add_client("John", "Doe", "2943 69 ave", "Vancouver", "blah", "number", datetime.date(1984, 8, 20), MALE)
 
     # Constants for Dependent model
     SPOUSE = Dependent.RELATIONSHIP_CHOICES[0][0]
@@ -95,10 +95,13 @@ def add_admin(username, password):
         return
 
 
-def add_client(firstName, lastName, address, birthdate, gender):
+def add_client(firstName, lastName, address, city, postalCode, phoneNumber, birthdate, gender):
     c = Client.objects.get_or_create(firstName=firstName,
                                      lastName=lastName,
                                      address=address,
+                                     city=city,
+                                     postalCode=postalCode,
+                                     phoneNumber=phoneNumber,
                                      birthdate=birthdate,
                                      gender=gender)
     return c[0]

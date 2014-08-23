@@ -8,23 +8,19 @@
     <h1>Clients</h1>
     </br>
     {% if clients %}
-        <table class="table">
-            <tr>
         {% for client in clients %}
-            <td> 
-                <h3><a href="/clients/{{client.id}}">{{client.firstName}} {{client.lastName}}</a></h3>
-                <ul>
-                    <li>{{client.address}}</li>
-                    <li>{{client.birthdate}}</li>
-                </ul>
-            </td>
-            {% if not forloop.last and forloop.counter == 4 %}
-            </tr>
-            <tr>
-            {% endif %}
+             <h3><a href="/clients/{{client.id}}">{{client.firstName}} {{client.lastName}}</a></h3>
+             <table class="table">
+                 <tr>
+                    <td>{{client.birthdate}}</td>
+                    <td>{{client.phoneNumber}}</td>
+                    <td>{{client.cellNumber}}</td>
+                    <td>{{client.email}}</td>
+                    <td>{{client.employer}}</td>
+                    <td>{{client_insurance.insurance.provider}}</td>
+                </tr>
+            </table>
         {% endfor %}
-            </tr>
-        </table>
     {% else %}
         <p> There is no client information </p>
     {% endif %}

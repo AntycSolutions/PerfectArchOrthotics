@@ -53,11 +53,14 @@ class Client(models.Model):
     First Name
     Last Name
     Address
+    City of residence
+    Postal code
     Phone #
     Cell #
     Email
     Birthdate
     Gender
+    Employer
     Credit (current credit from insurance company)
     Notes (for log of communication)
     Dependents - another table
@@ -71,16 +74,19 @@ class Client(models.Model):
     GENDER_CHOICES = ((MALE, 'M'),
                       (FEMALE, 'F'))
 
-    firstName = models.CharField(max_length=128)
-    lastName = models.CharField(max_length=128)
-    address = models.CharField(max_length=128)
+    firstName = models.CharField(max_length=128, blank=True, default="")
+    lastName = models.CharField(max_length=128, blank=True, default="")
+    address = models.CharField(max_length=128, blank=True, default="")
+    city = models.CharField(max_length=128, blank=True, default="")
+    postalCode = models.CharField(max_length=6, blank=True, default="")
     # TODO Write validators for the phone numbers below
     phoneNumber = models.CharField(max_length=14, blank=True, default="")  # In the form of (780)-937-1514
     cellNumber = models.CharField(max_length=14, blank=True, default="")  # In the form of (780)-937-1514
     # will cover all RFC3696/5321-compliant email addresses
     email = models.EmailField(max_length=254, blank=True, null=True)
     birthdate = models.DateField()
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    employer = models.CharField(max_length=128, blank=True, default="")
     credit = models.SmallIntegerField(default=0)
     notes = models.TextField(blank=True, default="")
     # Foreign key relationships
