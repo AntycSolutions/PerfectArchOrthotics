@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang=en>
+    <head>
+        <title>{% block title %}3DOrthotics{% endblock %}</title>
+        <meta charset="UTF-8">
+        <script src="{{ STATIC_URL }}jquery-2.1.1.min.js"></script>
+        <link href="{{ STATIC_URL }}css/bootstrap-cerulean.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/sticky-footer.css" rel="stylesheet">
+        <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+        {% block extrahead %}{% endblock %}
+    </head>
+
+    <body>
+        {% include  'navbar.html' %}
+        <div id="main" class="container" style"margin-left:auto; margin-right:auto; max-width=960px;">
+            {% block content %}{% endblock %}
+        </div>
+        {% block test %}{% endblock %}
+    </body>
+
+    <div id="footer" class="container footer">
+        <p class="text-muted" align="center">Perfect Arch Orthotics</p>
+        <p class="text-muted" align="center">Built by Eric and Chris Klinger</p>
+    </div>
+</html>

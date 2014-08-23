@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+    <h1>Clients</h1>
+    </br>
+    {% if clients %}
+        <table class="table">
+            <tr>
+        {% for client in clients %}
+            <td> 
+                <h3><a href="/clients/{{client.id}}">{{client.firstName}} {{client.lastName}}</a></h3>
+                <ul>
+                    <li>{{client.address}}</li>
+                    <li>{{client.birthdate}}</li>
+                </ul>
+            </td>
+            {% if not forloop.last and forloop.counter == 4 %}
+            </tr>
+            <tr>
+            {% endif %}
+        {% endfor %}
+            </tr>
+        </table>
+    {% else %}
+        <p> There is no client information </p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+<h1>Dependents</h1>
+</br>
+{% if spouse %}
+    <h2>Spouse</h2>
+    <div class="container">
+        <h3>{{spouse.firstName}} {{spouse.lastName}}</h3>
+        <ul>
+            <li>Birthdate: {{spouse.birthdate}}</li>
+            <li>Gender: {{spouse.gender}}</li>
+        </ul>
+    </div>
+{% endif %}
+</br>
+{% if children %}
+    <h2>Children</h2>
+    {% for child in children %}
+    <div class="container">
+        <h3>{{child.firstName}} {{child.lastName}}</h3>
+        <ul>
+            <li>Birthdate: {{child.birthdate}}</li>
+            <li>Gender: {{child.gender}}</li>
+        </ul>
+    </div>
+    {% endfor %}
+{% endif %}

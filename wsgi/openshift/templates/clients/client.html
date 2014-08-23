@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}{{client.firstName}} {{client.lastName}}{% endblock %}
+
+{% block content %}
+    <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+        <li class="active"><a href="#info" data-toggle="tab">Information</a></li>
+        <li class=""><a href="#dependents" data-toggle="tab">Dependents</a></li>
+        <li><a href="#insurance" data-toggle="tab">Insurance</a></li>
+    </ul>
+
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active in" id="info">
+            {% include 'clients/information_tab.html' %}
+        </div>
+        <div class="tab-pane fade" id="dependents">
+            {% include 'clients/dependents_tab.html' %}
+        </div>
+        <div class="tab-pane fade" id="insurance">
+            {% include 'clients/insurance_tab.html' %}
+        </div>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,10 @@
+<h1>Client Insurance</h1>
+    {% if insurance %}
+    <ul>
+        {% for insurance in client_insurance %}
+            <li>{{insurance}}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>This client doesnt have any insurance listed.</p>
+    {% endif %}
