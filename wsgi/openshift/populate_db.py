@@ -4,6 +4,7 @@ import datetime
 from django.utils import timezone
 
 
+
 def populate():
     # Constants for the client model
     MALE = Client.GENDER_CHOICES[0][0]
