@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
 from clients.models import Client, Dependent
+from clients.forms import ClientForm
 
 def index(request):
     context = RequestContext(request)
@@ -32,3 +33,21 @@ def clientView(request, client_id):
                     'children': children}
     print context_dict
     return render_to_response('clients/client.html', context_dict, context)
+
+def add_client(request):
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        form = ClientForm(request.POST)
+
+        if form.is_valid():
+            form.save(commit=True)
+
+            return index(request)
+        else:
+            print form.errors
+    else:
+        form = ClientForm()
+
+    return render_to_response('clients/add_client.html', {'form':form}, context)
+
