@@ -8,7 +8,6 @@ class ClientForm(forms.ModelForm):
     GENDER_CHOICES = ((MALE, 'M'),
                       (FEMALE, 'F'))
 
-    """
     firstName = forms.CharField(max_length=128, help_text="Client first name")
     lastName = forms.CharField(max_length=128, help_text="Client last name")
     address = forms.CharField(max_length=128, help_text="Client address")
@@ -18,9 +17,8 @@ class ClientForm(forms.ModelForm):
     cellNumber = forms.CharField(max_length=14, help_text="Client cell phone")
     email = forms.CharField(max_length=254, help_text="Client email")
     birthdate = forms.DateField(help_text="Client birthdate")
-    gender = forms.ChoiceField(choices=GENDER_CHOICES)
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, help_text="Gender")
     employer = forms.CharField(max_length=128, help_text="Client employer")
-    """
 
     class Meta:
         model = Client

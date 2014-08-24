@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Add Client</title>
-    </head>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
 
-    <body>
-        <h1>Add a Client</h1>
+{% block title %}Add Client{% endblock %}
 
-        <form id="client_form" method="post" action="clients/add_client/">
+{% block content %}
+    <h1>Add a Client</h1>
 
+    <form id="client_form" class="form-horizontal" method="post">
+        <fieldset>
             {% csrf_token %}
-            {% for field in forms.visible_fields %}
-                {{ field.errors }}
-                {{ field.help_text }}
-                {{ field }}
-            {% endfor %}
-
-            <input type="submit" name="submit" value="Create Client" />
-        </form>
-    </body>
-
-</html>
+                {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {{ field.errors }}
+                    <label class"col-lg-2 control-label">{{ field.help_text }}</label>
+                    <div class="col-lg-10">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+        </fieldset>
+        <input type="submit" name="submit" value="Create Client" />
+    </form>
+{% endblock %}
