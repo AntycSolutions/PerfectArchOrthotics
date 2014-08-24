@@ -5,8 +5,8 @@ class ClientForm(forms.ModelForm):
 
     MALE = 'Male'
     FEMALE = 'Female'
-    GENDER_CHOICES = ((MALE, 'M'),
-                      (FEMALE, 'F'))
+    GENDER_CHOICES = ((MALE, 'Male'),
+                      (FEMALE, 'Female'))
 
     firstName = forms.CharField(max_length=128, help_text="Client first name")
     lastName = forms.CharField(max_length=128, help_text="Client last name")
