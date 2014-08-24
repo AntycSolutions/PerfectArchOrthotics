@@ -43,7 +43,9 @@ def add_client(request):
         if form.is_valid():
             form.save(commit=True)
 
-            return index(request)
+            client_list = Client.objects.all()
+            client_dict = {'clients': client_list}
+            return render_to_response('clients/index.html', client_dict, context)
         else:
             print form.errors
     else:
