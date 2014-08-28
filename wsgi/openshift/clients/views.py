@@ -65,14 +65,6 @@ def claimsView(request):
 
 
 def coverageView(request):
-    """This view will print out the following (4-5 columns looks good)
-
-    client
-    coverage type
-    coverage percent
-    coveage left (max - claimed)
-    quantity
-    """
     context = RequestContext(request)
 
     insurance = Insurance.objects.all()
@@ -82,12 +74,9 @@ def coverageView(request):
 
 
 def insuranceView(request):
-    """This view will print out
+    context = RequestContext(request)
 
-    client
-    provider
-    policy number
-    contract number
-    billing
-    """
-    pass
+    insurance = Insurance.objects.all()
+
+    context_dict = {'insurances': insurance}
+    return render_to_response('clients/insurance.html', context_dict, context)

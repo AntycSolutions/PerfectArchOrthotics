@@ -191,8 +191,8 @@ class Insurance(models.Model):
                      ("Compression_stockings", "Compression Stockings"),
                      ("Orthopedic_shoes", "Orthopedic Shoes"))
 
-    BILLING_CHOICES = (("DIRECT", "Direct"),
-                       ("INDIRECT", "Indirect"))
+    BILLING_CHOICES = (("Direct", "Direct"),
+                       ("Indirect", "Indirect"))
 
     client = models.ForeignKey(Client)
     provider = models.CharField(max_length=128)
