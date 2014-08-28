@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
-from clients.models import Client, Dependent, Claim
+from clients.models import Client, Dependent, Claim, Insurance
 from clients.forms import ClientForm
 
 def index(request):
@@ -65,8 +65,29 @@ def claimsView(request):
 
 
 def coverageView(request):
-    pass
+    """This view will print out the following (4-5 columns looks good)
+
+    client
+    coverage type
+    coverage percent
+    coveage left (max - claimed)
+    quantity
+    """
+    context = RequestContext(request)
+
+    insurance = Insurance.objects.all()
+
+    context_dict = {'insurances': insurance}
+    return render_to_response('clients/coverage.html', context_dict, context)
 
 
 def insuranceView(request):
+    """This view will print out
+
+    client
+    provider
+    policy number
+    contract number
+    billing
+    """
     pass
