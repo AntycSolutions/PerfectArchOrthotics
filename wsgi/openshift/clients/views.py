@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
-from clients.models import Client, Dependent
+from clients.models import Client, Dependent, Claim
 from clients.forms import ClientForm
 
 def index(request):
@@ -34,6 +34,7 @@ def clientView(request, client_id):
     print context_dict
     return render_to_response('clients/client.html', context_dict, context)
 
+
 def add_client(request):
     context = RequestContext(request)
 
@@ -53,3 +54,19 @@ def add_client(request):
 
     return render_to_response('clients/add_client.html', {'form':form}, context)
 
+
+def claimsView(request):
+    context = RequestContext(request)
+
+    claims = Claim.objects.all()
+
+    context_dict = {'claims': claims}
+    return render_to_response('clients/claims.html', context_dict, context)
+
+
+def coverageView(request):
+    pass
+
+
+def insuranceView(request):
+    pass
