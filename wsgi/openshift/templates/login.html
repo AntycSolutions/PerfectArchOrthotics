@@ -1,20 +1,18 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Login</title>
-    </head>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
 
-    <body>
-        <h1>Login in PerfectArchOrthotics</h1>
+{% block title %}Login{% endblock %}
 
-        <form id="login_form" method="post" action="/login/">
-            {% csrf_token %}
-            Username: <input type="text" name="username" value="" size="50"/>
-            </br>
-            Password: <input type="password" name="password" value="" size="50"/>
-            </br>
+{% block content %}
+<h1>Login to PerfectArchOrthotics</h1>
+<form id="login_form" method="post" action="/login/">
+    {% csrf_token %}
+    Username: <input type="text" name="username" value="" size="50"/>
+    </br>
+    Password: <input type="password" name="password" value="" size="50"/>
+    </br>
 
-            <input type="submit" value="submit"/>
-        </form>
-    </body>
-</html>
+    <input type="submit" value="submit"/>
+</form>
+{% endblock %}

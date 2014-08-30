@@ -1,9 +1,12 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 from clients.models import Client, Dependent, Claim, Insurance
 from clients.forms import ClientForm
 
+
+@login_required
 def index(request):
     context = RequestContext(request)
 
@@ -13,6 +16,7 @@ def index(request):
     return render_to_response('clients/index.html', client_dict, context)
 
 
+@login_required
 def clientView(request, client_id):
     context = RequestContext(request)
 
@@ -35,6 +39,7 @@ def clientView(request, client_id):
     return render_to_response('clients/client.html', context_dict, context)
 
 
+@login_required
 def add_client(request):
     context = RequestContext(request)
 
@@ -55,6 +60,7 @@ def add_client(request):
     return render_to_response('clients/add_client.html', {'form':form}, context)
 
 
+@login_required
 def claimsView(request):
     context = RequestContext(request)
 
@@ -64,6 +70,7 @@ def claimsView(request):
     return render_to_response('clients/claims.html', context_dict, context)
 
 
+@login_required
 def coverageView(request):
     context = RequestContext(request)
 
@@ -73,6 +80,7 @@ def coverageView(request):
     return render_to_response('clients/coverage.html', context_dict, context)
 
 
+@login_required
 def insuranceView(request):
     context = RequestContext(request)
 

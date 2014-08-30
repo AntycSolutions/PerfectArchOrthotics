@@ -17,6 +17,8 @@ if os.environ.has_key('OPENSHIFT_REPO_DIR'):
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
+LOGIN_URL = '/login/'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
