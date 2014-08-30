@@ -13,12 +13,11 @@
         it will literally knock your socks off!</p>
     </div>
 
-    <a href="/login/">Login</a>
 
     {% if user.is_authenticated %}
-    <h1>User is logged in a-ok</h1>
+    <a href="/logout/">Logout</a>
     {% else %}
-    <h1>User needs to log in</h1>
+    <a href="/login/">Login</a>
     {% endif %}
 
 {% endblock %}
