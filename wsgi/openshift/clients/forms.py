@@ -1,6 +1,7 @@
 from django import forms
 from clients.models import Client, Dependent, Insurance
 
+
 class ClientForm(forms.ModelForm):
 
     MALE = 'Male'
@@ -23,4 +24,5 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
 
-        fields = ('firstName', 'lastName', 'address', 'city', 'postalCode', 'phoneNumber', 'cellNumber', 'email', 'birthdate', 'gender', 'employer')
+        fields = ('firstName', 'lastName', 'address', 'city', 'postalCode', 'phoneNumber',
+                  'cellNumber', 'email', 'birthdate', 'gender', 'employer')

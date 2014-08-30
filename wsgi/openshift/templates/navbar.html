@@ -8,28 +8,28 @@
         <a class="navbar-brand" href="/">Perfect Arch Orthotics</a>
     </div>
     {% if user.is_authenticated %}
-    <div class="navbar-collapse collapse navbar-responsive-collapse">
-        <ul class="nav navbar-nav">
-            <li><a href="/clients">Clients</a></li>
-            <li><a href="/clients/claims">Claims</a></li>
-            <li><a href="/clients/coverage">Coverage</a></li>
-            <li><a href="/clients/insurance">Insurance</a></li>
-            <li><a href="/inventory">Inventory</a></li>
-        </ul>
-        <form class="navbar-form navbar-left">
-            <input type="text" class="form-control col-lg-8" placeholder="Search">
-        </form>
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin">Admin</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
-    </div>
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/clients">Clients</a></li>
+                <li><a href="/clients/claims">Claims</a></li>
+                <li><a href="/clients/coverage">Coverage</a></li>
+                <li><a href="/clients/insurance">Insurance</a></li>
+                <li><a href="/inventory">Inventory</a></li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <input type="text" class="form-control col-lg-8" placeholder="Search">
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/admin">Admin</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
     {% else %}
-    <div class="navbar-collapse collapse navbar-responsive-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin">Admin</a></li>
-            <li><a href="/login">Login</a></li>
-        </ul>
-    </div>
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/admin">Admin</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
     {% endif %}
 </div>

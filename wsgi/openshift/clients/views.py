@@ -57,7 +57,7 @@ def add_client(request):
     else:
         form = ClientForm()
 
-    return render_to_response('clients/add_client.html', {'form':form}, context)
+    return render_to_response('clients/add_client.html', {'form': form}, context)
 
 
 @login_required

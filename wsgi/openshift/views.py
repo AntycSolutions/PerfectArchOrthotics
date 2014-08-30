@@ -5,11 +5,6 @@ from clients.models import Client
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-# Restricting access. User this decorator
-# @login_required
-# import from django.contrib.auth.decorators
-# Now to redirect the user, give them a way to get to the login url
-# in settings.py LOGIN_URL = '/login/'
 
 def index(request):
     context = RequestContext(request)
