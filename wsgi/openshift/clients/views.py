@@ -2,8 +2,10 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance
 from clients.forms import ClientForm
+from search import get_query
 
 
 @login_required
@@ -11,10 +13,42 @@ def index(request):
     context = RequestContext(request)
 
     client_list = Client.objects.all()
-    client_dict = {'clients': client_list}
+    paginator = Paginator(client_list, 5)
+    page = request.GET.get('page')
+    try:
+        clients = paginator.page(page)
+    except PageNotAnInteger:
+        clients = paginator.page(1)
+    except EmptyPage:
+        clients = paginator.page(paginator.num_pages)
+
+    client_dict = {'clients': clients}
 
     return render_to_response('clients/index.html', client_dict, context)
 
+
+def clientSearchView(request):
+    context = RequestContext(request)
+    query_string = request.GET['q']
+    print query_string
+    clients = None
+    if ('q' in request.GET) and request.GET['q'].strip():
+        page = request.GET.get('page')
+        query_string = request.GET['q']
+        client_query = get_query(query_string, ['firstName', 'lastName'])
+        found_clients = Client.objects.filter(client_query)
+        paginator = Paginator(found_clients, 5)
+        try:
+            clients = paginator.page(page)
+        except PageNotAnInteger:
+            clients = paginator.page(1)
+        except EmptyPage:
+            clients = paginator.page(paginator.num_pages)
+
+
+    return render_to_response('clients/client_search.html',
+                              {'clients': clients},
+                              context)
 
 @login_required
 def clientView(request, client_id):

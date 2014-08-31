@@ -2,12 +2,10 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 
-{% block title %}Clients{% endblock %}
+{% block title %}Client search results{% endblock %}
 
 {% block content %}
-    <h1>Clients</h1>
-    <p><a href="/clients/add_client/">Add a new client</a>
-    </br>
+    <h1>Client search results</h1>
     {% if clients %}
         {% for client in clients %}
              <h3><a href="/clients/{{client.id}}">{{client.firstName}} {{client.lastName}}</a></h3>
