@@ -50,6 +50,39 @@ def clientSearchView(request):
                               {'clients': clients},
                               context)
 
+def insuranceSearchView(request):
+    context = RequestContext(request)
+    query_string = request.GET['q']
+    fields = getFieldsFromRequest(request, default='provider')
+    insurances = None
+    if ('q' in request.GET) and request.GET['q'].strip():
+        page = request.GET.get('page')
+        query_string = request.GET['q']
+        insurance_query = get_query(query_string, fields)
+        found_insurances = Insurance.objects.filter(insurance_query)
+        paginator = Paginator(found_insurances, 5)
+        try:
+            insurances = paginator.page(page)
+        except PageNotAnInteger:
+            insurances = paginator.page(1)
+        except EmptyPage:
+            insurances = paginator.page(paginator.num_pages)
+
+
+    return render_to_response('clients/insurance.html',
+                              {'insurances': insurances},
+                              context)
+
+def getFieldsFromRequest(request, default=""):
+    if 'fields' in request.GET and request.GET['fields'].strip():
+        print request.GET
+        querydict = dict(request.GET.iterlists())
+        print querydict
+        print querydict['fields']
+        return querydict['fields']
+    else:
+        return [default]
+
 @login_required
 def clientView(request, client_id):
     context = RequestContext(request)
@@ -118,7 +151,7 @@ def coverageView(request):
 def insuranceView(request):
     context = RequestContext(request)
 
-    insurance = Insurance.objects.all()
+    #insurance = Insurance.objects.all()
 
-    context_dict = {'insurances': insurance}
+    context_dict = {'insurances': None}
     return render_to_response('clients/insurance.html', context_dict, context)

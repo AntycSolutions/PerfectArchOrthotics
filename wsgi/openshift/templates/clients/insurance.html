@@ -6,6 +6,14 @@
 
 {% block content %}
     <h1>Insurances</h1>
+    <form method="get" action="/clients/insurance_search/">
+        Search on:</br>
+        <input type="checkbox" name="fields" value="provider" checked> Provider</br>
+        <input type="checkbox" name="fields" value="policyNumber"> Policy Number</br>
+
+        <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Insurance Search">
+        <input type="submit" class="btn" value="Search">
+    </form>
     {% if insurances %}
         <table class="table table-striped table-cover">
             <thead>
@@ -30,7 +38,6 @@
             </tbody>
         </table>
     {% else %}
-        <p>No converage information could be found</p>
+        <p>No results found</p>
     {% endif %}
 {% endblock %}
-
