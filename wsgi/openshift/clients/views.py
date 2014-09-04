@@ -54,6 +54,7 @@ def insuranceSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
     fields = getFieldsFromRequest(request, default='provider')
+    fields.append("client__employer")
     insurances = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
@@ -67,7 +68,6 @@ def insuranceSearchView(request):
             insurances = paginator.page(1)
         except EmptyPage:
             insurances = paginator.page(paginator.num_pages)
-
 
     return render_to_response('clients/insurance.html',
                               {'insurances': insurances},

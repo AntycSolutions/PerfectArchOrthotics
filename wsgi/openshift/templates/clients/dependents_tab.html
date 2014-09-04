@@ -1,9 +1,9 @@
-<h1>Dependents</h1>
+<h3>Dependents</h3>
 </br>
 {% if spouse %}
-    <h2>Spouse</h2>
+    <h4>Spouse</h4>
     <div class="container">
-        <h3>{{spouse.firstName}} {{spouse.lastName}}</h3>
+        <h5>{{spouse.firstName}} {{spouse.lastName}}</h5>
         <ul>
             <li>Birthdate: {{spouse.birthdate}}</li>
             <li>Gender: {{spouse.gender}}</li>
@@ -12,10 +12,10 @@
 {% endif %}
 </br>
 {% if children %}
-    <h2>Children</h2>
+    <h4>Children</h4>
     {% for child in children %}
     <div class="container">
-        <h3>{{child.firstName}} {{child.lastName}}</h3>
+        <h5>{{child.firstName}} {{child.lastName}}</h5>
         <ul>
             <li>Birthdate: {{child.birthdate}}</li>
             <li>Gender: {{child.gender}}</li>

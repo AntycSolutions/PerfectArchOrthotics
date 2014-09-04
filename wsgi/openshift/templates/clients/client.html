@@ -5,6 +5,7 @@
 {% block title %}{{client.firstName}} {{client.lastName}}{% endblock %}
 
 {% block content %}
+<!--
     <ul class="nav nav-tabs" style="margin-bottom: 15px;">
         <li class="active"><a href="#info" data-toggle="tab">Information</a></li>
         <li class=""><a href="#dependents" data-toggle="tab">Dependents</a></li>
@@ -22,5 +23,9 @@
             {% include 'clients/insurance_tab.html' %}
         </div>
     </div>
+-->
+    {% include 'clients/information_tab.html' %}
+    {% include 'clients/dependents_tab.html' %}
+    {% include 'clients/insurance_tab.html' %}
 {% endblock %}
 
