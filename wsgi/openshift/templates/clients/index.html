@@ -8,22 +8,43 @@
     <h1>Clients</h1>
     <p><a href="/clients/add_client/">Add a new client</a>
     </br>
+    <form method="get" action="/clients/client_search/">
+        <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Client Search">
+        <input type="submit" class="btn" value="Search">
+    </form>
     {% if clients %}
-        {% for client in clients %}
-             <h3><a href="/clients/{{client.id}}">{{client.firstName}} {{client.lastName}}</a></h3>
-             <table class="table">
-                 <tr>
-                    <td>{{client.birthdate}}</td>
-                    <td>{{client.phoneNumber}}</td>
-                    <td>{{client.cellNumber}}</td>
-                    <td>{{client.email}}</td>
-                    <td>{{client.employer}}</td>
-                    <td>{{client_insurance.insurance.provider}}</td>
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Address</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Credit</th>
+                    <th>Employer</th>
                 </tr>
-            </table>
+            </thead>
+            <tbody>
+        {% for client in clients %}
+            <tr>
+                <td>
+                    <a href="/clients/{{client.id}}">
+                        {{client.firstName}} {{client.lastName}}
+                    </a>
+                </td>
+                <td>{{client.address}}</td>
+                <td>{{client.phoneNumber}}</td>
+                <td>{{client.email}}</td>
+                <td>{{client.gender}}</td>
+                <td>{{client.credit}}</td>
+                <td>{{client.employer}}</td>
+                </tr>
         {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p> There is no client information </p>
+        <p>No results found</p>
     {% endif %}
 
     <div class="pagination">

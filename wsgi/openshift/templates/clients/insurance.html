@@ -7,10 +7,6 @@
 {% block content %}
     <h1>Insurances</h1>
     <form method="get" action="/clients/insurance_search/">
-        Search on:</br>
-        <input type="checkbox" name="fields" value="provider" checked> Provider</br>
-        <input type="checkbox" name="fields" value="policyNumber"> Policy Number</br>
-
         <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Insurance Search">
         <input type="submit" class="btn" value="Search">
     </form>
@@ -19,19 +15,27 @@
             <thead>
                 <tr>
                     <th>Client</th>
+                    <th>Employer</th>
                     <th>Provider</th>
                     <th>Policy Number</th>
                     <th>Contract Number</th>
+                    <th>Coverage Percent</th>
                     <th>Billing</th>
                 </tr>
             </thead>
             <tbody>
         {% for insurance in insurances %}
                 <tr>
-                    <td>{{insurance.client.firstName}} {{insurance.client.lastName}}</td>
+                    <td>
+                        <a href="/clients/{{insurance.client.id}}">
+                            {{insurance.client.firstName}} {{insurance.client.lastName}}
+                        </a>
+                    </td>
+                    <td>{{insurance.client.employer}}
                     <td>{{insurance.provider}}</td>
                     <td>{{insurance.policyNumber}}</td>
                     <td>{{insurance.contractNumber}}</td>
+                    <td>{{insurance.coveragePercent}}</td>
                     <td>{{insurance.billing}}</td>
                 </tr>
         {% endfor %}

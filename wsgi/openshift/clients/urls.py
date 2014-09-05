@@ -9,6 +9,5 @@ urlpatterns = \
              url(r'^insurance_search/', views.insuranceSearchView, name='insurance_search'),
              url(r'^(?P<client_id>\w+)/$', views.clientView, name='client'),
              url(r'^claims', views.claimsView, name='claims'),
-             url(r'^coverage', views.coverageView, name='coverage'),
              url(r'^insurance', views.insuranceView, name='insurance'),
              )

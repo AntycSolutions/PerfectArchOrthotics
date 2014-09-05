@@ -30,12 +30,12 @@ def index(request):
 def clientSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
-    print query_string
+    fields = ['firstName', 'lastName', 'address', 'phoneNumber', 'employer']
     clients = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
-        client_query = get_query(query_string, ['firstName', 'lastName'])
+        client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
         paginator = Paginator(found_clients, 5)
         try:
@@ -46,15 +46,14 @@ def clientSearchView(request):
             clients = paginator.page(paginator.num_pages)
 
 
-    return render_to_response('clients/client_search.html',
+    return render_to_response('clients/index.html',
                               {'clients': clients},
                               context)
 
 def insuranceSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
-    fields = getFieldsFromRequest(request, default='provider')
-    fields.append("client__employer")
+    fields = ["client__employer", "provider", "policyNumber", "client__firstName", "client__lastName"]
     insurances = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
@@ -74,6 +73,7 @@ def insuranceSearchView(request):
                               context)
 
 def getFieldsFromRequest(request, default=""):
+    """This is not used currently, will maybe be used in the future."""
     if 'fields' in request.GET and request.GET['fields'].strip():
         print request.GET
         querydict = dict(request.GET.iterlists())
@@ -135,16 +135,6 @@ def claimsView(request):
 
     context_dict = {'claims': claims}
     return render_to_response('clients/claims.html', context_dict, context)
-
-
-@login_required
-def coverageView(request):
-    context = RequestContext(request)
-
-    insurance = Insurance.objects.all()
-
-    context_dict = {'insurances': insurance}
-    return render_to_response('clients/coverage.html', context_dict, context)
 
 
 @login_required
