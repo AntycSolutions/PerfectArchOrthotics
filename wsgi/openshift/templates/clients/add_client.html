@@ -7,7 +7,7 @@
 {% block content %}
     <h1>Add a Client</h1>
 
-    <form id="client_form" class="form-horizontal" method="post">
+    <form id="client_form" method="post">
         <fieldset>
             {% csrf_token %}
                 {% for field in form.visible_fields %}

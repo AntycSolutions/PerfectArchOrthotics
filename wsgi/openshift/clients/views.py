@@ -12,7 +12,7 @@ from search import get_query
 def index(request):
     context = RequestContext(request)
 
-    client_list = Client.objects.all()
+    client_list = Client.objects.order_by('-id')
     paginator = Paginator(client_list, 5)
     page = request.GET.get('page')
     try:
@@ -27,6 +27,45 @@ def index(request):
     return render_to_response('clients/index.html', client_dict, context)
 
 
+@login_required
+def claimsView(request):
+    context = RequestContext(request)
+
+    # TODO: Change this order_by to be on time
+    claim_list = Claim.objects.order_by('-id')
+    paginator = Paginator(claim_list, 5)
+    page = request.GET.get('page')
+    try:
+        claims = paginator.page(page)
+    except PageNotAnInteger:
+        claims = paginator.page(1)
+    except EmptyPage:
+        claims = paginator.page(paginator.num_pages)
+
+
+    context_dict = {'claims': claims}
+    return render_to_response('clients/claims.html', context_dict, context)
+
+
+@login_required
+def insuranceView(request):
+    context = RequestContext(request)
+
+    insurance_list = Insurance.objects.all()
+    paginator = Paginator(insurance_list, 5)
+    page = request.GET.get('page')
+    try:
+        insurances = paginator.page(page)
+    except PageNotAnInteger:
+        insurances = paginator.page(1)
+    except EmptyPage:
+        insurances = paginator.page(paginator.num_pages)
+
+    context_dict = {'insurances': insurances}
+    return render_to_response('clients/insurance.html', context_dict, context)
+
+
+@login_required
 def clientSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
@@ -50,6 +89,7 @@ def clientSearchView(request):
                               {'clients': clients},
                               context)
 
+@login_required
 def claimSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
@@ -73,6 +113,7 @@ def claimSearchView(request):
                               {'claims': claims},
                               context)
 
+@login_required
 def insuranceSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
@@ -125,7 +166,6 @@ def clientView(request, client_id):
                     'client_insurance': insurance,
                     'spouse': spouse,
                     'children': children}
-    print context_dict
     return render_to_response('clients/client.html', context_dict, context)
 
 
@@ -148,23 +188,3 @@ def add_client(request):
         form = ClientForm()
 
     return render_to_response('clients/add_client.html', {'form': form}, context)
-
-
-@login_required
-def claimsView(request):
-    context = RequestContext(request)
-
-    claims = Claim.objects.all()
-
-    context_dict = {'claims': claims}
-    return render_to_response('clients/claims.html', context_dict, context)
-
-
-@login_required
-def insuranceView(request):
-    context = RequestContext(request)
-
-    insurance = Insurance.objects.all()
-
-    context_dict = {'insurances': insurance}
-    return render_to_response('clients/insurance.html', context_dict, context)
