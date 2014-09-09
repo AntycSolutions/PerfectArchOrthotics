@@ -5,17 +5,19 @@
 {% block title %}Add Client{% endblock %}
 
 {% block content %}
-    <h1>Add a Client</h1>
+    <h1>Part 1 of 3:</h1>
+    <h3>Add client personal information</h3>
 
-    <form id="client_form" method="post">
+    <form id="client_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}
                 {% for field in form.visible_fields %}
                 <div class="form-group">
-                    {{ field.errors }}
-                    <label class"col-lg-2 control-label">{{ field.help_text }}</label>
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
                     <div class="col-lg-10">
-                        {{ field }}
+                        {{ field.label_tag}} {{ field }}
                     </div>
                 </div>
                 {% endfor %}
