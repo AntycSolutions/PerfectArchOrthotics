@@ -7,6 +7,11 @@
 {% block content %}
     <h1>Claims</h1>
 
+    <form method="get" action="/clients/claim_search/">
+        <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search">
+        <input type="submit" class="btn" value="Search">
+    </form>
+
     {% if claims %}
         <table class="table table-striped table-cover">
             <thead>
@@ -20,7 +25,11 @@
             <tbody>
         {% for claim in claims %}
                 <tr>
-                    <td>{{claim.client.firstName}} {{claim.client.lastName}}</td>
+                    <td>
+                        <a href="/clients/{{claim.client.id}}">
+                            {{claim.client.firstName}} {{claim.client.lastName}}
+                        </a>
+                    </td>
                     <td>{{claim.submittedDate}}</td>
                     <td>{{claim.amountClaimed}}</td>
                     <td>{{insurance.provider}}</td>
@@ -31,5 +40,23 @@
     {% else %}
         <p>There are no claims currenty</p>
     {% endif %}
+
+    <!-- Pagination stuff -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if claims.has_previous %}
+                <a href="?page={{ claims.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ claims.number }} of {{ claims.paginator.num_pages }}.
+            </span>
+
+            {% if claims.has_next %}
+            <a href="?page={{ claims.next_page_number }}">next</a>
+            {% endif %}
+        </span>            
+    </div>
+
 {% endblock %}
 

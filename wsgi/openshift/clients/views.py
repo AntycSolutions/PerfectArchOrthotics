@@ -50,6 +50,29 @@ def clientSearchView(request):
                               {'clients': clients},
                               context)
 
+def claimSearchView(request):
+    context = RequestContext(request)
+    query_string = request.GET['q']
+    fields = ['client__firstName', 'client__lastName', 'client__employer', 'insurance__provider']
+    claims = None
+    if ('q' in request.GET) and request.GET['q'].strip():
+        page = request.GET.get('page')
+        query_string = request.GET['q']
+        claim_query = get_query(query_string, fields)
+        found_claims = Claim.objects.filter(claim_query)
+        paginator = Paginator(found_claims, 5)
+        try:
+            claims = paginator.page(page)
+        except PageNotAnInteger:
+            claims = paginator.page(1)
+        except EmptyPage:
+            claims = paginator.page(paginator.num_pages)
+
+
+    return render_to_response('clients/claims.html',
+                              {'claims': claims},
+                              context)
+
 def insuranceSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
