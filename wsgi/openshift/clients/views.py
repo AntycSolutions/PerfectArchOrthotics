@@ -141,7 +141,7 @@ def claimsView(request):
 def insuranceView(request):
     context = RequestContext(request)
 
-    #insurance = Insurance.objects.all()
+    insurance = Insurance.objects.all()
 
-    context_dict = {'insurances': None}
+    context_dict = {'insurances': insurance}
     return render_to_response('clients/insurance.html', context_dict, context)

@@ -44,4 +44,22 @@
     {% else %}
         <p>No results found</p>
     {% endif %}
+
+    <!-- Pagination stuff -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if insurances.has_previous %}
+                <a href="?page={{ insurances.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ insurances.number }} of {{ insurances.paginator.num_pages }}.
+            </span>
+
+            {% if insurances.has_next %}
+            <a href="?page={{ insurances.next_page_number }}">next</a>
+            {% endif %}
+        </span>            
+    </div>
+
 {% endblock %}
