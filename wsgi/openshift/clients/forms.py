@@ -11,18 +11,20 @@ class ClientForm(forms.ModelForm):
 
     firstName = forms.CharField(max_length=128, help_text="Client first name")
     lastName = forms.CharField(max_length=128, help_text="Client last name")
-    address = forms.CharField(max_length=128, help_text="Client address")
-    city = forms.CharField(max_length=128, help_text="Client city")
-    postalCode = forms.CharField(max_length=6, help_text="Client postal code (no spaces)")
-    phoneNumber = forms.CharField(max_length=14, help_text="Client home phone")
-    cellNumber = forms.CharField(max_length=14, help_text="Client cell phone")
-    email = forms.CharField(max_length=254, help_text="Client email")
+    address = forms.CharField(max_length=128, help_text="Client address", required=False)
+    city = forms.CharField(max_length=128, help_text="Client city", required=False)
+    postalCode = forms.CharField(max_length=6, help_text="Client postal code (no spaces)", required=False)
+    phoneNumber = forms.CharField(max_length=14, help_text="Client home phone", required=False)
+    cellNumber = forms.CharField(max_length=14, help_text="Client cell phone", required=False)
+    email = forms.CharField(max_length=254, help_text="Client email", required=False)
     birthdate = forms.CharField(help_text="Client birthdate")
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, help_text="Gender")
-    employer = forms.CharField(max_length=128, help_text="Client employer")
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, help_text="Gender", required=False)
+    employer = forms.CharField(max_length=128, help_text="Client employer", required=False)
+    referredBy = forms.CharField(max_length=128, required=False)
+    healthcareNumber = forms.CharField(max_length=20, required=False)
 
     class Meta:
         model = Client
 
-        fields = ('firstName', 'lastName', 'address', 'city', 'postalCode', 'phoneNumber',
-                  'cellNumber', 'email', 'birthdate', 'gender', 'employer')
+        fields = ('firstName', 'lastName', 'birthdate', 'address', 'city', 'postalCode', 'phoneNumber',
+                  'cellNumber', 'email', 'healthcareNumber', 'gender', 'employer', 'referredBy')

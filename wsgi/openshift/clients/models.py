@@ -15,12 +15,12 @@ class Dependent(models.Model):
 
     """Model of a clients dependents.
 
-   Fields:
-   Relationship (spouse, son, daughter)
-   Birthdate
-   Sex
+    Fields:
+    Relationship (spouse, son, daughter)
+    Birthdate
+    Sex
 
-   * Each client will have a list of dependents that they are associate with.
+    * Each client will have a list of dependents that they are associate with.
 
     """
     SPOUSE = 'Spouse'
@@ -33,11 +33,11 @@ class Dependent(models.Model):
     GENDER_CHOICES = ((MALE, 'Male'),
                       (FEMALE, 'Female'))
 
-    firstName = models.CharField(max_length=128)
-    lastName = models.CharField(max_length=128)
-    relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES)
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
-    birthdate = models.DateField()
+    firstName = models.CharField(max_length=128, blank=True, default="")
+    lastName = models.CharField(max_length=128, blank=True, default="")
+    relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES, blank=True, default="")
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True, default="")
+    birthdate = models.DateField(blank=True, null=True)
 
     def __unicode__(self):
         return "%s - %s" % (self.firstName, self.lastName)
@@ -62,6 +62,7 @@ class Client(models.Model):
     Birthdate
     Gender
     Employer
+    Albeta Healthcare number
     Credit (current credit from insurance company)
     Notes (for log of communication)
     Dependents - another table
@@ -85,10 +86,12 @@ class Client(models.Model):
     cellNumber = models.CharField(max_length=14, blank=True, default="")  # In the form of (780)-937-1514
     # will cover all RFC3696/5321-compliant email addresses
     email = models.EmailField(max_length=254, blank=True, null=True)
-    birthdate = models.DateField()
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True)
+    healthcareNumber = models.CharField(max_length=20, blank=True, default="")
+    birthdate = models.DateField(blank=True)
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True, default="")
     employer = models.CharField(max_length=128, blank=True, default="")
-    credit = models.SmallIntegerField(default=0)
+    credit = models.SmallIntegerField(blank=True, default=0)
+    referredBy = models.CharField(max_length=128, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     dependents = models.ManyToManyField(Dependent, blank=True, null=True)
     # Foreign key relationships
@@ -169,16 +172,16 @@ class Insurance(models.Model):
                        ("Indirect", "Indirect"))
 
     client = models.ForeignKey(Client)
-    provider = models.CharField(max_length=128)
-    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE)
-    policyNumber = models.CharField(max_length=128)
-    contractNumber = models.CharField(max_length=128)
-    coveragePercent = models.IntegerField()
+    provider = models.CharField(max_length=128, blank=True, default="")
+    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE, blank=True, default="")
+    policyNumber = models.CharField(max_length=128, blank=True, default="")
+    contractNumber = models.CharField(max_length=128, blank=True, default="")
+    coveragePercent = models.IntegerField(blank=True, null=True)
     maxClaimAmount = models.IntegerField(default=0, blank=True)
     totalClaimed = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True)
     period = models.IntegerField(default=1)
-    billing = models.CharField(max_length=8, choices=BILLING_CHOICES)
+    billing = models.CharField(max_length=8, choices=BILLING_CHOICES, blank=True, default="")
 
     def __unicode__(self):
         clientName = self.client.firstName + " " + self.client.lastName
@@ -209,16 +212,16 @@ class Claim(models.Model):
                        ("CHEQUE", "Cheque"),
                        ("CREDIT", "Credit"))
 
-    client = models.ForeignKey(Client)
+    client = models.ForeignKey(Client, blank=True, null=True)
     # TODO figure out how to get the insurance from the client to calidate this
-    insurance = models.ForeignKey(Insurance)
+    insurance = models.ForeignKey(Insurance, blank=True, null=True)
     submittedDate = models.DateTimeField(auto_now=True)
     invoiceDate = models.DateTimeField(blank=True, null=True)
     paidDate = models.DateTimeField(blank=True, null=True)
     amountClaimed = models.IntegerField(blank=True, default=0)
     # TODO validate based on clients insurance, amount left in coverage and coverage percent
     expectedBack = models.IntegerField(blank=True, default=0)
-    paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES)
+    paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES, blank=True, default="")
 
     def __unicode__(self):
         return "Claim - %s %s" % (self.client.firstName, self.client.lastName)
