@@ -9,15 +9,18 @@ class ClientForm(forms.ModelForm):
     GENDER_CHOICES = ((MALE, 'Male'),
                       (FEMALE, 'Female'))
 
+    # required
     firstName = forms.CharField(max_length=128, help_text="Client first name")
     lastName = forms.CharField(max_length=128, help_text="Client last name")
+    birthdate = forms.CharField(help_text="Client birthdate")
+
+    # not required
     address = forms.CharField(max_length=128, help_text="Client address", required=False)
     city = forms.CharField(max_length=128, help_text="Client city", required=False)
     postalCode = forms.CharField(max_length=6, help_text="Client postal code (no spaces)", required=False)
     phoneNumber = forms.CharField(max_length=14, help_text="Client home phone", required=False)
     cellNumber = forms.CharField(max_length=14, help_text="Client cell phone", required=False)
     email = forms.CharField(max_length=254, help_text="Client email", required=False)
-    birthdate = forms.CharField(help_text="Client birthdate")
     gender = forms.ChoiceField(choices=GENDER_CHOICES, help_text="Gender", required=False)
     employer = forms.CharField(max_length=128, help_text="Client employer", required=False)
     referredBy = forms.CharField(max_length=128, required=False)
