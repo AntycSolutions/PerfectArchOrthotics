@@ -69,7 +69,7 @@ def insuranceView(request):
 def clientSearchView(request):
     context = RequestContext(request)
     query_string = request.GET['q']
-    fields = ['firstName', 'lastName', 'address', 'phoneNumber', 'employer']
+    fields = ['firstName', 'lastName', 'address', 'phoneNumber', 'employer', 'healthcareNumber']
     clients = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
