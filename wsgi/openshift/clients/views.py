@@ -68,12 +68,14 @@ def insuranceView(request):
 @login_required
 def clientSearchView(request):
     context = RequestContext(request)
+    context_dict = {}
     query_string = request.GET['q']
     fields = ['firstName', 'lastName', 'address', 'phoneNumber', 'employer', 'healthcareNumber']
     clients = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
+        context_dict['q'] = query_string
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
         paginator = Paginator(found_clients, 5)
@@ -83,21 +85,24 @@ def clientSearchView(request):
             clients = paginator.page(1)
         except EmptyPage:
             clients = paginator.page(paginator.num_pages)
+        context_dict['clients'] = clients
 
 
     return render_to_response('clients/index.html',
-                              {'clients': clients},
+                              context_dict,
                               context)
 
 @login_required
 def claimSearchView(request):
     context = RequestContext(request)
+    context_dict = {}
     query_string = request.GET['q']
     fields = ['client__firstName', 'client__lastName', 'client__employer', 'insurance__provider']
     claims = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
+        context_dict['q'] = query_string
         claim_query = get_query(query_string, fields)
         found_claims = Claim.objects.filter(claim_query)
         paginator = Paginator(found_claims, 5)
@@ -107,21 +112,24 @@ def claimSearchView(request):
             claims = paginator.page(1)
         except EmptyPage:
             claims = paginator.page(paginator.num_pages)
+        context_dict['claims'] = claims
 
 
     return render_to_response('clients/claims.html',
-                              {'claims': claims},
+                              context_dict,
                               context)
 
 @login_required
 def insuranceSearchView(request):
     context = RequestContext(request)
+    context_dict = {}
     query_string = request.GET['q']
     fields = ["client__employer", "provider", "policyNumber", "client__firstName", "client__lastName"]
     insurances = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
+        context_dict['q'] = query_string
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
         paginator = Paginator(found_insurances, 5)
@@ -131,9 +139,10 @@ def insuranceSearchView(request):
             insurances = paginator.page(1)
         except EmptyPage:
             insurances = paginator.page(paginator.num_pages)
+        context_dict['insurances'] = insurances
 
     return render_to_response('clients/insurance.html',
-                              {'insurances': insurances},
+                              context_dict,
                               context)
 
 def getFieldsFromRequest(request, default=""):
