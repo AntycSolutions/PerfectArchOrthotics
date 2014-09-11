@@ -36,8 +36,10 @@ if ON_OPENSHIFT:
 SECRET_KEY = use_keys['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# TODO Turn debug back to False for production
 if ON_OPENSHIFT:
-     DEBUG = False
+     #DEBUG = False
+     DEBUG = True
 else:
      DEBUG = True
 
@@ -130,7 +132,7 @@ if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
 else:
 	DATABASES['default'] = {
 		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': dev.db,
+		'NAME': 'dev.db',
 		'USER': '',
 		'PASSWORD': '',
 		'HOST': '',
