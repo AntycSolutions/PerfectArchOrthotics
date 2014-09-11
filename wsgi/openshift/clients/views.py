@@ -1,10 +1,10 @@
-from django.shortcuts import render_to_response
-from django.http import HttpResponse
+from django.shortcuts import render_to_response, redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance
-from clients.forms import ClientForm
+from clients.forms import ClientForm, DependentForm
 from search import get_query
 
 
@@ -186,14 +186,40 @@ def add_client(request):
         form = ClientForm(request.POST)
 
         if form.is_valid():
-            form.save(commit=True)
+            saved = form.save(commit=True)
 
-            client_list = Client.objects.all()
-            client_dict = {'clients': client_list}
-            return render_to_response('clients/index.html', client_dict, context)
+            form = DependentForm()
+            return redirect('add_dependent', saved.id)
+            #return render_to_response('clients/add_dependent.html', {'form': form}, context)
         else:
             print form.errors
     else:
         form = ClientForm()
 
     return render_to_response('clients/add_client.html', {'form': form}, context)
+
+
+@login_required
+def add_dependent(request, client_id):
+    #print client_id
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        form = DependentForm(request.POST)
+
+        if form.is_valid():
+            saved = form.save(commit=True)
+
+            client = Client.objects.get(id=client_id)
+            client.dependents.add(saved)
+
+            #client_list = Client.objects.all()
+            #client_dict = {'clients': client_list}
+            return redirect('client_index')
+            #return render_to_response('clients/index.html', client_dict, context)
+        else:
+            print form.errors
+    else:
+        form = DependentForm()
+
+    return render_to_response('clients/add_dependent.html', {'form': form}, context)

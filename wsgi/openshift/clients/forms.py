@@ -31,3 +31,27 @@ class ClientForm(forms.ModelForm):
 
         fields = ('firstName', 'lastName', 'birthdate', 'address', 'city', 'postalCode', 'phoneNumber',
                   'cellNumber', 'email', 'healthcareNumber', 'gender', 'employer', 'referredBy')
+
+
+class DependentForm(forms.ModelForm):
+
+    SPOUSE = 'Spouse'
+    CHILD = 'Child'
+    RELATIONSHIP_CHOICES = ((SPOUSE, 'Spouse'),
+                            (CHILD, 'Child'))
+
+    MALE = 'Male'
+    FEMALE = 'Female'
+    GENDER_CHOICES = ((MALE, 'Male'),
+                      (FEMALE, 'Female'))
+
+    firstName = forms.CharField(max_length=128, help_text="Dependent first name")
+    lastName = forms.CharField(max_length=128, help_text="Dependent last name")
+    birthdate = forms.CharField(help_text="Dependent birthdate")
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, help_text="Gender", required=False)
+    relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, help_text="Relationship", required=False)
+
+    class Meta:
+        model = Dependent
+
+        fields = ('firstName', 'lastName', 'birthdate', 'gender', 'relationship')
