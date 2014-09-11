@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import imp
+import urlparse
 
 ON_OPENSHIFT = False
 if os.environ.has_key('OPENSHIFT_REPO_DIR'):
@@ -97,6 +98,7 @@ TEMPLATE_DIRS = (
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+""" Old way, changed on September 10, 2014
 if ON_OPENSHIFT:
      DATABASES = {
          'default': {
@@ -111,6 +113,29 @@ else:
              'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
          }
     }
+"""
+DATABASES = {}
+if 'OPENSHIFT_MYSQL_DB_URL' in os.environ:
+	url = urlparse.urlparse(os.environ.get('OPENSHIFT_MYSQL_DB_URL'))
+
+	DATABASES['default'] = {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': os.environ['OPENSHIFT_APP_NAME'],
+		'USER': url.username,
+		'PASSWORD': url.password,
+		'HOST': url.hostname,
+		'PORT': url.port,
+		}
+
+else:
+	DATABASES['default'] = {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': dev.db,
+		'USER': '',
+		'PASSWORD': '',
+		'HOST': '',
+		'PORT': '',
+		}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
