@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance
-from clients.forms import ClientForm, DependentForm
+from clients.forms import ClientForm, DependentForm, DependantFormSet
 from search import get_query
 
 
@@ -220,6 +220,7 @@ def add_dependent(request, client_id):
         else:
             print form.errors
     else:
+        # TODO need to create a formset here isntead of a form
         form = DependentForm()
 
     return render_to_response('clients/add_dependent.html', {'form': form}, context)

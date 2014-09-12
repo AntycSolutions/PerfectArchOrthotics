@@ -1,5 +1,6 @@
 from django import forms
 from clients.models import Client, Dependent, Insurance
+from django.forms.formsets import formset_factory
 
 
 class ClientForm(forms.ModelForm):
@@ -55,3 +56,6 @@ class DependentForm(forms.ModelForm):
         model = Dependent
 
         fields = ('firstName', 'lastName', 'birthdate', 'gender', 'relationship')
+
+
+DependantFormSet = formset_factory(DependentForm)
