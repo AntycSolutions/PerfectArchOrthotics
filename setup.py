@@ -4,7 +4,11 @@ import os
 
 # Put here required packages
 packages = ['Django<=1.6',
-            'South<=1.0']
+            'South<=1.0',
+            'django-easy-pdf',
+            'xhtml2pdf>=0.0.6',
+            'reportlab>=2.7',
+            ]
 
 if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
      packages.append('django-redis-cache')

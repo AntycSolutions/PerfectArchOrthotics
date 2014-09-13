@@ -61,6 +61,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'clients',
     'south',
+    'easy_pdf',
 )
 
 MIDDLEWARE_CLASSES = (

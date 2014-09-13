@@ -6,7 +6,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance
 from clients.forms import ClientForm, DependentForm, DependantFormSet
 from search import get_query
+from easy_pdf.views import PDFTemplateView
 
+
+class HelloPDFView(PDFTemplateView):
+    template_name = "Hello.html"
 
 @login_required
 def index(request):
