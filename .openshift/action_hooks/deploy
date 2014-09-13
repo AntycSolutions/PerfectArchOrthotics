@@ -20,8 +20,15 @@ source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
 echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py syncdb --noinput'"
 python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py syncdb --noinput
 
-echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py migrate --noinput'"
-python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate --noinput
+#echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py migrate --noinput'"
+#python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate --noinput
+
+# First-time deploy for south, only run this the first time
+echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py schemamigration memberapp --initial'"
+python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py schemamigration memberapp --initial
+echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py migrate memberapp --fake'"
+python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate memberapp --fake
+# End of first-time deploy
 
 echo "Executing populate script"
 python "$OPENSHIFT_REPO_DIR"wsgi/openshift/populate_db.py
