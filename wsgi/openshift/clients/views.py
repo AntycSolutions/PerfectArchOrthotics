@@ -191,8 +191,6 @@ def add_client(request):
             form = DependentForm()
             return redirect('add_dependent', saved.id)
             #return render_to_response('clients/add_dependent.html', {'form': form}, context)
-        else:
-            print form.errors
     else:
         form = ClientForm()
 
@@ -201,10 +199,13 @@ def add_client(request):
 
 @login_required
 def add_dependent(request, client_id):
-    #print client_id
     context = RequestContext(request)
+    print request
 
     if request.method == 'POST':
+        if request.POST['submit'] == "Skip step":
+            return redirect('client_index')
+
         form = DependentForm(request.POST)
 
         if form.is_valid():
@@ -213,12 +214,12 @@ def add_dependent(request, client_id):
             client = Client.objects.get(id=client_id)
             client.dependents.add(saved)
 
-            #client_list = Client.objects.all()
-            #client_dict = {'clients': client_list}
-            return redirect('client_index')
-            #return render_to_response('clients/index.html', client_dict, context)
-        else:
-            print form.errors
+            if request.POST['submit'] == "Create and proceed":
+                # This means we want to add insurance
+                return redirect('client_index')
+            else:
+                # This means we want to add another
+                form = DependentForm()
     else:
         # TODO need to create a formset here isntead of a form
         form = DependentForm()
