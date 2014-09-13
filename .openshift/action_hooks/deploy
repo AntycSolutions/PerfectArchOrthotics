@@ -23,11 +23,11 @@ python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py syncdb --noinput
 #echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py migrate --noinput'"
 #python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate --noinput
 
-# First-time deploy for south, only run this the first time
+# First-time deploy for south, only run this the first time using south an an application
 echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py schemamigration --initial'"
-python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py schemamigration --initial
+python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py schemamigration clients --initial
 echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/openshift/manage.py migrate --fake'"
-python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate --fake
+python "$OPENSHIFT_REPO_DIR"wsgi/openshift/manage.py migrate clients --fake
 # End of first-time deploy
 
 echo "Executing populate script"
