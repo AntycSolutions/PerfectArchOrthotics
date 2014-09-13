@@ -3,7 +3,8 @@ from setuptools import setup
 import os
 
 # Put here required packages
-packages = ['Django<=1.6',]
+packages = ['Django<=1.6',
+            'South<=1.0']
 
 if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
      packages.append('django-redis-cache')
