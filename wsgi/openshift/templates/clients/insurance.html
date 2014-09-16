@@ -19,7 +19,7 @@
                     <th>Provider</th>
                     <th>Policy Number</th>
                     <th>Contract Number</th>
-                    <th>Coverage Percent</th>
+                    <th>Coverage Types</th>
                     <th>Billing</th>
                 </tr>
             </thead>
@@ -35,7 +35,24 @@
                     <td>{{insurance.provider}}</td>
                     <td>{{insurance.policyNumber}}</td>
                     <td>{{insurance.contractNumber}}</td>
-                    <td>{{insurance.coveragePercent}}</td>
+                    <td>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Coverage Type</th>
+                                    <th>Coverage Percent</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for coverageType in insurance.coveragetype_set.all %}
+                                <tr>
+                                    <td>{{coverageType.coverageType}}</td>
+                                    <td>{{coverageType.coveragePercent}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
                     <td>{{insurance.billing}}</td>
                 </tr>
         {% endfor %}
