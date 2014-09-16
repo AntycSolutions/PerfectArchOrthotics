@@ -54,17 +54,26 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('client', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Client'])),
             ('provider', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True)),
-            ('coverageType', self.gf('django.db.models.fields.CharField')(default='', max_length=21, blank=True)),
             ('policyNumber', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True)),
             ('contractNumber', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True)),
+            ('billing', self.gf('django.db.models.fields.CharField')(default='', max_length=8, blank=True)),
+            ('gaitScan', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('insuranceCard', self.gf('django.db.models.fields.BooleanField')(default=False)),
+        ))
+        db.send_create_signal(u'clients', ['Insurance'])
+
+        # Adding model 'CoverageType'
+        db.create_table(u'clients_coveragetype', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('insurance', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['clients.Insurance'])),
+            ('coverageType', self.gf('django.db.models.fields.CharField')(default='', max_length=21, blank=True)),
             ('coveragePercent', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('maxClaimAmount', self.gf('django.db.models.fields.IntegerField')(default=0, blank=True)),
             ('totalClaimed', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('quantity', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('period', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('billing', self.gf('django.db.models.fields.CharField')(default='', max_length=8, blank=True)),
         ))
-        db.send_create_signal(u'clients', ['Insurance'])
+        db.send_create_signal(u'clients', ['CoverageType'])
 
         # Adding model 'Claim'
         db.create_table(u'clients_claim', (
@@ -101,6 +110,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Insurance'
         db.delete_table(u'clients_insurance')
+
+        # Deleting model 'CoverageType'
+        db.delete_table(u'clients_coveragetype')
 
         # Deleting model 'Claim'
         db.delete_table(u'clients_claim')
@@ -142,6 +154,17 @@ class Migration(SchemaMigration):
             'postalCode': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '6', 'blank': 'True'}),
             'referredBy': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'blank': 'True'})
         },
+        u'clients.coveragetype': {
+            'Meta': {'object_name': 'CoverageType'},
+            'coveragePercent': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'coverageType': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '21', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'insurance': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['clients.Insurance']"}),
+            'maxClaimAmount': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
+            'period': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'quantity': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'totalClaimed': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
+        },
         u'clients.dependent': {
             'Meta': {'object_name': 'Dependent'},
             'birthdate': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
@@ -156,15 +179,11 @@ class Migration(SchemaMigration):
             'billing': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '8', 'blank': 'True'}),
             'client': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['clients.Client']"}),
             'contractNumber': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'blank': 'True'}),
-            'coveragePercent': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'coverageType': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '21', 'blank': 'True'}),
+            'gaitScan': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'maxClaimAmount': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
-            'period': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'insuranceCard': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'policyNumber': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'blank': 'True'}),
-            'provider': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'blank': 'True'}),
-            'quantity': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'totalClaimed': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
+            'provider': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'blank': 'True'})
         },
         u'clients.prescription': {
             'Meta': {'object_name': 'Prescription'},

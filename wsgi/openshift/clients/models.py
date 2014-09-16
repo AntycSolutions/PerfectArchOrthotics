@@ -164,24 +164,16 @@ class Insurance(models.Model):
     Reporting:
 
     """
-    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
-                     ("Compression_stockings", "Compression Stockings"),
-                     ("Orthopedic_shoes", "Orthopedic Shoes"))
-
     BILLING_CHOICES = (("Direct", "Direct"),
                        ("Indirect", "Indirect"))
 
     client = models.ForeignKey(Client)
     provider = models.CharField(max_length=128, blank=True, default="")
-    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE, blank=True, default="")
     policyNumber = models.CharField(max_length=128, blank=True, default="")
     contractNumber = models.CharField(max_length=128, blank=True, default="")
-    coveragePercent = models.IntegerField(blank=True, null=True)
-    maxClaimAmount = models.IntegerField(default=0, blank=True)
-    totalClaimed = models.IntegerField(null=True, blank=True)
-    quantity = models.IntegerField(null=True, blank=True)
-    period = models.IntegerField(default=1)
     billing = models.CharField(max_length=8, choices=BILLING_CHOICES, blank=True, default="")
+    gaitScan = models.BooleanField(default=False)
+    insuranceCard = models.BooleanField(default=False)
 
     def __unicode__(self):
         clientName = self.client.firstName + " " + self.client.lastName
@@ -189,6 +181,34 @@ class Insurance(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+class CoverageType(models.Model):
+    """This class will represent coverage types.
+
+    There are three types:
+    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
+                 ("Compression_stockings", "Compression Stockings"),
+                 ("Orthopedic_shoes", "Orthopedic Shoes"))
+
+    Other fields will include:
+    - Covergae %
+    - Max claim amount
+    - Quantitiy in pair(s)
+    - Period
+
+    """
+    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
+                     ("Compression_stockings", "Compression Stockings"),
+                     ("Orthopedic_shoes", "Orthopedic Shoes"))
+
+    insurance = models.ForeignKey(Insurance)
+    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE, blank=True, default="")
+    coveragePercent = models.IntegerField(blank=True, null=True)
+    maxClaimAmount = models.IntegerField(default=0, blank=True)
+    totalClaimed = models.IntegerField(null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True)
+    period = models.IntegerField(default=1)
 
 
 class Claim(models.Model):

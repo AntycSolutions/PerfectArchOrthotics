@@ -43,30 +43,31 @@ def populate():
     add_prescription(john, timezone.now())
 
     # Constants for insurance model
-    DIRECT = Insurance.BILLING_CHOICES[0][0]
-    INDIRECT = Insurance.BILLING_CHOICES[1][0]
-    ORTHOTICS = Insurance.COVERAGE_TYPE[0][0]
-    COMPRESSION = Insurance.COVERAGE_TYPE[1][0]
-    ORTHO_SHOES = Insurance.COVERAGE_TYPE[2][0]
+    #DIRECT = Insurance.BILLING_CHOICES[0][0]
+    #INDIRECT = Insurance.BILLING_CHOICES[1][0]
+    #ORTHOTICS = Insurance.COVERAGE_TYPE[0][0]
+    #COMPRESSION = Insurance.COVERAGE_TYPE[1][0]
+    #ORTHO_SHOES = Insurance.COVERAGE_TYPE[2][0]
     # Add insurance
-    eric_insurance = add_insurance(eric, "Some_provider", ORTHOTICS, "PN9999", "CN9999", 50, DIRECT)
-    chris_insurance = add_insurance(chris, "Some_provider", ORTHOTICS, "PN9998", "CN9998", 50, DIRECT)
-    jay_insurance = add_insurance(jay, "Some_provider", ORTHOTICS, "PN9997", "CN9997", 50, DIRECT)
-    dan_insurance = add_insurance(dan, "Some_provider", ORTHOTICS, "PN9996", "CN9996", 50, DIRECT)
-    cloney_insurance = add_insurance(cloney, "Some_provider", ORTHOTICS, "PN9995", "CN9995", 50, DIRECT)
-    jane_insurance = add_insurance(jane, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
-    john_insurance = add_insurance(john, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
+    # Commening out for now, looks like we are changing the way we do this
+    #eric_insurance = add_insurance(eric, "Some_provider", ORTHOTICS, "PN9999", "CN9999", 50, DIRECT)
+    #chris_insurance = add_insurance(chris, "Some_provider", ORTHOTICS, "PN9998", "CN9998", 50, DIRECT)
+    #jay_insurance = add_insurance(jay, "Some_provider", ORTHOTICS, "PN9997", "CN9997", 50, DIRECT)
+    #dan_insurance = add_insurance(dan, "Some_provider", ORTHOTICS, "PN9996", "CN9996", 50, DIRECT)
+    #cloney_insurance = add_insurance(cloney, "Some_provider", ORTHOTICS, "PN9995", "CN9995", 50, DIRECT)
+    #jane_insurance = add_insurance(jane, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
+    #john_insurance = add_insurance(john, "Some_provider", ORTHOTICS, "PN9994", "CN9994", 50, DIRECT)
 
     # Constants for claim model
     CASH = Claim.PAYMENT_CHOICES[0][0]
     # Add claims
-    add_claim(eric, eric_insurance, timezone.now(), CASH)
-    add_claim(chris, chris_insurance, timezone.now(), CASH)
-    add_claim(jay, jay_insurance, timezone.now(), CASH)
-    add_claim(dan, dan_insurance, timezone.now(), CASH)
-    add_claim(cloney, cloney_insurance, timezone.now(), CASH)
-    add_claim(jane, jane_insurance, timezone.now(), CASH)
-    add_claim(john, john_insurance, timezone.now(), CASH)
+    #add_claim(eric, eric_insurance, timezone.now(), CASH)
+    #add_claim(chris, chris_insurance, timezone.now(), CASH)
+    #add_claim(jay, jay_insurance, timezone.now(), CASH)
+    #add_claim(dan, dan_insurance, timezone.now(), CASH)
+    #add_claim(cloney, cloney_insurance, timezone.now(), CASH)
+    #add_claim(jane, jane_insurance, timezone.now(), CASH)
+    #add_claim(john, john_insurance, timezone.now(), CASH)
 
     # Add admin users
     # Have to hash passwords so get_or_create will work
