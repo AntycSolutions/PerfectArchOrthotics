@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
+{% load mathfilters %}
 
 {% block title %}Insurances{% endblock %}
 
@@ -41,7 +42,8 @@
                                 <tr>
                                     <th>Coverage Type</th>
                                     <th>Coverage Percent</th>
-                                    <th>Total Coverage</th>
+                                    <th>Max Coverage</th>
+                                    <th>Coverage Remaining</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,6 +52,7 @@
                                     <td>{{coverageType.coverageType}}</td>
                                     <td>{{coverageType.coveragePercent}}</td>
                                     <td>{{coverageType.maxClaimAmount}}</td>
+                                    <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
