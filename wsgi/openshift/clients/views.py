@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance
-from clients.forms import ClientForm, DependentForm, DependantFormSet
+from clients.forms import ClientForm, DependentForm, InsuranceForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
@@ -208,7 +208,7 @@ def add_dependent(request, client_id):
 
     if request.method == 'POST':
         if request.POST['submit'] == "Skip step":
-            return redirect('client_index')
+            return redirect('add_insurance', client_id)
 
         form = DependentForm(request.POST)
 
@@ -220,7 +220,7 @@ def add_dependent(request, client_id):
 
             if request.POST['submit'] == "Create and proceed":
                 # This means we want to add insurance
-                return redirect('client_index')
+                return redirect('add_insurance', client_id)
             else:
                 # This means we want to add another
                 form = DependentForm()
@@ -229,3 +229,22 @@ def add_dependent(request, client_id):
         form = DependentForm()
 
     return render_to_response('clients/add_dependent.html', {'form': form}, context)
+
+@login_required
+def add_insurance(request, client_id):
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        form = InsuranceForm(request.POST)
+
+        if form.is_valid():
+            saved = form.save(commit=False)
+            client = Client.objects.get(id=client_id)
+            saved.client = client
+            saved.save()
+
+            return redirect('client_index')
+    else:
+        form = InsuranceForm()
+
+    return render_to_response('clients/add_insurance.html', {'form': form}, context)

@@ -58,4 +58,19 @@ class DependentForm(forms.ModelForm):
         fields = ('firstName', 'lastName', 'birthdate', 'gender', 'relationship')
 
 
-DependantFormSet = formset_factory(DependentForm)
+class InsuranceForm(forms.ModelForm):
+
+    BILLING_CHOICES = (("Direct", "Direct"),
+                       ("Indirect", "Indirect"))
+
+    provider = forms.CharField(max_length=128)
+    policyNumber = forms.CharField(max_length=128, required=False)
+    contractNumber = forms.CharField(max_length=128, required=False)
+    billing = forms.ChoiceField(choices=BILLING_CHOICES, required=False)
+    gaitScan = forms.BooleanField(required=False)
+    insuranceCard = forms.BooleanField(required=False)
+
+    class Meta:
+        model = Insurance
+
+        fields = ('provider', 'policyNumber', 'contractNumber', 'billing', 'gaitScan', 'insuranceCard')
