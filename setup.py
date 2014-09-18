@@ -8,6 +8,7 @@ packages = ['Django<=1.6',
             'django-easy-pdf',
             'xhtml2pdf>=0.0.6',
             'reportlab>=2.7',
+            'django-mathfilters',
             ]
 
 if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
