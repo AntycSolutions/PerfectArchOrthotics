@@ -1,5 +1,5 @@
 from django import forms
-from clients.models import Client, Dependent, Insurance
+from clients.models import Client, Dependent, Insurance, CoverageType
 from django.forms.formsets import formset_factory
 
 
@@ -74,3 +74,21 @@ class InsuranceForm(forms.ModelForm):
         model = Insurance
 
         fields = ('provider', 'policyNumber', 'contractNumber', 'billing', 'gaitScan', 'insuranceCard')
+
+
+class CoverageForm(forms.ModelForm):
+
+    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
+                     ("Compression_stockings", "Compression Stockings"),
+                     ("Orthopedic_shoes", "Orthopedic Shoes"))
+
+    coverageType = forms.ChoiceField(choices=COVERAGE_TYPE, required=False)
+    coveragePercent = forms.IntegerField()
+    maxClaimAmount = forms.IntegerField()
+    quantity = forms.IntegerField()
+    period = forms.IntegerField()
+
+    class Meta:
+        model = CoverageType
+
+        fields = ('coverageType', 'coveragePercent', 'maxClaimAmount', 'quantity', 'period')

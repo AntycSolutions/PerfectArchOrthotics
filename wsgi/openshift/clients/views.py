@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from clients.models import Client, Dependent, Claim, Insurance
-from clients.forms import ClientForm, DependentForm, InsuranceForm
+from clients.models import Client, Dependent, Claim, Insurance, CoverageType
+from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
@@ -235,16 +235,75 @@ def add_insurance(request, client_id):
     context = RequestContext(request)
 
     if request.method == 'POST':
-        form = InsuranceForm(request.POST)
+        print request.POST
+        insurance_form = InsuranceForm(request.POST, prefix="insurance_form")
+        coverage_form1 = CoverageForm(request.POST, prefix="coverage_form1",
+                                      initial={'coverageType':CoverageType.COVERAGE_TYPE[0][0],
+                                               'coveragePercent': 0})
+        coverage_form2 = CoverageForm(request.POST, prefix="coverage_form2",
+                                      initial={'coverageType':CoverageType.COVERAGE_TYPE[1][0]})
+        coverage_form3 = CoverageForm(request.POST, prefix="coverage_form3",
+                                      initial={'coverageType':CoverageType.COVERAGE_TYPE[2][0]})
 
-        if form.is_valid():
-            saved = form.save(commit=False)
+        if (insurance_form.is_valid() and
+            coverage_form1.is_valid() and
+            coverage_form2.is_valid() and
+            coverage_form3.is_valid()):
+            saved = insurance_form.save(commit=False)
             client = Client.objects.get(id=client_id)
             saved.client = client
             saved.save()
 
+            coverage_1 = coverage_form1.save(commit=False)
+            if coverage_1.coveragePercent == 0:
+                pass
+            else:
+                coverage_1.insurance = saved
+                coverage_1.totalClaimed = 0
+                coverage_1.save()
+
+            coverage_2 = coverage_form2.save(commit=False)
+            if coverage_2.coveragePercent == 0:
+                pass
+            else:
+                coverage_2.insurance = saved
+                coverage_2.totalClaimed = 0
+                coverage_2.save()
+
+            coverage_3 = coverage_form3.save(commit=False)
+            if coverage_3.coveragePercent == 0:
+                pass
+            else:
+                coverage_3.insurance = saved
+                coverage_3.totalClaimed = 0
+                coverage_3.save()
+
             return redirect('client_index')
     else:
-        form = InsuranceForm()
+        insurance_form = InsuranceForm(prefix="insurance_form")
+        coverage_form1 = CoverageForm(prefix="coverage_form1",
+                                      initial={'coverageType':CoverageType.COVERAGE_TYPE[0][0],
+                                               'coveragePercent': 0,
+                                               'maxClaimAmount': 0,
+                                               'quantity': 0,
+                                               'period': 0})
+        coverage_form2 = CoverageForm(prefix="coverage_form2",
+                                      initial={'coverageType':CoverageType.COVERAGE_TYPE[1][0],
+                                               'coveragePercent': 0,
+                                               'maxClaimAmount': 0,
+                                               'quantity': 0,
+                                               'period': 0})
 
-    return render_to_response('clients/add_insurance.html', {'form': form}, context)
+        coverage_form3 = CoverageForm(prefix="coverage_form3",
+                                      initial={'coverageType':"Orthopedic_shoes",
+                                               'coveragePercent': 0,
+                                               'maxClaimAmount': 0,
+                                               'quantity': 0,
+                                               'period': 0})
+
+    return render_to_response('clients/add_insurance.html',
+                              {'insurance_form': insurance_form,
+                               'coverage_form1': coverage_form1,
+                               'coverage_form2': coverage_form2,
+                               'coverage_form3': coverage_form3},
+                              context)
