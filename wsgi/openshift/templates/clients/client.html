@@ -1,31 +1,141 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
+{% load mathfilters %}
 
 {% block title %}{{client.firstName}} {{client.lastName}}{% endblock %}
 
 {% block content %}
-<!--
-    <ul class="nav nav-tabs" style="margin-bottom: 15px;">
-        <li class="active"><a href="#info" data-toggle="tab">Information</a></li>
-        <li class=""><a href="#dependents" data-toggle="tab">Dependents</a></li>
-        <li><a href="#insurance" data-toggle="tab">Insurance</a></li>
+<h1>{{client.firstName}} {{client.lastName}}</h1>
+<div class="well">
+    <h3>Personal Information</h3>
+    <h5>Healthcare</h5>
+    <ul>
+        <li>Healthcare number: {{client.healthcareNumber}}</li>
     </ul>
+    <h5>Personal</h5>
+    <ul>
+        <li>Birthdate: {{client.birthdate}}</li>
+        <li>Gender: {{client.gender}}</li>
+        <li>Employer: {{client.employer}}</li>
+        <li>Referred by: {{client.referredBy}}</li>
+    </ul>
+    <h5>Location</h5>
+    <ul>
+        <li>Address: {{client.address}}</li>
+        <li>City: {{client.city}}</li>
+        <li>Postal code: {{client.postalCode}}</li>
+    </ul>
+    <h5>Contact</h5>
+    <ul>
+        <li>Home phone: {{client.phoneNumber}}</li>
+        <li>Cell phone: {{client.cellNumber}}</li>
+        <li>Email: {{client.email}}</li>
+    </ul>
+</div>
 
-    <div id="myTabContent" class="tab-content">
-        <div class="tab-pane fade active in" id="info">
-            {% include 'clients/information_tab.html' %}
-        </div>
-        <div class="tab-pane fade" id="dependents">
-            {% include 'clients/dependents_tab.html' %}
-        </div>
-        <div class="tab-pane fade" id="insurance">
-            {% include 'clients/insurance_tab.html' %}
-        </div>
-    </div>
--->
-    {% include 'clients/information_tab.html' %}
-    {% include 'clients/dependents_tab.html' %}
-    {% include 'clients/insurance_tab.html' %}
+<div class="well">
+<h3>Dependents</h3>
+</br>
+{% if spouse %}
+    <h4>Spouse</h4>
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Birth date</th>
+                    <th>Gender</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{spouse.firstName}} {{spouse.lastName}}</td>
+                    <td>{{spouse.birthdate}}</td>
+                    <td>{{spouse.gender}}</td>
+                </tr>
+            </tbody>
+        </table>
+{% endif %}
+</br>
+{% if children %}
+    <h4>Children</h4>
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Birth date</th>
+                    <th>Gender</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for child in children %}
+                <tr>
+                    <td>{{child.firstName}} {{child.lastName}}</td>
+                    <td>{{child.birthdate}}</td>
+                    <td>{{child.gender}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endif %}
+</div>
+
+<div class="well">
+<h3>Client Insurance</h3>
+    {% if client_insurance %}
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Employer</th>
+                    <th>Provider</th>
+                    <th>Policy Number</th>
+                    <th>Contract Number</th>
+                    <th>Coverage Types</th>
+                    <th>Billing</th>
+                </tr>
+            </thead>
+            <tbody>
+        {% for insurance in client_insurance %}
+                <tr>
+                    <td>
+                        <a href="/clients/{{insurance.client.id}}">
+                            {{insurance.client.firstName}} {{insurance.client.lastName}}
+                        </a>
+                    </td>
+                    <td>{{insurance.client.employer}}
+                    <td>{{insurance.provider}}</td>
+                    <td>{{insurance.policyNumber}}</td>
+                    <td>{{insurance.contractNumber}}</td>
+                    <td>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Coverage Type</th>
+                                    <th>Coverage Percent</th>
+                                    <th>Max Coverage</th>
+                                    <th>Coverage Remaining</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for coverageType in insurance.coveragetype_set.all %}
+                                <tr>
+                                    <td>{{coverageType.coverageType}}</td>
+                                    <td>{{coverageType.coveragePercent}}</td>
+                                    <td>{{coverageType.maxClaimAmount}}</td>
+                                    <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>{{insurance.billing}}</td>
+                </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>This client doesnt have any insurance listed.</p>
+    {% endif %}
+</div>
 {% endblock %}
-
