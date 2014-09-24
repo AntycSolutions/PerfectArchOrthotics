@@ -200,6 +200,24 @@ def add_client(request):
 
     return render_to_response('clients/add_client.html', {'form': form}, context)
 
+@login_required
+def editClientView(request, client_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    if request.method == 'POST':
+        client_form = ClientForm(request.POST, instance=client)
+        if client_form.is_valid():
+            saved = client_form.save(commit=True)
+            return redirect('client', saved.id)
+
+    else:
+        client_form = ClientForm(instance=client)
+
+    return render_to_response('clients/edit_client.html',
+                              {'client': client,
+                               'client_form': client_form},
+                              context)
 
 @login_required
 def add_dependent(request, client_id):
@@ -307,3 +325,4 @@ def add_insurance(request, client_id):
                                'coverage_form2': coverage_form2,
                                'coverage_form3': coverage_form3},
                               context)
+
