@@ -15,4 +15,9 @@ urlpatterns = \
              url(r'^insurance', views.insuranceView, name='insurance'),
              url(r'^pdftest.pdf$', views.HelloPDFView.as_view(), name='pdf'),
              url(r'^edit_client/(?P<client_id>\w+)', views.editClientView, name='client_edit'),
+             url(r'^edit_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)',
+                 views.editDependantsView, name='dependant_edit'),
+             url(r'^delete_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)',
+                 views.deleteDependantsView, name='dependant_delete'),
+             url(r'^add_new_dependent/(?P<client_id>\w+)', views.add_new_dependent, name='add_new_dependent'),
              )

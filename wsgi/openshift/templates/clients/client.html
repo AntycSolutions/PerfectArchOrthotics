@@ -37,6 +37,9 @@
     </ul>
 </div>
 
+<div class="pull-right">
+    <a href="/clients/add_new_dependent/{{client.id}}/" class="btn btn-default">Add Dependent</a>
+</div>
 <div class="well">
 <h3>Dependents</h3>
 </br>
@@ -48,6 +51,7 @@
                     <th>Name</th>
                     <th>Birth date</th>
                     <th>Gender</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +59,12 @@
                     <td>{{spouse.firstName}} {{spouse.lastName}}</td>
                     <td>{{spouse.birthdate}}</td>
                     <td>{{spouse.gender}}</td>
+                    <td>
+                    <div class="pull-right">
+                        <a href="/clients/edit_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Edit</a>
+                        <a href="/clients/delete_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Delete</a>
+                    </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -68,6 +78,7 @@
                     <th>Name</th>
                     <th>Birth date</th>
                     <th>Gender</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -76,6 +87,12 @@
                     <td>{{child.firstName}} {{child.lastName}}</td>
                     <td>{{child.birthdate}}</td>
                     <td>{{child.gender}}</td>
+                    <td>
+                    <div class="pull-right">
+                        <a href="/clients/edit_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Edit</a>
+                        <a href="/clients/delete_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Delete</a>
+                    </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

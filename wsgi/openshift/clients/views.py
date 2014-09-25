@@ -220,6 +220,57 @@ def editClientView(request, client_id):
                               context)
 
 @login_required
+def editDependantsView(request, client_id, dependent_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    dependent = client.dependents.get(id=dependent_id)
+    if request.method == 'POST':
+        dependent_form = DependentForm(request.POST, instance=dependent)
+        if dependent_form.is_valid():
+            dependent_form.save()
+            return redirect('client', client_id)
+
+    else:
+        dependent_form = DependentForm(instance=dependent)
+
+    return render_to_response('clients/edit_dependent.html',
+                              {'client': client,
+                               'dependent_form': dependent_form},
+                              context)
+
+@login_required
+def add_new_dependent(request, client_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    if request.method == 'POST':
+        form = DependentForm(request.POST)
+
+        if form.is_valid():
+            saved = form.save(commit=True)
+
+            client = Client.objects.get(id=client_id)
+            client.dependents.add(saved)
+            return redirect('client', client_id)
+    else:
+        form = DependentForm()
+
+    return render_to_response('clients/add_new_dependent.html',
+                              {'form': form,
+                               'client': client},
+                              context)
+
+@login_required
+def deleteDependantsView(request, client_id, dependent_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    dependent = client.dependents.get(id=dependent_id)
+    dependent.delete()
+    return redirect('client', client_id)
+
+@login_required
 def add_dependent(request, client_id):
     context = RequestContext(request)
     print request
