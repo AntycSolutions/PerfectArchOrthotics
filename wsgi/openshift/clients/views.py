@@ -67,6 +67,9 @@ def myview(request):
 def insurance_letter(request):
     return render_to_pdf('insurance_letter.html', {'pagesize':'A4',})
 
+def proof_of_manufacturing(request):
+    return render_to_pdf('proof_of_manufacturing.html', {'pagesize':'A4',})
+
 class HelloPDFView(PDFTemplateView):
     template_name = "Hello.html"
 
