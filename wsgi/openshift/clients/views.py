@@ -8,6 +8,64 @@ from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
+import cStringIO as StringIO
+import ho.pisa as pisa
+from django.template.loader import get_template
+from django.template import Context
+from django.http import HttpResponse
+from cgi import escape
+
+import os
+from django.conf import settings
+
+# Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
+def link_callback(uri, rel):
+    # use short variable names
+    sUrl = settings.STATIC_URL      # Typically /static/
+    sRoot = settings.STATIC_ROOT    # Typically /home/userX/project_static/
+    mUrl = settings.MEDIA_URL       # Typically /static/media/
+    mRoot = settings.MEDIA_ROOT     # Typically /home/userX/project_static/media/
+
+    # convert URIs to absolute system paths
+    if uri.startswith(mUrl):
+        path = os.path.join(mRoot, uri.replace(mUrl, ""))
+    elif uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+        raise Exception(
+                        'media URI must start with %s or %s' % \
+                        (sUrl, mUrl))
+    return path
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    context = Context(context_dict)
+    html  = template.render(context)
+    result = StringIO.StringIO()
+
+    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode("ISO-8859-1")), result, link_callback=link_callback)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), mimetype='application/pdf')
+    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
+
+    #file = open(os.join(settings.MEDIA_ROOT, 'test.pdf'), "w+b")
+    #pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
+
+def myview(request):
+    #Retrieve data or whatever you need
+    return render_to_pdf(
+                         'mytemplate.html',
+                         #'Hello.html',
+                         {
+                         'pagesize':'A4',
+                         #'mylist': results,
+                         }
+                         )
+
+def insurance_letter(request):
+    return render_to_pdf('insurance_letter.html', {'pagesize':'A4',})
 
 class HelloPDFView(PDFTemplateView):
     template_name = "Hello.html"

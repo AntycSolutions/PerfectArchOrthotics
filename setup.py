@@ -7,7 +7,7 @@ packages = ['Django<=1.6',
             'South<=1.0',
             'django-easy-pdf',
             'xhtml2pdf>=0.0.6',
-            'reportlab>=2.7',
+            'reportlab>=2.7,<3',
             'django-mathfilters',
             ]
 

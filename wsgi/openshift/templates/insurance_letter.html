@@ -1,0 +1,281 @@
+{% extends "easy_pdf/base.html" %}
+{% load staticfiles %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+            margin-top: 1cm;
+            margin-bottom: 2cm;
+        }
+    </style>
+{% endblock %}
+
+{% block extra_style %}
+    <style type="text/css">
+        @font-face { font-family: Lato; src: url(fonts/Lato-Bol.ttf); font-weight: bold; }
+        @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }
+        @font-face { font-family: "Lato Light"; src: url(fonts/Lato-Lig.ttf); }
+
+        html {
+            font-family: "Lato", "Helvetica", "sans-serif";
+            color: #333333;
+        }
+
+        p {
+            margin: 0 0 6px 0;
+            font-size: 11pt;
+            font-family: "Lato", "Helvetica", "sans-serif";
+        }
+
+        table {
+            line-height: 140%;
+            margin-bottom: 10px;
+        }
+            table.bordered {
+                border-top: 0.1pt solid #999999;
+                border-bottom: 0.1pt solid #999999;
+            }
+
+            tr, td, th { border: none; }
+
+            th {
+                font-size: 10pt;
+                border-bottom: 0.1pt solid #999999;
+                padding: 3px 0;
+                line-height: 1;
+                font-weight: bold;
+            }
+
+            td {
+                font-size: 8pt;
+                font-family: "Lato", "Helvetica", "sans-serif";
+                vertical-align: top;
+                /*padding: 3px 0;*/
+            }
+
+            td:last-child { padding-bottom: 0; }
+
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .bottom-10 { margin-bottom: 10px; }
+        .bottom-20 { margin-bottom: 20px; }
+
+        .header { color: #7f7f7f; }
+        .header p { font-size: 13px; line-height: 1.5em; }
+        .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
+        .logo { margin-bottom: 20px; margin-left: -25px; }
+        .logo img { zoom: 60%; }
+
+        .recipient { margin-left: 10cm; }
+        .total { margin-left: 11cm; }
+
+        .main h1 {
+            margin: 18px 0 18px 0;
+            font-size: 250%;
+            font-weight: normal;
+            color: #4F81BD;
+        }
+
+        .main h2 {
+            margin: 18px 0 6px 0;
+            font-size: 180%;
+            font-weight: normal;
+        }
+
+        .main p {
+            font-size: 8pt;
+        }
+
+
+        .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
+        .info a { color: #4F81BD; text-decoration: none; }
+
+    </style>
+{% endblock %}
+
+{%block page_header%}{% endblock %}
+
+{% block content %}
+<div class="main">
+    <div>
+    <table>
+        <tr>
+            <td><strong>Patient Name:</strong></td>
+            <td>Eric Klinger</td>
+            <td><strong>Health Care Practitioner:</strong></td>
+            <td>Danny Mu</td>
+        </tr>
+        <tr>
+            <td><strong>Date of Biomechanical Exam and Gait Analysis:</strong></td>
+            <td>10-Jul-2014</td>
+            <td><strong>Perform by:</strong></td>
+            <td>Danny Mu</td>
+        </tr>
+    </table>
+    <div>
+        <p>
+        Custom-made foot orthotic devices and/or footwear have been prescribed for the above mentioned patient insured by your company. Abnormal foot structure, function and/or closed kinetic chain disorders of the lower extremities are often the cause of many foot disorders and overuse injuries. In this specific case, the biomechanical exam and gait analysis include
+        </p>
+    </div>
+    <div>
+    <table>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+        <tr>
+            <td>_____</td><td colspan="2">Drop Foot</td>
+            <td>_____</td><td colspan="2">Hammer Toes</td>
+            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
+            <td>_____</td><td colspan="2">Knee Arthritis</td>
+        </tr>
+    </table>
+    <p>Other:</p>
+    <p>Diagosis:</p>
+    <table>
+        <tr>
+            <td>Treatment:</td>
+            <td>_____</td>
+            <td colspan="2">Orthotics Only</td>
+            <td>_____</td>
+            <td colspan="2">Internall Modified Footware With Custom Orthotic</td>
+            <td>_____</td>
+            <td colspan="2">Stock Shoe/Shell Only</td>
+        </tr>
+    <table>
+    <table>
+        <tr>
+            <td>Dispensed by:</td>
+            <td>Danny Mu</td>
+            <td>Dispensing Date:</td>
+            <td>25-Jul-2014</td>
+        </tr>
+    </table>
+    <p>Date paid in full: Assignment</p>
+    <p>Fee: The breakdown of fees is as follows. No part of these fees are covered by government health plans.</p>
+    <table>
+        <tr>
+            <td><strong>Biomechanical Evaluation/Casting:</strong></td>
+            <td colspan="2">$0.00</td>
+        </tr>
+        <tr>
+            <td><strong>Custom-made Orthotic Device:</strong></td>
+            <td colspan="2">$350.00</td>
+        </tr>
+        <tr>
+            <td><strong>Fee for Footware (off shelf/stock shoes):</strong></td>
+            <td colspan="2">$0.00</td>
+        </tr>
+        <tr>
+            <td><strong>Dispensing Fee:</strong></td>
+            <td colspan="2">$0.00</td>
+        </tr>
+        <tr> 
+            <td><strong>Total:</strong></td>
+            <td colspan="2">$0.00</td>
+        </tr>
+    </table>
+    <p><strong>Casting and Manufacturing Techniques:</strong></p>
+    <table>
+        <tr>
+            <td style="text-align center">_____</td>
+            <td colspan="5">Foam/plaster: Non weight bearing 3D volumetric cast in subtalar
+                neutral. This data is scanned by technicians. Copolymer plastic is formed
+                over the positive to create a custom orthotic for the patient's specific
+                correction and symptomatic need.</td>
+        </tr>
+        <tr>
+            <td style="text-align center">_____</td>
+            <td colspan="5">Gaitscan(TM): 2D and 3D pressure data was taken using proprietary
+                GaitScan(TM) technology combined with CAD/CAM software and advanced milling
+                machinery. Technicians design and mold a custom orthotic; copolymer plastic is
+                formed over the positive to create a custom orthotic for the patient's specific
+                correction and symptomatic needs</td> 
+        </tr>
+    </table>
+    <p><strong>Raw Materials Used for Custom-made Orthotics:</strong>Engineered copolymer
+    with complete intrinsic memory and predictability postings, made from extra firm
+    nickelplast (58-65 Durometers).</p>
+
+    <p><strong>Prognosis:</strong>The gait anomalies and existing foot problems can be
+    managed and corrected by the devices while wearing them, but will not cause a structural
+    or functional change in the foot or the closed kinetic chain if the devices are not worn.
+    The custom orthotics are a medical necessity and must be worn on a daily basis, for an
+    indefinite period of time. Wearing the orthotics will alleviate the symptoms caused in
+    the foot, hip and low back regions. The feet and gait should be monitored for changesi
+    in prescription or breakdown of the orthotic devices.</p>
+
+    <p><strong>The following laboratories are used depending on the needs of our patients:</strong><p>
+    <p><strong>Laboratory:i</strong>The Orthotic Group Inc. 160 Markland Street, Markham, ON, L6C 0C6,
+    1.800.551.3008; Manufacturing custom orthotics since 1985. Pedorthist on staff: Alan M. Lustig,
+    D.P.M (Chief Medical Director of TOG)</p>
+    <p><strong>Laboratory:i</strong>Premier Biomechanical Labs. 1810 Sharon Drive, Albany, GA 31707
+    229-518-3059. Manufacturing custom orthotics since 1997 Pedorthist on staff: W.E Anderson.
+    C.Ped (President)</p>
+    <p><strong>Laboratory:</strong>Doctor's Choice Biomechanical Orthotics Lab Inc. 1220 Britannia
+    Road East, Mississauga, ON L4W 1C8 Pedorthist on staff: Kader Prasad BSc., MLT, C.Ped(Tech)C</p>
+    <table style="margin-top: 30px;">
+        <tr>
+            <td>_____________________________</td>
+            <td>25-Jul-2014</td>
+        </tr>
+        <tr>
+            <td>Health Care Practitioner Signature</td>
+            <td>Date Signed</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
