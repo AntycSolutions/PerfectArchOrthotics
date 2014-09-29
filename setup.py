@@ -9,6 +9,7 @@ packages = ['Django<=1.6',
             'xhtml2pdf>=0.0.6',
             'reportlab>=2.7,<3',
             'django-mathfilters',
+            'pisa',
             ]
 
 if 'REDISCLOUD_URL' in os.environ and 'REDISCLOUD_PORT' in os.environ and 'REDISCLOUD_PASSWORD' in os.environ:
