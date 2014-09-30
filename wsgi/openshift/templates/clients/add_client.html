@@ -4,6 +4,19 @@
 
 {% block title %}Add Client{% endblock %}
 
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_birthdate" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
 {% block content %}
     <h1>Part 1 of 3:</h1>
     <h3>Add client personal information</h3>

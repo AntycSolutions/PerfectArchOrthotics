@@ -30,8 +30,16 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
 
-        fields = ('firstName', 'lastName', 'birthdate', 'address', 'city', 'postalCode', 'phoneNumber',
+        fields = ('firstName', 'lastName','birthdate', 'address', 'city', 'postalCode', 'phoneNumber',
                   'cellNumber', 'email', 'healthcareNumber', 'gender', 'employer', 'referredBy')
+
+    def clean(self):
+        cleaned_data = super(ClientForm, self).clean()
+        if 'birthdate' in cleaned_data.keys():
+            m, d, y = cleaned_data['birthdate'].split('/')
+            new_birthdate = "%s-%s-%s" % (y, m, d)
+            cleaned_data['birthdate'] = new_birthdate
+        return cleaned_data
 
 
 class DependentForm(forms.ModelForm):
@@ -56,6 +64,14 @@ class DependentForm(forms.ModelForm):
         model = Dependent
 
         fields = ('firstName', 'lastName', 'birthdate', 'gender', 'relationship')
+
+    def clean(self):
+        cleaned_data = super(DependentForm, self).clean()
+        if 'birthdate' in cleaned_data.keys():
+            m, d, y = cleaned_data['birthdate'].split('/')
+            new_birthdate = "%s-%s-%s" % (y, m, d)
+            cleaned_data['birthdate'] = new_birthdate
+        return cleaned_data
 
 
 class InsuranceForm(forms.ModelForm):
