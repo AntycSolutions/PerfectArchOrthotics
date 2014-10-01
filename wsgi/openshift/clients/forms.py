@@ -36,9 +36,10 @@ class ClientForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(ClientForm, self).clean()
         if 'birthdate' in cleaned_data.keys():
-            m, d, y = cleaned_data['birthdate'].split('/')
-            new_birthdate = "%s-%s-%s" % (y, m, d)
-            cleaned_data['birthdate'] = new_birthdate
+            if len(cleaned_data['birthdate'].split('/')) > 1:
+                m, d, y = cleaned_data['birthdate'].split('/')
+                new_birthdate = "%s-%s-%s" % (y, m, d)
+                cleaned_data['birthdate'] = new_birthdate
         return cleaned_data
 
 
@@ -68,9 +69,10 @@ class DependentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(DependentForm, self).clean()
         if 'birthdate' in cleaned_data.keys():
-            m, d, y = cleaned_data['birthdate'].split('/')
-            new_birthdate = "%s-%s-%s" % (y, m, d)
-            cleaned_data['birthdate'] = new_birthdate
+            if len(cleaned_data['birthdate'].split('/')) > 1:
+                m, d, y = cleaned_data['birthdate'].split('/')
+                new_birthdate = "%s-%s-%s" % (y, m, d)
+                cleaned_data['birthdate'] = new_birthdate
         return cleaned_data
 
 
