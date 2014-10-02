@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}Edit Client{% endblock %}
+
+{% block content %}
+<h1>Make a claim</h1>
+{{claim_form}}
+<div>
+    {% for i in insurances %}
+    {{i}}</br>
+    <ul>
+        {% for ct in i.coveragetype_set.all %}
+        <li>{{ct}}</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+{% endblock %}

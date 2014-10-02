@@ -18,6 +18,7 @@ urlpatterns = \
              url(r'^pdftest3.pdf$', views.insurance_letter, name='insurance_letter'),
              url(r'^pdftest4.pdf$', views.proof_of_manufacturing, name='proof'),
              url(r'^edit_client/(?P<client_id>\w+)', views.editClientView, name='client_edit'),
+             url(r'^make_claim/(?P<client_id>\w+)', views.makeClaimView, name='make_claim'),
              url(r'^edit_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)',
                  views.editDependantsView, name='dependant_edit'),
              url(r'^delete_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)',

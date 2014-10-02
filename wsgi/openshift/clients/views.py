@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType
-from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm
+from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm, ClaimForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
@@ -278,6 +278,29 @@ def editClientView(request, client_id):
     return render_to_response('clients/edit_client.html',
                               {'client': client,
                                'client_form': client_form},
+                              context)
+
+@login_required
+def makeClaimView(request, client_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    insurances = client.insurance_set.all()
+    claim_form = ClaimForm()
+    if request.method == 'POST':
+        client_form = ClientForm(request.POST, instance=client)
+        if client_form.is_valid():
+            saved = client_form.save(commit=True)
+            return redirect('client', saved.id)
+
+    else:
+        client_form = ClientForm(instance=client)
+
+    return render_to_response('clients/make_claim.html',
+                              {'client': client,
+                               'client_form': client_form,
+                               'insurances': insurances,
+                               'claim_form': claim_form},
                               context)
 
 @login_required

@@ -1,5 +1,5 @@
 from django import forms
-from clients.models import Client, Dependent, Insurance, CoverageType
+from clients.models import Client, Dependent, Insurance, CoverageType, Claim
 from django.forms.formsets import formset_factory
 
 
@@ -110,3 +110,9 @@ class CoverageForm(forms.ModelForm):
         model = CoverageType
 
         fields = ('coverageType', 'coveragePercent', 'maxClaimAmount', 'quantity', 'period')
+
+
+class ClaimForm(forms.ModelForm):
+
+    class Meta:
+        model = Claim

@@ -210,6 +210,8 @@ class CoverageType(models.Model):
     quantity = models.IntegerField(null=True, blank=True)
     period = models.IntegerField(default=1)
 
+    def __unicode__(self):
+        return "%s - Coverage percent: %s" % (self.coverageType, self.coveragePercent)
 
 class Claim(models.Model):
 
@@ -231,23 +233,39 @@ class Claim(models.Model):
     PAYMENT_CHOICES = (("CASH", "Cash"),
                        ("CHEQUE", "Cheque"),
                        ("CREDIT", "Credit"))
+    CLAIM_TYPE = (("Orthotics", "Orthotics"),
+                     ("Compression_stockings", "Compression Stockings"),
+                     ("Orthopedic_shoes", "Orthopedic Shoes"))
 
     client = models.ForeignKey(Client, blank=True, null=True)
     # TODO figure out how to get the insurance from the client to calidate this
     insurance = models.ForeignKey(Insurance, blank=True, null=True)
-    submittedDate = models.DateTimeField(auto_now=True)
+    submittedDate = models.DateTimeField(auto_now_add=True)
     invoiceDate = models.DateTimeField(blank=True, null=True)
     paidDate = models.DateTimeField(blank=True, null=True)
     amountClaimed = models.IntegerField(blank=True, default=0)
     # TODO validate based on clients insurance, amount left in coverage and coverage percent
     expectedBack = models.IntegerField(blank=True, default=0)
     paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES, blank=True, default="")
+    claimType = models.CharField(max_length=21, choices=CLAIM_TYPE, blank=True, default="")
 
     def __unicode__(self):
         return "Claim - %s %s" % (self.client.firstName, self.client.lastName)
 
     def __str__(self):
         return self.__unicode__()
+
+
+class InsuranceClaim(models.Model):
+
+    """Model to represent an amount claimed against a coverage."""
+
+    claim = models.ForeignKey(Claim)
+    coverageType = models.ForeignKey(CoverageType)
+    amountClaimed = models.IntegerField(blank=True, default=0)
+
+    def __unicode__(self):
+        return "%s - %s - Amount claimed: %s" % (self.claim, self.coverageType, self.amountClaimed)
 
 
 class Prescription(models.Model):

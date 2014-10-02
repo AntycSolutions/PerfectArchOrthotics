@@ -7,10 +7,12 @@
 
 {% block content %}
 <h1>{{client.firstName}} {{client.lastName}}</h1>
-<div class="pull-right">
-    <a href="/clients/edit_client/{{client.id}}/" class="btn btn-default">Edit</a>
-</div>
+<a href="/clients/make_claim/{{client.id}}/" class="btn">Make Claim</a>
 <div class="well">
+    <div class="pull-right">
+        <a href="/clients/edit_client/{{client.id}}/" class="btn btn-default">Edit</a>
+    </div>
+
     <h3>Personal Information</h3>
     <h5>Healthcare</h5>
     <ul>
