@@ -116,3 +116,5 @@ class ClaimForm(forms.ModelForm):
 
     class Meta:
         model = Claim
+
+        fields = ('claimType', 'paymentType',)

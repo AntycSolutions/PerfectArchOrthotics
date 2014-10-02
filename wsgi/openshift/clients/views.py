@@ -282,6 +282,7 @@ def editClientView(request, client_id):
 
 @login_required
 def makeClaimView(request, client_id):
+    print request
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)

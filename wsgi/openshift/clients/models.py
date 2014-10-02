@@ -40,7 +40,7 @@ class Dependent(models.Model):
     birthdate = models.DateField(blank=True, null=True)
 
     def __unicode__(self):
-        return "%s - %s" % (self.firstName, self.lastName)
+        return "%s %s" % (self.firstName, self.lastName)
 
     def __str__(self):
         return self.__unicode__()
