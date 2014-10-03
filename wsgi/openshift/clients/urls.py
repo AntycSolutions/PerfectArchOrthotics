@@ -12,6 +12,7 @@ urlpatterns = \
              url(r'^insurance_search/', views.insuranceSearchView, name='insurance_search'),
              url(r'^(?P<client_id>\w+)/$', views.clientView, name='client'),
              url(r'^claims', views.claimsView, name='claims'),
+             url(r'^(?P<client_id>\w+)/claim/(?P<claim_id>\w+)', views.claimView, name='claim'),
              url(r'^insurance', views.insuranceView, name='insurance'),
              url(r'^pdftest.pdf$', views.HelloPDFView.as_view(), name='pdf'),
              url(r'^pdftest2.pdf$', views.myview, name='pdf2'),

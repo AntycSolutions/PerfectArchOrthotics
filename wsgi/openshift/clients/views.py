@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from clients.models import Client, Dependent, Claim, Insurance, CoverageType
+from clients.models import Client, Dependent, Claim, Insurance, CoverageType, InsuranceClaim
 from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm, ClaimForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
@@ -113,6 +113,16 @@ def claimsView(request):
 
 
 @login_required
+def claimView(request, client_id, claim_id):
+    context = RequestContext(request)
+
+    client = Client.objects.get(id=client_id)
+    claim = Claim.objects.get(id=claim_id)
+    context_dict = {'claim': claim, 'client': client}
+    return render_to_response('clients/claim.html', context_dict, context)
+
+
+@login_required
 def insuranceView(request):
     context = RequestContext(request)
 
@@ -213,10 +223,7 @@ def insuranceSearchView(request):
 def getFieldsFromRequest(request, default=""):
     """This is not used currently, will maybe be used in the future."""
     if 'fields' in request.GET and request.GET['fields'].strip():
-        print request.GET
         querydict = dict(request.GET.iterlists())
-        print querydict
-        print querydict['fields']
         return querydict['fields']
     else:
         return [default]
@@ -289,10 +296,46 @@ def makeClaimView(request, client_id):
     insurances = client.insurance_set.all()
     claim_form = ClaimForm()
     if request.method == 'POST':
-        client_form = ClientForm(request.POST, instance=client)
-        if client_form.is_valid():
-            saved = client_form.save(commit=True)
-            return redirect('client', saved.id)
+        # the check for if the right coverage and amount are selected
+        # for coverage_id in coverageSelected:
+        #       if 'amount_%s' not in request.POST.keys()
+        claim_form = ClaimForm(request.POST)
+        if claim_form.is_valid():
+            print "VALID"
+            claim = claim_form.save(commit=False)
+            claim.client = client
+            coverages_used = []
+            querydict = dict(request.POST.iterlists())
+            print "QD: %s" % querydict
+            if 'coverageSelected' in querydict:
+                for coverage_id in querydict['coverageSelected']:
+                   coverage = CoverageType.objects.get(id=coverage_id)
+                   percent = coverage.coveragePercent
+                   amount = float(querydict['amount_%s' % coverage_id][0])
+                   pairs = float(querydict['pairs_%s' % coverage_id][0])
+                   coverages_used.append([amount, percent, coverage])
+            amountClaimed = 0
+            expectedBack = 0
+            if coverages_used:
+                print "Used: %s" % coverages_used
+                for used in coverages_used:
+                    amountClaimed += used[0]
+                    expectedBack += float(amount * (float(used[1])/100))
+            print "Amount: %s" % amountClaimed
+            print "Expected: %s" % expectedBack
+            claim.amountClaimed = amountClaimed
+            claim.expectedBack = expectedBack
+            claim.save()
+            # Now to save each insurance claim object and update the coverage
+            # we have the claim in: claim
+            # we have the coverageType objects [2] of: coverages_used
+            # we have amount claimed in [0] of: coverage_used
+
+            # with these created time to update the coverageTypes with amount and pairs values
+            # we have the coverageType objects [2] of: coverages_used
+            # we have amount claimed in [0] of: coverage_used
+            # we have pairs in [3] of: coverage_used
+            return redirect('claim', client.id, claim.id)
 
     else:
         client_form = ClientForm(instance=client)
@@ -358,7 +401,6 @@ def deleteDependantsView(request, client_id, dependent_id):
 @login_required
 def add_dependent(request, client_id):
     context = RequestContext(request)
-    print request
 
     if request.method == 'POST':
         if request.POST['submit'] == "Skip step":
@@ -389,7 +431,6 @@ def add_insurance(request, client_id):
     context = RequestContext(request)
 
     if request.method == 'POST':
-        print request.POST
         insurance_form = InsuranceForm(request.POST, prefix="insurance_form")
         coverage_form1 = CoverageForm(request.POST, prefix="coverage_form1",
                                       initial={'coverageType':CoverageType.COVERAGE_TYPE[0][0],

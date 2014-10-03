@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% load mathfilters %}
+
+{% block title %}Claim Under {{client.firstName}} {{client.lastName}}{% endblock %}
+
+{% block content %}
+<h1>Claim for {{client.firstName}} {{client.lastName}}</h1>
+<div>
+    <a href="/clients/pdftest2.pdf" class="btn btn-default">Generate Invoice</a>
+    <a href="/clients/pdftest3.pdf" class="btn btn-default">Insurance Letter</a>
+    <a href="/clients/pdftest4.pdf" class="btn btn-default">Proof of Manufacturing</a>
+</div>
+<h5>Claim Details</h5>
+<ul>
+    <li>Patient: TODO</li>
+    <li>Claim Type: {{ claim.claimType }}</li>
+    <li>Payment Type: {{ claim.paymentType }}</li>
+    <li>Amount Claimed: {{ claim.amountClaimed }}</li>
+    <li>Expected Back: {{ claim.expectedBack }}</li>
+</ul>
+<h5>Payment Status</h5>
+<ul>
+    <li>Submitted Date: {{ claim.submittedDate }}</li>
+    <li>Invoice Date: {{ claim.invoiceDate }}</li>
+    <li>Paid Date: {{ claim.paidDate }}</li>
+</ul>
+{% endblock %}

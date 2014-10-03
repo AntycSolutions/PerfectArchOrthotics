@@ -101,7 +101,7 @@ class Client(models.Model):
     # claims (foreign key on other table)
 
     def __unicode__(self):
-        return "%s - %s" % (self.firstName, self.lastName)
+        return "%s %s" % (self.firstName, self.lastName)
 
     def __str__(self):
         return self.__unicode__()
@@ -239,6 +239,7 @@ class Claim(models.Model):
 
     client = models.ForeignKey(Client, blank=True, null=True)
     # TODO figure out how to get the insurance from the client to calidate this
+    # TODO remove this, coveraged the the insurance claim model now
     insurance = models.ForeignKey(Insurance, blank=True, null=True)
     submittedDate = models.DateTimeField(auto_now_add=True)
     invoiceDate = models.DateTimeField(blank=True, null=True)

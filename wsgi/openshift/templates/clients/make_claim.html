@@ -23,6 +23,7 @@
     </fieldset>
     <div>
         <h5>Patient</h5>
+            <input type="radio" name="patient" value="dependent.id">{{ client }}</br>
             {% for dependent in client.dependents.all %} 
             <input type="radio" name="patient" value="dependent.id">{{ dependent }}</br>
             {% endfor %}
@@ -37,25 +38,29 @@
                     <th>Coverage Type</th>
                     <th>Coverage Percent</th>
                     <th>Coverage Remaining</th>
-                    <th>Claim Amount</td>
+                    <th>Pair Remaining</th>
+                    <th>Claim Amount</th>
+                    <th>Pairs Claimed</th>
                 </tr>
             </thead>
             <tbody>
                 {% for insurance in insurances %}
                     {% for coverage in insurance.coveragetype_set.all %}
                         <tr>
-                            <td><input type="checkbox" name="coverage_selected" value="{{ coverage.id }}"></td>
+                            <td><input type="checkbox" name="coverageSelected" value="{{ coverage.id }}"></td>
                             <td>{{ coverage.coverageType }}</td>
                             <td>{{ coverage.coveragePercent }}</td>
                             <td>{{ coverage.maxClaimAmount|sub:coverage.totalClaimed }}</td>
-                            <td><input type="number" name="amount_{{ coverage.id }}"></td>
+                            <td>{{ coverage.quantity }}</td>
+                            <td><input type="number" name="amount_{{ coverage.id }}" value=0></td>
+                            <td><input type="number" name="pairs_{{ coverage.id }}" value=1></td>
                         </tr>
                     {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
+    <p><strong>Before saving please review that everything is entered correctly</strong></p>
     <input type="submit" name="submit" value="Make Claim" />
 </form>
 {% endblock %}

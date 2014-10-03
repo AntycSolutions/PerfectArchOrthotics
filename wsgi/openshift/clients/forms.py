@@ -114,6 +114,16 @@ class CoverageForm(forms.ModelForm):
 
 class ClaimForm(forms.ModelForm):
 
+    CLAIM_TYPE = (("Orthotics", "Orthotics"),
+                     ("Compression_stockings", "Compression Stockings"),
+                     ("Orthopedic_shoes", "Orthopedic Shoes"))
+    PAYMENT_CHOICES = (("CASH", "Cash"),
+                       ("CHEQUE", "Cheque"),
+                       ("CREDIT", "Credit"))
+
+    claimType = forms.ChoiceField(choices=CLAIM_TYPE, required=True)
+    paymentType = forms.ChoiceField(choices=PAYMENT_CHOICES, required=True)
+
     class Meta:
         model = Claim
 
