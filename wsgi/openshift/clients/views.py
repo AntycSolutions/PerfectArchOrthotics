@@ -53,7 +53,7 @@ def render_to_pdf(template_src, context_dict):
     #file = open(os.join(settings.MEDIA_ROOT, 'test.pdf'), "w+b")
     #pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
 
-def myview(request):
+def invoice_view(request):
     #Retrieve data or whatever you need
     return render_to_pdf(
                          'mytemplate.html',
@@ -503,3 +503,20 @@ def add_insurance(request, client_id):
                                'coverage_form3': coverage_form3},
                               context)
 
+
+@login_required
+def fillOutInvoiceView(request, client_id, claim_id):
+    context = RequestContext(request)
+    return render_to_response('clients/make_invoice.html', {}, context)
+
+
+@login_required
+def fillOutInsuranceLetterView(request, client_id, claim_id):
+    context = RequestContext(request)
+    return render_to_response('clients/make_invoice.html', {}, context)
+
+
+@login_required
+def fillOutProofOfManufacturingView(request, client_id, claim_id):
+    context = RequestContext(request)
+    return render_to_response('clients/make_invoice.html', {}, context)
