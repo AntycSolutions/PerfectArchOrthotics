@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from cgi import escape
 
 import os
+from datetime import datetime, timedelta
 from django.conf import settings
 
 # Convert HTML URIs to absolute system paths so xhtml2pdf can access those resources
@@ -53,15 +54,19 @@ def render_to_pdf(template_src, context_dict):
     #file = open(os.join(settings.MEDIA_ROOT, 'test.pdf'), "w+b")
     #pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
 
-def invoice_view(request):
+def invoice_view(request, client_id, claim_id):
     #Retrieve data or whatever you need
+    client = Client.objects.get(id=client_id)
+    claim = Claim.objects.get(id=claim_id)
+    today = datetime.utcnow() - timedelta(hours=6)
+
     return render_to_pdf(
-                         'mytemplate.html',
+                         'invoice.html',
                          #'Hello.html',
-                         {
-                         'pagesize':'A4',
-                         #'mylist': results,
-                         }
+                         {'pagesize':'A4',
+                          'client': client,
+                          'today': today,
+                          'claim': claim}
                          )
 
 def insurance_letter(request):
@@ -69,6 +74,30 @@ def insurance_letter(request):
 
 def proof_of_manufacturing(request):
     return render_to_pdf('proof_of_manufacturing.html', {'pagesize':'A4',})
+
+
+@login_required
+def fillOutInvoiceView(request, client_id, claim_id):
+    context = RequestContext(request)
+    client = Client.objects.get(id=client_id)
+    claim = Claim.objects.get(id=claim_id)
+    return render_to_response('clients/make_invoice.html',
+                              {'client': client,
+                               'claim': claim},
+                              context)
+
+
+@login_required
+def fillOutInsuranceLetterView(request, client_id, claim_id):
+    context = RequestContext(request)
+    return render_to_response('clients/make_invoice.html', {}, context)
+
+
+@login_required
+def fillOutProofOfManufacturingView(request, client_id, claim_id):
+    context = RequestContext(request)
+    return render_to_response('clients/make_invoice.html', {}, context)
+
 
 class HelloPDFView(PDFTemplateView):
     template_name = "Hello.html"
@@ -503,20 +532,3 @@ def add_insurance(request, client_id):
                                'coverage_form3': coverage_form3},
                               context)
 
-
-@login_required
-def fillOutInvoiceView(request, client_id, claim_id):
-    context = RequestContext(request)
-    return render_to_response('clients/make_invoice.html', {}, context)
-
-
-@login_required
-def fillOutInsuranceLetterView(request, client_id, claim_id):
-    context = RequestContext(request)
-    return render_to_response('clients/make_invoice.html', {}, context)
-
-
-@login_required
-def fillOutProofOfManufacturingView(request, client_id, claim_id):
-    context = RequestContext(request)
-    return render_to_response('clients/make_invoice.html', {}, context)
