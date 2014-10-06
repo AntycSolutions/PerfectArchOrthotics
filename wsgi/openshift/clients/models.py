@@ -10,8 +10,10 @@ The following tables will be contained within:
 """
 from django.db import models
 
+class Person(models.Model):
+    pass
 
-class Dependent(models.Model):
+class Dependent(Person):
 
     """Model of a clients dependents.
 
@@ -46,7 +48,7 @@ class Dependent(models.Model):
         return self.__unicode__()
 
 
-class Client(models.Model):
+class Client(Person):
 
     """Model of a client.
 
