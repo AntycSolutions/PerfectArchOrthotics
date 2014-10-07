@@ -23,9 +23,9 @@
     </fieldset>
     <div>
         <h5>Patient</h5>
-            <input type="radio" name="patient" value="dependent.id">{{ client }}</br>
+            <input type="radio" name="patient" value={{client.id}}>{{ client }}</br>
             {% for dependent in client.dependents.all %} 
-            <input type="radio" name="patient" value="dependent.id">{{ dependent }}</br>
+            <input type="radio" name="patient" value={{ dependent.id }}>{{ dependent }}</br>
             {% endfor %}
     </div>
 

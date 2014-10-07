@@ -11,7 +11,12 @@ The following tables will be contained within:
 from django.db import models
 
 class Person(models.Model):
-    pass
+    firstName = models.CharField(max_length=128, blank=True, default="")
+    lastName = models.CharField(max_length=128, blank=True, default="")
+
+    def __unicode__(self):
+        return "%s %s" % (self.firstName, self.lastName)
+
 
 class Dependent(Person):
 
@@ -35,8 +40,6 @@ class Dependent(Person):
     GENDER_CHOICES = ((MALE, 'Male'),
                       (FEMALE, 'Female'))
 
-    firstName = models.CharField(max_length=128, blank=True, default="")
-    lastName = models.CharField(max_length=128, blank=True, default="")
     relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES, blank=True, default="")
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True, default="")
     birthdate = models.DateField(blank=True, null=True)
@@ -78,8 +81,6 @@ class Client(Person):
     GENDER_CHOICES = ((MALE, 'Male'),
                       (FEMALE, 'Female'))
 
-    firstName = models.CharField(max_length=128, blank=True, default="")
-    lastName = models.CharField(max_length=128, blank=True, default="")
     address = models.CharField(max_length=128, blank=True, default="")
     city = models.CharField(max_length=128, blank=True, default="")
     postalCode = models.CharField(max_length=6, blank=True, default="")
@@ -239,7 +240,8 @@ class Claim(models.Model):
                      ("Compression_stockings", "Compression Stockings"),
                      ("Orthopedic_shoes", "Orthopedic Shoes"))
 
-    client = models.ForeignKey(Client, blank=True, null=True)
+    client = models.ForeignKey(Client, blank=True, null=True, related_name="uses_coverage_of")
+    patient = models.ForeignKey(Person, blank=True, null=True)
     # TODO figure out how to get the insurance from the client to calidate this
     # TODO remove this, coveraged the the insurance claim model now
     insurance = models.ForeignKey(Insurance, blank=True, null=True)

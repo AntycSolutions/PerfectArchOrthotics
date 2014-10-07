@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from clients.models import Client, Dependent, Claim, Insurance, CoverageType, InsuranceClaim
+from clients.models import Client, Dependent, Claim, Insurance, CoverageType, InsuranceClaim, Person
 from clients.forms import ClientForm, DependentForm, InsuranceForm, CoverageForm, ClaimForm
 from search import get_query
 from easy_pdf.views import PDFTemplateView
@@ -373,6 +373,9 @@ def makeClaimView(request, client_id):
             print "Expected: %s" % expectedBack
             claim.amountClaimed = amountClaimed
             claim.expectedBack = expectedBack
+            # Get the patient of the claim
+            patient = Person.objects.get(id=querydict['patient'][0])
+            claim.patient = patient
             claim.save()
             # Now to save each insurance claim object and update the coverage
             # we have the claim in: claim
