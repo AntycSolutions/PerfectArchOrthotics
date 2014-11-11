@@ -1,15 +1,11 @@
 db.sqlite3
-dev.db
-*.py[co]
-*.sw[po]
-*.bak
-*.orig
-*~
-*.log
-*.egg-info
+__pycache__
+*.pyc
 .project
 .pydevproject
-venv/
-virtenv/
-dist/
-build/
+
+# temporary files
+*~
+
+media/*
+static/*
