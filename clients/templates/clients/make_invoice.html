@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% load mathfilters %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<h1>BLAH</h1>
+<h5>To add fields to select</h5>
+<ul>
+    <li>Dispensed by</li>
+    <li>payment type</li>
+    <li>payment terms</li>
+    <li>Item details such as description, unit price, quantity, total</li>
+    <li>Total</li>
+    <li>payment</li>
+    <li>balance</li>
+</ul>
+<a href="/clients/{{client.id}}/claim/{{claim.id}}/invoice" class="btn btn-default">View Invoice</a>
+{% endblock %}

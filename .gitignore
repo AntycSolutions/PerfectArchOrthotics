@@ -7,5 +7,8 @@ __pycache__
 # temporary files
 *~
 
+# Apple
+.DS_Store
+
 media/*
 static/*

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block title %}Add Dependent{% endblock %}
+
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_birthdate" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <h1>Part 2 of 3:</h1>
+    <h3>Add dependent information</h3>
+
+    <form id="dependent_form" class="form-horizontal" method="post">
+        <fieldset>
+            {% csrf_token %}
+                {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+        </fieldset>
+        <input type="submit" name="submit" value="Create and add another" />
+        <input type="submit" name="submit" value="Create and proceed" />
+        <input type="submit" name="submit" value="Skip step" />
+    </form>
+{% endblock %}
