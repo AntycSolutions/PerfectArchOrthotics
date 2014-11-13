@@ -21,6 +21,7 @@ from datetime import datetime, timedelta, date
 from django.conf import settings
 
 
+#TODO: split into multiple views
 # Convert HTML URIs to absolute system paths
 #  so xhtml2pdf can access those resources
 def link_callback(uri, rel):
@@ -75,8 +76,8 @@ def invoice_view(request, client_id, claim_id):
 
 
 def insurance_letter(request, client_id, claim_id):
-    client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
+    # client = Client.objects.get(id=client_id)
+    # claim = Claim.objects.get(id=claim_id)
     today = date.today()
     return render_to_pdf('insurance_letter.html',
                          {'pagesize': 'A4',
@@ -84,8 +85,8 @@ def insurance_letter(request, client_id, claim_id):
 
 
 def proof_of_manufacturing(request, client_id, claim_id):
-    client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
+    # client = Client.objects.get(id=client_id)
+    # claim = Claim.objects.get(id=claim_id)
     return render_to_pdf('proof_of_manufacturing.html',
                          {'pagesize': 'A4', })
 

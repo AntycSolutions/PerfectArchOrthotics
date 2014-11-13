@@ -58,38 +58,51 @@ def populate():
     add_prescription(john, timezone.now())
 
     # Constants for insurance model
-    #DIRECT = Insurance.BILLING_CHOICES[0][0]
-    #INDIRECT = Insurance.BILLING_CHOICES[1][0]
-    #ORTHOTICS = Insurance.COVERAGE_TYPE[0][0]
-    #COMPRESSION = Insurance.COVERAGE_TYPE[1][0]
-    #ORTHO_SHOES = Insurance.COVERAGE_TYPE[2][0]
-    # Add insurance
+    DIRECT = Insurance.BILLING_CHOICES[0][0]
+    INDIRECT = Insurance.BILLING_CHOICES[1][0]
+    # Add Insurances
     # Commening out for now, looks like we are changing the way we do this
-    #eric_insurance = add_insurance(eric, "Some_provider", ORTHOTICS,
-                                    # "PN9999", "CN9999", 50, DIRECT)
-    #chris_insurance = add_insurance(chris, "Some_provider", ORTHOTICS,
-                                     # "PN9998", "CN9998", 50, DIRECT)
-    #jay_insurance = add_insurance(jay, "Some_provider", ORTHOTICS,
-                                   # "PN9997", "CN9997", 50, DIRECT)
-    #dan_insurance = add_insurance(dan, "Some_provider", ORTHOTICS,
-                                   # "PN9996", "CN9996", 50, DIRECT)
-    #cloney_insurance = add_insurance(cloney, "Some_provider", ORTHOTICS,
-                                      # "PN9995", "CN9995", 50, DIRECT)
-    #jane_insurance = add_insurance(jane, "Some_provider", ORTHOTICS,
-                                    # "PN9994", "CN9994", 50, DIRECT)
-    #john_insurance = add_insurance(john, "Some_provider", ORTHOTICS,
-                                    # "PN9994", "CN9994", 50, DIRECT)
+    eric_insurance = add_insurance(eric, "Some_provider",
+                                   "PN9999", "CN9999", DIRECT)
+    chris_insurance = add_insurance(chris, "Some_provider",
+                                    "PN9998", "CN9998", DIRECT)
+    jay_insurance = add_insurance(jay, "Some_provider",
+                                  "PN9997", "CN9997", DIRECT)
+    dan_insurance = add_insurance(dan, "Some_provider",
+                                  "PN9996", "CN9996", DIRECT)
+    cloney_insurance = add_insurance(cloney, "Some_provider",
+                                     "PN9995", "CN9995", DIRECT)
+    jane_insurance = add_insurance(jane, "Some_provider",
+                                   "PN9994", "CN9994", DIRECT)
+    john_insurance = add_insurance(john, "Some_provider",
+                                   "PN9994", "CN9994", INDIRECT)
+
+    # Constants for coverage types model
+    ORTHOTICS = CoverageType.COVERAGE_TYPE[0][0]
+    COMPRESSION = CoverageType.COVERAGE_TYPE[1][0]
+    ORTHO_SHOES = CoverageType.COVERAGE_TYPE[2][0]
+    # Add CoverageTypes
+    eric_coverage_type = add_coverage_type(eric_insurance, ORTHOTICS,
+                                           100, 250)
+    chris_coverage_type = add_coverage_type(chris_insurance, COMPRESSION,
+                                          100, 300)
+    jay_coverage_type = add_coverage_type(jay_insurance, ORTHO_SHOES,
+                                          100, 350)
 
     # Constants for claim model
-    # CASH = Claim.PAYMENT_CHOICES[0][0]
-    # Add claims
-    #add_claim(eric, eric_insurance, timezone.now(), CASH)
-    #add_claim(chris, chris_insurance, timezone.now(), CASH)
-    #add_claim(jay, jay_insurance, timezone.now(), CASH)
-    #add_claim(dan, dan_insurance, timezone.now(), CASH)
-    #add_claim(cloney, cloney_insurance, timezone.now(), CASH)
-    #add_claim(jane, jane_insurance, timezone.now(), CASH)
-    #add_claim(john, john_insurance, timezone.now(), CASH)
+    CASH = Claim.PAYMENT_CHOICES[0][0]
+    # Add Claims
+    eric_claim = add_claim(eric, eric_insurance, timezone.now(), CASH)
+    chris_claim = add_claim(chris, chris_insurance, timezone.now(), CASH)
+    jay_claim = add_claim(jay, jay_insurance, timezone.now(), CASH)
+    dan_claim = add_claim(dan, dan_insurance, timezone.now(), CASH)
+    cloney_claim = add_claim(cloney, cloney_insurance, timezone.now(), CASH)
+    jane_claim = add_claim(jane, jane_insurance, timezone.now(), CASH)
+    john_claim = add_claim(john, john_insurance, timezone.now(), CASH)
+
+    # Add Insurance Claims
+    eric_insurance_claim = add_insurance_claim(eric_claim, eric_coverage_type,
+                                               50)
 
     # Add admin users
     # Have to hash passwords so get_or_create will work
@@ -141,16 +154,22 @@ def add_prescription(client, dateAdded):
     return p[0]
 
 
-def add_insurance(client, provider, coverageType, policyNumber,
-                  contractNumber, coveragePercent, billing):
+def add_insurance(client, provider, policyNumber, contractNumber, billing):
     i = Insurance.objects.get_or_create(client=client,
                                         provider=provider,
-                                        coverageType=coverageType,
                                         policyNumber=policyNumber,
                                         contractNumber=contractNumber,
-                                        coveragePercent=coveragePercent,
                                         billing=billing)
     return i[0]
+
+
+def add_coverage_type(insurance, coverage_type, coverage_percent,
+                      max_claim_amount):
+    c = CoverageType.objects.get_or_create(insurance=insurance,
+                                           coverageType=coverage_type,
+                                           coveragePercent=coverage_percent,
+                                           maxClaimAmount=max_claim_amount)
+    return c[0]
 
 
 def add_claim(client, insurance, submittedDate, paymentType):
@@ -161,6 +180,13 @@ def add_claim(client, insurance, submittedDate, paymentType):
     return c[0]
 
 
+def add_insurance_claim(claim, coverage_type, amount_claimed):
+    i = InsuranceClaim.objects.get_or_create(claim=claim,
+                                             coverageType=coverage_type,
+                                             amountClaimed=amount_claimed)
+    return i[0]
+
+
 if __name__ == '__main__':
     print("Starting PerfectArchOrthotics database population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
@@ -168,6 +194,6 @@ if __name__ == '__main__':
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Prescription, Insurance, Claim, \
-        Dependent
+        Dependent, CoverageType, InsuranceClaim
     populate()
     print("Finished PerfectArchOrthotics database population script.")

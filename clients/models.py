@@ -10,6 +10,7 @@ The following tables will be contained within:
 """
 from django.db import models
 
+
 class Person(models.Model):
     firstName = models.CharField(max_length=128, blank=True, default="")
     lastName = models.CharField(max_length=128, blank=True, default="")
@@ -40,8 +41,10 @@ class Dependent(Person):
     GENDER_CHOICES = ((MALE, 'Male'),
                       (FEMALE, 'Female'))
 
-    relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES, blank=True, default="")
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True, default="")
+    relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES,
+                                    blank=True, default="")
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES,
+                              blank=True, default="")
     birthdate = models.DateField(blank=True, null=True)
 
     def __unicode__(self):
@@ -85,13 +88,16 @@ class Client(Person):
     city = models.CharField(max_length=128, blank=True, default="")
     postalCode = models.CharField(max_length=6, blank=True, default="")
     # TODO Write validators for the phone numbers below
-    phoneNumber = models.CharField(max_length=14, blank=True, default="")  # In the form of (780)-937-1514
-    cellNumber = models.CharField(max_length=14, blank=True, default="")  # In the form of (780)-937-1514
+    # In the form of (780)-937-1514
+    phoneNumber = models.CharField(max_length=14, blank=True, default="")
+    # In the form of (780)-937-1514
+    cellNumber = models.CharField(max_length=14, blank=True, default="")
     # will cover all RFC3696/5321-compliant email addresses
     email = models.EmailField(max_length=254, blank=True, null=True)
     healthcareNumber = models.CharField(max_length=20, blank=True, default="")
     birthdate = models.DateField(blank=True)
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=True, default="")
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES,
+                              blank=True, default="")
     employer = models.CharField(max_length=128, blank=True, default="")
     credit = models.SmallIntegerField(blank=True, default=0)
     referredBy = models.CharField(max_length=128, blank=True, default="")
@@ -138,16 +144,18 @@ class Insurance(models.Model):
     2) More common are plans as follows. The client has a max for each expense,
     normally covering themselves and dependents.
 
-    EX. Dental will have $500 per year, orthotics will have $300 max every three years.
+    EX. Dental will have $500 per year, orthotics will have $300 max
+        every three years.
 
     Modeling:
     Have the total coverage amount, amount remaining and amount claimed. The
     calc for amount remaining should be as easy as taking the total and minus
-    the amount claimed. However this may change if they go elsewhere for something
-    that is covered elsewhere and then comes back to us. The amount remaining then
-    should be dynamic and calculated separately from our numbers. (Have to ask Danny)
-    Coverage % may be different for each plan, say some will be 50%, others 100% and
-    will obviously drop to 0% once the coverage is used during the roll-over timeframe.
+    the amount claimed. However this may change if they go elsewhere for
+    something that is covered elsewhere and then comes back to us. The amount
+    remaining then should be dynamic and calculated separately from our
+    numbers. (Have to ask Danny) Coverage % may be different for each plan,
+    say some will be 50%, others 100% and will obviously drop to 0% once the
+    coverage is used during the roll-over timeframe.
 
     Insurance will have the following fields:
     Provider
@@ -174,7 +182,8 @@ class Insurance(models.Model):
     provider = models.CharField(max_length=128, blank=True, default="")
     policyNumber = models.CharField(max_length=128, blank=True, default="")
     contractNumber = models.CharField(max_length=128, blank=True, default="")
-    billing = models.CharField(max_length=8, choices=BILLING_CHOICES, blank=True, default="")
+    billing = models.CharField(max_length=8, choices=BILLING_CHOICES,
+                               blank=True, default="")
     gaitScan = models.BooleanField(default=False)
     insuranceCard = models.BooleanField(default=False)
 
@@ -187,6 +196,7 @@ class Insurance(models.Model):
 
 
 class CoverageType(models.Model):
+
     """This class will represent coverage types.
 
     There are three types:
@@ -206,7 +216,8 @@ class CoverageType(models.Model):
                      ("Orthopedic_shoes", "Orthopedic Shoes"))
 
     insurance = models.ForeignKey(Insurance)
-    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE, blank=True, default="")
+    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE,
+                                    blank=True, default="")
     coveragePercent = models.IntegerField(blank=True, null=True)
     maxClaimAmount = models.IntegerField(default=0, blank=True)
     totalClaimed = models.IntegerField(null=True, blank=True)
@@ -214,7 +225,9 @@ class CoverageType(models.Model):
     period = models.IntegerField(default=1)
 
     def __unicode__(self):
-        return "%s - Coverage percent: %s" % (self.coverageType, self.coveragePercent)
+        return "%s - Coverage percent: %s" % (self.coverageType,
+                                              self.coveragePercent)
+
 
 class Claim(models.Model):
 
@@ -237,10 +250,11 @@ class Claim(models.Model):
                        ("CHEQUE", "Cheque"),
                        ("CREDIT", "Credit"))
     CLAIM_TYPE = (("Orthotics", "Orthotics"),
-                     ("Compression_stockings", "Compression Stockings"),
-                     ("Orthopedic_shoes", "Orthopedic Shoes"))
+                  ("Compression_stockings", "Compression Stockings"),
+                  ("Orthopedic_shoes", "Orthopedic Shoes"))
 
-    client = models.ForeignKey(Client, blank=True, null=True, related_name="uses_coverage_of")
+    client = models.ForeignKey(Client, blank=True, null=True,
+                               related_name="uses_coverage_of")
     patient = models.ForeignKey(Person, blank=True, null=True)
     # TODO figure out how to get the insurance from the client to calidate this
     # TODO remove this, coveraged the the insurance claim model now
@@ -249,10 +263,13 @@ class Claim(models.Model):
     invoiceDate = models.DateTimeField(blank=True, null=True)
     paidDate = models.DateTimeField(blank=True, null=True)
     amountClaimed = models.IntegerField(blank=True, default=0)
-    # TODO validate based on clients insurance, amount left in coverage and coverage percent
+    # TODO validate based on clients insurance, amount left in coverage
+    #  and coverage percent
     expectedBack = models.IntegerField(blank=True, default=0)
-    paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES, blank=True, default="")
-    claimType = models.CharField(max_length=21, choices=CLAIM_TYPE, blank=True, default="")
+    paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES,
+                                   blank=True, default="")
+    claimType = models.CharField(max_length=21, choices=CLAIM_TYPE,
+                                 blank=True, default="")
 
     def __unicode__(self):
         return "Claim - %s %s" % (self.client.firstName, self.client.lastName)
@@ -270,7 +287,8 @@ class InsuranceClaim(models.Model):
     amountClaimed = models.IntegerField(blank=True, default=0)
 
     def __unicode__(self):
-        return "%s - %s - Amount claimed: %s" % (self.claim, self.coverageType, self.amountClaimed)
+        return "%s - %s - Amount claimed: %s" % (self.claim, self.coverageType,
+                                                 self.amountClaimed)
 
 
 class Prescription(models.Model):
@@ -289,7 +307,8 @@ class Prescription(models.Model):
 
     client = models.ForeignKey(Client)
     dateAdded = models.DateTimeField(auto_now_add=True)
-    # TODO file field for uploading and saving the prescription, optional for now
+    # TODO file field for uploading and saving the prescription, optional for
+    #  now
 
     def __unicode__(self):
         clientName = self.client.firstName + " " + self.client.lastName

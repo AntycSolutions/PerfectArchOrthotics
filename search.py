@@ -15,7 +15,8 @@ def normalize_query(query_string, normspace=re.compile(r'\s{2,}').sub,
     ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
 
     """
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
+    return [normspace(' ',
+                      (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
 
 def get_query(query_string, search_fields):
