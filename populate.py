@@ -191,6 +191,8 @@ if __name__ == '__main__':
     print("Starting PerfectArchOrthotics database population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                           'perfect_arch_orthotics.settings')
+    import django
+    django.setup()
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Prescription, Insurance, Claim, \
