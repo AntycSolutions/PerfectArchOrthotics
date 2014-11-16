@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from clients import views
+from clients.views import views
 
 
 #TODO: make this not gross
