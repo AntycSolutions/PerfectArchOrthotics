@@ -15,6 +15,7 @@
         <table class="table table-striped table-cover">
             <thead>
                 <tr>
+                    <th>Claim</th>
                     <th>Client</th>
                     <th>Submitted Date</th>
                     <th>Amount Claimed</th>
@@ -24,6 +25,11 @@
             <tbody>
         {% for claim in claims %}
                 <tr>
+                    <td>
+                        <a href="{% url 'claim' claim.client.id claim.pk %}">
+                            {{ claim }}
+                        </a>
+                    </td>
                     <td>
                         <a href="/clients/{{claim.client.id}}">
                             {{claim.client.firstName}} {{claim.client.lastName}}
