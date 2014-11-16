@@ -16,7 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e#v=c7*5@x1qnp*tfke!f#+nd_amito34d%blwm)!8&@4u7=+y'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,13 +52,8 @@ ROOT_URLCONF = 'perfect_arch_orthotics.urls'
 
 WSGI_APPLICATION = 'perfect_arch_orthotics.wsgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# Databases
+DATABASES = {}
 
 # Internationalization
 LANGUAGE_CODE = 'en-ca'
