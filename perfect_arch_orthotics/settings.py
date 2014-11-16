@@ -78,3 +78,12 @@ LOGIN_URL = '/login/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
+
+if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
+    from .configs.prod_settings import *
+elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
+    from .configs.test_settings import *
+elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
+    from .configs.devl_settings import *
+else:
+    raise Exception("Please create a settings decision file.")
