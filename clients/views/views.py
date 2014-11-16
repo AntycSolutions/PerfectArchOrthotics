@@ -10,7 +10,7 @@ from clients.forms import ClientForm, DependentForm, InsuranceForm, \
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
-import io as StringIO
+import io
 import xhtml2pdf.pisa as pisa
 from django.template.loader import get_template
 from django.template import Context
@@ -32,28 +32,42 @@ def link_callback(uri, rel):
     mRoot = settings.MEDIA_ROOT   # Typically /home/userX/project_static/media/
 
     # convert URIs to absolute system paths
+    path = ""
+    path2 = ""
     if uri.startswith(mUrl):
         path = os.path.join(mRoot, uri.replace(mUrl, ""))
     elif uri.startswith(sUrl):
         path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        # Also check other static dirs, for devl
+        path2 = path.replace("static", "assets")
 
     # make sure that file exists
-    if not os.path.isfile(path):
+    if os.path.isfile(path):
+        return path
+    elif os.path.isfile(path2):
+        return os.path.normpath(path2)
+    else:
         raise Exception('media URI must start with %s or %s' %
                         (sUrl, mUrl))
-    return path
 
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
     context = Context(context_dict)
     html = template.render(context)
-    result = StringIO.StringIO()
+    result = io.BytesIO()
 
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode("ISO-8859-1")),
-                            result, link_callback=link_callback)
+    # 'utf-8' didn't work
+    # pdf = pisa.pisaDocument(io.BytesIO("Test".encode("ISO-8859-1")),
+    #                         result,
+    #                         link_callback=link_callback
+    #                         )
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")),
+                            result,
+                            link_callback=link_callback
+                            )
     if not pdf.err:
-        return HttpResponse(result.getvalue(), mimetype='application/pdf')
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
     return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
     #file = open(os.join(settings.MEDIA_ROOT, 'test.pdf'), "w+b")
@@ -66,7 +80,7 @@ def invoice_view(request, client_id, claim_id):
     claim = Claim.objects.get(id=claim_id)
     today = datetime.utcnow() - timedelta(hours=6)
 
-    return render_to_pdf('invoice.html',
+    return render_to_pdf('clients/pdfs/invoice.html',
                          #'Hello.html',
                          {'pagesize': 'A4',
                           'client': client,
@@ -79,7 +93,7 @@ def insurance_letter(request, client_id, claim_id):
     # client = Client.objects.get(id=client_id)
     # claim = Claim.objects.get(id=claim_id)
     today = date.today()
-    return render_to_pdf('insurance_letter.html',
+    return render_to_pdf('clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
                           'today': today, })
 
@@ -87,7 +101,7 @@ def insurance_letter(request, client_id, claim_id):
 def proof_of_manufacturing(request, client_id, claim_id):
     # client = Client.objects.get(id=client_id)
     # claim = Claim.objects.get(id=claim_id)
-    return render_to_pdf('proof_of_manufacturing.html',
+    return render_to_pdf('clients/pdfs/proof_of_manufacturing.html',
                          {'pagesize': 'A4', })
 
 
@@ -354,7 +368,7 @@ def editClientView(request, client_id):
 
 @login_required
 def makeClaimView(request, client_id):
-    print(request)
+    # print(request)
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
@@ -370,8 +384,8 @@ def makeClaimView(request, client_id):
             claim = claim_form.save(commit=False)
             claim.client = client
             coverages_used = []
-            querydict = dict(request.POST.iterlists())
-            print("QD: %s" % querydict)
+            querydict = request.POST
+            # print("QD: %s" % querydict)
             if 'coverageSelected' in querydict:
                 for coverage_id in querydict['coverageSelected']:
                     coverage = CoverageType.objects.get(id=coverage_id)
