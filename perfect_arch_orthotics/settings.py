@@ -74,6 +74,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "assets"),
 )
 
+# Media files (user uploaded)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR + '/media/'
+
 LOGIN_URL = '/login/'
 
 TEMPLATE_DIRS = (
