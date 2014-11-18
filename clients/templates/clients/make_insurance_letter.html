@@ -21,5 +21,5 @@
     <li>casting techniques</li>
     <li></li>
 </ul>
-<a href="/clients/{{client.id}}/claim/{{claim.id}}/insurance_letter" class="btn btn-default">View Invoice</a>
+<a href="{% url 'insurance_letter' client.id claim.id %}" class="btn btn-default">View Invoice</a>
 {% endblock %}

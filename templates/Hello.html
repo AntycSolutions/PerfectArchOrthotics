@@ -44,8 +44,8 @@
                     <td>gender</td>
                     <td>
                     <div class="pull-right">
-                        <a href="/clients/edit_dependant/{{client.id}}/{{spouse.id}}/" class="btn btn-default">Edit</a>
-                        <a href="/clients/delete_dependant/{{client.id}}/{{spouse.id}}/" class="btn btn-default">Delete</a>
+                        <a href="{% url 'dependant_edit' client.id spouse.id %}" class="btn btn-default">Edit</a>
+                        <a href="{% url 'dependant_delete' client.id spouse.id %}" class="btn btn-default">Delete</a>
                     </div>
                     </td>
                 </tr>

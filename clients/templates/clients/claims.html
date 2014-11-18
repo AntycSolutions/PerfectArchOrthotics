@@ -6,7 +6,7 @@
 {% block content %}
     <h1>Claims</h1>
 
-    <form method="get" action="/clients/claim_search/">
+    <form method="get" action="{% url 'claim_search' %}">
         <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search">
         <input type="submit" class="btn" value="Search">
     </form>
@@ -31,7 +31,7 @@
                         </a>
                     </td>
                     <td>
-                        <a href="/clients/{{claim.client.id}}">
+                        <a href="{% url 'client' claim.client.id %}">
                             {{claim.client.firstName}} {{claim.client.lastName}}
                         </a>
                     </td>

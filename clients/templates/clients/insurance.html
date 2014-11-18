@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1>Insurances</h1>
-    <form method="get" action="/clients/insurance_search/">
+    <form method="get" action="{% url 'insurance_search' %}">
         <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Insurance Search">
         <input type="submit" class="btn" value="Search">
     </form>
@@ -27,7 +27,7 @@
         {% for insurance in insurances %}
                 <tr>
                     <td>
-                        <a href="/clients/{{insurance.client.id}}">
+                        <a href="{% url 'client' insurance.client.id %}">
                             {{insurance.client.firstName}} {{insurance.client.lastName}}
                         </a>
                     </td>

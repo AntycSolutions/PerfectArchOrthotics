@@ -16,5 +16,5 @@
     <li>payment</li>
     <li>balance</li>
 </ul>
-<a href="/clients/{{client.id}}/claim/{{claim.id}}/invoice" class="btn btn-default">View Invoice</a>
+<a href="{% url 'invoice' client.id claim.id %}" class="btn btn-default">View Invoice</a>
 {% endblock %}

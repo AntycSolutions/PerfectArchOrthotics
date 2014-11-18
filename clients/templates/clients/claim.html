@@ -7,9 +7,9 @@
 {% block content %}
 <h1>Claim for {{client.firstName}} {{client.lastName}}</h1>
 <div>
-    <a href="/clients/{{client.id}}/claim/{{claim.id}}/fill_out_invoice" class="btn btn-default">Generate Invoice</a>
-    <a href="/clients/{{client.id}}/claim/{{claim.id}}/fill_out_insurance_letter" class="btn btn-default">Insurance Letter</a>
-    <a href="/clients/{{client.id}}/claim/{{claim.id}}/fill_out_proof_of_manufacturing" class="btn btn-default">Proof of Manufacturing</a>
+    <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
+    <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>
+    <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Proof of Manufacturing</a>
 </div>
 <h5>Claim Details</h5>
 <ul>

@@ -6,10 +6,10 @@
 
 {% block content %}
 <h1>{{client.firstName}} {{client.lastName}}</h1>
-<a href="/clients/make_claim/{{client.id}}/" class="btn">Make Claim</a>
+<a href="{% url 'make_claim' client.id %}" class="btn">Make Claim</a>
 <div class="well">
     <div class="pull-right">
-        <a href="/clients/edit_client/{{client.id}}/" class="btn btn-default">Edit</a>
+        <a href="{% url 'client_edit' client.id %}" class="btn btn-default">Edit</a>
     </div>
 
     <h3>Personal Information</h3>
@@ -39,7 +39,7 @@
 </div>
 
 <div class="pull-right">
-    <a href="/clients/add_new_dependent/{{client.id}}/" class="btn btn-default">Add Dependent</a>
+    <a href="{% url 'add_new_dependent' client.id %}" class="btn btn-default">Add Dependent</a>
 </div>
 <div class="well">
 <h3>Dependents</h3>
@@ -62,8 +62,8 @@
                     <td>{{spouse.gender}}</td>
                     <td>
                     <div class="pull-right">
-                        <a href="/clients/edit_dependant/{{client.id}}/{{spouse.id}}/" class="btn btn-default">Edit</a>
-                        <a href="/clients/delete_dependant/{{client.id}}/{{spouse.id}}/" class="btn btn-default">Delete</a>
+                        <a href="{% url 'dependant_edit' client.id spouse.id %}" class="btn btn-default">Edit</a>
+                        <a href="{% url 'dependant_delete' client.id spouse.id %}" class="btn btn-default">Delete</a>
                     </div>
                     </td>
                 </tr>
@@ -90,8 +90,8 @@
                     <td>{{child.gender}}</td>
                     <td>
                     <div class="pull-right">
-                        <a href="/clients/edit_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Edit</a>
-                        <a href="/clients/delete_dependant/{{client.id}}/{{child.id}}/" class="btn btn-default">Delete</a>
+                        <a href="{% url 'dependant_edit' client.id child.id %}" class="btn btn-default">Edit</a>
+                        <a href="{% url 'dependant_delete' client.id child.id %}" class="btn btn-default">Delete</a>
                     </div>
                     </td>
                 </tr>
@@ -120,7 +120,7 @@
         {% for insurance in client_insurance %}
                 <tr>
                     <td>
-                        <a href="/clients/{{insurance.client.id}}">
+                        <a href="{% url 'client' insurance.client.id %}">
                             {{insurance.client.firstName}} {{insurance.client.lastName}}
                         </a>
                     </td>

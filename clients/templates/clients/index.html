@@ -5,9 +5,9 @@
 
 {% block content %}
     <h1>Clients</h1>
-    <p><a href="/clients/add_client/">Add a new client</a>
+    <p><a href="{% url 'add_client' %}">Add a new client</a>
     </br>
-    <form method="get" action="/clients/client_search/">
+    <form method="get" action="{% url 'client_search' %}">
         <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Client Search">
         <input type="submit" class="btn" value="Search">
     </form>
@@ -28,7 +28,7 @@
         {% for client in clients %}
             <tr>
                 <td>
-                    <a href="/clients/{{client.id}}">
+                    <a href="{% url 'client' client.id %}">
                         {{client.firstName}} {{client.lastName}}
                     </a>
                 </td>

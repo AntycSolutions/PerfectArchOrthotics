@@ -18,5 +18,5 @@
     <li>raw materials manufacturing</li>
     <li>casting technique</li>
 </ul>
-<a href="/clients/{{client.id}}/claim/{{claim.id}}/proof_of_manufacturing" class="btn btn-default">View Proof Of Insurance</a>
+<a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Insurance</a>
 {% endblock %}
