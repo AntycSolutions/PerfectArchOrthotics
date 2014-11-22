@@ -1,6 +1,32 @@
-from django.conf.urls import patterns, url
-from clients.views import views
+from django.conf.urls import patterns, url, include
+from django.contrib.auth.decorators import login_required
 
+from clients.views import views
+from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView
+from clients.views.coverage_type import UpdateCoverageTypeView, \
+    DeleteCoverageTypeView
+
+
+insurance_patterns = patterns(
+    '',
+    url(r'^$', views.insuranceView, name='insurance'),
+    url(r'^edit/(?P<insurance_id>\w+)/$',
+        login_required(UpdateInsuranceView.as_view()),
+        name='insurance_edit'),
+    url(r'^delete/(?P<insurance_id>\w+)/$',
+        login_required(DeleteInsuranceView.as_view()),
+        name='insurance_delete'),
+)
+
+coverage_type_patterns = patterns(
+    '',
+    url(r'^edit/(?P<coverage_type_id>\w+)/$',
+        login_required(UpdateCoverageTypeView.as_view()),
+        name='coverage_type_edit'),
+    url(r'^delete/(?P<coverage_type_id>\w+)/$',
+        login_required(DeleteCoverageTypeView.as_view()),
+        name='coverage_type_delete'),
+)
 
 #TODO: make this not gross
 urlpatterns = patterns(
@@ -31,7 +57,8 @@ urlpatterns = patterns(
         views.fillOutInsuranceLetterView, name='fillOutInsurance'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/fill_out_proof_of_manufacturing/$',
         views.fillOutProofOfManufacturingView, name='fillOutProof'),
-    url(r'^insurance/$', views.insuranceView, name='insurance'),
+    url(r'^insurance/', include(insurance_patterns)),
+    url(r'^coverage_type/', include(coverage_type_patterns)),
     url(r'^pdftest.pdf$', views.HelloPDFView.as_view(), name='pdf'),
     url(r'^pdftest2.pdf$', views.invoice_view, name='invoice'),
     url(r'^pdftest3.pdf$', views.insurance_letter,
@@ -41,10 +68,10 @@ urlpatterns = patterns(
         name='client_edit'),
     url(r'^make_claim/(?P<client_id>\w+)/$', views.makeClaimView,
         name='make_claim'),
-    url(r'^edit_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
-        views.editDependantsView, name='dependant_edit'),
-    url(r'^delete_dependant/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
-        views.deleteDependantsView, name='dependant_delete'),
+    url(r'^edit_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
+        views.editDependentsView, name='dependent_edit'),
+    url(r'^delete_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
+        views.deleteDependentsView, name='dependent_delete'),
     url(r'^add_new_dependent/(?P<client_id>\w+)/$', views.add_new_dependent,
         name='add_new_dependent'),
 )

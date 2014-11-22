@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% include 'navbar.html' %}
+
+{% block title %}Edit Coverage Type{% endblock %}
+
+{% block content %}
+
+<h1>Edit coverage type information for: {{ coveragetype.insurance.client.firstName }} {{ coveragetype.insurance.client.lastName }}</h1>
+<h3>insurance information:</h3>
+<table class="table table-striped table-cover">
+    <thead>
+        <tr>
+            <th>Employer</th>
+            <th>Provider</th>
+            <th>Policy Number</th>
+            <th>Contract Number</th>
+            <th>Billing</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{coveragetype.insurance.client.employer}}
+            <td>{{coveragetype.insurance.provider}}</td>
+            <td>{{coveragetype.insurance.policyNumber}}</td>
+            <td>{{coveragetype.insurance.contractNumber}}</td>
+            <td>{{coveragetype.insurance.billing}}</td>
+        </tr>
+    </tbody>
+</table>
+<h3>coverage type information:</h3>
+<form id="update_coverage_Type_form" class="form-horizontal" method="post">
+    <fieldset>
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" name="submit" value="Save" />
+</form>
+
+{% endblock %}
