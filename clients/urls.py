@@ -6,7 +6,7 @@ from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
     CreateInsuranceView
 from clients.views.client import DeleteClientView
 from clients.views.coverage_type import UpdateCoverageTypeView, \
-    DeleteCoverageTypeView
+    DeleteCoverageTypeView, CreateCoverageTypeView
 
 
 insurance_patterns = patterns(
@@ -34,6 +34,9 @@ coverage_type_patterns = patterns(
     url(r'^delete/(?P<coverage_type_id>\w+)/$',
         login_required(DeleteCoverageTypeView.as_view()),
         name='coverage_type_delete'),
+    url(r'^create/(?P<insurance_id>\w+)/$',
+        login_required(CreateCoverageTypeView.as_view()),
+        name='coverage_type_create'),
 )
 
 #TODO: make this not gross

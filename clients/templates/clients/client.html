@@ -159,6 +159,12 @@
                                 <td>{{coverageType.coveragePercent}}</td>
                                 <td>{{coverageType.maxClaimAmount}}</td>
                                 <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
+                                <!-- <td>
+                                    <div class="pull-right">
+                                        <a href="{% url 'coverage_type_edit' coverageType.id %}" class="btn btn-default">Edit</a>
+                                        <a href="{% url 'coverage_type_delete' coverageType.id %}" class="btn btn-default">Delete</a>
+                                    </div>
+                                </td> -->
                             </tr>
                             {% endfor %}
                         </tbody>
