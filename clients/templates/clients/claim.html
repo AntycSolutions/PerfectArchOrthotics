@@ -2,10 +2,10 @@
 {% include 'navbar.html' %}
 {% load mathfilters %}
 
-{% block title %}Claim Under {{client.firstName}} {{client.lastName}}{% endblock %}
+{% block title %} - Claim Under {{ client }}{% endblock %}
 
 {% block content %}
-<h1>Claim for {{client.firstName}} {{client.lastName}}</h1>
+<h1>Claim for {{ client }}</h1>
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
     <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>

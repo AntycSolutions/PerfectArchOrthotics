@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
-{% include 'navbar.html' %}
 {% load mathfilters %}
 
-{% block title %}Edit Client{% endblock %}
+{% include 'navbar.html' %}
+
+{% block title %} - Edit Client{% endblock %}
 
 {% block content %}
+
 <h1>Make a claim</h1>
 <form id="claim_add_form" class="form-horizontal" method="post">
     <fieldset>
@@ -66,4 +68,5 @@
         {% endif %}
     </div>
 </form>
+
 {% endblock %}

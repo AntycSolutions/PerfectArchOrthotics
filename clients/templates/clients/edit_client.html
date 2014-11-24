@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 
-{% block title %}Edit Client{% endblock %}
+{% block title %} - Edit Client{% endblock %}
 
 {% block content %}
-<h3>Edit client information for: {{client.firstName}} {{client.lastName}}</h3>
+<h3>Edit client information for: {{ client }}</h3>
     <form id="client_edit_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}

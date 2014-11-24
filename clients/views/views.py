@@ -384,7 +384,7 @@ def makeClaimView(request, client_id):
         #       if 'amount_%s' not in request.POST.keys()
         claim_form = ClaimForm(request.POST)
         if claim_form.is_valid():
-            print("VALID")
+            # print("VALID")
             claim = claim_form.save(commit=False)
             claim.client = client
             coverages_used = []
@@ -400,16 +400,16 @@ def makeClaimView(request, client_id):
             amountClaimed = 0
             expectedBack = 0
             if coverages_used:
-                print("Used: %s" % coverages_used)
+                # print("Used: %s" % coverages_used)
                 for used in coverages_used:
                     amountClaimed += used[0]
                     expectedBack += float(amount * (float(used[1])/100))
-            print("Amount: %s" % amountClaimed)
-            print("Expected: %s" % expectedBack)
+            # print("Amount: %s" % amountClaimed)
+            # print("Expected: %s" % expectedBack)
             claim.amountClaimed = amountClaimed
             claim.expectedBack = expectedBack
             # Get the patient of the claim
-            patient = Person.objects.get(id=querydict['patient'][0])
+            patient = Person.objects.get(id=querydict['patient'])
             claim.patient = patient
             claim.save()
             # Now to save each insurance claim object and update the coverage

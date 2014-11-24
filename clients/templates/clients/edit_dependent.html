@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% include 'navbar.html' %}
 
-{% block title %}Edit Dependents{% endblock %}
+{% block title %} - Edit Dependents{% endblock %}
 
 {% block content %}
-<h3>Edit dependent information for: {{client.firstName}} {{client.lastName}}</h3>
+<h3>Edit dependent information for: {{ client }}</h3>
     <form id="edit_dependent_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}
