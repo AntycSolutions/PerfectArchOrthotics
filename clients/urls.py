@@ -2,7 +2,9 @@ from django.conf.urls import patterns, url, include
 from django.contrib.auth.decorators import login_required
 
 from clients.views import views
-from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView
+from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
+    CreateInsuranceView
+from clients.views.client import DeleteClientView
 from clients.views.coverage_type import UpdateCoverageTypeView, \
     DeleteCoverageTypeView
 
@@ -16,6 +18,12 @@ insurance_patterns = patterns(
     url(r'^delete/(?P<insurance_id>\w+)/$',
         login_required(DeleteInsuranceView.as_view()),
         name='insurance_delete'),
+    url(r'^create/(?P<client_id>\w+)/$',
+        login_required(CreateInsuranceView.as_view()),
+        name='insurance_create'),
+    url(r'^create/(?P<client_id>\w+)/(?P<spouse_id>\w+)/$',
+        login_required(CreateInsuranceView.as_view()),
+        name='insurance_create_spouse'),
 )
 
 coverage_type_patterns = patterns(
@@ -66,6 +74,9 @@ urlpatterns = patterns(
     url(r'^pdftest4.pdf$', views.proof_of_manufacturing, name='proof'),
     url(r'^edit_client/(?P<client_id>\w+)/$', views.editClientView,
         name='client_edit'),
+    url(r'^delete_client/(?P<client_id>\w+)/$',
+        login_required(DeleteClientView.as_view()),
+        name='client_delete'),
     url(r'^make_claim/(?P<client_id>\w+)/$', views.makeClaimView,
         name='make_claim'),
     url(r'^edit_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',

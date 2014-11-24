@@ -1,7 +1,7 @@
 from django.views.generic.edit import UpdateView, DeleteView
 
 from clients.models import CoverageType
-from clients.forms import CoverageForm
+from clients.forms.forms import CoverageForm
 
 
 class UpdateCoverageTypeView(UpdateView):

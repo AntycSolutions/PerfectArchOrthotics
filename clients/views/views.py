@@ -3,10 +3,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
-    Person
-from clients.forms import ClientForm, DependentForm, InsuranceForm, \
-    CoverageForm, ClaimForm
+
 from search import get_query
 from easy_pdf.views import PDFTemplateView
 
@@ -19,6 +16,11 @@ from cgi import escape
 import os
 from datetime import datetime, timedelta, date
 from django.conf import settings
+
+from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
+    Person
+from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
+    CoverageForm, ClaimForm
 
 
 #TODO: split into multiple views
@@ -310,6 +312,7 @@ def clientView(request, client_id):
     client = Client.objects.get(id=client_id)
     insurance = client.insurance_set.all()
     dependents = client.dependents.all()
+    claims = client.claim_set.all()
     spouse = None
     children = []
     for dependent in dependents:
@@ -320,6 +323,7 @@ def clientView(request, client_id):
 
     context_dict = {'client': client,
                     'client_insurance': insurance,
+                    'client_claims': claims,
                     'spouse': spouse,
                     'children': children}
     return render_to_response('clients/client.html', context_dict, context)
@@ -432,7 +436,7 @@ def makeClaimView(request, client_id):
 
 
 @login_required
-def editDependantsView(request, client_id, dependent_id):
+def editDependentsView(request, client_id, dependent_id):
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
@@ -476,7 +480,7 @@ def add_new_dependent(request, client_id):
 
 
 @login_required
-def deleteDependantsView(request, client_id, dependent_id):
+def deleteDependentsView(request, client_id, dependent_id):
     # context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
@@ -511,7 +515,7 @@ def add_dependent(request, client_id):
         # TODO need to create a formset here isntead of a form
         form = DependentForm()
 
-    return render_to_response('clients/add_dependent.html',
+    return render_to_response('clients/dependent/add_dependent.html',
                               {'form': form}, context)
 
 
@@ -533,9 +537,9 @@ def add_insurance(request, client_id):
             initial={'coverageType': CoverageType.COVERAGE_TYPE[2][0]})
 
         if (insurance_form.is_valid()
-            and coverage_form1.is_valid()
-            and coverage_form2.is_valid()
-            and coverage_form3.is_valid()):
+                and coverage_form1.is_valid()
+                and coverage_form2.is_valid()
+                and coverage_form3.is_valid()):
             saved = insurance_form.save(commit=False)
             client = Client.objects.get(id=client_id)
             saved.client = client

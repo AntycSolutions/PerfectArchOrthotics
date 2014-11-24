@@ -179,6 +179,7 @@ class Insurance(models.Model):
                        ("Indirect", "Indirect"))
 
     client = models.ForeignKey(Client)
+    spouse = models.ForeignKey(Dependent, blank=True, null=True)
     provider = models.CharField(max_length=128, blank=True, default="")
     policyNumber = models.CharField(max_length=128, blank=True, default="")
     contractNumber = models.CharField(max_length=128, blank=True, default="")

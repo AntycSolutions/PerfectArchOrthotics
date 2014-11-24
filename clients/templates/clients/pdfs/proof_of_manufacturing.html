@@ -32,11 +32,11 @@
             color: #333333;
         }
 
-        p {
+/*        p {
             margin: 0 0 6px 0;
             font-size: 8pt;
             font-family: "Lato", "Helvetica", "sans-serif";
-        }
+        }*/
 
         table {
             line-height: 140%;
@@ -58,9 +58,9 @@
             }
 
             td {
-                font-size: 10pt;
+                font-size: 9pt;
                 font-family: "Lato", "Helvetica", "sans-serif";
-                vertical-align: top;
+                /*vertical-align: top;*/
                 padding: 3px 0;
             }
 
@@ -80,18 +80,18 @@
         .recipient { margin-left: 10cm; }
         .total { margin-left: 11cm; }
 
-        .main h1 {
+        /*.main h1 {
             margin: 18px 0 18px 0;
             font-size: 250%;
             font-weight: normal;
             color: #4F81BD;
-        }
+        }*/
 
-        .main h2 {
+        /*.main h2 {
             margin: 18px 0 6px 0;
             font-size: 180%;
             font-weight: normal;
-        }
+        }*/
 
         .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
         .info a { color: #4F81BD; text-decoration: none; }
@@ -101,71 +101,91 @@
 
 {% block content %}
 <div class="main">
-    <table style="border-bottom: 0.1pt solid #999999;">
+    <table style="border-bottom: 0.5pt solid #000;">
         <tr>
-            <td>
-                <p><strong>Premier Biomechanical Laboratory Ltd.</strong></br>
-                1810 Sharan Drive</br>
-                Albany GA 31707</br>
-                USA</br>
-                229-518-3059
-                </p>
+            <td colspan="7" valign="top" style="font-size: 200%;">
+                PROOF OF MANUFACTURING
             </td>
-            <td colspan="2" class="text-right"><h2>PROOF OF MANUFACTURING</h2></td>
+            <td colspan="3" class="text-right" style="font-size: 110%;">
+                MA Orthotics Laboratory Ltd<br>
+                11975 W Sample Rd<br>
+                Coral Springs, FL 331000<br>
+                Phone: (754) 206-6110<br>
+                Fax: (754) 206-6109
+            </td>
+        </tr>
+        <tr><td></td></tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td colspan="6"></td>
+            <td colspan="2" style="border: 1px solid black;">&nbsp;Invoice Date</td>
+            <td colspan="2" style="border: 1px solid black;">&nbsp;13-Jun-2014</td>
+        </tr>
+        <tr>
+            <td colspan="6"></td>
+            <td colspan="2" style="border: 1px solid black;">&nbsp;Invoice #</td>
+            <td colspan="2" style="border: 1px solid black;">&nbsp;12345678</td>
+        </tr>
+    </table>
+    <br>
+    <table style="border: 1px solid black;">
+        <tr>
+            <td colspan="2" valign="top">&nbsp;Bill To:</td>
+            <td colspan="3" style="border-right: 1px solid black;">
+                3D Orthotics<br>
+                4628 99 Stree NW<br>
+                Edmonton AB T6E 5H5<br>
+                Canada<br>
+            </td>
+            <td colspan="2" valign="top">&nbsp;Ship To:</td>
+            <td colspan="3">
+                3D Orthotics</br>
+                4628 99 Stree NW</br>
+                Edmonton AB T6E 5H5</br>
+                Canada
+            </td>
         </tr>
     </table>
     <table>
         <tr>
-            <td><strong>Bill To:</strong></td>
-            <td>3D Orthotics</br>
-                4628 99 Stree NW</br>
-                Edmonton AB T6E 5H5</br>
-                Canada</td>
-            <td><strong>Ship To:</strong></td>
-            <td>3D Orthotics</br>
-                4628 99 Stree NW</br>
-                Edmonton AB T6E 5H5</br>
-                Canada</td>
+            <td colspan="2">Patient:</td>
+            <td colspan="8">Eric Klinger</td>
+        </tr>
+        <tr>
+            <td colspan="2">Product:</td>
+            <td colspan="8">Bilateral Custom Orthotic Device</td>
+        </tr>
+        <tr>
+            <td colspan="2">Quantity:</td>
+            <td colspan="8">1</td>
         </tr>
     </table>
+    <br>
     <table>
         <tr>
-            <td><strong>Invoice #:</strong></td>
-            <td colspan="5">12345678</td>
+            <td colspan="3"><strong>Laboratory Information:</strong></td>
+            <td colspan="7">MA Orthotics Laboratory Ltd.</td>
         </tr>
         <tr>
-            <td><strong>Invoice Date:<strong></td>
-            <td colspan="5">13-Jun-2014</td>
+            <td colspan="3"><strong>Laboratory Surpervisor:</strong></td>
+            <td colspan="7">M. Asam C. Ped</td>
         </tr>
         <tr>
-            <td><strong>Patient:</strong></td>
-            <td colspan="5">Eric Klinger</td>
+            <td colspan="3" valign="top"><strong>Raw Materials:</strong></td>
+            <td colspan="7">Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers).</td>
         </tr>
         <tr>
-            <td><strong>Product:</strong></td>
-            <td colspan="5">Bilateral Custom Orthotic Device</td>
+            <td colspan="3" valign="top"><strong>Manufacturing:</strong></td>
+            <td colspan="7">
+                Vacuum formed copolymer plastic with complete intrinsic memory.<br>
+                Prescription specific additions, modifications and top coverings
+            </td>
         </tr>
         <tr>
-            <td><strong>Quantity:</strong></td>
-            <td colspan="5">1</td>
-        </tr>
-    </table>
-    <table style="margin-top: 50px;">
-        <tr>
-            <td><strong>Laboratory Information:</strong></td>
-            <td colspan="2">Premier Biomechanical Laboratory Ltd</td>
-        </tr>
-        <tr>
-            <td><strong>Padiatrist Information:</strong></td>
-            <td colspan="2">W.E. Anderson Certified Orthotist</td>
-        </tr>
-        <tr>
-            <td><strong>Raw Materials Manufacturing:</strong></td>
-            <td colspan="2">Vacuum formed copolymer plastic</td>
-        </tr>
-        <tr>
-            <td><strong>Casting Technique:</strong></td>
-            <td colspan="2">3D Volumetric Foam Impression</td>
+            <td colspan="3" valign="top"><strong>Casting Technique:</strong></td>
+            <td colspan="7">3D Volumetric Foam Impression / 3D Laser Scanner and CAD/CAM Technology</td>
         </tr>
     </table>
 </div>

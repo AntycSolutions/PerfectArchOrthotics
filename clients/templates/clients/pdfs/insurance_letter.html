@@ -100,186 +100,150 @@
 
 {% block content %}
 <div class="main">
-    <div>
     <table>
         <tr>
-            <td><strong>Patient Name:</strong></td>
-            <td>Eric Klinger</td>
-            <td><strong>Health Care Practitioner:</strong></td>
-            <td>Danny Mu</td>
-        </tr>
-        <tr>
-            <td><strong>Date of Biomechanical Exam and Gait Analysis:</strong></td>
-            <td>10-Jul-2014</td>
-            <td><strong>Perform by:</strong></td>
-            <td>Danny Mu</td>
-        </tr>
-    </table>
-    <div>
-        <p>
-        Custom-made foot orthotic devices and/or footwear have been prescribed
-        for the above mentioned patient insured by your company. Abnormal foot
-        structure, function and/or closed kinetic chain disorders of the lower
-        extremities are often the cause of many foot disorders and overuse
-        injuries. In this specific case, the biomechanical exam and gait
-        analysis include
-        </p>
-    </div>
-    <div>
-    <table>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-        <tr>
-            <td>_____</td><td colspan="2">Drop Foot</td>
-            <td>_____</td><td colspan="2">Hammer Toes</td>
-            <td>_____</td><td colspan="2">Ligament Tear/Sprain</td>
-            <td>_____</td><td colspan="2">Knee Arthritis</td>
-        </tr>
-    </table>
-    <p>Other:</p>
-    <p>Diagosis:</p>
-    <table>
-        <tr>
-            <td>Treatment:</td>
-            <td>_____</td>
-            <td colspan="2">Orthotics Only</td>
-            <td>_____</td>
-            <td colspan="2">Internall Modified Footware With Custom Orthotic</td>
-            <td>_____</td>
-            <td colspan="2">Stock Shoe/Shell Only</td>
+            <td>Patient Name: {{ client.firstName }} {{ client.lastName }}</td>
+            <td>Practitioner Name: {{ practioner_name }}</td>
         </tr>
     </table>
     <table>
         <tr>
-            <td>Dispensed by:</td>
-            <td>Danny Mu</td>
-            <td>Dispensing Date:</td>
-            <td>25-Jul-2014</td>
+            <td>Custom-made foot orthotics/orthosis or orthopedic shoes have been prescribed to the above mentioned patient and is covered under your insurance plan. An abnormal foot structure, function, or a lower extremity closed kinetic disorder may often cause many foot disorders and injury. A biomedical exam and gait analysis was performed and in this particular case, patient is showing symptoms of:</td>
         </tr>
     </table>
-    <p>Date paid in full: Assignment</p>
-    <p>Fee: The breakdown of fees is as follows. No part of these fees are covered by government health plans.</p>
     <table>
         <tr>
-            <td><strong>Biomechanical Evaluation/Casting:</strong></td>
-            <td colspan="2">$0.00</td>
+            <td>____</td><td colspan="5"><strong>Plantar Fasciitis</strong></td>
+            <td>____</td><td colspan="5"><strong>Hammer Toes</strong></td>
+            <td>____</td><td colspan="5"><strong>Ligament Tear / Sprain</strong></td>
+            <td>____</td><td colspan="5"><strong>Knee Arthritis</strong></td>
         </tr>
         <tr>
-            <td><strong>Custom-made Orthotic Device:</strong></td>
-            <td colspan="2">$350.00</td>
+            <td>____</td><td colspan="5"><strong>Metatarsalgia</strong></td>
+            <td>____</td><td colspan="5"><strong>Drop Foot</strong></td>
+            <td>____</td><td colspan="5"><strong>Scoliosis With Pelvic Tilt</strong></td>
+            <td>____</td><td colspan="5"><strong>Hip Arthritis</strong></td>
         </tr>
         <tr>
-            <td><strong>Fee for Footware (off shelf/stock shoes):</strong></td>
-            <td colspan="2">$0.00</td>
+            <td>____</td><td colspan="5"><strong>Pes Cavus</strong></td>
+            <td>____</td><td colspan="5"><strong>Heel Spur</strong></td>
+            <td>____</td><td colspan="5"><strong>Lumbar Spine Dysfunction</strong></td>
+            <td>____</td><td colspan="5"><strong>Lumbar Arthritis</strong></td>
         </tr>
         <tr>
-            <td><strong>Dispensing Fee:</strong></td>
-            <td colspan="2">$0.00</td>
+            <td>____</td><td colspan="5"><strong>Pes Planus</strong></td>
+            <td>____</td><td colspan="5"><strong>Ankle: Abnormal ROM</strong></td>
+            <td>____</td><td colspan="5"><strong>Leg Length Discrepancy</strong></td>
+            <td>____</td><td colspan="5"><strong>SI Arthritis</strong></td>
         </tr>
         <tr>
-            <td><strong>Total:</strong></td>
-            <td colspan="2">$0.00</td>
+            <td>____</td><td colspan="5"><strong>Diabetes</strong></td>
+            <td>____</td><td colspan="5"><strong>Foot: Abnormal ROM</strong></td>
+            <td>____</td><td colspan="5"><strong>SI Joint Dysfunction</strong></td>
+            <td>____</td><td colspan="5"><strong>Ankle Arthritis</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>Neuropathy</strong></td>
+            <td>____</td><td colspan="5"><strong>Peroneal Dysfunction</strong></td>
+            <td>____</td><td colspan="5"><strong>Genu Valgum</strong></td>
+            <td>____</td><td colspan="5"><strong>Foot Arthritis</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>MTP Drop</strong></td>
+            <td>____</td><td colspan="5"><strong>Interdigital Neuroma</strong></td>
+            <td>____</td><td colspan="5"><strong>Genu Varum</strong></td>
+            <td>____</td><td colspan="5"><strong>1st MTP Arthritis</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>Forefoot Varus</strong></td>
+            <td>____</td><td colspan="5"><strong>Bunions / Hallux Valgus</strong></td>
+            <td>____</td><td colspan="5"><strong>Abnormal Patellar Tracking</strong></td>
+            <td>____</td><td colspan="5"><strong>Rheumatoid Arthriti</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>Forefoot Valgus</strong></td>
+            <td>____</td><td colspan="5"><strong>Abnormal Gait Timing</strong></td>
+            <td>____</td><td colspan="5"><strong>Abnormal Gait Pressures</strong></td>
+            <td>____</td><td colspan="5"><strong>Gout</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>Shin Splints</strong></td>
+            <td>____</td><td colspan="5"><strong>Over Supination</strong></td>
+            <td>____</td><td colspan="5"><strong>Achilles Tendinitis</strong></td>
+            <td>____</td><td colspan="5"><strong>Ulcers</strong></td>
+        </tr>
+        <tr>
+            <td>____</td><td colspan="5"><strong>Over Pronation</strong></td>
         </tr>
     </table>
-    <p><strong>Casting and Manufacturing Techniques:</strong></p>
     <table>
         <tr>
-            <td style="text-align center">_____</td>
-            <td colspan="5">Foam/plaster: Non weight bearing 3D volumetric cast in subtalar
-                neutral. This data is scanned by technicians. Copolymer plastic is formed
-                over the positive to create a custom orthotic for the patient's specific
-                correction and symptomatic need.</td>
+            <td colspan="5">Diagosis: {{ diagnosis }}</td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+            <td colspan="10">Biomedical and Gait Analysis Date: {{ baga_date }}</td>
+            <td colspan="10">Examination Performaned By: {{ practioner }}</td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+            <td colspan="10">Dispensing Practitioner: {{ practioner }}</td>
+            <td colspan="10">Dispense Date: {{ dispense_date }}</td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+            <td colspan="5">Treatment:</td>
+            <td colspan="5">____ Orthopedic Shoe</td>
+            <td colspan="5">____ Foot Orthotics / Orthosis</td>
+            <td colspan="5">____ Internally Modified Footwear</td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+            <td colspan="5">Orthotics Laboratories:</td>
+        </tr>
+        <tr><td></td></tr>
+        {% for lab in laboratories %}
+            <tr>
+                <td colspan="20">Laboratory: {{ lab }}</td>
+            </tr>
+            <tr><td></td></tr>
+        {% endfor %}
+    </table>
+    <h3><strong><u>Casting and Manufacturing Techniques:</u></strong></h3>
+    <table>
+        <tr>
+            <td colspan="1" valign="top">____</td>
+            <td colspan="19"><strong>Foam/plaster:</strong> Non-weight bearing 3D volumetric cast in subtalar neutral. This data is scanned by technicians. Copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.</td>
         </tr>
         <tr>
-            <td style="text-align center">_____</td>
-            <td colspan="5">Gaitscan(TM): 2D and 3D pressure data was taken using proprietary
-                GaitScan(TM) technology combined with CAD/CAM software and advanced milling
-                machinery. Technicians design and mold a custom orthotic; copolymer plastic is
-                formed over the positive to create a custom orthotic for the patient's specific
-                correction and symptomatic needs</td>
+            <td colspan="1" valign="top">____</td>
+            <td colspan="19"><strong>Gaitscan(TM):</strong> 3D Laser Scan data was taken using proprietary Oolab technology combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.</td>
         </tr>
     </table>
-    <p><strong>Raw Materials Used for Custom-made Orthotics:</strong>Engineered copolymer
-    with complete intrinsic memory and predictability postings, made from extra firm
-    nickelplast (58-65 Durometers).</p>
-
-    <p><strong>Prognosis:</strong>The gait anomalies and existing foot problems can be
-    managed and corrected by the devices while wearing them, but will not cause a structural
-    or functional change in the foot or the closed kinetic chain if the devices are not worn.
-    The custom orthotics are a medical necessity and must be worn on a daily basis, for an
-    indefinite period of time. Wearing the orthotics will alleviate the symptoms caused in
-    the foot, hip and low back regions. The feet and gait should be monitored for changesi
-    in prescription or breakdown of the orthotic devices.</p>
-
-    <p><strong>The following laboratories are used depending on the needs of our patients:</strong><p>
-    <p><strong>Laboratory:i</strong>The Orthotic Group Inc. 160 Markland Street, Markham, ON, L6C 0C6,
-    1.800.551.3008; Manufacturing custom orthotics since 1985. Pedorthist on staff: Alan M. Lustig,
-    D.P.M (Chief Medical Director of TOG)</p>
-    <p><strong>Laboratory:i</strong>Premier Biomechanical Labs. 1810 Sharon Drive, Albany, GA 31707
-    229-518-3059. Manufacturing custom orthotics since 1997 Pedorthist on staff: W.E Anderson.
-    C.Ped (President)</p>
-    <p><strong>Laboratory:</strong>Doctor's Choice Biomechanical Orthotics Lab Inc. 1220 Britannia
-    Road East, Mississauga, ON L4W 1C8 Pedorthist on staff: Kader Prasad BSc., MLT, C.Ped(Tech)C</p>
-    <table style="margin-top: 30px;">
+    <h3><strong><u>Raw Materials Used for Custom-made Orthotics:</u></strong></h3>
+    <table>
         <tr>
-            <td>_____________________________</td>
-            <td>{{today}}</td>
+            <td>Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers).</td>
         </tr>
+    </table>
+    <h3><strong><u>Prognosis:</u></strong></h3>
+    <table>
         <tr>
-            <td>Health Care Practitioner Signature</td>
-            <td>Date Signed</td>
+            <td>The gait anomalies and existing foot problems can be managed and corrected by the devices while wearing them, but will not cause a structural or functional change in the foot or the closed kinetic chain if the devices are not worn. The custom orthotics are a medical necessity and must be worn on a daily basis, for an indefinite period of time. Wearing the orthotics will alleviate the symptoms caused in the foot, hip, and low back regions. The feet and gait should be monitored for changes in prescription or breakdown of the orthotic devices.</td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="5">_____________________________</td>
+            <td colspan="5">___________________</td>
+        </tr>
+        <tr><td> </td></tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="5">Health Care Practitioner Signature</td>
+            <td colspan="5">Date</td>
         </tr>
     </table>
 </div>

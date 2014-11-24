@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% include 'navbar.html' %}
+
+{% block title %} - Add Client Insurance{% endblock %}
+
+{% block content %}
+
+<h3>Add client insurance information</h3>
+
+<form id="create_insurance_form" class="form-horizontal" method="post">
+    <fieldset>
+        {% csrf_token %}
+            <!-- Insurance info form -->
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+            <!-- Coverage forms -->
+            <h5>Coverage Types</h5>
+            <p>NOTE: Please leave fields for unused coverage types zeroed out</p>
+            {% for field in coverage_form1.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for field in coverage_form2.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for field in coverage_form3.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+            {% endfor %}
+
+    </fieldset>
+    <input type="submit" name="submit" value="Add Insurance Information" />
+</form>
+<br>
+
+{% endblock %}
