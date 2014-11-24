@@ -25,6 +25,9 @@
     </fieldset>
     <input type="submit" name="submit" value="Save" />
 </form>
+<div class="pull-right">
+    <a href="{% url 'coverage_type_create' insurance.id %}" class="btn btn-default">Add Coverage Type</a>
+</div>
 <h3>coverage types information:</h3>
 <table class="table">
     <thead>
@@ -32,6 +35,7 @@
             <th>Coverage Type</th>
             <th>Coverage Percent</th>
             <th>Max Coverage</th>
+            <th>Total Claimed</th>
             <th>Coverage Remaining</th>
         </tr>
     </thead>
@@ -41,6 +45,7 @@
             <td>{{coverageType.coverageType}}</td>
             <td>{{coverageType.coveragePercent}}</td>
             <td>{{coverageType.maxClaimAmount}}</td>
+            <td>{{coverageType.totalClaimed}}</td>
             <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
             <td>
                 <div class="pull-right">
