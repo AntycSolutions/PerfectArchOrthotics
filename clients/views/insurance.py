@@ -13,12 +13,24 @@ class UpdateInsuranceView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
 
+    def get_success_url(self):
+        client_id = self.object.client.id
+        self.success_url = reverse_lazy('client',
+                                        kwargs={'client_id': client_id})
+        return self.success_url
+
 
 class DeleteInsuranceView(DeleteView):
     template_name = 'clients/insurance/delete_insurance.html'
     model = Insurance
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
+
+    def get_success_url(self):
+        client_id = self.object.client.id
+        self.success_url = reverse_lazy('client',
+                                        kwargs={'client_id': client_id})
+        return self.success_url
 
 
 class CreateInsuranceView(CreateView):
