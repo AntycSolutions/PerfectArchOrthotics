@@ -33,7 +33,7 @@ def populate():
     # Constants for Dependent model
     SPOUSE = Dependent.RELATIONSHIP_CHOICES[0][0]
     CHILD = Dependent.RELATIONSHIP_CHOICES[1][0]
-    # Add Dependants
+    # Add Dependents
     kid_one = add_dependent("Kid", "one", CHILD, MALE,
                             datetime.date(1999, 1, 1))
     kid_two = add_dependent("Kid", "two", CHILD, FEMALE,
