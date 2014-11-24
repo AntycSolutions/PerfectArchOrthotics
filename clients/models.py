@@ -18,6 +18,9 @@ class Person(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.firstName, self.lastName)
 
+    def __str__(self):
+        return self.__unicode__()
+
 
 class Dependent(Person):
 
