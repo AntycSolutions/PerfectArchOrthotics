@@ -2,27 +2,27 @@
 {% load static %}
 
 <html lang=en>
-    <head>
-        <title>{% block title %}3DOrthotics{% endblock %}</title>
-        <meta charset="UTF-8">
-        <script src="{% static 'jquery-2.1.1.min.js' %}"></script>
-        <link href="{% static 'css/bootstrap-cerulean.min.css' %}" rel="stylesheet">
-        <link href="{% static 'css/sticky-footer.css' %}" rel="stylesheet">
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-        {% block extrahead %}{% endblock %}
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Antyc Solutions">
 
-    <body>
-        {% include  'navbar.html' %}
-        <div id="main" class="container" style="margin-left:auto; margin-right:auto; max-width=960px;">
-            {% block content %}{% endblock %}
-        </div>
-        {% block test %}{% endblock %}
-    </body>
+    <title>Perfect Arch {% block title %}{% endblock %}</title>
 
-    <!--div id="footer" class="container footer">
-        <p class="text-muted" align="center">Perfect Arch Orthotics</p>
-        <p class="text-muted" align="center">Built by Eric and Chris Klinger</p>
-    </div-->
+    <link href="{% static 'css/bootstrap-cerulean.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sticky-footer.css' %}" rel="stylesheet">
+
+    <script src="{% static 'jquery-2.1.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+    {% block extrahead %}{% endblock %}
+</head>
+
+<body>
+    {% include  'navbar.html' %}
+    <div id="main" class="container" style="margin-left:auto; margin-right:auto; max-width=960px;">
+        {% block content %}{% endblock %}
+    </div>
+    {% block test %}{% endblock %}
+    {% include 'footer.html' %}
+</body>
 </html>
