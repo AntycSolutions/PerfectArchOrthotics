@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% include 'navbar.html' %}
+
+{% block title %}Edit Claim{% endblock %}
+
+{% block content %}
+
+<h1>Edit claim information for: {{ insurance.client }}</h1>
+<h3>claim information:</h3>
+<form id="update_claim_form" class="form-horizontal" method="post">
+    <fieldset>
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" name="submit" value="Save" />
+</form>
+
+{% endblock %}

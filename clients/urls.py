@@ -7,6 +7,7 @@ from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
 from clients.views.client import DeleteClientView
 from clients.views.coverage_type import UpdateCoverageTypeView, \
     DeleteCoverageTypeView, CreateCoverageTypeView
+from clients.views.claim import UpdateClaimView, DeleteClaimView
 
 
 insurance_patterns = patterns(
@@ -39,6 +40,17 @@ coverage_type_patterns = patterns(
         name='coverage_type_create'),
 )
 
+claim_patterns = patterns(
+    '',
+    url(r'^$', views.claimsView, name='claims'),
+    url(r'^edit/(?P<claim_id>\w+)/$',
+        login_required(UpdateClaimView.as_view()),
+        name='claim_edit'),
+    url(r'^delete/(?P<claim_id>\w+)/$',
+        login_required(DeleteClaimView.as_view()),
+        name='claim_delete'),
+)
+
 #TODO: make this not gross
 urlpatterns = patterns(
     '',  # Tells django to view the rest as str
@@ -53,7 +65,7 @@ urlpatterns = patterns(
     url(r'^insurance_search/$', views.insuranceSearchView,
         name='insurance_search'),
     url(r'^(?P<client_id>\d+)/$', views.clientView, name='client'),
-    url(r'^claims/$', views.claimsView, name='claims'),
+    url(r'^claim/', include(claim_patterns)),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/$', views.claimView,
         name='claim'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/invoice/$',
