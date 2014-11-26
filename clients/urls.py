@@ -7,7 +7,10 @@ from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
 from clients.views.client import DeleteClientView
 from clients.views.coverage_type import UpdateCoverageTypeView, \
     DeleteCoverageTypeView, CreateCoverageTypeView
-from clients.views.claim import UpdateClaimView, DeleteClaimView
+from clients.views.claim import UpdateClaimView, DeleteClaimView, \
+    UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
+    CreateInsuranceLetterView, UpdateProofOfManufacturingView, \
+    CreateProofOfManufacturingView
 
 
 insurance_patterns = patterns(
@@ -49,6 +52,24 @@ claim_patterns = patterns(
     url(r'^delete/(?P<claim_id>\w+)/$',
         login_required(DeleteClaimView.as_view()),
         name='claim_delete'),
+    url(r'^invoice/edit/(?P<invoice_id>\w+)/$',
+        login_required(UpdateInvoiceView.as_view()),
+        name='invoice_edit'),
+    url(r'^invoice/create/(?P<claim_id>\w+)/$',
+        login_required(CreateInvoiceView.as_view()),
+        name='invoice_create'),
+    url(r'^insurance_letter/edit/(?P<insurance_letter_id>\w+)/$',
+        login_required(UpdateInsuranceLetterView.as_view()),
+        name='insurance_letter_edit'),
+    url(r'^insurance_letter/create/(?P<claim_id>\w+)/$',
+        login_required(CreateInsuranceLetterView.as_view()),
+        name='insurance_letter_create'),
+    url(r'^proof_of_manufacturing/edit/(?P<proof_of_manufacturing_id>\w+)/$',
+        login_required(UpdateProofOfManufacturingView.as_view()),
+        name='proof_of_manufacturing_edit'),
+    url(r'^proof_of_manufacturing/create/(?P<claim_id>\w+)/$',
+        login_required(CreateProofOfManufacturingView.as_view()),
+        name='proof_of_manufacturing_create'),
 )
 
 #TODO: make this not gross

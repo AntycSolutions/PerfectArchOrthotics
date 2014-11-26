@@ -1,5 +1,8 @@
 from django import forms
-from clients.models import Client, Dependent, Insurance, CoverageType, Claim
+from django.forms.models import inlineformset_factory
+
+from clients.models import Client, Dependent, Insurance, CoverageType, Claim, \
+    Invoice, Item, InsuranceLetter, Laboratory, ProofOfManufacturing
 
 
 class ClientForm(forms.ModelForm):
@@ -140,3 +143,31 @@ class ClaimForm(forms.ModelForm):
         model = Claim
 
         fields = ('claimType', 'paymentType',)
+
+
+class InvoiceForm(forms.ModelForm):
+
+    class Meta:
+        model = Invoice
+        exclude = ('claim',)
+
+
+class InsuranceLetterForm(forms.ModelForm):
+
+    class Meta:
+        model = InsuranceLetter
+        exclude = ('claim',)
+
+
+class ProofOfManufacturingForm(forms.ModelForm):
+
+    class Meta:
+        model = ProofOfManufacturing
+        exclude = ('claim',)
+
+
+ItemFormSet = inlineformset_factory(Invoice, Item,
+                                    exclude=('invoice',))
+
+LaboratoryFormSet = inlineformset_factory(InsuranceLetter, Laboratory,
+                                          exclude=('insurance_letter',))

@@ -1,20 +1,40 @@
 {% extends 'base.html' %}
-{% include 'navbar.html' %}
 {% load mathfilters %}
+
+{% include 'navbar.html' %}
 
 {% block title %} - Invoice{% endblock %}
 
 {% block content %}
-<h1>BLAH</h1>
-<h5>To add fields to select</h5>
-<ul>
-    <li>Dispensed by</li>
-    <li>payment type</li>
-    <li>payment terms</li>
-    <li>Item details such as description, unit price, quantity, total</li>
-    <li>Total</li>
-    <li>payment</li>
-    <li>balance</li>
-</ul>
-<a href="{% url 'invoice' client.id claim.id %}" class="btn btn-default">View Invoice</a>
+
+<h1>Invoice for {{ claim }}</h1>
+<div>
+    {% if claim.invoice_set.all.0 %}
+        <a href="{% url 'invoice_edit' claim.invoice_set.all.0.id %}" class="btn btn-primary">Edit</a>
+    {% else %}
+        <a href="{% url 'invoice_create' claim.id %}" class="btn btn-primary">Create</a>
+    {% endif %}
+</div>
+{% if claim.invoice_set.all.0 %}
+    <h5>Please make sure the following is correct:</h5>
+    <ul>
+        <li>Dispensed by: {{ claim.invoice_set.all.0.dispensed_by }}</li>
+        <li>Payment type: {{ claim.invoice_set.all.0.payment_type }}</li>
+        <li>Payment terms: {{ claim.invoice_set.all.0.payment_terms }}<!-- Due on reciept --></li>
+        <li>Items:</li>
+        <ul>
+            {% for item in claim.invoice_set.all.0.item_set.all %}
+                <li>Description: {{ item.description }}</li>
+                <li>Unit price: {{ item.unit_price }}</li>
+                <li>Quantity: {{ item.quantity }}</li>
+                <li>Total: {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+        <li>Total: {{ claim.invoice_set.all.0.total }}</li>
+        <li>Payment made: {{ claim.invoice_set.all.0.payment_made }}</li>
+        <li>Balance: {{ claim.invoice_set.all.0.balance }}</li>
+    </ul>
+    <a href="{% url 'invoice' claim.client.id claim.id %}" class="btn btn-default">View Invoice</a>
+{% endif %}
+
 {% endblock %}

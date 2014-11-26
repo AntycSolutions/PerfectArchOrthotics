@@ -77,15 +77,13 @@ def render_to_pdf(template_src, context_dict):
 
 
 def invoice_view(request, client_id, claim_id):
-    #Retrieve data or whatever you need
-    client = Client.objects.get(id=client_id)
+    # client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
     today = datetime.utcnow() - timedelta(hours=6)
 
     return render_to_pdf('clients/pdfs/invoice.html',
-                         #'Hello.html',
                          {'pagesize': 'A4',
-                          'client': client,
+                          # 'client': client,
                           'today': today,
                           'claim': claim}
                          )
@@ -93,18 +91,34 @@ def invoice_view(request, client_id, claim_id):
 
 def insurance_letter(request, client_id, claim_id):
     # client = Client.objects.get(id=client_id)
-    # claim = Claim.objects.get(id=claim_id)
+    claim = Claim.objects.get(id=claim_id)
+    insurance_letter = None
+    try:
+        insurance_letter = claim.insuranceletter_set.all()[0]
+    except:
+        pass
     today = date.today()
+
     return render_to_pdf('clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
-                          'today': today, })
+                          'today': today,
+                          'claim': claim,
+                          'insurance_letter': insurance_letter})
 
 
 def proof_of_manufacturing(request, client_id, claim_id):
     # client = Client.objects.get(id=client_id)
-    # claim = Claim.objects.get(id=claim_id)
+    claim = Claim.objects.get(id=claim_id)
+    proof_of_manufacturing = None
+    try:
+        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
+    except:
+        pass
+
     return render_to_pdf('clients/pdfs/proof_of_manufacturing.html',
-                         {'pagesize': 'A4', })
+                         {'pagesize': 'A4',
+                          'claim': claim,
+                          'proof_of_manufacturing': proof_of_manufacturing})
 
 
 @login_required
@@ -112,6 +126,7 @@ def fillOutInvoiceView(request, client_id, claim_id):
     context = RequestContext(request)
     client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
+
     return render_to_response('clients/make_invoice.html',
                               {'client': client,
                                'claim': claim},
@@ -123,10 +138,16 @@ def fillOutInsuranceLetterView(request, client_id, claim_id):
     context = RequestContext(request)
     client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
+    insurance_letter = None
+    try:
+        insurance_letter = claim.insuranceletter_set.all()[0]
+    except:
+        pass
 
     return render_to_response('clients/make_insurance_letter.html',
                               {'client': client,
-                               'claim': claim},
+                               'claim': claim,
+                               'insurance_letter': insurance_letter},
                               context)
 
 
@@ -135,11 +156,18 @@ def fillOutProofOfManufacturingView(request, client_id, claim_id):
     context = RequestContext(request)
     client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
+    proof_of_manufacturing = None
+    try:
+        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
+    except:
+        pass
 
-    return render_to_response('clients/make_proof_of_manufacturing.html',
-                              {'client': client,
-                               'claim': claim},
-                              context)
+    return render_to_response(
+        'clients/make_proof_of_manufacturing.html',
+        {'client': client,
+         'claim': claim,
+         'proof_of_manufacturing': proof_of_manufacturing},
+        context)
 
 
 class HelloPDFView(PDFTemplateView):

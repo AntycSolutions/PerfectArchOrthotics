@@ -1,22 +1,53 @@
 {% extends 'base.html' %}
+
 {% include 'navbar.html' %}
-{% load mathfilters %}
 
 {% block title %} - Proof of Manufacturing{% endblock %}
 
 {% block content %}
-<h1>BLAH</h1>
-<h5>Fields To Add</h5>
-<ul>
-    <li>Invoice #</li>
-    <li>invoice date</li>
-    <li>patient</li>
-    <li>product</li>
-    <li>quantity</li>
-    <li>lab information</li>
-    <li>padiatrist infrmation</li>
-    <li>raw materials manufacturing</li>
-    <li>casting technique</li>
-</ul>
-<a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Insurance</a>
+
+<h1>Proof of Manufacturing for {{ claim }}</h1>
+<div>
+    {% if proof_of_manufacturing %}
+        <a href="{% url 'proof_of_manufacturing_edit' proof_of_manufacturing.id %}" class="btn btn-primary">Edit</a>
+    {% else %}
+        <a href="{% url 'proof_of_manufacturing_create' claim.id %}" class="btn btn-primary">Create</a>
+    {% endif %}
+</div>
+{% if proof_of_manufacturing %}
+    <h5>Please make sure the following is correct:</h5>
+    <ul>
+        <li>Laboratory name: {{ proof_of_manufacturing.laboratory_name }}</li>
+        <li>Laboratory address: {{ proof_of_manufacturing.laboratory_address }}</li>
+        <li>Laboratory city: {{ proof_of_manufacturing.laboratory_city }}</li>
+        <li>Laboratory postal code: {{ proof_of_manufacturing.laboratory_postal_code }}</li>
+        <li>Laboratory country: {{ proof_of_manufacturing.laboratory_country }}</li>
+        <li>Laboratory phone: {{ proof_of_manufacturing.laboratory_phone }}</li>
+        <li>Laboratory fax: {{ proof_of_manufacturing.laboratory_fax }}</li>
+        <li>Invoice #: {{ proof_of_manufacturing.invoice_number }}</li>
+        <li>invoice date: {{ proof_of_manufacturing.invoice_date }}</li>
+        <li>bill name: {{ proof_of_manufacturing.bill_name }}</li>
+        <li>bill address: {{ proof_of_manufacturing.bill_address }}</li>
+        <li>bill city: {{ proof_of_manufacturing.bill_city }}</li>
+        <li>bill postal code: {{ proof_of_manufacturing.bill_postal_code }}</li>
+        <li>bill country: {{ proof_of_manufacturing.bill_country }}</li>
+        <li>ship name: {{ proof_of_manufacturing.ship_name }}</li>
+        <li>ship address: {{ proof_of_manufacturing.ship_address }}</li>
+        <li>ship city: {{ proof_of_manufacturing.ship_city }}</li>
+        <li>ship postal code: {{ proof_of_manufacturing.ship_postal_code }}</li>
+        <li>ship country: {{ proof_of_manufacturing.ship_country }}</li>
+        <li>patient: {{ proof_of_manufacturing.patient }}</li>
+        <li>product: {{ proof_of_manufacturing.product }}</li>
+        <li>quantity: {{ proof_of_manufacturing.quantity }}</li>
+        <li>lab information: {{ proof_of_manufacturing.laboratory_information }}</li>
+        <li>padiatrist infrmation: {{ proof_of_manufacturing.laboratory_supervisor }}</li>
+        <li>raw materials: {{ proof_of_manufacturing.raw_materials }}</li>
+        <li>manufacturing: {{ proof_of_manufacturing.manufacturing }}
+        <li>casting technique: {{ proof_of_manufacturing.casting_technique }}</li>
+    </ul>
+    <a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
+<br>
+{% endif %}
+<br>
+
 {% endblock %}

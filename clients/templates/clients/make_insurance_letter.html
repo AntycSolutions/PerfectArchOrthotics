@@ -1,25 +1,480 @@
 {% extends 'base.html' %}
-{% include 'navbar.html' %}
 {% load mathfilters %}
+
+{% include 'navbar.html' %}
 
 {% block title %} - Insurance Letter{% endblock %}
 
 {% block content %}
-<h1>BLAH</h1>
-<h5>Fields i am missing</h5>
-<ul>
-    <li>patient name</li>
-    <li>date of bio exam</li>
-    <li>healthcare practitioner</li>
-    <li>perform by</li>
-    <li>All the fields for gait ananlysis</li>
-    <li>other text field</li>
-    <li>diagnosis text field</li>
-    <li>treatment options</li>
-    <li>date paid in full</li>
-    <li>fees</li>
-    <li>casting techniques</li>
-    <li></li>
-</ul>
-<a href="{% url 'insurance_letter' client.id claim.id %}" class="btn btn-default">View Invoice</a>
+
+<h1>Insurance Letter for {{ claim }}</h1>
+<div>
+    {% if insurance_letter %}
+        <a href="{% url 'insurance_letter_edit' insurance_letter.id %}" class="btn btn-primary">Edit</a>
+    {% else %}
+        <a href="{% url 'insurance_letter_create' claim.id %}" class="btn btn-primary">Create</a>
+    {% endif %}
+</div>
+{% if insurance_letter %}
+    <h5>Please make sure the following is correct:</h5>
+    <ul>
+        <li>Patient name: {{ claim.patient }}</li>
+        <li>Date of bio exam: {{ insurance_letter.bio_exam_date }}</li>
+        <li>Healthcare practitioner: {{ insurance_letter.healthcare_practitioner }}</li>
+        <li>Performed by: {{ insurance_letter.performed_by }}</li>
+        <li>All the fields for gait ananlysis {{ insurance_letter.gait_analysis }}</li>
+        <li>other text field {{ insurance_letter.other }}</li>
+        <li>diagnosis text field {{ insurance_letter.diagnosis }}</li>
+        <li>treatment options {{ insurance_letter.treatment_options }}</li>
+        <li>date paid in full {{ insurance_letter.date_paid_in_full }}</li>
+        <li>fees {{ insurance_letter.fees }}</li>
+        <li>casting techniques {{ insurance_letter.casting_fees }}</li>
+    </ul>
+
+    <style type="text/css">
+        .borderless tbody tr td, .borderless thead tr th {
+            border: none;
+        }
+        span.underline {
+            font-family: monospace;
+            /*font-size: 7pt;*/
+        }
+    </style>
+    <table class="table borderless">
+        <tr>
+            <td colspan="20">Patient Name: {{ claim.client }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">Practitioner Name: {{ insurance_letter.practitioner_name }}</td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.plantar_fasciitis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Plantar Fasciitis</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.hammer_toes|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Hammer Toes</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.ligament_tear|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Ligament Tear / Sprain</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.knee_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Knee Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.metatarsalgia|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Metatarsalgia</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.drop_foot|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Drop Foot</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.scoliosis_with_pelvic_tilt|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Scoliosis With Pelvic Tilt</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.hip_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Hip Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.pes_cavus|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Pes Cavus</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.heel_spur|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Heel Spur</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.lumbar_spine_dysfunction|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Lumbar Spine Dysfunction</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.lumbar_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Lumbar Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.pes_planus|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Pes Planus</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.ankle_abnormal_rom|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Ankle: Abnormal ROM</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.leg_length_discrepency|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Leg Length Discrepancy</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.si_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>SI Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.diabetes|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Diabetes</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.foot_abnormal_ROM|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Foot: Abnormal ROM</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.si_joint_dysfunction|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>SI Joint Dysfunction</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.ankle_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Ankle Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.neuropathy|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Neuropathy</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.peroneal_dysfunction|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Peroneal Dysfunction</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.genu_valgum|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Genu Valgum</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.foot_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Foot Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.mtp_drop|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>MTP Drop</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.interdigital_neuroma|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Interdigital Neuroma</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.genu_varum|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Genu Varum</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.first_mtp_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>1st MTP Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.forefoot_varus|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Forefoot Varus</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.bunions_hallux_valgus|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Bunions / Hallux Valgus</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.abnormal_patellar_tracking|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Abnormal Patellar Tracking</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.rheumatoid_arthritis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Rheumatoid Arthritis</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.forefoot_valgus|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Forefoot Valgus</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.abnormal_gait_tracking|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Abnormal Gait Timing</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.abnormal_gait_pressures|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Abnormal Gait Pressures</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.gout|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Gout</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.shin_splints|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Shin Splints</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.over_supination|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Over Supination</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.achilles_tendinitis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Achilles Tendinitis</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.ulcers|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Ulcers</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.over_pronation|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Over Pronation</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="20">Diagosis: {{ insurance_letter.diagnosis }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">Biomedical and Gait Analysis Date: {{ insurance_letter.biomedical_and_gait_analysis_date }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">Examination Performed By: {{ insurance_letter.examiner }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">Dispensing Practitioner: {{ insurance_letter.dispensing_practitioner }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">Dispense Date: {{ insurance_letter.dispense_date }}</td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                Treatment:
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.orthopedic_shoes|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                Orthopedic Shoe
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.foot_orthotics_orthosis|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                Foot Orthotics / Orthosis
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.internally_modified_footwear|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                Internally Modified Footwear
+            </td>
+        </tr>
+        <tr>
+            <td colspan="20">Orthotics Laboratories:</td>
+        </tr>
+        {% for lab in insurance_letter.laboratory_set.all %}
+            <tr>
+                <td colspan="20">Laboratory: {{ lab }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="20" valign="top">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.foam_plaster|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Foam/plaster</strong>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="20" valign="top">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.gaitscan|yesno:"X, " }}
+                    &nbsp;</u>
+                </span>
+                <strong>Gaitscan(TM)</strong>
+            </td>
+        </tr>
+    </table>
+
+    <br>
+    <a href="{% url 'insurance_letter' client.id claim.id %}" class="btn btn-default">View Insurance Letter</a>
+    <br>
+{% endif %}
+<br>
+
 {% endblock %}

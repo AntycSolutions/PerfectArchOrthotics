@@ -2,101 +2,85 @@
 {% load static %}
 
 {% block layout_style %}
-    <style type="text/css">
-        @page {
-            size: {{ pagesize|default:"A4" }};
-            margin-left: 2.5cm;
-            margin-right: 2.5cm;
-            margin-top: 2.5cm;
-            margin-bottom: 2cm;
-
-            @frame header {
-                -pdf-frame-content: page-header;
-                margin-top: 1.3cm;
-                margin-right: 2mm;
-                margin-bottom: 1cm;
-                margin-left: 1.2cm;
-            }
-        }
-    </style>
+<style type="text/css">
+    @page {
+        size: {{ pagesize|default:"A4" }};
+        margin-left: 2.5cm;
+        margin-right: 2.5cm;
+        margin-top: 2.5cm;
+        margin-bottom: 2cm;
+    }
+</style>
 {% endblock %}
 
 {% block extra_style %}
-    <style type="text/css">
-        /*@font-face { font-family: Lato; src: url(fonts/Lato-Bol.ttf); font-weight: bold; }
-        @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }
-        @font-face { font-family: "Lato Light"; src: url(fonts/Lato-Lig.ttf); }
-*/
-        html {
-            font-family: "Lato", "Helvetica", "sans-serif";
-            color: #333333;
+<style type="text/css">
+    /*@font-face { font-family: Lato; src: url(fonts/Lato-Bol.ttf); font-weight: bold; }
+    @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }
+    @font-face { font-family: "Lato Light"; src: url(fonts/Lato-Lig.ttf); }*/
+    html {
+        font-family: "Lato", "Helvetica", "sans-serif";
+        color: #333333;
+    }
+
+    table {
+        line-height: 140%;
+        margin-bottom: 20px;
+    }
+        table.bordered {
+            border-top: 0.1pt solid #999999;
+            border-bottom: 0.1pt solid #999999;
         }
 
-/*        p {
-            margin: 0 0 6px 0;
-            font-size: 8pt;
-            font-family: "Lato", "Helvetica", "sans-serif";
-        }*/
+        tr, td, th { border: none; }
 
-        table {
-            line-height: 140%;
-            margin-bottom: 20px;
+        th {
+            font-size: 10pt;
+            border-bottom: 0.1pt solid #999999;
+            padding: 3px 0;
+            line-height: 1;
+            font-weight: bold;
         }
-            table.bordered {
-                border-top: 0.1pt solid #999999;
-                border-bottom: 0.1pt solid #999999;
-            }
 
-            tr, td, th { border: none; }
+        td {
+            font-size: 9pt;
+            font-family: "Lato", "Helvetica", "sans-serif";
+            /*vertical-align: top;*/
+            padding: 3px 0;
+        }
 
-            th {
-                font-size: 10pt;
-                border-bottom: 0.1pt solid #999999;
-                padding: 3px 0;
-                line-height: 1;
-                font-weight: bold;
-            }
+        td:last-child { padding-bottom: 0; }
 
-            td {
-                font-size: 9pt;
-                font-family: "Lato", "Helvetica", "sans-serif";
-                /*vertical-align: top;*/
-                padding: 3px 0;
-            }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .bottom-10 { margin-bottom: 10px; }
+    .bottom-20 { margin-bottom: 20px; }
 
-            td:last-child { padding-bottom: 0; }
+    .header { color: #7f7f7f; }
+    .header p { font-size: 13px; line-height: 1.5em; }
+    .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
+    .logo { margin-bottom: 20px; margin-left: -25px; }
+    .logo img { zoom: 60%; }
 
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        .bottom-10 { margin-bottom: 10px; }
-        .bottom-20 { margin-bottom: 20px; }
+    .recipient { margin-left: 10cm; }
+    .total { margin-left: 11cm; }
 
-        .header { color: #7f7f7f; }
-        .header p { font-size: 13px; line-height: 1.5em; }
-        .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
-        .logo { margin-bottom: 20px; margin-left: -25px; }
-        .logo img { zoom: 60%; }
+    /*.main h1 {
+        margin: 18px 0 18px 0;
+        font-size: 250%;
+        font-weight: normal;
+        color: #4F81BD;
+    }*/
 
-        .recipient { margin-left: 10cm; }
-        .total { margin-left: 11cm; }
+    /*.main h2 {
+        margin: 18px 0 6px 0;
+        font-size: 180%;
+        font-weight: normal;
+    }*/
 
-        /*.main h1 {
-            margin: 18px 0 18px 0;
-            font-size: 250%;
-            font-weight: normal;
-            color: #4F81BD;
-        }*/
-
-        /*.main h2 {
-            margin: 18px 0 6px 0;
-            font-size: 180%;
-            font-weight: normal;
-        }*/
-
-        .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
-        .info a { color: #4F81BD; text-decoration: none; }
-
-    </style>
+    .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
+    .info a { color: #4F81BD; text-decoration: none; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -107,11 +91,12 @@
                 PROOF OF MANUFACTURING
             </td>
             <td colspan="3" class="text-right" style="font-size: 110%;">
-                MA Orthotics Laboratory Ltd<br>
-                11975 W Sample Rd<br>
-                Coral Springs, FL 331000<br>
-                Phone: (754) 206-6110<br>
-                Fax: (754) 206-6109
+                {{ proof_of_manufacturing.laboratory_name }}<br>
+                {{ proof_of_manufacturing.laboratory_address }}<br>
+                {{ proof_of_manufacturing.laboratory_city }} {{ proof_of_manufacturing.laboratory_postal_code }}<br>
+                {{ proof_of_manufacturing.laboratory_country }}<br>
+                {{ proof_of_manufacturing.laboratory_phone }}<br>
+                {{ proof_of_manufacturing.laboratory_fax }}
             </td>
         </tr>
         <tr><td></td></tr>
@@ -120,72 +105,92 @@
     <table>
         <tr>
             <td colspan="6"></td>
-            <td colspan="2" style="border: 1px solid black;">&nbsp;Invoice Date</td>
-            <td colspan="2" style="border: 1px solid black;">&nbsp;13-Jun-2014</td>
+            <td colspan="2" style="border: 1px solid black;">
+                &nbsp;Invoice Date</td>
+            <td colspan="2" style="border: 1px solid black;">
+                &nbsp;{{ proof_of_manufacturing.invoice_date }}</td>
         </tr>
         <tr>
             <td colspan="6"></td>
-            <td colspan="2" style="border: 1px solid black;">&nbsp;Invoice #</td>
-            <td colspan="2" style="border: 1px solid black;">&nbsp;12345678</td>
+            <td colspan="2" style="border: 1px solid black;">
+                &nbsp;Invoice #</td>
+            <td colspan="2" style="border: 1px solid black;">
+                &nbsp;{{ proof_of_manufacturing.invoice_number }}</td>
         </tr>
     </table>
     <br>
     <table style="border: 1px solid black;">
         <tr>
-            <td colspan="2" valign="top">&nbsp;Bill To:</td>
+            <td colspan="2" valign="top">
+                &nbsp;Bill To:</td>
             <td colspan="3" style="border-right: 1px solid black;">
-                3D Orthotics<br>
-                4628 99 Stree NW<br>
-                Edmonton AB T6E 5H5<br>
-                Canada<br>
+                {{ proof_of_manufacturing.bill_name }}<br>
+                {{ proof_of_manufacturing.bill_address }}<br>
+                {{ proof_of_manufacturing.bill_city }} {{ proof_of_manufacturing.bill_postal_code }}<br>
+                {{ proof_of_manufacturing.bill_country }}
             </td>
-            <td colspan="2" valign="top">&nbsp;Ship To:</td>
+            <td colspan="2" valign="top">
+                &nbsp;Ship To:</td>
             <td colspan="3">
-                3D Orthotics</br>
-                4628 99 Stree NW</br>
-                Edmonton AB T6E 5H5</br>
-                Canada
+                {{ proof_of_manufacturing.ship_name }}<br>
+                {{ proof_of_manufacturing.ship_address }}<br>
+                {{ proof_of_manufacturing.ship_city }} {{ proof_of_manufacturing.ship_postal_code }}<br>
+                {{ proof_of_manufacturing.ship_country }}
             </td>
         </tr>
     </table>
     <table>
         <tr>
-            <td colspan="2">Patient:</td>
-            <td colspan="8">Eric Klinger</td>
+            <td colspan="2">
+                Patient:</td>
+            <td colspan="8">
+                {{ proof_of_manufacturing.patient }}</td>
         </tr>
         <tr>
-            <td colspan="2">Product:</td>
-            <td colspan="8">Bilateral Custom Orthotic Device</td>
+            <td colspan="2">
+                Product:</td>
+            <td colspan="8">
+                {{ proof_of_manufacturing.product }}</td>
         </tr>
         <tr>
-            <td colspan="2">Quantity:</td>
-            <td colspan="8">1</td>
+            <td colspan="2">
+                Quantity:</td>
+            <td colspan="8">
+                {{ proof_of_manufacturing.quantity }}</td>
         </tr>
     </table>
     <br>
     <table>
         <tr>
-            <td colspan="3"><strong>Laboratory Information:</strong></td>
-            <td colspan="7">MA Orthotics Laboratory Ltd.</td>
-        </tr>
-        <tr>
-            <td colspan="3"><strong>Laboratory Surpervisor:</strong></td>
-            <td colspan="7">M. Asam C. Ped</td>
-        </tr>
-        <tr>
-            <td colspan="3" valign="top"><strong>Raw Materials:</strong></td>
-            <td colspan="7">Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers).</td>
-        </tr>
-        <tr>
-            <td colspan="3" valign="top"><strong>Manufacturing:</strong></td>
+            <td colspan="3">
+                <strong>Laboratory Information:</strong></td>
             <td colspan="7">
-                Vacuum formed copolymer plastic with complete intrinsic memory.<br>
-                Prescription specific additions, modifications and top coverings
+                {{ proof_of_manufacturing.laboratory_information }}</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <strong>Laboratory Surpervisor:</strong></td>
+            <td colspan="7">
+                {{ proof_of_manufacturing.laboratory_supervisor }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" valign="top">
+                <strong>Raw Materials:</strong></td>
+            <td colspan="7">
+                {{ proof_of_manufacturing.raw_materials }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" valign="top">
+                <strong>Manufacturing:</strong></td>
+            <td colspan="7">
+                {{ proof_of_manufacturing.manufacturing }}
             </td>
         </tr>
         <tr>
-            <td colspan="3" valign="top"><strong>Casting Technique:</strong></td>
-            <td colspan="7">3D Volumetric Foam Impression / 3D Laser Scanner and CAD/CAM Technology</td>
+            <td colspan="3" valign="top">
+                <strong>Casting Technique:</strong></td>
+            <td colspan="7">
+                {{ proof_of_manufacturing.casting_technique }}</td>
         </tr>
     </table>
 </div>
