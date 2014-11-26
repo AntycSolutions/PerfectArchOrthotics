@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% include 'navbar.html' %}
+
+{% block title %} - Edit Invoice{% endblock %}
+
+{% block content %}
+
+<h1>Edit invoice information for: {{ invoice.claim.client }}</h1>
+<h3>invoice information:</h3>
+<form id="update_invoice_form" class="form-horizontal" method="post">
+    <fieldset>
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <h5>Items</h5>
+        {{ item_form.management_form }}
+        {{ item_form.non_form_errors }}
+        {% for form in item_form %}
+            {{ form.id }}
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </fieldset>
+    <input type="submit" name="submit" value="Save" />
+</form>
+<br>
+
+{% endblock %}

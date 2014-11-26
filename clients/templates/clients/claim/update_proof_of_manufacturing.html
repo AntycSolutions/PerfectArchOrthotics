@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% include 'navbar.html' %}
+
+{% block title %} - Edit Proof of Manufacturing{% endblock %}
+
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_invoice_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+
+<h1>Edit proof of manufacturing information for: {{ proof_of_manufacturing.claim.client }}</h1>
+<h3>proof of manufacturing information:</h3>
+<form id="update_proof_of_manufacturing_form" class="form-horizontal" method="post">
+    <fieldset>
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+    <input type="submit" name="submit" value="Save" />
+</form>
+<br>
+
+{% endblock %}
