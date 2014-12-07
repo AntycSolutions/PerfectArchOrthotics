@@ -1,0 +1,84 @@
+<table class="table table-striped table-cover">
+    <thead>
+        <tr>
+            <th>Client / Spouse</th>
+            <th>Employer</th>
+            <th>Provider</th>
+            <th>Policy Number</th>
+            <th>Contract Number</th>
+            <th>Billing</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for insurance in insurances %}
+            <tr>
+                <td>
+                    {% if insurance.spouse %}
+                        <a href="{% url 'client' insurance.client.id %}#{{ insurance.spouse.id }}">
+                            {{ insurance.spouse.full_name }}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'client' insurance.client.id %}">
+                            {{ insurance.client.full_name }}
+                        </a>
+                    {% endif %}
+                </td>
+                <td>{{insurance.client.employer}}</td>
+                <td>{{insurance.provider}}</td>
+                <td>{{insurance.policy_number}}</td>
+                <td>{{insurance.contract_number}}</td>
+                <td>{{ insurance.get_billing_display }}</td>
+                <td>
+                    <div class="pull-right">
+                        <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-default">Edit</a>
+                        <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-default">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <div class="pull-right">
+                        {% if insurance.coveragetype_set.all %}
+                            <table class="table" style="display: inline-block;">
+                                <thead>
+                                    <tr>
+                                        <th>Coverage Type</th>
+                                        <th>Coverage Percent</th>
+                                        <th>Max Coverage</th>
+                                        <th>Coverage Remaining</th>
+                                        <th>Total Claimed</th>
+                                        <th>Quantity</th>
+                                        <th>Period</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coverageType in insurance.coveragetype_set.all %}
+                                        <tr>
+                                            <td>{{ coverageType.get_coverage_type_display }}</td>
+                                            <td>{{ coverageType.coverage_percent }}</td>
+                                            <td>{{ coverageType.max_claim_amount }}</td>
+                                            <td>{{ coverageType.coverage_remaining }}</td>
+                                            <td>{{ coverageType.total_claimed }}</td>
+                                            <td>{{ coverageType.quantity }}</td>
+                                            <td>{{ coverageType.period }}</td>
+                                            <!-- <td>
+                                                <div class="pull-right">
+                                                    <a href="{% url 'coverage_type_edit' coverageType.id %}" class="btn btn-default">Edit</a>
+                                                    <a href="{% url 'coverage_type_delete' coverageType.id %}" class="btn btn-default">Delete</a>
+                                                </div>
+                                            </td> -->
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            There are no coverage types for this insurance currenty.
+                        {% endif %}
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
