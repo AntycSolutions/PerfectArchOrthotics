@@ -1,5 +1,7 @@
 {% extends "easy_pdf/base.html" %}
+
 {% load static %}
+{% load nbsp %}
 
 {% block layout_style %}
 
@@ -45,30 +47,30 @@
         line-height: 140%;
         margin-bottom: 20px;
     }
-        table.bordered {
-            border-top: 0.1pt solid #999999;
-            border-bottom: 0.1pt solid #999999;
-        }
+    table.bordered {
+        border-top: 0.1pt solid #999999;
+        border-bottom: 0.1pt solid #999999;
+    }
 
-        td, th { border: none; }
-        tr { border-bottom: 0.1pt solid #999999; }
+    td, th { border: none; }
+    tr { border-bottom: 0.1pt solid #999999; }
 
-        th {
-            font-size: 10pt;
-            border-bottom: 0.1pt solid #999999;
-            padding: 3px 0;
-            line-height: 1;
-            font-weight: bold;
-        }
+    th {
+        font-size: 10pt;
+        border-bottom: 0.1pt solid #999999;
+        padding: 3px 0;
+        line-height: 1;
+        font-weight: bold;
+    }
 
-        td {
-            font-size: 10pt;
-            font-family: "Lato", "Helvetica", "sans-serif";
-            vertical-align: top;
-            padding: 3px 0;
-        }
+    td {
+        font-size: 10pt;
+        font-family: "Lato", "Helvetica", "sans-serif";
+        vertical-align: top;
+        padding: 3px 0;
+    }
 
-        td:last-child { padding-bottom: 0; }
+    td:last-child { padding-bottom: 0; }
 
     .text-left { text-align: left; }
     .text-right { text-align: right; }
@@ -99,7 +101,6 @@
 
     .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
     .info a { color: #4F81BD; text-decoration: none; }
-
 </style>
 
 {% endblock %}
@@ -108,18 +109,15 @@
 
 <div id="page-header">
     <div class="header">
-        <!--p class="logo"><img src="img/logo.jpg" /></p-->
         <p class="logo">
-            <img src="{% static 'images/Square_200x200.png' %}" width='100px' height='100px' />
+            <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='400px' />
         </p>
         <p>
-            <h1>The Perfect Arch Orthotics</h1>
-            (780)123-4567<br>
-            111 - 11 St.<br>
-            Edmonton AB &nbsp;X9X 9X9<br>
-            <p class="header-link">
+            <h1>{{ perfect_arch_name }}</h1>
+            {{ perfect_arch_address|nbsp|linebreaksbr }}
+            <!-- <p class="header-link">
                 <a class="header-link" href="http://perfectarch.ca">perfectarch.ca</a>
-            </p>
+            </p> -->
         </p>
     </div>
 </div>
@@ -132,19 +130,19 @@
     <div class="recipient bottom-10">
         <p class="bottom-10">
             <strong>{{ client.employer }}</strong><br>
-            {{ client }}<br>
+            {{ client.full_name }}<br>
             {{ client.address }}<br>
-            {{ client.city }} {{ client.postalCode }}<br/>
+            {{ client.city }} &nbsp;{{ client.postal_code }}<br/>
         </p>
         <p>{{ today }}</p>
     </div>
-    <br>
+    <br><br><br>
 
     <p class='info'>
-        To: {{ client }}</br>
-        Dispensed by: {{ claim.invoice_set.all.0.dispensed_by }}</br>
-        Payment type: {{ claim.invoice_set.all.0.payment_type }} </br>
-        Payment terms: {{ claim.invoice_set.all.0.payment_terms }}</br>
+        To: {{ client.full_name }}</br>
+        Dispensed by: {{ invoice.dispensed_by }}</br>
+        Payment type: {{ invoice.payment_type }} </br>
+        Payment terms: {{ invoice.payment_terms }}</br>
         <strong>Please cover payment in 10 days.</strong>
     </p>
 
@@ -154,7 +152,7 @@
         <table>
             <tr>
                 <td colspan="1" class="item-name">Invoice Number</td>
-                <td colspan="1">{{ claim.id }}</td>
+                <td colspan="1">{{ invoice_number }}</td>
                 <td colspan="2"></td>
             </tr>
         </table>
@@ -168,7 +166,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in claim.invoice_set.all.0.item_set.all %}
+                {% for item in invoice.item_set.all %}
                     <tr>
                         <td colspan="2">{{ item.description }}</td>
                         <td colspan="1">{{ item.quantity }}</td>
@@ -186,21 +184,21 @@
                     <td colspan="2" style="text-align: right;">
                         <strong>Total:&nbsp;       </strong></td>
                     <td colspan="1" style="text-align: right;">
-                        <strong>{{ claim.invoice_set.all.0.total }}</strong></td>
+                        <strong>{{ invoice.total }}</strong></td>
                 </tr>
                 <tr style="border: 0;">
                     <td colspan="4"></td>
                     <td colspan="2" style="text-align: right;">
                         <strong>Payment Made:&nbsp;</strong></td>
                     <td colspan="1" style="text-align: right;">
-                        <strong>{{ claim.invoice_set.all.0.payment_made }}</strong></td>
+                        <strong>{{ invoice.payment_made }}</strong></td>
                 </tr>
                 <tr style="border: 0;">
                     <td colspan="4"></td>
                     <td colspan="2" style="text-align: right;">
                         <strong>Balance:&nbsp;     </strong></td>
                     <td colspan="1" style="text-align: right;">
-                        <strong>{{ claim.invoice_set.all.0.balance }}</strong></td>
+                        <strong>{{ invoice.balance }}</strong></td>
                 </tr>
             </tbody>
         </table>

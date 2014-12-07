@@ -2,7 +2,7 @@
 
 {% include 'navbar.html' %}
 
-{% block title %} - Add Claim Insurance Letter{% endblock %}
+{% block title %} - Add Insurance Letter{% endblock %}
 
 {% block extrahead %}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -23,7 +23,7 @@
 
 {% block content %}
 
-<h3>Add claim insurance letter information</h3>
+<h3>Add Insurance Letter Information</h3>
 
 <form id="create_insurance_letter_form" class="form-horizontal" method="post">
     <fieldset>
@@ -38,6 +38,15 @@
                     {{ field.label_tag}} {{ field }}
                 </div>
             </div>
+            {% if field.label == "Internally Modified Orthosis" %}
+                <br />
+            {% endif %}
+            {% if field.label == "Gait Scan(TM)" %}
+                <br />
+            {% endif %}
+            {% if field.label == "Dispense Date" %}
+                <br />
+            {% endif %}
         {% endfor %}
     </fieldset>
     <fieldset>

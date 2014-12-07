@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
-{% load mathfilters %}
+
+{% load verbose_name %}
+{% load nbsp %}
 
 {% include 'navbar.html' %}
 
-{% block title %} - Insurance Letter{% endblock %}
+{% block title %} - Insurance Letter for {{ client.full_name }}{% endblock %}
 
 {% block content %}
 
-<h1>Insurance Letter for {{ claim }}</h1>
+<h1>Insurance Letter for {{ client.full_name }}</h1>
 <div>
     {% if insurance_letter %}
         <a href="{% url 'insurance_letter_edit' insurance_letter.id %}" class="btn btn-primary">Edit</a>
@@ -17,400 +19,387 @@
 </div>
 {% if insurance_letter %}
     <h5>Please make sure the following is correct:</h5>
-    <ul>
-        <li>Patient name: {{ claim.patient }}</li>
-        <li>Date of bio exam: {{ insurance_letter.bio_exam_date }}</li>
-        <li>Healthcare practitioner: {{ insurance_letter.healthcare_practitioner }}</li>
-        <li>Performed by: {{ insurance_letter.performed_by }}</li>
-        <li>All the fields for gait ananlysis {{ insurance_letter.gait_analysis }}</li>
-        <li>other text field {{ insurance_letter.other }}</li>
-        <li>diagnosis text field {{ insurance_letter.diagnosis }}</li>
-        <li>treatment options {{ insurance_letter.treatment_options }}</li>
-        <li>date paid in full {{ insurance_letter.date_paid_in_full }}</li>
-        <li>fees {{ insurance_letter.fees }}</li>
-        <li>casting techniques {{ insurance_letter.casting_fees }}</li>
-    </ul>
-
+    <!-- ah yeah in file css -->
     <style type="text/css">
-        .borderless tbody tr td, .borderless thead tr th {
-            border: none;
+        .borderless tbody tr td, .borderless thead tr th
+        {   border: none;
         }
-        span.underline {
-            font-family: monospace;
+        span.underline
+        {   font-family: monospace;
             /*font-size: 7pt;*/
         }
     </style>
     <table class="table borderless">
         <tr>
-            <td colspan="20">Patient Name: {{ claim.client }}</td>
+            <td colspan="20">{% verbose_field_name claim "patient" %}: {{ claim.patient.full_name }}</td>
         </tr>
         <tr>
-            <td colspan="20">Practitioner Name: {{ insurance_letter.practitioner_name }}</td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <span class="underline">
-                    <u>&nbsp;
-                    {{ insurance_letter.plantar_fasciitis|yesno:"X, " }}
-                    &nbsp;</u>
-                </span>
-                <strong>Plantar Fasciitis</strong>
-            </td>
-            <td colspan="5">
-                <span class="underline">
-                    <u>&nbsp;
-                    {{ insurance_letter.hammer_toes|yesno:"X, " }}
-                    &nbsp;</u>
-                </span>
-                <strong>Hammer Toes</strong>
-            </td>
-            <td colspan="5">
-                <span class="underline">
-                    <u>&nbsp;
-                    {{ insurance_letter.ligament_tear|yesno:"X, " }}
-                    &nbsp;</u>
-                </span>
-                <strong>Ligament Tear / Sprain</strong>
-            </td>
-            <td colspan="5">
-                <span class="underline">
-                    <u>&nbsp;
-                    {{ insurance_letter.knee_arthritis|yesno:"X, " }}
-                    &nbsp;</u>
-                </span>
-                <strong>Knee Arthritis</strong>
-            </td>
+            <td colspan="20">{% verbose_field_name insurance_letter "practitioner_name" %}: {{ insurance_letter.practitioner_name }}</td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.metatarsalgia|yesno:"X, " }}
+                    {{ insurance_letter.plantar_fasciitis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Metatarsalgia</strong>
+                <strong>{% verbose_field_name insurance_letter "plantar_fasciitis" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.drop_foot|yesno:"X, " }}
+                    {{ insurance_letter.hammer_toes|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Drop Foot</strong>
+                <strong>{% verbose_field_name insurance_letter "hammer_toes" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.scoliosis_with_pelvic_tilt|yesno:"X, " }}
+                    {{ insurance_letter.ligament_tear|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Scoliosis With Pelvic Tilt</strong>
+                <strong>{% verbose_field_name insurance_letter "ligament_tear" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.hip_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.knee_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Hip Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "knee_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.pes_cavus|yesno:"X, " }}
+                    {{ insurance_letter.metatarsalgia|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Pes Cavus</strong>
+                <strong>{% verbose_field_name insurance_letter "metatarsalgia" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.heel_spur|yesno:"X, " }}
+                    {{ insurance_letter.drop_foot|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Heel Spur</strong>
+                <strong>{% verbose_field_name insurance_letter "drop_foot" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.lumbar_spine_dysfunction|yesno:"X, " }}
+                    {{ insurance_letter.scoliosis_with_pelvic_tilt|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Lumbar Spine Dysfunction</strong>
+                <strong>{% verbose_field_name insurance_letter "scoliosis_with_pelvic_tilt" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.lumbar_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.hip_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Lumbar Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "hip_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.pes_planus|yesno:"X, " }}
+                    {{ insurance_letter.pes_cavus|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Pes Planus</strong>
+                <strong>{% verbose_field_name insurance_letter "pes_cavus" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.ankle_abnormal_rom|yesno:"X, " }}
+                    {{ insurance_letter.heel_spur|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Ankle: Abnormal ROM</strong>
+                <strong>{% verbose_field_name insurance_letter "heel_spur" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.leg_length_discrepency|yesno:"X, " }}
+                    {{ insurance_letter.lumbar_spine_dysfunction|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Leg Length Discrepancy</strong>
+                <strong>{% verbose_field_name insurance_letter "lumbar_spine_dysfunction" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.si_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.lumbar_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>SI Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "lumbar_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.diabetes|yesno:"X, " }}
+                    {{ insurance_letter.pes_planus|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Diabetes</strong>
+                <strong>{% verbose_field_name insurance_letter "pes_planus" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.foot_abnormal_ROM|yesno:"X, " }}
+                    {{ insurance_letter.ankle_abnormal_rom|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Foot: Abnormal ROM</strong>
+                <strong>{% verbose_field_name insurance_letter "ankle_abnormal_rom" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.si_joint_dysfunction|yesno:"X, " }}
+                    {{ insurance_letter.leg_length_discrepency|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>SI Joint Dysfunction</strong>
+                <strong>{% verbose_field_name insurance_letter "leg_length_discrepency" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.ankle_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.si_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Ankle Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "si_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.neuropathy|yesno:"X, " }}
+                    {{ insurance_letter.diabetes|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Neuropathy</strong>
+                <strong>{% verbose_field_name insurance_letter "diabetes" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.peroneal_dysfunction|yesno:"X, " }}
+                    {{ insurance_letter.foot_abnormal_ROM|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Peroneal Dysfunction</strong>
+                <strong>{% verbose_field_name insurance_letter "foot_abnormal_ROM" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.genu_valgum|yesno:"X, " }}
+                    {{ insurance_letter.si_joint_dysfunction|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Genu Valgum</strong>
+                <strong>{% verbose_field_name insurance_letter "si_joint_dysfunction" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.foot_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.ankle_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Foot Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "ankle_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.mtp_drop|yesno:"X, " }}
+                    {{ insurance_letter.neuropathy|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>MTP Drop</strong>
+                <strong>{% verbose_field_name insurance_letter "neuropathy" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.interdigital_neuroma|yesno:"X, " }}
+                    {{ insurance_letter.peroneal_dysfunction|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Interdigital Neuroma</strong>
+                <strong>{% verbose_field_name insurance_letter "peroneal_dysfunction" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.genu_varum|yesno:"X, " }}
+                    {{ insurance_letter.genu_valgum|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Genu Varum</strong>
+                <strong>{% verbose_field_name insurance_letter "genu_valgum" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.first_mtp_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.foot_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>1st MTP Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "foot_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.forefoot_varus|yesno:"X, " }}
+                    {{ insurance_letter.mtp_drop|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Forefoot Varus</strong>
+                <strong>{% verbose_field_name insurance_letter "mtp_drop" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.bunions_hallux_valgus|yesno:"X, " }}
+                    {{ insurance_letter.interdigital_neuroma|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Bunions / Hallux Valgus</strong>
+                <strong>{% verbose_field_name insurance_letter "interdigital_neuroma" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.abnormal_patellar_tracking|yesno:"X, " }}
+                    {{ insurance_letter.genu_varum|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Abnormal Patellar Tracking</strong>
+                <strong>{% verbose_field_name insurance_letter "genu_varum" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.rheumatoid_arthritis|yesno:"X, " }}
+                    {{ insurance_letter.first_mtp_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Rheumatoid Arthritis</strong>
+                <strong>{% verbose_field_name insurance_letter "first_mtp_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.forefoot_valgus|yesno:"X, " }}
+                    {{ insurance_letter.forefoot_varus|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Forefoot Valgus</strong>
+                <strong>{% verbose_field_name insurance_letter "forefoot_varus" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.abnormal_gait_tracking|yesno:"X, " }}
+                    {{ insurance_letter.bunions_hallux_valgus|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Abnormal Gait Timing</strong>
+                <strong>{% verbose_field_name insurance_letter "bunions_hallux_valgus" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.abnormal_gait_pressures|yesno:"X, " }}
+                    {{ insurance_letter.abnormal_patellar_tracking|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Abnormal Gait Pressures</strong>
+                <strong>{% verbose_field_name insurance_letter "abnormal_patellar_tracking" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.gout|yesno:"X, " }}
+                    {{ insurance_letter.rheumatoid_arthritis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Gout</strong>
+                <strong>{% verbose_field_name insurance_letter "rheumatoid_arthritis" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.shin_splints|yesno:"X, " }}
+                    {{ insurance_letter.forefoot_valgus|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Shin Splints</strong>
+                <strong>{% verbose_field_name insurance_letter "forefoot_valgus" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.over_supination|yesno:"X, " }}
+                    {{ insurance_letter.abnormal_gait_tracking|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Over Supination</strong>
+                <strong>{% verbose_field_name insurance_letter "abnormal_gait_tracking" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.achilles_tendinitis|yesno:"X, " }}
+                    {{ insurance_letter.abnormal_gait_pressures|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Achilles Tendinitis</strong>
+                <strong>{% verbose_field_name insurance_letter "abnormal_gait_pressures" %}</strong>
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.ulcers|yesno:"X, " }}
+                    {{ insurance_letter.gout|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Ulcers</strong>
+                <strong>{% verbose_field_name insurance_letter "gout" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.over_pronation|yesno:"X, " }}
+                    {{ insurance_letter.shin_splints|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Over Pronation</strong>
+                <strong>{% verbose_field_name insurance_letter "shin_splints" %}</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.over_supination|yesno:"X,_" }}
+                    &nbsp;</u>
+                </span>
+                <strong>{% verbose_field_name insurance_letter "over_supination" %}</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.achilles_tendinitis|yesno:"X,_" }}
+                    &nbsp;</u>
+                </span>
+                <strong>{% verbose_field_name insurance_letter "achilles_tendinitis" %}</strong>
+            </td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.ulcers|yesno:"X,_" }}
+                    &nbsp;</u>
+                </span>
+                <strong>{% verbose_field_name insurance_letter "ulcers" %}</strong>
             </td>
         </tr>
         <tr>
-            <td colspan="20">Diagosis: {{ insurance_letter.diagnosis }}</td>
+            <td colspan="5">
+                <span class="underline">
+                    <u>&nbsp;
+                    {{ insurance_letter.over_pronation|yesno:"X,_" }}
+                    &nbsp;</u>
+                </span>
+                <strong>{% verbose_field_name insurance_letter "over_pronation" %}</strong>
+            </td>
         </tr>
         <tr>
-            <td colspan="20">Biomedical and Gait Analysis Date: {{ insurance_letter.biomedical_and_gait_analysis_date }}</td>
+            <td colspan="20">Diagnosis: {{ insurance_letter.diagnosis }}</td>
         </tr>
         <tr>
-            <td colspan="20">Examination Performed By: {{ insurance_letter.examiner }}</td>
+            <td colspan="20">{% verbose_field_name insurance_letter "biomedical_and_gait_analysis_date" %}: {{ insurance_letter.biomedical_and_gait_analysis_date }}</td>
         </tr>
         <tr>
-            <td colspan="20">Dispensing Practitioner: {{ insurance_letter.dispensing_practitioner }}</td>
+            <td colspan="20">{% verbose_field_name insurance_letter "examiner" %}: {{ insurance_letter.examiner }}</td>
         </tr>
         <tr>
-            <td colspan="20">Dispense Date: {{ insurance_letter.dispense_date }}</td>
+            <td colspan="20">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.dispensing_practitioner }}</td>
+        </tr>
+        <tr>
+            <td colspan="20">{% verbose_field_name insurance_letter "dispense_date" %}: {{ insurance_letter.dispense_date }}</td>
         </tr>
         <tr>
             <td colspan="5">
@@ -419,54 +408,67 @@
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.orthopedic_shoes|yesno:"X, " }}
+                    {{ insurance_letter.orthopedic_shoes|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                Orthopedic Shoe
+                {% verbose_field_name insurance_letter "orthopedic_shoes" %}
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.foot_orthotics_orthosis|yesno:"X, " }}
+                    {{ insurance_letter.foot_orthotics_orthosis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                Foot Orthotics / Orthosis
+                {% verbose_field_name insurance_letter "foot_orthotics_orthosis" %}
             </td>
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.internally_modified_footwear|yesno:"X, " }}
+                    {{ insurance_letter.internally_modified_footwear|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                Internally Modified Footwear
+                {% verbose_field_name insurance_letter "internally_modified_footwear" %}
             </td>
         </tr>
         <tr>
-            <td colspan="20">Orthotics Laboratories:</td>
+            <td colspan="20">Orthotics Laboratories:
+                <div>
+                    <table class="table" style="display: inline-block;">
+                        {% for lab in insurance_letter.laboratory_set.all %}
+                            <tr>
+                                <td></td>
+                                <td>{% verbose_field_name lab "information" %}:<br />
+                                    {{ lab.get_information_display|nbsp|linebreaksbr }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td></td>
+                                <td>There are currently no laboratories for this insurance letter.</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </td>
         </tr>
-        {% for lab in insurance_letter.laboratory_set.all %}
-            <tr>
-                <td colspan="20">Laboratory: {{ lab }}</td>
-            </tr>
-        {% endfor %}
         <tr>
             <td colspan="20" valign="top">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.foam_plaster|yesno:"X, " }}
+                    {{ insurance_letter.foam_plaster|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Foam/plaster</strong>
+                <strong>{% verbose_field_name insurance_letter "foam_plaster" %}</strong>
             </td>
         </tr>
         <tr>
             <td colspan="20" valign="top">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.gaitscan|yesno:"X, " }}
+                    {{ insurance_letter.gaitscan|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>Gaitscan(TM)</strong>
+                <strong>{% verbose_field_name insurance_letter "gaitscan" %}</strong>
             </td>
         </tr>
     </table>

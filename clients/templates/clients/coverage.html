@@ -18,7 +18,7 @@
             <tbody>
         {% for insurance in insurances %}
                 <tr>
-                    <td>{{insurance.client.firstName}} {{insurance.client.lastName}}</td>
+                    <td>{{ insurance.client.full_name }}</td>
                     <td>{{insurance.coverageType}}</td>
                     <td>{{insurance.coveragePercent}}</td>
                     <td>{{insurance.quantity}}</td>

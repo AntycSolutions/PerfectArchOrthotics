@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load mathfilters %}
 
 {% include 'navbar.html' %}
 
@@ -7,7 +6,7 @@
 
 {% block content %}
 
-<h1>Edit insurance information for: {{ insurance.client }}</h1>
+<h1>Edit insurance information for: {{ insurance.client.full_name }}</h1>
 <h3>insurance information:</h3>
 <form id="update_insurance_form" class="form-horizontal" method="post">
     <fieldset>
@@ -37,16 +36,21 @@
             <th>Max Coverage</th>
             <th>Total Claimed</th>
             <th>Coverage Remaining</th>
+            <th>Quantity</th>
+            <th>Period</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         {% for coverageType in insurance.coveragetype_set.all %}
         <tr>
-            <td>{{coverageType.coverageType}}</td>
-            <td>{{coverageType.coveragePercent}}</td>
-            <td>{{coverageType.maxClaimAmount}}</td>
-            <td>{{coverageType.totalClaimed}}</td>
-            <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
+            <td>{{ coverageType.get_coverage_type_display }}</td>
+            <td>{{ coverageType.coverage_percent }}</td>
+            <td>{{ coverageType.max_claim_amount }}</td>
+            <td>{{ coverageType.total_claimed }}</td>
+            <td>{{ coverageType.coverage_remaining }}</td>
+            <td>{{ coverageType.quantity }}</td>
+            <td>{{ coverageType.period }}</td>
             <td>
                 <div class="pull-right">
                     <a href="{% url 'coverage_type_edit' coverageType.id %}" class="btn btn-default">Edit</a>

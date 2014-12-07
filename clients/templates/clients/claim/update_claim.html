@@ -1,13 +1,25 @@
 {% extends 'base.html' %}
-{% load mathfilters %}
 
 {% include 'navbar.html' %}
 
 {% block title %} - Edit Claim{% endblock %}
 
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_paid_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 
-<h1>Edit claim information for: {{ insurance.client }}</h1>
+<h1>Edit claim information for: {{ insurance.client.full_name }}</h1>
 <h3>claim information:</h3>
 <form id="update_claim_form" class="form-horizontal" method="post">
     <fieldset>

@@ -1,10 +1,24 @@
 {% extends 'base.html' %}
+
 {% include 'navbar.html' %}
 
-{% block title %}Add Dependent{% endblock %}
+{% block title %} - Add Dependent{% endblock %}
+
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_birth_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
 
 {% block content %}
-<h3>Add dependent for: {{client.firstName}} {{client.lastName}}</h3>
+<h3>Add dependent for: {{ client.full_name }}</h3>
     <form id="dependent_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}

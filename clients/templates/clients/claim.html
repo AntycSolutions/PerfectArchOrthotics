@@ -1,11 +1,26 @@
 {% extends 'base.html' %}
-{% include 'navbar.html' %}
-{% load mathfilters %}
 
-{% block title %} - Claim Under {{ client }}{% endblock %}
+{% load verbose_name %}
+
+{% include 'navbar.html' %}
+
+{% block title %} - Claim for
+    {% if client.patient %}
+        {{ client.patient.full_name }}
+    {% else %}
+        {{ client.full_name }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<h1>Claim for {{ client }}</h1>
+
+<h1>Claim for
+    {% if claim.patient %}
+        {{ claim.patient.full_name }}
+    {% else %}
+        {{ client.full_name }}
+    {% endif %}
+</h1>
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
     <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>
@@ -13,16 +28,42 @@
 </div>
 <h5>Claim Details</h5>
 <ul>
-    <li>Patient: {{ claim.patient}}</li>
-    <li>Claim Type: {{ claim.claimType }}</li>
-    <li>Payment Type: {{ claim.paymentType }}</li>
-    <li>Amount Claimed: {{ claim.amountClaimed }}</li>
-    <li>Expected Back: {{ claim.expectedBack }}</li>
+    <li>{% verbose_field_name claim "patient" %}:
+        {% if claim.patient %}
+            {{ claim.patient.full_name }}
+        {% else %}
+            {{ client.full_name }}
+        {% endif %}
+    </li>
+    <li>{% verbose_field_name claim "coverage_types" %}:
+        <ul>
+            {% for coverage_type in claim.coverage_types.all %}
+                <li>{{ coverage_type.get_coverage_type_display }}
+                </li>
+            {% empty %}
+                <li>There are no coverage types for this claim.
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li>{% verbose_field_name claim "payment_type" %}:
+        {{ claim.get_payment_type_display }}
+    </li>
+    <li>{% verbose_field_name claim "amount_claimed" %}:
+        {{ claim.amount_claimed }}
+    </li>
+    <li>{% verbose_field_name claim "expected_back" %}:
+        {{ claim.expected_back }}
+    </li>
 </ul>
 <h5>Payment Status</h5>
 <ul>
-    <li>Submitted Date: {{ claim.submittedDate }}</li>
-    <li>Invoice Date: {{ claim.invoiceDate }}</li>
-    <li>Paid Date: {{ claim.paidDate }}</li>
+    <li>{% verbose_field_name claim "submitted_date" %}:
+        {{ claim.submitted_date }}
+    </li>
+    <li>{% verbose_field_name claim "paid_date" %}:
+        {{ claim.paid_date }}
+    </li>
 </ul>
+
 {% endblock %}

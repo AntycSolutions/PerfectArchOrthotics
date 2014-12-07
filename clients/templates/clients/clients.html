@@ -32,13 +32,13 @@
         <tr>
             <td>
                 <a href="{% url 'client' client.id %}">
-                    {{client.firstName}} {{client.lastName}}
+                    {{ client.full_name }}
                 </a>
             </td>
             <td>{{client.address}}</td>
-            <td>{{client.phoneNumber}}</td>
+            <td>{{client.phone_number}}</td>
             <td>{{client.email}}</td>
-            <td>{{client.gender}}</td>
+            <td>{{ client.get_gender_display }}</td>
             <td>{{client.credit}}</td>
             <td>{{client.employer}}</td>
             </tr>

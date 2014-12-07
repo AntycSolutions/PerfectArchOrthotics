@@ -1,5 +1,8 @@
 {% extends "easy_pdf/base.html" %}
+
 {% load static %}
+{% load verbose_name %}
+{% load nbsp %}
 
 {% block layout_style %}
 
@@ -111,8 +114,16 @@
 <div class="main">
     <table>
         <tr>
-            <td colspan="10">Patient Name: {{ claim.client }}</td>
-            <td colspan="10">Practitioner Name: {{ insurance_letter.practitioner_name }}</td>
+            <td colspan="10">
+                {% if claim.patient %}
+                    {% verbose_field_name claim "patient" %}: {{ claim.patient.full_name }}
+                {% else %}
+                    {% verbose_field_name claim "client" %}: {{ client.full_name }}
+                {% endif %}
+            </td>
+            <td colspan="10">
+                {% verbose_field_name insurance_letter "practitioner_name" %}: {{ insurance_letter.get_practitioner_name_display }}
+            </td>
         </tr>
     </table>
     <table>
@@ -125,7 +136,7 @@
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;&nbsp;
-                    {{ insurance_letter.plantar_fasciitis|yesno:"X, " }}
+                    {{ insurance_letter.plantar_fasciitis|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
                 <strong>Plantar Fasciitis</strong>
@@ -133,7 +144,7 @@
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;&nbsp;
-                    {{ insurance_letter.hammer_toes|yesno:"X, " }}
+                    {{ insurance_letter.hammer_toes|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
                 <strong>Hammer Toes</strong>
@@ -159,7 +170,7 @@
             <td colspan="5">
                 <span class="underline">
                     <u>&nbsp;&nbsp;
-                    {{ insurance_letter.metatarsalgia|yesno:"X, " }}
+                    {{ insurance_letter.metatarsalgia|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
                 <strong>Metatarsalgia</strong>
@@ -518,15 +529,27 @@
         </tr>
         <tr><td></td></tr>
         <tr>
-            <td colspan="20">Orthotics Laboratories:</td>
+            <td colspan="20">Orthotics Laboratories:
+                <div>
+                    <table>
+                        {% for lab in insurance_letter.laboratory_set.all %}
+                            <tr>
+                                <td colspan="1"></td>
+                                <td colspan="19">
+                                    {% verbose_field_name lab "information" %}:<br />
+                                    {{ lab.get_information_display|nbsp|linebreaksbr }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td></td>
+                                <td>There are currently no laboratories for this insurance letter.</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </td>
         </tr>
-        <tr><td></td></tr>
-        {% for lab in insurance_letter.laboratory_set.all %}
-            <tr>
-                <td colspan="20">Laboratory: {{ lab }}</td>
-            </tr>
-            <tr><td></td></tr>
-        {% endfor %}
     </table>
     <h3><strong><u>Casting and Manufacturing Techniques:</u></strong></h3>
     <table>
@@ -534,7 +557,7 @@
             <td colspan="1" valign="top">
                 <span class="underline">
                     <u>&nbsp;&nbsp;
-                    {{ insurance_letter.foam_plaster|yesno:"X, " }}
+                    {{ insurance_letter.foam_plaster|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
             </td>
@@ -544,7 +567,7 @@
             <td colspan="1" valign="top">
                 <span class="underline">
                     <u>&nbsp;&nbsp;
-                    {{ insurance_letter.gaitscan|yesno:"X, " }}
+                    {{ insurance_letter.gaitscan|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
             </td>

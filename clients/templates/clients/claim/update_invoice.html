@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load mathfilters %}
 
 {% include 'navbar.html' %}
 
@@ -7,7 +6,7 @@
 
 {% block content %}
 
-<h1>Edit invoice information for: {{ invoice.claim.client }}</h1>
+<h1>Edit invoice information for: {{ invoice.claim.client.full_name }}</h1>
 <h3>invoice information:</h3>
 <form id="update_invoice_form" class="form-horizontal" method="post">
     <fieldset>

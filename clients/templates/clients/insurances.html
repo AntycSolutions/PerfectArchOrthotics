@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load mathfilters %}
 
 {% include 'navbar.html' %}
 
@@ -13,66 +12,9 @@
     <input type="submit" class="btn" value="Search">
 </form>
 {% if insurances %}
-    <table class="table table-striped table-cover">
-        <thead>
-            <tr>
-                <th>Client</th>
-                <th>Employer</th>
-                <th>Provider</th>
-                <th>Policy Number</th>
-                <th>Contract Number</th>
-                <th>Coverage Types</th>
-                <th>Billing</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for insurance in insurances %}
-            <tr>
-                <td>
-                    <a href="{% url 'client' insurance.client.id %}">
-                        {{insurance.client.firstName}} {{insurance.client.lastName}}
-                    </a>
-                </td>
-                <td>{{insurance.client.employer}}
-                <td>{{insurance.provider}}</td>
-                <td>{{insurance.policyNumber}}</td>
-                <td>{{insurance.contractNumber}}</td>
-                <td>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Coverage Type</th>
-                                <th>Coverage Percent</th>
-                                <th>Max Coverage</th>
-                                <th>Coverage Remaining</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for coverageType in insurance.coveragetype_set.all %}
-                            <tr>
-                                <td>{{coverageType.coverageType}}</td>
-                                <td>{{coverageType.coveragePercent}}</td>
-                                <td>{{coverageType.maxClaimAmount}}</td>
-                                <td>{{coverageType.maxClaimAmount|sub:coverageType.totalClaimed}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </td>
-                <td>{{insurance.billing}}</td>
-                <td>
-                    <div class="pull-right">
-                        <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-default">Edit</a>
-                        <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-default">Delete</a>
-                    </div>
-                </td>
-            </tr>
-    {% endfor %}
-        </tbody>
-    </table>
+    {% include 'clients/snippets/insurances.html' %}
 {% else %}
-    <p>No results found</p>
+    <p>There are no insurances currently.</p>
 {% endif %}
 
 <!-- Pagination stuff -->

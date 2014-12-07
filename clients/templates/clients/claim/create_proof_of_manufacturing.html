@@ -36,6 +36,24 @@
             </div>
         {% endfor %}
     </fieldset>
+    <fieldset>
+        <h5>Laboratory</h5>
+        {{ laboratory_form.management_form }}
+        {{ laboratory_form.non_form_errors }}
+        {% for form in laboratory_form %}
+            {{ form.id }}
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </fieldset>
     <input type="submit" name="submit" value="Add Proof of Manufacturing" />
 </form>
 <br>
