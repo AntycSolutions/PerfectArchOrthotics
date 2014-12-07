@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% load static %}
+
 {% include 'navbar.html' %}
 
 {% block title %} - Welcome{% endblock %}
@@ -6,6 +9,9 @@
 {% block content %}
 
 <div class="jumbotron">
+    <div style="margin: auto; width: 60%;">
+        <img src="{% static 'images/PerfectArchLogo.jpg' %}">
+    </div>
     <h1>Welcome</h1>
     <h2>The Perfect Arch Orthotics</h2>
     <p>This is a webserver under development for The Perfect
