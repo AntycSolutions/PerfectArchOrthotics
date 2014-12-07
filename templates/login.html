@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% include 'navbar.html' %}
 
 {% block title %} - Login{% endblock %}
@@ -6,13 +7,19 @@
 {% block content %}
 
 <h1>Login to The Perfect Arch Orthotics</h1>
-<form id="login_form" method="post" action="{% url 'user_login' %}">
+<form id="login_form" method="post" action="{% url 'user_login' %}" class="form-horizontal">
     {% csrf_token %}
-    Username: <input type="text" name="username" value="" size="50"/>
-    </br>
-    Password: <input type="password" name="password" value="" size="50"/>
-    </br>
-    <input type="submit" value="Submit"/>
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+            {% if field.errors %}
+                {{ field.errors }}
+            {% endif %}
+            <div class="col-lg-10">
+                {{ field.label_tag}} {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+    <input type="submit" value="Login"/>
 </form>
 
 {% endblock %}
