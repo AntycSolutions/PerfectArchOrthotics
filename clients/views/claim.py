@@ -5,7 +5,8 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing
 from clients.forms.forms import ClaimForm, InvoiceForm, ItemFormSet, \
-    InsuranceLetterForm, LaboratoryFormSet, ProofOfManufacturingForm
+    InsuranceLetterForm, ProofOfManufacturingForm, \
+    LaboratoryProofOfManufacturingFormSet, LaboratoryInsuranceLetterFormSet
 
 
 class UpdateClaimView(UpdateView):
@@ -142,31 +143,44 @@ class UpdateInsuranceLetterView(UpdateView):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        laboratory_form = LaboratoryFormSet(instance=self.object)
+        laboratory_form = LaboratoryInsuranceLetterFormSet(
+            instance=self.object)
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form))
+                                  laboratory_form=laboratory_form
+                                  ))
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        laboratory_form = LaboratoryFormSet(request.POST, instance=self.object)
-        if (form.is_valid() and laboratory_form.is_valid()):
-            return self.form_valid(form, laboratory_form)
+        laboratory_form = LaboratoryInsuranceLetterFormSet(
+            request.POST, instance=self.object)
+        if (form.is_valid()
+                and laboratory_form.is_valid()):
+            return self.form_valid(form,
+                                   laboratory_form
+                                   )
         else:
-            return self.form_invalid(form, laboratory_form)
+            return self.form_invalid(form,
+                                     laboratory_form
+                                     )
 
-    def form_valid(self, form, laboratory_form):
+    def form_valid(self, form,
+                   laboratory_form
+                   ):
         self.object = form.save()
         laboratory_form.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form, laboratory_form):
+    def form_invalid(self, form,
+                     laboratory_form
+                     ):
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form))
+                                  laboratory_form=laboratory_form
+                                  ))
 
     def get_success_url(self):
         client_id = self.object.claim.client.id
@@ -186,22 +200,30 @@ class CreateInsuranceLetterView(CreateView):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        laboratory_form = LaboratoryFormSet()
+        laboratory_form = LaboratoryInsuranceLetterFormSet()
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form))
+                                  laboratory_form=laboratory_form
+                                  ))
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        laboratory_form = LaboratoryFormSet(request.POST)
-        if (form.is_valid() and laboratory_form.is_valid()):
-            return self.form_valid(form, laboratory_form)
+        laboratory_form = LaboratoryInsuranceLetterFormSet(request.POST)
+        if (form.is_valid()
+                and laboratory_form.is_valid()):
+            return self.form_valid(form,
+                                   laboratory_form
+                                   )
         else:
-            return self.form_invalid(form, laboratory_form)
+            return self.form_invalid(form,
+                                     laboratory_form
+                                     )
 
-    def form_valid(self, form, laboratory_form):
+    def form_valid(self, form,
+                   laboratory_form
+                   ):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         self.object.claim = claim
@@ -211,10 +233,13 @@ class CreateInsuranceLetterView(CreateView):
 
         return HttpResponseRedirect(self.get_success_url(claim))
 
-    def form_invalid(self, form, laboratory_form):
+    def form_invalid(self, form,
+                     laboratory_form
+                     ):
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form))
+                                  laboratory_form=laboratory_form
+                                  ))
 
     def get_success_url(self, claim):
         client_id = claim.client.id
@@ -232,6 +257,49 @@ class UpdateProofOfManufacturingView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "proof_of_manufacturing_id"
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        laboratory_form = LaboratoryProofOfManufacturingFormSet(
+            instance=self.object)
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  laboratory_form=laboratory_form
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        laboratory_form = LaboratoryProofOfManufacturingFormSet(
+            request.POST, instance=self.object)
+        if (form.is_valid()
+                and laboratory_form.is_valid()):
+            return self.form_valid(form,
+                                   laboratory_form
+                                   )
+        else:
+            return self.form_invalid(form,
+                                     laboratory_form
+                                     )
+
+    def form_valid(self, form,
+                   laboratory_form
+                   ):
+        self.object = form.save()
+        laboratory_form.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form,
+                     laboratory_form
+                     ):
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  laboratory_form=laboratory_form
+                                  ))
+
     def get_success_url(self):
         client_id = self.object.claim.client.id
         claim_id = self.object.claim.id
@@ -246,13 +314,50 @@ class CreateProofOfManufacturingView(CreateView):
     model = ProofOfManufacturing
     form_class = ProofOfManufacturingForm
 
-    def form_valid(self, form):
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        laboratory_form = LaboratoryProofOfManufacturingFormSet()
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  laboratory_form=laboratory_form
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        laboratory_form = LaboratoryProofOfManufacturingFormSet(request.POST)
+        if (form.is_valid()
+                and laboratory_form.is_valid()):
+            return self.form_valid(form,
+                                   laboratory_form
+                                   )
+        else:
+            return self.form_invalid(form,
+                                     laboratory_form
+                                     )
+
+    def form_valid(self, form,
+                   laboratory_form
+                   ):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         self.object.claim = claim
         self.object.save()
+        laboratory_form.instance = self.object
+        laboratory_form.save()
 
         return HttpResponseRedirect(self.get_success_url(claim))
+
+    def form_invalid(self, form,
+                     laboratory_form
+                     ):
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  laboratory_form=laboratory_form
+                                  ))
 
     def get_success_url(self, claim):
         client_id = claim.client.id
