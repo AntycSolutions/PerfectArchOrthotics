@@ -10,9 +10,9 @@
     {% if user.is_authenticated %}
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{% url 'client_index' %}">Clients</a></li>
+                <li><a href="{% url 'clients' %}">Clients</a></li>
                 <li><a href="{% url 'claims' %}">Claims</a></li>
-                <li><a href="{% url 'insurance' %}">Insurance</a></li>
+                <li><a href="{% url 'insurance' %}">Insurances</a></li>
                 <li><a href="{% url 'inventory_index' %}">Inventory</a></li>
             </ul>
             <!--form method="get" action="{% url 'client_search' %}" class="navbar-form navbar-left">
@@ -28,7 +28,6 @@
     {% else %}
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/admin/">Admin</a></li>
                 <li><a href="{% url 'user_login' %}">Login</a></li>
             </ul>
         </div>
