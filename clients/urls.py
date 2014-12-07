@@ -11,6 +11,7 @@ from clients.views.claim import UpdateClaimView, DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
     CreateInsuranceLetterView, UpdateProofOfManufacturingView, \
     CreateProofOfManufacturingView
+from clients.views.statistics import Statistics
 
 
 insurance_patterns = patterns(
@@ -121,4 +122,5 @@ urlpatterns = patterns(
         views.deleteDependentsView, name='dependent_delete'),
     url(r'^add_new_dependent/(?P<client_id>\w+)/$', views.add_new_dependent,
         name='add_new_dependent'),
+    url(r'^statistics/$', Statistics.as_view(), name='statistics'),
 )

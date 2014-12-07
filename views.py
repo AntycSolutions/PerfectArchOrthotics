@@ -4,9 +4,14 @@ from django.template import RequestContext
 from django.contrib.auth import logout  # , authenticate, login,
 from django.contrib.auth.decorators import login_required
 
+from clients.models import SiteStatistics
+
 
 def index(request):
     context = RequestContext(request)
+    statistics = SiteStatistics.objects.get_or_create(pk=0)[0]
+    statistics.home_page_views += 1
+    statistics.save()
     return render_to_response('index.html', context)
 
 
