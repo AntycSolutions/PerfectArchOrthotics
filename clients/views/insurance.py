@@ -43,24 +43,24 @@ class CreateInsuranceView(CreateView):
         client = Client.objects.get(id=self.kwargs['client_id'])
         coverage_form1 = CoverageForm(
             prefix="coverage_form1",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[0][0],
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
+            initial={'coverage_type': CoverageType.ORTHOTICS,
+                     'coverage_percent': 0,
+                     'max_claim_amount': 0,
                      'quantity': 0,
                      'period': 0})
         coverage_form2 = CoverageForm(
             prefix="coverage_form2",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[1][0],
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
+            initial={'coverage_type': CoverageType.COMPRESSION_STOCKINGS,
+                     'coverage_percent': 0,
+                     'max_claim_amount': 0,
                      'quantity': 0,
                      'period': 0})
 
         coverage_form3 = CoverageForm(
             prefix="coverage_form3",
-            initial={'coverageType': "Orthopedic_shoes",
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
+            initial={'coverage_type': CoverageType.ORTHOPEDIC_SHOES,
+                     'coverage_percent': 0,
+                     'max_claim_amount': 0,
                      'quantity': 0,
                      'period': 0})
 
@@ -74,14 +74,14 @@ class CreateInsuranceView(CreateView):
     def form_valid(self, form):
         coverage_form1 = CoverageForm(
             self.request.POST, prefix="coverage_form1",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[0][0],
-                     'coveragePercent': 0})
+            initial={'coverage_type': CoverageType.ORTHOTICS,
+                     'coverage_percent': 0})
         coverage_form2 = CoverageForm(
             self.request.POST, prefix="coverage_form2",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[1][0]})
+            initial={'coverage_type': CoverageType.COMPRESSION_STOCKINGS})
         coverage_form3 = CoverageForm(
             self.request.POST, prefix="coverage_form3",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[2][0]})
+            initial={'coverage_type': CoverageType.ORTHOPEDIC_SHOES})
 
         if (coverage_form1.is_valid()
                 and coverage_form2.is_valid()
@@ -95,27 +95,27 @@ class CreateInsuranceView(CreateView):
             saved.save()
 
             coverage_1 = coverage_form1.save(commit=False)
-            if coverage_1.coveragePercent == 0:
+            if coverage_1.coverage_percent == 0:
                 pass
             else:
                 coverage_1.insurance = saved
-                coverage_1.totalClaimed = 0
+                coverage_1.total_claimed = 0
                 coverage_1.save()
 
             coverage_2 = coverage_form2.save(commit=False)
-            if coverage_2.coveragePercent == 0:
+            if coverage_2.coverage_percent == 0:
                 pass
             else:
                 coverage_2.insurance = saved
-                coverage_2.totalClaimed = 0
+                coverage_2.total_claimed = 0
                 coverage_2.save()
 
             coverage_3 = coverage_form3.save(commit=False)
-            if coverage_3.coveragePercent == 0:
+            if coverage_3.coverage_percent == 0:
                 pass
             else:
                 coverage_3.insurance = saved
-                coverage_3.totalClaimed = 0
+                coverage_3.total_claimed = 0
                 coverage_3.save()
 
             return HttpResponseRedirect(self.get_success_url(client))
