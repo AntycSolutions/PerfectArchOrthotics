@@ -6,7 +6,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Get from file
-SECRET_KEY = 'e#v=c7*5@x1qnp*tfke!f#+nd_amito34d%blwm)!8&@4u7=+y'
+SECRET_KEY = ''
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -24,12 +24,15 @@ DATABASES = {
 ADMINS = ()
 
 # Get from file
+DM = ''
 PRACTITIONERS = ()
 
 # Get from file
+MOLL = ''
 LABORATORIES = ()
 
 # Get from file
+PAOI = ''
 BILL_TO = ()
 
 SHIP_TO = BILL_TO
