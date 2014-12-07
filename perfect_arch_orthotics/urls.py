@@ -7,7 +7,11 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',  # Tells django to view the rest as str
     url(r'^$', 'views.index', name='index'),
-    url(r'^login/', 'views.user_login', name='user_login'),
+    url(r'^login/',
+        # 'views.user_login',
+        'django.contrib.auth.views.login',  # doesnt use next, make own
+        {'template_name': 'login.html'},
+        name='user_login'),
     url(r'^logout/', 'views.user_logout', name='user_logout'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^clients/', include('clients.urls')),
