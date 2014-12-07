@@ -1,340 +1,239 @@
-"""Models for the clients app.
-
-The following tables will be contained within:
-- Dependent
-- Client
-- Insurance
-- Claim
-- Prescription
-
-"""
+from datetime import date
 from django.db import models
+from django.conf import settings
 
 
 class Person(models.Model):
-    firstName = models.CharField(max_length=128, blank=True, default="")
-    lastName = models.CharField(max_length=128, blank=True, default="")
+    MALE = 'm'
+    FEMALE = 'f'
+    GENDER_CHOICES = ((MALE, 'Male'),
+                      (FEMALE, 'Female'))
+
+    first_name = models.CharField(
+        "First Name", max_length=128, blank=True, default="")
+    last_name = models.CharField(
+        "Last Name", max_length=128, blank=True, default="")
+    gender = models.CharField(
+        "Gender", max_length=6, choices=GENDER_CHOICES,
+        blank=True, default="")
+    birth_date = models.DateField(
+        "Birth Date", blank=True, null=True)
+
+    # ForeignKey
+    # Client, Dependent
+
+    def full_name(self):
+        if self.first_name or self.last_name:
+            return "%s %s" % (self.first_name, self.last_name)
+        return None
 
     def __unicode__(self):
-        return "%s %s" % (self.firstName, self.lastName)
+        return "Person - %s" % (self.full_name())
 
     def __str__(self):
         return self.__unicode__()
 
 
 class Dependent(Person):
-
-    """Model of a clients dependents.
-
-    Fields:
-    Relationship (spouse, son, daughter)
-    Birthdate
-    Sex
-
-    * Each client will have a list of dependents that they are associate with.
-
-    """
-    SPOUSE = 'Spouse'
-    CHILD = 'Child'
+    SPOUSE = 's'
+    CHILD = 'c'
     RELATIONSHIP_CHOICES = ((SPOUSE, 'Spouse'),
                             (CHILD, 'Child'))
 
-    MALE = 'Male'
-    FEMALE = 'Female'
-    GENDER_CHOICES = ((MALE, 'Male'),
-                      (FEMALE, 'Female'))
+    relationship = models.CharField(
+        "Relationship", max_length=6, choices=RELATIONSHIP_CHOICES,
+        blank=True, default="")
 
-    relationship = models.CharField(max_length=6, choices=RELATIONSHIP_CHOICES,
-                                    blank=True, default="")
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES,
-                              blank=True, default="")
-    birthdate = models.DateField(blank=True, null=True)
+    # ManyToMany
+    # Client
 
     def __unicode__(self):
-        return "%s %s" % (self.firstName, self.lastName)
+        return "Dependent - %s" % (self.full_name())
 
     def __str__(self):
         return self.__unicode__()
 
 
 class Client(Person):
-
-    """Model of a client.
-
-    A client will have the following fields:
-    First Name
-    Last Name
-    Address
-    City of residence
-    Postal code
-    Phone #
-    Cell #
-    Email
-    Birthdate
-    Gender
-    Employer
-    Albeta Healthcare number
-    Credit (current credit from insurance company)
-    Notes (for log of communication)
-    Dependents - another table
-    Prescriptions - another table
-    Insurance - another table
-
-    """
-
-    MALE = 'Male'
-    FEMALE = 'Female'
-    GENDER_CHOICES = ((MALE, 'Male'),
-                      (FEMALE, 'Female'))
-
-    address = models.CharField(max_length=128, blank=True, default="")
-    city = models.CharField(max_length=128, blank=True, default="")
-    postalCode = models.CharField(max_length=6, blank=True, default="")
+    address = models.CharField(
+        "Address", max_length=128, blank=True, default="")
+    city = models.CharField(
+        "City", max_length=128, blank=True, default="")
+    postal_code = models.CharField(
+        "Postal Code", max_length=6, blank=True, default="")
     # TODO Write validators for the phone numbers below
     # In the form of (780)-937-1514
-    phoneNumber = models.CharField(max_length=14, blank=True, default="")
+    phone_number = models.CharField(
+        "Phone Number", max_length=14, blank=True, default="")
     # In the form of (780)-937-1514
-    cellNumber = models.CharField(max_length=14, blank=True, default="")
-    # will cover all RFC3696/5321-compliant email addresses
-    email = models.EmailField(max_length=254, blank=True, null=True)
-    healthcareNumber = models.CharField(max_length=20, blank=True, default="")
-    birthdate = models.DateField(blank=True)
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES,
-                              blank=True, default="")
-    employer = models.CharField(max_length=128, blank=True, default="")
-    credit = models.SmallIntegerField(blank=True, default=0)
-    referredBy = models.CharField(max_length=128, blank=True, default="")
-    notes = models.TextField(blank=True, default="")
-    dependents = models.ManyToManyField(Dependent, blank=True, null=True)
-    # Foreign key relationships
-    # insurance (foreign key on other table)
-    # prescriptions (foreign key on other table)
-    # invoices (foreign key on other table)
-    # claims (foreign key on other table)
+    cell_number = models.CharField(
+        "Cell Number", max_length=14, blank=True, default="")
+    email = models.EmailField(
+        "Email", max_length=254, blank=True, null=True)
+    health_care_number = models.CharField(
+        "Health Care Number", max_length=20, blank=True, default="")
+    employer = models.CharField(
+        "Employer", max_length=128, blank=True, default="")
+    credit = models.SmallIntegerField(
+        "Credit", default=0, blank=True)
+    referred_by = models.CharField(
+        "Referred By", max_length=128, blank=True, default="")
+    notes = models.TextField(
+        "Notes", blank=True, default="")
+    dependents = models.ManyToManyField(
+        Dependent, verbose_name="Dependents", blank=True, null=True)
+
+    # Foreign keys
+    # Insurance, Claim
+
+    def age(self):
+        if self.birth_date.year:
+            return date.today().year - self.birth_date.year
+        return None
 
     def __unicode__(self):
-        return "%s %s" % (self.firstName, self.lastName)
+        return "Client - %s" % (self.full_name())
 
     def __str__(self):
         return self.__unicode__()
 
-    def getAge(self):
-        """Calculate clients age in years."""
-        pass
-
 
 class Insurance(models.Model):
+    DIRECT = "d"
+    INDIRECT = "i"
+    BILLING_CHOICES = ((DIRECT, "Direct"),
+                       (INDIRECT, "Indirect"))
 
-    """Model of a clients insurance coverage.
+    client = models.ForeignKey(
+        Client, verbose_name="Client")
+    # A spouse can have their own insurance
+    spouse = models.ForeignKey(
+        Dependent, verbose_name="Spouse", blank=True, null=True)
+    provider = models.CharField(
+        "Provider", max_length=128, blank=True, default="")
+    policy_number = models.CharField(
+        "Policy Number", max_length=128, blank=True, default="")
+    contract_number = models.CharField(
+        "Contract Number", max_length=128, blank=True, default="")
+    billing = models.CharField(
+        "Billing", max_length=8, choices=BILLING_CHOICES,
+        blank=True, default="")
+    gait_scan = models.BooleanField(
+        "Gait Scan", default=False)
+    insurance_card = models.BooleanField(
+        "Insurance Card", default=False)
 
-    This is meant to cover most of the cases of how coverage would work.
-    Following are some examples:
-
-    1) Some plans have a pool for coverage, say $10,000 for everything per
-    year per person under the insurance plan. This includes primaries
-    and dependents.
-
-    EX. $10,000 can be used for eveything, dental, orthotics, hospital etc.
-    Once you go over that $10,000 nothing else is covered
-
-    Modeling:
-    Have the total coverage amount, amount remaining of that total, amount
-    we have claimed against it. Coverage % would likely be 100% until that
-    limit is reached and then the coverage % won't be considered. Billing
-    can still be of certain types and the roll-over timeframe can be set
-    as normal
-
-    2) More common are plans as follows. The client has a max for each expense,
-    normally covering themselves and dependents.
-
-    EX. Dental will have $500 per year, orthotics will have $300 max
-        every three years.
-
-    Modeling:
-    Have the total coverage amount, amount remaining and amount claimed. The
-    calc for amount remaining should be as easy as taking the total and minus
-    the amount claimed. However this may change if they go elsewhere for
-    something that is covered elsewhere and then comes back to us. The amount
-    remaining then should be dynamic and calculated separately from our
-    numbers. (Have to ask Danny) Coverage % may be different for each plan,
-    say some will be 50%, others 100% and will obviously drop to 0% once the
-    coverage is used during the roll-over timeframe.
-
-    Insurance will have the following fields:
-    Provider
-    Policy #
-    Contract #
-    coverage %
-    Benefit year (when the insurers benefit period renews):
-    1) Calendar Year (Jan 1)
-    2) could be a specific month in the year
-    Example: April 1
-
-    Direct/indirect billing
-
-    Notes:
-    coverage conditions
-    Husband and Wifes coverage (there could be multiple policies)
-    Reporting:
-
-    """
-    BILLING_CHOICES = (("Direct", "Direct"),
-                       ("Indirect", "Indirect"))
-
-    client = models.ForeignKey(Client)
-    spouse = models.ForeignKey(Dependent, blank=True, null=True)
-    provider = models.CharField(max_length=128, blank=True, default="")
-    policyNumber = models.CharField(max_length=128, blank=True, default="")
-    contractNumber = models.CharField(max_length=128, blank=True, default="")
-    billing = models.CharField(max_length=8, choices=BILLING_CHOICES,
-                               blank=True, default="")
-    gaitScan = models.BooleanField(default=False)
-    insuranceCard = models.BooleanField(default=False)
+    # ForeignKey
+    # CoverageType
 
     def __unicode__(self):
-        clientName = self.client.firstName + " " + self.client.lastName
-        return "Insurance - %s - %s" % (clientName, self.provider)
+        return "Insurance - %s - %s" % (self.provider, self.client)
 
     def __str__(self):
         return self.__unicode__()
 
 
 class CoverageType(models.Model):
+    ORTHOTICS = "o"
+    COMPRESSION_STOCKINGS = "cs"
+    ORTHOPEDIC_SHOES = "os"
+    COVERAGE_TYPE = ((ORTHOTICS, "Orthotics"),
+                     (COMPRESSION_STOCKINGS, "Compression Stockings"),
+                     (ORTHOPEDIC_SHOES, "Orthopedic Shoes"))
 
-    """This class will represent coverage types.
+    insurance = models.ForeignKey(
+        Insurance, verbose_name="Insurance")
+    coverage_type = models.CharField(
+        "Coverage Type", max_length=21, choices=COVERAGE_TYPE,
+        blank=True, default="")
+    coverage_percent = models.IntegerField(
+        "Coverage Percent", default=0, blank=True, null=True)
+    max_claim_amount = models.IntegerField(
+        "Max Claim Amount", default=0, blank=True)
+    total_claimed = models.IntegerField(
+        "Total Claimed", default=0, null=True, blank=True)
+    quantity = models.IntegerField(
+        "Quantity", default=0, null=True, blank=True)
+    period = models.IntegerField(
+        "Period", default=1)
 
-    There are three types:
-    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
-                 ("Compression_stockings", "Compression Stockings"),
-                 ("Orthopedic_shoes", "Orthopedic Shoes"))
+    # ForeignKey
+    # Claim
 
-    Other fields will include:
-    - Covergae %
-    - Max claim amount
-    - Quantitiy in pair(s)
-    - Period
-
-    """
-    COVERAGE_TYPE = (("Orthotics", "Orthotics"),
-                     ("Compression_stockings", "Compression Stockings"),
-                     ("Orthopedic_shoes", "Orthopedic Shoes"))
-
-    insurance = models.ForeignKey(Insurance)
-    coverageType = models.CharField(max_length=21, choices=COVERAGE_TYPE,
-                                    blank=True, default="")
-    coveragePercent = models.IntegerField(blank=True, null=True)
-    maxClaimAmount = models.IntegerField(default=0, blank=True)
-    totalClaimed = models.IntegerField(null=True, blank=True)
-    quantity = models.IntegerField(null=True, blank=True)
-    period = models.IntegerField(default=1)
-
-    def __unicode__(self):
-        return "%s - Coverage percent: %s" % (self.coverageType,
-                                              self.coveragePercent)
-
-
-class Claim(models.Model):
-
-    """Model of a claim submitted for a clients.
-
-    Claims will have the following fields:
-    Submitted date
-    invoice date
-    paid date
-    client/dependent
-    insurance
-    amount claimed
-    expected back
-    payment type (cash, cheque, credit)
-    Look up report types from google docs
-
-    """
-
-    PAYMENT_CHOICES = (("CASH", "Cash"),
-                       ("CHEQUE", "Cheque"),
-                       ("CREDIT", "Credit"))
-    CLAIM_TYPE = (("Orthotics", "Orthotics"),
-                  ("Compression_stockings", "Compression Stockings"),
-                  ("Orthopedic_shoes", "Orthopedic Shoes"))
-
-    client = models.ForeignKey(Client, blank=True, null=True,
-                               related_name="uses_coverage_of")
-    patient = models.ForeignKey(Person, blank=True, null=True)
-    # TODO figure out how to get the insurance from the client to calidate this
-    # TODO remove this, coveraged the the insurance claim model now
-    insurance = models.ForeignKey(Insurance, blank=True, null=True)
-    submittedDate = models.DateTimeField(auto_now_add=True)
-    invoiceDate = models.DateTimeField(blank=True, null=True)
-    paidDate = models.DateTimeField(blank=True, null=True)
-    amountClaimed = models.IntegerField(blank=True, default=0)
-    # TODO validate based on clients insurance, amount left in coverage
-    #  and coverage percent
-    expectedBack = models.IntegerField(blank=True, default=0)
-    paymentType = models.CharField(max_length=6, choices=PAYMENT_CHOICES,
-                                   blank=True, default="")
-    claimType = models.CharField(max_length=21, choices=CLAIM_TYPE,
-                                 blank=True, default="")
+    def coverage_remaining(self):
+        return self.max_claim_amount - self.total_claimed
 
     def __unicode__(self):
-        return "Claim - %s %s" % (self.client.firstName, self.client.lastName)
+        return "Coverage Type - %s - %s" % (self.get_coverage_type_display(),
+                                            self.insurance)
 
     def __str__(self):
         return self.__unicode__()
 
 
-class InsuranceClaim(models.Model):
+class Claim(models.Model):
+    CASH = "ca"
+    CHEQUE = "ch"
+    CREDIT = "cr"
+    PAYMENT_CHOICES = ((CASH, "Cash"),
+                       (CHEQUE, "Cheque"),
+                       (CREDIT, "Credit"))
 
-    """Model to represent an amount claimed against a coverage."""
+    client = models.ForeignKey(
+        Client, verbose_name="Client", blank=True, null=True,)
+    patient = models.ForeignKey(
+        Person, verbose_name="Patient", blank=True, null=True,
+        related_name="patient")
+    coverage_types = models.ManyToManyField(
+        CoverageType, verbose_name="Coverage Types", blank=True, null=True)
+    submitted_date = models.DateField(
+        "Submitted Date", auto_now_add=True)
+    paid_date = models.DateField(
+        "Paid Date", blank=True, null=True)
+    amount_claimed = models.IntegerField(
+        "Amount Claimed", default=0, blank=True)
+    # TODO validate based on clients insurance, amount left in coverage
+    #  and coverage percent
+    expected_back = models.IntegerField(
+        "Expected Back", default=0, blank=True)
+    payment_type = models.CharField(
+        "Payment Type", max_length=6, choices=PAYMENT_CHOICES,
+        blank=True, default="")
 
-    claim = models.ForeignKey(Claim)
-    coverageType = models.ForeignKey(CoverageType)
-    amountClaimed = models.IntegerField(blank=True, default=0)
+    # ForeignKey
+    # Invoice, InsuranceLetter, ProofOfManufacturing
 
     def __unicode__(self):
-        return "%s - %s - Amount claimed: %s" % (self.claim, self.coverageType,
-                                                 self.amountClaimed)
-
-
-class Prescription(models.Model):
-
-    """Model of a saved prescription file.
-
-    A prescription will have the following fields:
-    Client
-    Date added
-    Prescription image
-
-    Notes:
-    Reporting:
-
-    """
-
-    client = models.ForeignKey(Client)
-    dateAdded = models.DateTimeField(auto_now_add=True)
-    # TODO file field for uploading and saving the prescription, optional for
-    #  now
-
-    def __unicode__(self):
-        clientName = self.client.firstName + " " + self.client.lastName
-        date = self.dateAdded.date().isoformat()
-        return "Prescription - %s - %s" % (clientName, date)
+        return "Claim - %s - %s" % (self.submitted_date, self.client)
 
     def __str__(self):
         return self.__unicode__()
 
 
 class Invoice(models.Model):
-    PAYMENT_TYPES = (("Assignment", "Assignment"),
-                     ("Non-assignment", "Non-assignment"))
+    ASSIGNMENT = "a"
+    NON_ASSIGNMENT = "na"
+    PAYMENT_TYPES = ((ASSIGNMENT, "Assignment"),
+                     (NON_ASSIGNMENT, "Non-assignment"))
 
-    claim = models.ForeignKey(Claim)
-    dispensed_by = models.CharField(max_length=128)
-    payment_type = models.CharField(max_length=15, choices=PAYMENT_TYPES)
-    payment_terms = models.CharField(max_length=256)
-    payment_made = models.IntegerField(default=0)
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
+    dispensed_by = models.CharField(
+        "Dispensed By", max_length=128)
+    payment_type = models.CharField(
+        "Payment Type", max_length=15, choices=PAYMENT_TYPES)
+    payment_terms = models.CharField(
+        "Payment Terms", max_length=256)
+    payment_made = models.IntegerField(
+        "Payment Made", default=0)
+
+    # ForeignKey
+    # Item
 
     def balance(self):
-        return self.total() - self.payment_made
+        if (self.total() != 0) and self.payment_made:
+            return self.total() - self.payment_made
+        return None
 
     def total(self):
         total = 0
@@ -342,39 +241,57 @@ class Invoice(models.Model):
             total += item.total()
         return total
 
+    def __unicode__(self):
+        return "Invoice - %s - %s" % (self.dispensed_by, self.claim)
+
     def __str__(self):
-        return self.dispensed_by
+        return self.__unicode__()
 
 
 class Item(models.Model):
-    invoice = models.ForeignKey(Invoice)
-    description = models.CharField(max_length=512)
-    unit_price = models.IntegerField(default=0)
-    quantity = models.IntegerField(default=0)
+    invoice = models.ForeignKey(
+        Invoice, verbose_name="Invoice")
+    description = models.CharField(
+        "Description", max_length=512)
+    unit_price = models.IntegerField(
+        "Unit Price", default=0)
+    quantity = models.IntegerField(
+        "Quantity", default=0)
 
     def total(self):
         return self.unit_price * self.quantity
 
-    def __str__(self):
-        return self.description
+    def __unicode__(self):
+        return "Item - %s - %s" % (self.description, self.invoice)
 
 
 class InsuranceLetter(models.Model):
-    claim = models.ForeignKey(Claim)
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
 
-    practitioner_name = models.CharField(max_length=128)
-    diagnosis = models.CharField(max_length=512)
-    biomedical_and_gait_analysis_date = models.DateTimeField()
-    examiner = models.CharField(max_length=128)
-    dispensing_practitioner = models.CharField(max_length=128)
-    dispense_date = models.DateTimeField()
+    practitioner_name = models.CharField(
+        "Practitioner Name", max_length=128, choices=settings.PRACTITIONERS,
+        default=settings.PRACTITIONERS[0])
+    biomedical_and_gait_analysis_date = models.DateField(
+        "Biomedical and Gait Analysis Date")
+    examiner = models.CharField(
+        "Examiner", max_length=128)
+    dispensing_practitioner = models.CharField(
+        "Dispensing Practitioner", max_length=128)
+    dispense_date = models.DateField(
+        "Dispense Date")
 
-    orthopedic_shoes = models.BooleanField(default=False)
-    foot_orthotics_orthosis = models.BooleanField(default=False)
-    internally_modified_footwear = models.BooleanField(default=False)
+    orthopedic_shoes = models.BooleanField(
+        "Orthopedic Shoes", default=False)
+    foot_orthotics_orthosis = models.BooleanField(
+        "Foot Orthotics Orthosis", default=False)
+    internally_modified_footwear = models.BooleanField(
+        "Internally Modified Orthosis", default=False)
 
-    foam_plaster = models.BooleanField(default=False)
-    gaitscan = models.BooleanField(default=False)
+    foam_plaster = models.BooleanField(
+        "Foam / Plaster", default=False)
+    gaitscan = models.BooleanField(
+        "Gait Scan(TM)", default=False)
 
     plantar_fasciitis = models.BooleanField(
         "Plantar Fasciitis", default=False)
@@ -459,49 +376,157 @@ class InsuranceLetter(models.Model):
     over_pronation = models.BooleanField(
         "Over Pronation", default=False)
 
+    # ForeignKey
+    # Laboratory
+
+    def _verbose_name(self, field):
+        return InsuranceLetter._meta.get_field(field).verbose_name
+
+    def diagnosis(self):
+        diagnosis = []
+
+        if self.plantar_fasciitis:
+            diagnosis.append(self._verbose_name('plantar_fasciitis'))
+        if self.hammer_toes:
+            diagnosis.append(self._verbose_name('hammer_toes'))
+        if self.ligament_tear:
+            diagnosis.append(self._verbose_name('ligament_tear'))
+        if self.knee_arthritis:
+            diagnosis.append(self._verbose_name('knee_arthritis'))
+        if self.metatarsalgia:
+            diagnosis.append(self._verbose_name('metatarsalgia'))
+        if self.drop_foot:
+            diagnosis.append(self._verbose_name('drop_foot'))
+        if self.scoliosis_with_pelvic_tilt:
+            diagnosis.append(self._verbose_name('scoliosis_with_pelvic_tilt'))
+        if self.hip_arthritis:
+            diagnosis.append(self._verbose_name('hip_arthritis'))
+        if self.pes_cavus:
+            diagnosis.append(self._verbose_name('pes_cavus'))
+        if self.heel_spur:
+            diagnosis.append(self._verbose_name('heel_spur'))
+        if self.lumbar_spine_dysfunction:
+            diagnosis.append(self._verbose_name('lumbar_spine_dysfunction'))
+        if self.lumbar_arthritis:
+            diagnosis.append(self._verbose_name('lumbar_arthritis'))
+        if self.pes_planus:
+            diagnosis.append(self._verbose_name('pes_planus'))
+        if self.ankle_abnormal_rom:
+            diagnosis.append(self._verbose_name('ankle_abnormal_rom'))
+        if self.leg_length_discrepency:
+            diagnosis.append(self._verbose_name('leg_length_discrepency'))
+        if self.si_arthritis:
+            diagnosis.append(self._verbose_name('si_arthritis'))
+        if self.diabetes:
+            diagnosis.append(self._verbose_name('diabetes'))
+        if self.foot_abnormal_ROM:
+            diagnosis.append(self._verbose_name('foot_abnormal_ROM'))
+        if self.si_joint_dysfunction:
+            diagnosis.append(self._verbose_name('si_joint_dysfunction'))
+        if self.ankle_arthritis:
+            diagnosis.append(self._verbose_name('ankle_arthritis'))
+        if self.neuropathy:
+            diagnosis.append(self._verbose_name('neuropathy'))
+        if self.peroneal_dysfunction:
+            diagnosis.append(self._verbose_name('peroneal_dysfunction'))
+        if self.genu_valgum:
+            diagnosis.append(self._verbose_name('genu_valgum'))
+        if self.foot_arthritis:
+            diagnosis.append(self._verbose_name('foot_arthritis'))
+        if self.mtp_drop:
+            diagnosis.append(self._verbose_name('mtp_drop'))
+        if self.interdigital_neuroma:
+            diagnosis.append(self._verbose_name('interdigital_neuroma'))
+        if self.genu_varum:
+            diagnosis.append(self._verbose_name('genu_varum'))
+        if self.first_mtp_arthritis:
+            diagnosis.append(self._verbose_name('first_mtp_arthritis'))
+        if self.forefoot_varus:
+            diagnosis.append(self._verbose_name('forefoot_varus'))
+        if self.bunions_hallux_valgus:
+            diagnosis.append(self._verbose_name('bunions_hallux_valgus'))
+        if self.abnormal_patellar_tracking:
+            diagnosis.append(self._verbose_name('abnormal_patellar_tracking'))
+        if self.rheumatoid_arthritis:
+            diagnosis.append(self._verbose_name('rheumatoid_arthritis'))
+        if self.forefoot_valgus:
+            diagnosis.append(self._verbose_name('forefoot_valgus'))
+        if self.abnormal_gait_tracking:
+            diagnosis.append(self._verbose_name('abnormal_gait_tracking'))
+        if self.abnormal_gait_pressures:
+            diagnosis.append(self._verbose_name('abnormal_gait_pressures'))
+        if self.gout:
+            diagnosis.append(self._verbose_name('gout'))
+        if self.shin_splints:
+            diagnosis.append(self._verbose_name('shin_splints'))
+        if self.over_supination:
+            diagnosis.append(self._verbose_name('over_supination'))
+        if self.achilles_tendinitis:
+            diagnosis.append(self._verbose_name('achilles_tendinitis'))
+        if self.ulcers:
+            diagnosis.append(self._verbose_name('ulcers'))
+        if self.over_pronation:
+            diagnosis.append(self._verbose_name('over_pronation'))
+
+        if diagnosis:
+            diagnosis.append("as per prescription.")
+
+        # Remove list characters
+        return str(diagnosis).strip("[]").replace("'", "")
+
+    def __unicode__(self):
+        return "Insurance Letter - %s - %s" % (self.practitioner_name,
+                                               self.claim)
+
     def __str__(self):
-        return self.practitioner_name
-
-
-class Laboratory(models.Model):
-    insurance_letter = models.ForeignKey(InsuranceLetter)
-    description = models.CharField(max_length=512)
-
-    def __str__(self):
-        return self.description
+        return self.__unicode__()
 
 
 class ProofOfManufacturing(models.Model):
-    claim = models.ForeignKey(Claim)
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
 
-    laboratory_name = models.CharField(max_length=128)
-    laboratory_address = models.CharField(max_length=128)
-    laboratory_city = models.CharField(max_length=128)
-    laboratory_postal_code = models.CharField(max_length=6)
-    laboratory_country = models.CharField(max_length=128)
-    laboratory_phone = models.CharField(max_length=14)
-    laboratory_fax = models.CharField(max_length=14)
+    invoice_date = models.DateField(
+        "Invoice Date")
 
-    invoice_date = models.DateTimeField()
-    invoice_number = models.IntegerField()
+    product = models.CharField(
+        "Product", max_length=256)
+    quantity = models.IntegerField(
+        "Quantity", default=0)
 
-    bill_name = models.CharField(max_length=128)
-    bill_address = models.CharField(max_length=128)
-    bill_city = models.CharField(max_length=128)
-    bill_postal_code = models.CharField(max_length=6)
-    bill_country = models.CharField(max_length=128)
-    ship_name = models.CharField(max_length=128)
-    ship_address = models.CharField(max_length=128)
-    ship_city = models.CharField(max_length=128)
-    ship_postal_code = models.CharField(max_length=6)
-    ship_country = models.CharField(max_length=128)
+    laboratory_supervisor = models.CharField(
+        "Laboratory Supervisor", max_length=128)
+    raw_materials = models.TextField(
+        "Raw Materials")
+    manufacturing = models.TextField(
+        "Manufacturing")
+    casting_technique = models.TextField(
+        "Casting Technique")
 
-    patient = models.CharField(max_length=128)
-    product = models.CharField(max_length=256)
-    quantity = models.IntegerField()
+    # ForeignKey
+    # Laboratory
 
-    laboratory_information = models.CharField(max_length=128)
-    laboratory_supervisor = models.CharField(max_length=128)
-    raw_materials = models.TextField()
-    manufacturing = models.TextField()
-    casting_technique = models.TextField()
+    def __unicode__(self):
+        return "Proof of Manufacturing - %s - %s" % (self.product,
+                                                     self.claim)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class Laboratory(models.Model):
+    information = models.CharField(
+        "Information", max_length=512, choices=settings.LABORATORIES)
+    insurance_letter = models.ForeignKey(
+        InsuranceLetter, verbose_name="Insurance Letter",
+        null=True, blank=True)
+    proof_of_manufacturing = models.ForeignKey(
+        ProofOfManufacturing, verbose_name="Proof of Manufacturing",
+        null=True, blank=True)
+
+    def __unicode__(self):
+        return "Laboratory - %s - %s" % (self.name,
+                                         self.insurance_letter)
+
+    def __str__(self):
+        return self.__unicode__()
