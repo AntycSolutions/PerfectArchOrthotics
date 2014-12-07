@@ -32,7 +32,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'south',
     'easy_pdf',
     'mathfilters',
     'clients',
@@ -73,6 +72,7 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR + '/media/'
 
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 
 TEMPLATE_DIRS = (
