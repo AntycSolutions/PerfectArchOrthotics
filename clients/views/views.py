@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
 from search import get_query
 from easy_pdf.views import PDFTemplateView
@@ -14,8 +15,7 @@ from django.template import Context
 from cgi import escape
 
 import os
-from datetime import datetime, timedelta, date
-from django.conf import settings
+from datetime import date
 
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
     Person
@@ -77,21 +77,53 @@ def render_to_pdf(template_src, context_dict):
 
 
 def invoice_view(request, client_id, claim_id):
-    # client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
-    today = datetime.utcnow() - timedelta(hours=6)
+    claim, client, invoice, today, invoice_number = _invoice(client_id,
+                                                             claim_id)
+    bill_to = settings.BILL_TO[0][1]
+    perfect_arch_name = bill_to.split('\n')[0]
+    perfect_arch_address = bill_to.replace(perfect_arch_name + '\n', '')
 
     return render_to_pdf('clients/pdfs/invoice.html',
                          {'pagesize': 'A4',
-                          # 'client': client,
                           'today': today,
-                          'claim': claim}
+                          'claim': claim,
+                          'client': client,
+                          'invoice': invoice,
+                          'invoice_number': invoice_number,
+                          'perfect_arch_name': perfect_arch_name,
+                          'perfect_arch_address': perfect_arch_address}
                          )
 
 
-def insurance_letter(request, client_id, claim_id):
-    # client = Client.objects.get(id=client_id)
+def _invoice(client_id, claim_id):
     claim = Claim.objects.get(id=claim_id)
+    client = claim.client
+    invoice = None
+    try:
+        invoice = claim.invoice_set.all()[0]
+    except:
+        pass
+    today = date.today()
+    invoice_number = "{0:04d}".format(claim.id)
+
+    return claim, client, invoice, today, invoice_number
+
+
+def insurance_letter_view(request, client_id, claim_id):
+    claim, client, insurance_letter, today = _insurance_letter(client_id,
+                                                               claim_id)
+
+    return render_to_pdf('clients/pdfs/insurance_letter.html',
+                         {'pagesize': 'A4',
+                          'today': today,
+                          'claim': claim,
+                          'client': client,
+                          'insurance_letter': insurance_letter})
+
+
+def _insurance_letter(client_id, claim_id):
+    claim = Claim.objects.get(id=claim_id)
+    client = claim.client
     insurance_letter = None
     try:
         insurance_letter = claim.insuranceletter_set.all()[0]
@@ -99,50 +131,63 @@ def insurance_letter(request, client_id, claim_id):
         pass
     today = date.today()
 
-    return render_to_pdf('clients/pdfs/insurance_letter.html',
-                         {'pagesize': 'A4',
-                          'today': today,
-                          'claim': claim,
-                          'insurance_letter': insurance_letter})
+    return claim, client, insurance_letter, today
 
 
-def proof_of_manufacturing(request, client_id, claim_id):
-    # client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
-    proof_of_manufacturing = None
+def proof_of_manufacturing_view(request, client_id, claim_id):
+    claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
+        claim_id)
+    laboratory_information = None
     try:
-        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
+        laboratory = proof_of_manufacturing.laboratory_set.all()[0]
+        information = laboratory.get_information_display()
+        laboratory_information = information.split('\n')[0]
     except:
         pass
 
     return render_to_pdf('clients/pdfs/proof_of_manufacturing.html',
                          {'pagesize': 'A4',
                           'claim': claim,
-                          'proof_of_manufacturing': proof_of_manufacturing})
+                          'proof_of_manufacturing': proof_of_manufacturing,
+                          'invoice_number': invoice_number,
+                          'laboratory_information': laboratory_information,
+                          'bill_to': settings.BILL_TO[0][1],
+                          'ship_to': settings.SHIP_TO[0][1]}
+                         )
+
+
+def _proof_of_manufacturing(claim_id):
+    claim = Claim.objects.get(id=claim_id)
+    proof_of_manufacturing = None
+    try:
+        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
+    except:
+        pass
+    invoice_number = "{0:04d}".format(claim.id)
+
+    return claim, proof_of_manufacturing, invoice_number
 
 
 @login_required
 def fillOutInvoiceView(request, client_id, claim_id):
     context = RequestContext(request)
-    client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
+
+    claim, client, invoice, today, invoice_number = _invoice(client_id,
+                                                             claim_id)
 
     return render_to_response('clients/make_invoice.html',
                               {'client': client,
-                               'claim': claim},
+                               'claim': claim,
+                               'invoice': invoice},
                               context)
 
 
 @login_required
 def fillOutInsuranceLetterView(request, client_id, claim_id):
     context = RequestContext(request)
-    client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
-    insurance_letter = None
-    try:
-        insurance_letter = claim.insuranceletter_set.all()[0]
-    except:
-        pass
+
+    claim, client, insurance_letter, today = _insurance_letter(client_id,
+                                                               claim_id)
 
     return render_to_response('clients/make_insurance_letter.html',
                               {'client': client,
@@ -154,19 +199,19 @@ def fillOutInsuranceLetterView(request, client_id, claim_id):
 @login_required
 def fillOutProofOfManufacturingView(request, client_id, claim_id):
     context = RequestContext(request)
+
     client = Client.objects.get(id=client_id)
-    claim = Claim.objects.get(id=claim_id)
-    proof_of_manufacturing = None
-    try:
-        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
-    except:
-        pass
+    claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
+        claim_id)
 
     return render_to_response(
         'clients/make_proof_of_manufacturing.html',
         {'client': client,
          'claim': claim,
-         'proof_of_manufacturing': proof_of_manufacturing},
+         'proof_of_manufacturing': proof_of_manufacturing,
+         'invoice_number': invoice_number,
+         'bill_to': settings.BILL_TO[0][1],
+         'ship_to': settings.SHIP_TO[0][1]},
         context)
 
 
@@ -175,7 +220,7 @@ class HelloPDFView(PDFTemplateView):
 
 
 @login_required
-def index(request):
+def clients(request):
     context = RequestContext(request)
 
     client_list = Client.objects.order_by('-id')
@@ -190,7 +235,7 @@ def index(request):
 
     client_dict = {'clients': clients}
 
-    return render_to_response('clients/index.html', client_dict, context)
+    return render_to_response('clients/clients.html', client_dict, context)
 
 
 @login_required
@@ -237,7 +282,7 @@ def insuranceView(request):
         insurances = paginator.page(paginator.num_pages)
 
     context_dict = {'insurances': insurances}
-    return render_to_response('clients/insurance.html', context_dict, context)
+    return render_to_response('clients/insurances.html', context_dict, context)
 
 
 @login_required
@@ -245,8 +290,8 @@ def clientSearchView(request):
     context = RequestContext(request)
     context_dict = {}
     query_string = request.GET['q']
-    fields = ['firstName', 'lastName', 'address', 'phoneNumber', 'employer',
-              'healthcareNumber']
+    fields = ['first_name', 'last_name', 'address', 'phone_number', 'employer',
+              'health_care_number']
     clients = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
@@ -263,7 +308,7 @@ def clientSearchView(request):
             clients = paginator.page(paginator.num_pages)
         context_dict['clients'] = clients
 
-    return render_to_response('clients/index.html',
+    return render_to_response('clients/clients.html',
                               context_dict,
                               context)
 
@@ -319,7 +364,7 @@ def insuranceSearchView(request):
             insurances = paginator.page(paginator.num_pages)
         context_dict['insurances'] = insurances
 
-    return render_to_response('clients/insurance.html',
+    return render_to_response('clients/insurances.html',
                               context_dict,
                               context)
 
@@ -400,7 +445,6 @@ def editClientView(request, client_id):
 
 @login_required
 def makeClaimView(request, client_id):
-    # print(request)
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
@@ -408,50 +452,45 @@ def makeClaimView(request, client_id):
     claim_form = ClaimForm()
     if request.method == 'POST':
         # the check for if the right coverage and amount are selected
-        # for coverage_id in coverageSelected:
-        #       if 'amount_%s' not in request.POST.keys()
         claim_form = ClaimForm(request.POST)
         if claim_form.is_valid():
-            # print("VALID")
             claim = claim_form.save(commit=False)
-            claim.client = client
-            coverages_used = []
+            coverage_types = []
+            valid = True
             querydict = request.POST
-            # print("QD: %s" % querydict)
             if 'coverageSelected' in querydict:
-                for coverage_id in querydict['coverageSelected']:
-                    coverage = CoverageType.objects.get(id=coverage_id)
-                    percent = coverage.coveragePercent
-                    amount = float(querydict['amount_%s' % coverage_id][0])
-                    # pairs = float(querydict['pairs_%s' % coverage_id][0])
-                    coverages_used.append([amount, percent, coverage])
-            amountClaimed = 0
-            expectedBack = 0
-            if coverages_used:
-                # print("Used: %s" % coverages_used)
-                for used in coverages_used:
-                    amountClaimed += used[0]
-                    expectedBack += float(amount * (float(used[1])/100))
-            # print("Amount: %s" % amountClaimed)
-            # print("Expected: %s" % expectedBack)
-            claim.amountClaimed = amountClaimed
-            claim.expectedBack = expectedBack
-            # Get the patient of the claim
-            patient = Person.objects.get(id=querydict['patient'])
-            claim.patient = patient
-            claim.save()
-            # Now to save each insurance claim object and update the coverage
-            # we have the claim in: claim
-            # we have the coverageType objects [2] of: coverages_used
-            # we have amount claimed in [0] of: coverage_used
+                amount_claimed_total = 0
+                expected_back_total = 0
+                for coverage_id in querydict.getlist('coverageSelected'):
+                    coverage_type = CoverageType.objects.get(id=coverage_id)
+                    coverage_types.append(coverage_type)
+                    quantity = float(querydict['pairs_%s' % coverage_id])
+                    if quantity > coverage_type.quantity:
+                        valid = False
+                    else:
+                        coverage_type.quantity -= quantity
+                        coverage_type.save()
+                        coverage_percent = coverage_type.coverage_percent
+                        amount = float(querydict['amount_%s' % coverage_id])
+                        amount_total = amount * quantity
 
-            # with these created time to update the coverageTypes
-            #  with amount and pairs values
-            # we have the coverageType objects [2] of: coverages_used
-            # we have amount claimed in [0] of: coverage_used
-            # we have pairs in [3] of: coverage_used
-            return redirect('claim', client.id, claim.id)
+                        amount_claimed_total += amount_total
+                        expected_back_total += float(
+                            amount_total * (float(coverage_percent) / 100))
+                claim.amount_claimed = amount_claimed_total
+                claim.expected_back = expected_back_total
 
+            if valid:
+                claim.client = client
+                patient = Person.objects.get(id=querydict['patient'])
+                claim.patient = patient
+
+                claim.save()
+
+                for coverage_type in coverage_types:
+                    claim.coverage_types.add(coverage_type)
+
+                return redirect('claim', client.id, claim.id)
     else:
         client_form = ClientForm(instance=client)
 
@@ -478,7 +517,7 @@ def editDependentsView(request, client_id, dependent_id):
     else:
         dependent_form = DependentForm(instance=dependent)
 
-    return render_to_response('clients/edit_dependent.html',
+    return render_to_response('clients/dependent/edit_dependent.html',
                               {'client': client,
                                'dependent_form': dependent_form},
                               context)
@@ -501,7 +540,7 @@ def add_new_dependent(request, client_id):
     else:
         form = DependentForm()
 
-    return render_to_response('clients/add_new_dependent.html',
+    return render_to_response('clients/dependent/add_new_dependent.html',
                               {'form': form,
                                'client': client},
                               context)
@@ -574,30 +613,30 @@ def add_insurance(request, client_id):
             saved.save()
 
             coverage_1 = coverage_form1.save(commit=False)
-            if coverage_1.coveragePercent == 0:
+            if coverage_1.coverage_percent == 0:
                 pass
             else:
                 coverage_1.insurance = saved
-                coverage_1.totalClaimed = 0
+                coverage_1.total_claimed = 0
                 coverage_1.save()
 
             coverage_2 = coverage_form2.save(commit=False)
-            if coverage_2.coveragePercent == 0:
+            if coverage_2.coverage_percent == 0:
                 pass
             else:
                 coverage_2.insurance = saved
-                coverage_2.totalClaimed = 0
+                coverage_2.total_claimed = 0
                 coverage_2.save()
 
             coverage_3 = coverage_form3.save(commit=False)
-            if coverage_3.coveragePercent == 0:
+            if coverage_3.coverage_percent == 0:
                 pass
             else:
                 coverage_3.insurance = saved
-                coverage_3.totalClaimed = 0
+                coverage_3.total_claimed = 0
                 coverage_3.save()
 
-            return redirect('client_index')
+            return redirect('clients')
     else:
         insurance_form = InsuranceForm(prefix="insurance_form")
         coverage_form1 = CoverageForm(
