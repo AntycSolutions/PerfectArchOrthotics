@@ -16,7 +16,8 @@ ALLOWED_HOSTS = ['perfectarch.ca']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nolemon',
+        # Get from file
+        'NAME': '',
         # Get from file
         'USER': '',
         # Get from file
@@ -26,7 +27,21 @@ DATABASES = {
 }
 
 # Get from file
-# ADMINS = ()
+ADMINS = ()
+
+# Get from file
+DM = ''
+PRACTITIONERS = ()
+
+# Get from file
+MOLL = ''
+LABORATORIES = ()
+
+# Get from file
+PAOI = ''
+BILL_TO = ()
+
+SHIP_TO = BILL_TO
 
 # # Get from file
 # EMAIL_HOST_USER = ''
