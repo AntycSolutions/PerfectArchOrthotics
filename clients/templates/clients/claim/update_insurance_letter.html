@@ -37,6 +37,15 @@
                     {{ field.label_tag}} {{ field }}
                 </div>
             </div>
+            {% if field.label == "Internally Modified Orthosis" %}
+                <br />
+            {% endif %}
+            {% if field.label == "Gait Scan(TM)" %}
+                <br />
+            {% endif %}
+            {% if field.label == "Dispense Date" %}
+                <br />
+            {% endif %}
         {% endfor %}
     </fieldset>
     <fieldset>
