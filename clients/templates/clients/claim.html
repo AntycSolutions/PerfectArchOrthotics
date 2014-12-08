@@ -38,7 +38,18 @@
     <li>{% verbose_field_name claim "coverage_types" %}:
         <ul>
             {% for coverage_type in claim.coverage_types.all %}
-                <li>{{ coverage_type.get_coverage_type_display }}
+                <li>{{ coverage_type.get_coverage_type_display }}<br />
+                    {% verbose_field_name coverage_type "coverage_percent" %}: {{ coverage_type.coverage_percent }}
+                    {% verbose_field_name coverage_type "max_claim_amount" %}:
+                    {{ coverage_type.max_claim_amount }}
+                    {% verbose_field_name coverage_type "total_claimed" %}:
+                    {{ coverage_type.total_claimed }}
+                    Coverage Remaining:
+                    {{ coverage_type.coverage_remaining }}
+                    {% verbose_field_name coverage_type "quantity" %}:
+                    {{ coverage_type.quantity }}
+                    {% verbose_field_name coverage_type "period" %}:
+                    {{ coverage_type.period }}
                 </li>
             {% empty %}
                 <li>There are no coverage types for this claim.
