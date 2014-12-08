@@ -61,7 +61,7 @@
                                             <td>{{ coverageType.coverage_remaining }}</td>
                                             <td>{{ coverageType.total_claimed }}</td>
                                             <td>{{ coverageType.quantity }}</td>
-                                            <td>{{ coverageType.period }}</td>
+                                            <td>{{ coverageType.get_period_display }}</td>
                                             <!-- <td>
                                                 <div class="pull-right">
                                                     <a href="{% url 'coverage_type_edit' coverageType.id %}" class="btn btn-default">Edit</a>

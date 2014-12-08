@@ -49,7 +49,7 @@
                     {% verbose_field_name coverage_type "quantity" %}:
                     {{ coverage_type.quantity }}
                     {% verbose_field_name coverage_type "period" %}:
-                    {{ coverage_type.period }}
+                    {{ coverage_type.get_period_display }}
                 </li>
             {% empty %}
                 <li>There are no coverage types for this claim.

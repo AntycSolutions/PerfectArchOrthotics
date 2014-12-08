@@ -74,7 +74,7 @@
                                 <td>{{ coverage.coverage_remaining }}</td>
                                 <td>{{ coverage.total_claimed }}</td>
                                 <td>{{ coverage.quantity }}</td>
-                                <td>{{ coverage.period }}</td>
+                                <td>{{ coverage.get_period_display }}</td>
                                 <td><input type="number" name="amount_{{ coverage.id }}" value=0></td>
                                 <td><input type="number" name="pairs_{{ coverage.id }}" value=1></td>
                             </tr>
