@@ -58,7 +58,7 @@
                     </table>
                 <td>{{ claim.get_payment_type_display }}</td>
                 <td>
-                    <div>
+                    <div class="pull-right">
                         <a href="{% url 'claim_edit' claim.id %}" class="btn btn-default">Edit</a>
                         <a href="{% url 'claim_delete' claim.id %}" class="btn btn-default">Delete</a>
                     </div>
