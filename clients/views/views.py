@@ -118,13 +118,28 @@ def insurance_letter_view(request, client_id, claim_id):
     claim, client, insurance_letter, today = _insurance_letter(client_id,
                                                                claim_id)
 
+    # Because !@#$ xhtml2pdf (putting these in css classes didnt work)
+    underline = (
+        'border-bottom: 1pt solid #000000;'
+        ' width: 25px;'
+        ' text-align: center;'
+        ' line-height: 5px;'
+        ' font-family: monospace;'
+    )
+    notunderline = (
+        'text-align: left;'
+        ' line-height: 5px;'
+    )
+
     return render_to_pdf(request,
                          'clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
                           'today': today,
                           'claim': claim,
                           'client': client,
-                          'insurance_letter': insurance_letter})
+                          'insurance_letter': insurance_letter,
+                          'underline': underline,
+                          'notunderline': notunderline})
 
 
 def _insurance_letter(client_id, claim_id):
