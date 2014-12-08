@@ -37,9 +37,11 @@
 
     <div>
         <h5>Patient</h5>
-        <input type="radio" name="patient" value={{ client.id }}>Client - {{ client.full_name }}<br>
+        <input type="radio" name="patient" value={{ client.id }}>
+            Client - {{ client.full_name }}<br>
         {% for dependent in client.dependents.all %}
-            <input type="radio" name="patient" value={{ dependent.id }}>{{ dependent.get_relationship_display }} - {{ dependent.full_name }}<br>
+            <input type="radio" name="patient" value={{ dependent.id }}>
+                {{ dependent.get_relationship_display }} - {{ dependent.full_name }}<br>
         {% endfor %}
     </div>
 
