@@ -16,10 +16,6 @@ class Statistics(TemplateView):
 
         self.context['clients_total'] = clients_total
         self.context['claims_total'] = claims_total
-        self.context['home_page_views'] = statistics.home_page_views
-        self.context['outstanding_fees'] = statistics.outstanding_fees()
-        self.context['number_of_clients_with_outstanding_fees'] = \
-            statistics.number_of_clients_with_outstanding_fees()
-        self.context['revenue'] = statistics.revenue()
+        self.context['statistics'] = statistics
 
         return self.render_to_response(self.context)

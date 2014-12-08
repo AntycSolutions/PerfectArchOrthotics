@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load verbose_name %}
+
 {% block title %} - Site Statistics{% endblock %}
 
 {% include 'navbar.html' %}
@@ -22,18 +24,18 @@
                         .dl-horizontal dt { width: 345px; }
                         .dl-horizontal dd { margin-left: 365px;}
                     </style>
-                    <dt>Total number of home page views:</dt>
-                    <dd>{{ home_page_views }}</dd>
+                    <dt>Total number of {% verbose_field_name statistics "home_page_views" %}:</dt>
+                    <dd>{{ statistics.home_page_views }}</dd>
                     <dt>Total number of clients:</dt>
                     <dd>{{ clients_total }}</dd>
                     <dt>Total number of claims:</dt>
                     <dd>{{ claims_total }}</dd>
                     <dt>Outstanding fees:</dt>
-                    <dd>{{ outstanding_fees }}</dd>
+                    <dd>{{ statistics.outstanding_fees }}</dd>
                     <dt>Number of clients with outstanding fees:</dt>
-                    <dd>{{ number_of_clients_with_outstanding_fees }}</dd>
+                    <dd>{{ statistics.number_of_clients_with_outstanding_fees }}</dd>
                     <dt>Revenue:</dt>
-                    <dd>{{ revenue }}</dd>
+                    <dd>{{ statistics.revenue }}</dd>
                 </dl>
             </div>
         </div><!-- /.main -->

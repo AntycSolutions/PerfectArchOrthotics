@@ -584,7 +584,8 @@ class Laboratory(models.Model):
 
 
 class SiteStatistics(models.Model):
-    home_page_views = models.IntegerField(default=0)
+    home_page_views = models.IntegerField(
+        "Home Page Views", default=0)
 
     def outstanding_fees(self):
         return 0
