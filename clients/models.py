@@ -2,22 +2,29 @@ from datetime import date
 from django.db import models
 from django.conf import settings
 
+'''
+    Char/Text Field is always set to '', doesnt need null=True
+    All others need a null=True if blank=True
+'''
+
 
 class Person(models.Model):
     MALE = 'm'
     FEMALE = 'f'
-    GENDER_CHOICES = ((MALE, 'Male'),
-                      (FEMALE, 'Female'))
+    GENDERS = ((MALE, 'Male'),
+               (FEMALE, 'Female'))
 
     first_name = models.CharField(
-        "First Name", max_length=128, blank=True, default="")
+        "First Name", max_length=128)
     last_name = models.CharField(
-        "Last Name", max_length=128, blank=True, default="")
+        "Last Name", max_length=128,
+        blank=True)
     gender = models.CharField(
-        "Gender", max_length=6, choices=GENDER_CHOICES,
-        blank=True, default="")
+        "Gender", max_length=4, choices=GENDERS,
+        blank=True)
     birth_date = models.DateField(
-        "Birth Date", blank=True, null=True)
+        "Birth Date",
+        blank=True, null=True)
 
     # ForeignKey
     # Client, Dependent
@@ -37,12 +44,12 @@ class Person(models.Model):
 class Dependent(Person):
     SPOUSE = 's'
     CHILD = 'c'
-    RELATIONSHIP_CHOICES = ((SPOUSE, 'Spouse'),
-                            (CHILD, 'Child'))
+    RELATIONSHIPS = ((SPOUSE, 'Spouse'),
+                     (CHILD, 'Child'))
 
     relationship = models.CharField(
-        "Relationship", max_length=6, choices=RELATIONSHIP_CHOICES,
-        blank=True, default="")
+        "Relationship", max_length=4, choices=RELATIONSHIPS,
+        blank=True)
 
     # ManyToMany
     # Client
@@ -56,32 +63,43 @@ class Dependent(Person):
 
 class Client(Person):
     address = models.CharField(
-        "Address", max_length=128, blank=True, default="")
+        "Address", max_length=128,
+        blank=True)
     city = models.CharField(
-        "City", max_length=128, blank=True, default="")
+        "City", max_length=128,
+        blank=True)
     postal_code = models.CharField(
-        "Postal Code", max_length=6, blank=True, default="")
+        "Postal Code", max_length=6,
+        blank=True)
     # TODO Write validators for the phone numbers below
     # In the form of (780)-937-1514
     phone_number = models.CharField(
-        "Phone Number", max_length=14, blank=True, default="")
+        "Phone Number", max_length=14,
+        blank=True)
     # In the form of (780)-937-1514
     cell_number = models.CharField(
-        "Cell Number", max_length=14, blank=True, default="")
+        "Cell Number", max_length=14,
+        blank=True)
     email = models.EmailField(
-        "Email", max_length=254, blank=True, null=True)
+        "Email", max_length=254,
+        blank=True, null=True)
     health_care_number = models.CharField(
-        "Health Care Number", max_length=20, blank=True, default="")
+        "Health Care Number", max_length=20,
+        blank=True)
     employer = models.CharField(
-        "Employer", max_length=128, blank=True, default="")
+        "Employer", max_length=128,
+        blank=True)
     credit = models.SmallIntegerField(
-        "Credit", default=0, blank=True)
+        "Credit", default=0)
     referred_by = models.CharField(
-        "Referred By", max_length=128, blank=True, default="")
+        "Referred By", max_length=128,
+        blank=True)
     notes = models.TextField(
-        "Notes", blank=True, default="")
+        "Notes",
+        blank=True)
     dependents = models.ManyToManyField(
-        Dependent, verbose_name="Dependents", blank=True, null=True)
+        Dependent, verbose_name="Dependents",
+        blank=True, null=True)
 
     # Foreign keys
     # Insurance, Claim
@@ -101,23 +119,27 @@ class Client(Person):
 class Insurance(models.Model):
     DIRECT = "d"
     INDIRECT = "i"
-    BILLING_CHOICES = ((DIRECT, "Direct"),
-                       (INDIRECT, "Indirect"))
+    BILLINGS = ((DIRECT, "Direct"),
+                (INDIRECT, "Indirect"))
 
     client = models.ForeignKey(
         Client, verbose_name="Client")
     # A spouse can have their own insurance
     spouse = models.ForeignKey(
-        Dependent, verbose_name="Spouse", blank=True, null=True)
+        Dependent, verbose_name="Spouse",
+        blank=True, null=True)
     provider = models.CharField(
-        "Provider", max_length=128, blank=True, default="")
+        "Provider", max_length=128,
+        blank=True)
     policy_number = models.CharField(
-        "Policy Number", max_length=128, blank=True, default="")
+        "Policy Number", max_length=128,
+        blank=True)
     contract_number = models.CharField(
-        "Contract Number", max_length=128, blank=True, default="")
+        "Contract Number", max_length=128,
+        blank=True)
     billing = models.CharField(
-        "Billing", max_length=8, choices=BILLING_CHOICES,
-        blank=True, default="")
+        "Billing", max_length=4, choices=BILLINGS,
+        blank=True)
     gait_scan = models.BooleanField(
         "Gait Scan", default=False)
     insurance_card = models.BooleanField(
@@ -137,25 +159,36 @@ class CoverageType(models.Model):
     ORTHOTICS = "o"
     COMPRESSION_STOCKINGS = "cs"
     ORTHOPEDIC_SHOES = "os"
-    COVERAGE_TYPE = ((ORTHOTICS, "Orthotics"),
-                     (COMPRESSION_STOCKINGS, "Compression Stockings"),
-                     (ORTHOPEDIC_SHOES, "Orthopedic Shoes"))
+    COVERAGE_TYPES = ((ORTHOTICS, "Orthotics"),
+                      (COMPRESSION_STOCKINGS, "Compression Stockings"),
+                      (ORTHOPEDIC_SHOES, "Orthopedic Shoes"))
+    BENEFIT_YEAR = 1
+    CALENDAR_YEAR = 2
+    TWELVE_ROLLING_MONTHS = 12
+    TWENTY_FOUR_ROLLING_MONTHS = 24
+    THIRTY_SIX_ROLLING_MONTHS = 36
+    PERIODS = ((TWELVE_ROLLING_MONTHS, '12 Rolling Months'),
+               (TWENTY_FOUR_ROLLING_MONTHS, '24 Rolling Months'),
+               (THIRTY_SIX_ROLLING_MONTHS, '36 Rolling Months'),
+               (BENEFIT_YEAR, 'Benefit Year'),
+               (CALENDAR_YEAR, 'Calendar Year'))
 
     insurance = models.ForeignKey(
         Insurance, verbose_name="Insurance")
     coverage_type = models.CharField(
-        "Coverage Type", max_length=21, choices=COVERAGE_TYPE,
-        blank=True, default="")
+        "Coverage Type", max_length=4, choices=COVERAGE_TYPES,
+        blank=True)
     coverage_percent = models.IntegerField(
-        "Coverage Percent", default=0, blank=True, null=True)
+        "Coverage Percent", default=0)
     max_claim_amount = models.IntegerField(
-        "Max Claim Amount", default=0, blank=True)
+        "Max Claim Amount", default=0)
     total_claimed = models.IntegerField(
-        "Total Claimed", default=0, null=True, blank=True)
+        "Total Claimed", default=0)
     quantity = models.IntegerField(
-        "Quantity", default=0, null=True, blank=True)
+        "Quantity", default=0)
     period = models.IntegerField(
-        "Period", default=1)
+        "Period", choices=PERIODS,
+        blank=True, null=True)
 
     # ForeignKey
     # Claim
@@ -175,30 +208,32 @@ class Claim(models.Model):
     CASH = "ca"
     CHEQUE = "ch"
     CREDIT = "cr"
-    PAYMENT_CHOICES = ((CASH, "Cash"),
-                       (CHEQUE, "Cheque"),
-                       (CREDIT, "Credit"))
+    PAYMENTS = ((CASH, "Cash"),
+                (CHEQUE, "Cheque"),
+                (CREDIT, "Credit"))
 
     client = models.ForeignKey(
-        Client, verbose_name="Client", blank=True, null=True,)
+        Client, verbose_name="Client")
     patient = models.ForeignKey(
-        Person, verbose_name="Patient", blank=True, null=True,
-        related_name="patient")
+        Person, verbose_name="Patient", related_name="patient",
+        blank=True, null=True)
     coverage_types = models.ManyToManyField(
-        CoverageType, verbose_name="Coverage Types", blank=True, null=True)
+        CoverageType, verbose_name="Coverage Types",
+        blank=True, null=True)
     submitted_date = models.DateField(
         "Submitted Date", auto_now_add=True)
     paid_date = models.DateField(
-        "Paid Date", blank=True, null=True)
+        "Paid Date",
+        blank=True, null=True)
     amount_claimed = models.IntegerField(
-        "Amount Claimed", default=0, blank=True)
+        "Amount Claimed", default=0)
     # TODO validate based on clients insurance, amount left in coverage
     #  and coverage percent
     expected_back = models.IntegerField(
-        "Expected Back", default=0, blank=True)
+        "Expected Back", default=0)
     payment_type = models.CharField(
-        "Payment Type", max_length=6, choices=PAYMENT_CHOICES,
-        blank=True, default="")
+        "Payment Type", max_length=4, choices=PAYMENTS,
+        blank=True)
 
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing
@@ -219,11 +254,14 @@ class Invoice(models.Model):
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
     dispensed_by = models.CharField(
-        "Dispensed By", max_length=128)
+        "Dispensed By", max_length=128,
+        blank=True)
     payment_type = models.CharField(
-        "Payment Type", max_length=15, choices=PAYMENT_TYPES)
+        "Payment Type", max_length=4, choices=PAYMENT_TYPES,
+        blank=True)
     payment_terms = models.CharField(
-        "Payment Terms", max_length=256)
+        "Payment Terms", max_length=256,
+        blank=True)
     payment_made = models.IntegerField(
         "Payment Made", default=0)
 
@@ -252,7 +290,8 @@ class Item(models.Model):
     invoice = models.ForeignKey(
         Invoice, verbose_name="Invoice")
     description = models.CharField(
-        "Description", max_length=512)
+        "Description", max_length=512,
+        blank=True)
     unit_price = models.IntegerField(
         "Unit Price", default=0)
     quantity = models.IntegerField(
@@ -271,15 +310,20 @@ class InsuranceLetter(models.Model):
 
     practitioner_name = models.CharField(
         "Practitioner Name", max_length=128, choices=settings.PRACTITIONERS,
-        default=settings.PRACTITIONERS[0])
+        default=settings.DM,
+        blank=True)
     biomedical_and_gait_analysis_date = models.DateField(
-        "Biomedical and Gait Analysis Date")
+        "Biomedical and Gait Analysis Date",
+        blank=True, null=True)
     examiner = models.CharField(
-        "Examiner", max_length=128)
+        "Examiner", max_length=128,
+        blank=True)
     dispensing_practitioner = models.CharField(
-        "Dispensing Practitioner", max_length=128)
+        "Dispensing Practitioner", max_length=128,
+        blank=True)
     dispense_date = models.DateField(
-        "Dispense Date")
+        "Dispense Date",
+        blank=True, null=True)
 
     orthopedic_shoes = models.BooleanField(
         "Orthopedic Shoes", default=False)
@@ -487,21 +531,27 @@ class ProofOfManufacturing(models.Model):
         Claim, verbose_name="Claim")
 
     invoice_date = models.DateField(
-        "Invoice Date")
+        "Invoice Date",
+        blank=True, null=True)
 
     product = models.CharField(
-        "Product", max_length=256)
+        "Product", max_length=256,
+        blank=True)
     quantity = models.IntegerField(
         "Quantity", default=0)
 
     laboratory_supervisor = models.CharField(
-        "Laboratory Supervisor", max_length=128)
+        "Laboratory Supervisor", max_length=128,
+        blank=True)
     raw_materials = models.TextField(
-        "Raw Materials")
+        "Raw Materials",
+        blank=True)
     manufacturing = models.TextField(
-        "Manufacturing")
+        "Manufacturing",
+        blank=True)
     casting_technique = models.TextField(
-        "Casting Technique")
+        "Casting Technique",
+        blank=True)
 
     # ForeignKey
     # Laboratory
@@ -515,8 +565,9 @@ class ProofOfManufacturing(models.Model):
 
 
 class Laboratory(models.Model):
+    # Dont set default on information, or itll mess up FormSets
     information = models.CharField(
-        "Information", max_length=512, choices=settings.LABORATORIES)
+        "Information", max_length=8, choices=settings.LABORATORIES)
     insurance_letter = models.ForeignKey(
         InsuranceLetter, verbose_name="Insurance Letter",
         null=True, blank=True)
@@ -530,3 +581,19 @@ class Laboratory(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+class SiteStatistics(models.Model):
+    home_page_views = models.IntegerField(default=0)
+
+    def outstanding_fees(self):
+        return 0
+
+    def number_of_clients_with_outstanding_fees(self):
+        return 0
+
+    def revenue(self):
+        revenue = 0
+        for claim in Claim.objects.all():
+            revenue += claim.amount_claimed - claim.expected_back
+        return revenue
