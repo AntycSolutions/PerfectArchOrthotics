@@ -9,6 +9,16 @@
 
 {% block content %}
 
+<h1>Claim for
+    {% if claim.patient %}
+        {{ claim.patient.full_name }}
+    {% else %}
+        {{ client.full_name }}
+    {% endif %}
+</h1>
+<div>
+    <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+</div>
 <h1>Insurance Letter for {{ client.full_name }}</h1>
 <div>
     {% if insurance_letter %}
