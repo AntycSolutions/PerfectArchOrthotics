@@ -1,22 +1,24 @@
+# Python
+import os
+import io
+from datetime import date
+from cgi import escape
+
+# Django
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
-
-from search import get_query
-from easy_pdf.views import PDFTemplateView
-
-import io
-import xhtml2pdf.pisa as pisa
 from django.template.loader import get_template
 from django.template import Context
-from cgi import escape
 
-import os
-from datetime import date
+# xhtml2pdf
+import xhtml2pdf.pisa as pisa
 
+# PerfectArchOrthotics
+from search import get_query
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
     Person
 from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
@@ -24,6 +26,7 @@ from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
 
 
 #TODO: split into multiple views
+
 # Convert HTML URIs to absolute system paths
 #  so xhtml2pdf can access those resources
 def link_callback(uri, rel):
@@ -53,7 +56,8 @@ def link_callback(uri, rel):
                         (sUrl, mUrl))
 
 
-def render_to_pdf(template_src, context_dict):
+@login_required
+def render_to_pdf(request, template_src, context_dict):
     template = get_template(template_src)
     context = Context(context_dict)
     html = template.render(context)
@@ -83,7 +87,8 @@ def invoice_view(request, client_id, claim_id):
     perfect_arch_name = bill_to.split('\n')[0]
     perfect_arch_address = bill_to.replace(perfect_arch_name + '\n', '')
 
-    return render_to_pdf('clients/pdfs/invoice.html',
+    return render_to_pdf(request,
+                         'clients/pdfs/invoice.html',
                          {'pagesize': 'A4',
                           'today': today,
                           'claim': claim,
@@ -113,7 +118,8 @@ def insurance_letter_view(request, client_id, claim_id):
     claim, client, insurance_letter, today = _insurance_letter(client_id,
                                                                claim_id)
 
-    return render_to_pdf('clients/pdfs/insurance_letter.html',
+    return render_to_pdf(request,
+                         'clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
                           'today': today,
                           'claim': claim,
@@ -145,7 +151,8 @@ def proof_of_manufacturing_view(request, client_id, claim_id):
     except:
         pass
 
-    return render_to_pdf('clients/pdfs/proof_of_manufacturing.html',
+    return render_to_pdf(request,
+                         'clients/pdfs/proof_of_manufacturing.html',
                          {'pagesize': 'A4',
                           'claim': claim,
                           'proof_of_manufacturing': proof_of_manufacturing,
@@ -213,10 +220,6 @@ def fillOutProofOfManufacturingView(request, client_id, claim_id):
          'bill_to': settings.BILL_TO[0][1],
          'ship_to': settings.SHIP_TO[0][1]},
         context)
-
-
-class HelloPDFView(PDFTemplateView):
-    template_name = "Hello.html"
 
 
 @login_required
@@ -465,20 +468,25 @@ def makeClaimView(request, client_id):
                     coverage_type = CoverageType.objects.get(id=coverage_id)
                     coverage_types.append(coverage_type)
                     quantity = float(querydict['pairs_%s' % coverage_id])
-                    if quantity > coverage_type.quantity:
+                    amount = float(querydict['amount_%s' % coverage_id])
+                    amount_total = amount * quantity
+                    coverage_remaining = coverage_type.coverage_remaining()
+                    if (quantity > coverage_type.quantity
+                            or amount_total > coverage_remaining):
                         valid = False
                     else:
                         coverage_type.quantity -= quantity
+                        coverage_type.total_claimed += amount_total
                         coverage_type.save()
                         coverage_percent = coverage_type.coverage_percent
-                        amount = float(querydict['amount_%s' % coverage_id])
-                        amount_total = amount * quantity
 
                         amount_claimed_total += amount_total
                         expected_back_total += float(
                             amount_total * (float(coverage_percent) / 100))
                 claim.amount_claimed = amount_claimed_total
                 claim.expected_back = expected_back_total
+            else:
+                valid = False
 
             if valid:
                 claim.client = client
@@ -593,15 +601,11 @@ def add_insurance(request, client_id):
     if request.method == 'POST':
         insurance_form = InsuranceForm(request.POST, prefix="insurance_form")
         coverage_form1 = CoverageForm(
-            request.POST, prefix="coverage_form1",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[0][0],
-                     'coveragePercent': 0})
+            request.POST, prefix="coverage_form1")
         coverage_form2 = CoverageForm(
-            request.POST, prefix="coverage_form2",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[1][0]})
+            request.POST, prefix="coverage_form2")
         coverage_form3 = CoverageForm(
-            request.POST, prefix="coverage_form3",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[2][0]})
+            request.POST, prefix="coverage_form3")
 
         if (insurance_form.is_valid()
                 and coverage_form1.is_valid()
@@ -640,27 +644,12 @@ def add_insurance(request, client_id):
     else:
         insurance_form = InsuranceForm(prefix="insurance_form")
         coverage_form1 = CoverageForm(
-            prefix="coverage_form1",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[0][0],
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form1")
         coverage_form2 = CoverageForm(
-            prefix="coverage_form2",
-            initial={'coverageType': CoverageType.COVERAGE_TYPE[1][0],
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form2")
 
         coverage_form3 = CoverageForm(
-            prefix="coverage_form3",
-            initial={'coverageType': "Orthopedic_shoes",
-                     'coveragePercent': 0,
-                     'maxClaimAmount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form3")
 
     return render_to_response('clients/add_insurance.html',
                               {'insurance_form': insurance_form,
