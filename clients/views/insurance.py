@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
-from clients.models import Insurance, CoverageType, Client, Dependent
+from clients.models import Insurance, Client, Dependent
 from clients.forms.forms import InsuranceForm, CoverageForm
 
 
@@ -42,27 +42,12 @@ class CreateInsuranceView(CreateView):
         context = super(CreateInsuranceView, self).get_context_data(**kwargs)
         client = Client.objects.get(id=self.kwargs['client_id'])
         coverage_form1 = CoverageForm(
-            prefix="coverage_form1",
-            initial={'coverage_type': CoverageType.ORTHOTICS,
-                     'coverage_percent': 0,
-                     'max_claim_amount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form1")
         coverage_form2 = CoverageForm(
-            prefix="coverage_form2",
-            initial={'coverage_type': CoverageType.COMPRESSION_STOCKINGS,
-                     'coverage_percent': 0,
-                     'max_claim_amount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form2")
 
         coverage_form3 = CoverageForm(
-            prefix="coverage_form3",
-            initial={'coverage_type': CoverageType.ORTHOPEDIC_SHOES,
-                     'coverage_percent': 0,
-                     'max_claim_amount': 0,
-                     'quantity': 0,
-                     'period': 0})
+            prefix="coverage_form3")
 
         context['coverage_form1'] = coverage_form1
         context['coverage_form2'] = coverage_form2
@@ -73,15 +58,11 @@ class CreateInsuranceView(CreateView):
 
     def form_valid(self, form):
         coverage_form1 = CoverageForm(
-            self.request.POST, prefix="coverage_form1",
-            initial={'coverage_type': CoverageType.ORTHOTICS,
-                     'coverage_percent': 0})
+            self.request.POST, prefix="coverage_form1")
         coverage_form2 = CoverageForm(
-            self.request.POST, prefix="coverage_form2",
-            initial={'coverage_type': CoverageType.COMPRESSION_STOCKINGS})
+            self.request.POST, prefix="coverage_form2")
         coverage_form3 = CoverageForm(
-            self.request.POST, prefix="coverage_form3",
-            initial={'coverage_type': CoverageType.ORTHOPEDIC_SHOES})
+            self.request.POST, prefix="coverage_form3")
 
         if (coverage_form1.is_valid()
                 and coverage_form2.is_valid()
