@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load nbsp %}
+{% load verbose_name %}
 
 {% block layout_style %}
 
@@ -108,7 +109,7 @@
         <tr>
             <td colspan="6"></td>
             <td colspan="2" style="border: 1px solid black;">
-                &nbsp;Invoice Date</td>
+                &nbsp;{% verbose_field_name proof_of_manufacturing "invoice_date" %}</td>
             <td colspan="2" style="border: 1px solid black;">
                 &nbsp;{{ proof_of_manufacturing.invoice_date }}</td>
         </tr>
@@ -140,19 +141,19 @@
     <table>
         <tr>
             <td colspan="1">
-                Patient:</td>
+                {% verbose_field_name claim "patient" %}:</td>
             <td colspan="9">
                 {{ claim.patient.full_name }}</td>
         </tr>
         <tr>
             <td colspan="1">
-                Product:</td>
+                {% verbose_field_name proof_of_manufacturing "product" %}:</td>
             <td colspan="9">
                 {{ proof_of_manufacturing.product }}</td>
         </tr>
         <tr>
             <td colspan="1">
-                Quantity:</td>
+                {% verbose_field_name proof_of_manufacturing "quantity" %}:</td>
             <td colspan="9">
                 {{ proof_of_manufacturing.quantity }}</td>
         </tr>
@@ -167,26 +168,26 @@
         </tr>
         <tr>
             <td colspan="3">
-                <strong>Laboratory Surpervisor:</strong></td>
+                <strong>{% verbose_field_name proof_of_manufacturing "laboratory_supervisor" %}:</strong></td>
             <td colspan="7">
                 {{ proof_of_manufacturing.laboratory_supervisor }}</td>
         </tr>
         <tr>
             <td colspan="3" valign="top">
-                <strong>Raw Materials:</strong></td>
+                <strong>{% verbose_field_name proof_of_manufacturing "raw_materials" %}:</strong></td>
             <td colspan="7">
                 {{ proof_of_manufacturing.raw_materials }}</td>
         </tr>
         <tr>
             <td colspan="3" valign="top">
-                <strong>Manufacturing:</strong></td>
+                <strong>{% verbose_field_name proof_of_manufacturing "manufacturing" %}:</strong></td>
             <td colspan="7">
                 {{ proof_of_manufacturing.manufacturing }}
             </td>
         </tr>
         <tr>
             <td colspan="3" valign="top">
-                <strong>Casting Technique:</strong></td>
+                <strong>{% verbose_field_name proof_of_manufacturing "casting_technique" %}:</strong></td>
             <td colspan="7">
                 {{ proof_of_manufacturing.casting_technique }}</td>
         </tr>

@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load nbsp %}
+{% load verbose_name %}
 
 {% block layout_style %}
 
@@ -134,15 +135,18 @@
             {{ client.address }}<br>
             {{ client.city }} &nbsp;{{ client.postal_code }}<br/>
         </p>
-        <p>{{ today }}</p>
+        <p>{% now "DATE_FORMAT" %}</p>
     </div>
     <br><br><br>
 
     <p class='info'>
         To: {{ client.full_name }}</br>
-        Dispensed by: {{ invoice.dispensed_by }}</br>
-        Payment type: {{ invoice.payment_type }} </br>
-        Payment terms: {{ invoice.payment_terms }}</br>
+        {% verbose_field_name invoice "dispensed_by" %}:
+        {{ invoice.dispensed_by }}</br>
+        {% verbose_field_name invoice "payment_type" %}:
+        {{ invoice.payment_type }} </br>
+        {% verbose_field_name invoice "payment_terms" %}:
+        {{ invoice.payment_terms }}</br>
         <strong>Please cover payment in 10 days.</strong>
     </p>
 
@@ -159,19 +163,35 @@
         <table>
             <thead>
                 <tr style="border: 1px;">
-                    <th colspan="2" style="text-align: left;"><strong>Description</strong></th>
-                    <th colspan="1" style="text-align: left;"><strong>Quantity</strong></th>
-                    <th colspan="1" style="text-align: left;"><strong>Unit Price</strong></th>
-                    <th colspan="1" style="text-align: right;"><strong>Total</strong></th>
+                    <th colspan="2" style="text-align: left;"><strong>
+                        {% verbose_field_name item_class "description" %}
+                    </strong></th>
+                    <th colspan="1" style="text-align: left;"><strong>
+                        {% verbose_field_name item_class "quantity" %}
+                    </strong></th>
+                    <th colspan="1" style="text-align: left;"><strong>
+                        {% verbose_field_name item_class "unit_price" %}
+                    </strong></th>
+                    <th colspan="1" style="text-align: right;"><strong>
+                        Total
+                    </strong></th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in invoice.item_set.all %}
                     <tr>
-                        <td colspan="2">{{ item.description }}</td>
-                        <td colspan="1">{{ item.quantity }}</td>
-                        <td colspan="1">{{ item.unit_price }}</td>
-                        <td colspan="1" style="text-align: right;">{{ item.total }}</td>
+                        <td colspan="2">
+                            {{ item.description }}
+                        </td>
+                        <td colspan="1">
+                            {{ item.quantity }}
+                        </td>
+                        <td colspan="1">
+                            {{ item.unit_price }}
+                        </td>
+                        <td colspan="1" style="text-align: right;">
+                            {{ item.total }}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -181,24 +201,30 @@
             <tbody>
                 <tr style="border: 0;">
                     <td colspan="4"></td>
-                    <td colspan="2" style="text-align: right;">
-                        <strong>Total:&nbsp;       </strong></td>
-                    <td colspan="1" style="text-align: right;">
-                        <strong>{{ invoice.total }}</strong></td>
+                    <td colspan="2" style="text-align: right;"><strong>
+                        Total:&nbsp;
+                    </strong></td>
+                    <td colspan="1" style="text-align: right;"><strong>
+                        {{ invoice.total }}
+                    </strong></td>
                 </tr>
                 <tr style="border: 0;">
                     <td colspan="4"></td>
-                    <td colspan="2" style="text-align: right;">
-                        <strong>Payment Made:&nbsp;</strong></td>
-                    <td colspan="1" style="text-align: right;">
-                        <strong>{{ invoice.payment_made }}</strong></td>
+                    <td colspan="2" style="text-align: right;"><strong>
+                        {% verbose_field_name invoice "payment_made" %}:&nbsp;
+                    </strong></td>
+                    <td colspan="1" style="text-align: right;"><strong>
+                        {{ invoice.payment_made }}
+                    </strong></td>
                 </tr>
                 <tr style="border: 0;">
                     <td colspan="4"></td>
-                    <td colspan="2" style="text-align: right;">
-                        <strong>Balance:&nbsp;     </strong></td>
-                    <td colspan="1" style="text-align: right;">
-                        <strong>{{ invoice.balance }}</strong></td>
+                    <td colspan="2" style="text-align: right;"><strong>
+                        Balance:&nbsp;
+                    </strong></td>
+                    <td colspan="1" style="text-align: right;"><strong>
+                        {{ invoice.balance }}
+                    </strong></td>
                 </tr>
             </tbody>
         </table>
