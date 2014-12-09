@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
+from django.contrib import messages
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -20,7 +21,7 @@ import xhtml2pdf.pisa as pisa
 # PerfectArchOrthotics
 from search import get_query
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
-    Person
+    Person, Item
 from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
     CoverageForm, ClaimForm
 
@@ -81,8 +82,8 @@ def render_to_pdf(request, template_src, context_dict):
 
 
 def invoice_view(request, client_id, claim_id):
-    claim, client, invoice, today, invoice_number = _invoice(client_id,
-                                                             claim_id)
+    claim, client, invoice, invoice_number = _invoice(client_id,
+                                                      claim_id)
     bill_to = settings.BILL_TO[0][1]
     perfect_arch_name = bill_to.split('\n')[0]
     perfect_arch_address = bill_to.replace(perfect_arch_name + '\n', '')
@@ -90,13 +91,13 @@ def invoice_view(request, client_id, claim_id):
     return render_to_pdf(request,
                          'clients/pdfs/invoice.html',
                          {'pagesize': 'A4',
-                          'today': today,
                           'claim': claim,
                           'client': client,
                           'invoice': invoice,
                           'invoice_number': invoice_number,
                           'perfect_arch_name': perfect_arch_name,
-                          'perfect_arch_address': perfect_arch_address}
+                          'perfect_arch_address': perfect_arch_address,
+                          'item_class': Item}
                          )
 
 
@@ -108,10 +109,9 @@ def _invoice(client_id, claim_id):
         invoice = claim.invoice_set.all()[0]
     except:
         pass
-    today = date.today()
     invoice_number = "{0:04d}".format(claim.id)
 
-    return claim, client, invoice, today, invoice_number
+    return claim, client, invoice, invoice_number
 
 
 def insurance_letter_view(request, client_id, claim_id):
@@ -194,8 +194,8 @@ def _proof_of_manufacturing(claim_id):
 def fillOutInvoiceView(request, client_id, claim_id):
     context = RequestContext(request)
 
-    claim, client, invoice, today, invoice_number = _invoice(client_id,
-                                                             claim_id)
+    claim, client, invoice, invoice_number = _invoice(client_id,
+                                                      claim_id)
 
     return render_to_response('clients/make_invoice.html',
                               {'client': client,
@@ -416,7 +416,8 @@ def clientView(request, client_id):
                     'client_insurance': insurance,
                     'client_claims': claims,
                     'spouse': spouse,
-                    'children': children}
+                    'children': children,
+                    'dependent_class': Dependent}
     return render_to_response('clients/client.html', context_dict, context)
 
 
@@ -468,6 +469,7 @@ def makeClaimView(request, client_id):
     client = Client.objects.get(id=client_id)
     insurances = client.insurance_set.all()
     claim_form = ClaimForm()
+    # SUPER GROSS, MOVE TO FORM!
     if request.method == 'POST':
         # the check for if the right coverage and amount are selected
         claim_form = ClaimForm(request.POST)
@@ -476,32 +478,47 @@ def makeClaimView(request, client_id):
             coverage_types = []
             valid = True
             querydict = request.POST
-            if 'coverageSelected' in querydict:
-                amount_claimed_total = 0
-                expected_back_total = 0
-                for coverage_id in querydict.getlist('coverageSelected'):
-                    coverage_type = CoverageType.objects.get(id=coverage_id)
-                    coverage_types.append(coverage_type)
-                    quantity = float(querydict['pairs_%s' % coverage_id])
-                    amount = float(querydict['amount_%s' % coverage_id])
-                    amount_total = amount * quantity
-                    coverage_remaining = coverage_type.coverage_remaining()
-                    if (quantity > coverage_type.quantity
-                            or amount_total > coverage_remaining):
-                        valid = False
-                    else:
-                        coverage_type.quantity -= quantity
-                        coverage_type.total_claimed += amount_total
-                        coverage_type.save()
-                        coverage_percent = coverage_type.coverage_percent
+            if 'patient' in querydict:
+                if 'coverageSelected' in querydict:
+                    amount_claimed_total = 0
+                    expected_back_total = 0
+                    for coverage_id in querydict.getlist('coverageSelected'):
+                        coverage_type = CoverageType.objects.get(
+                            id=coverage_id)
+                        coverage_types.append(coverage_type)
+                        quantity = float(querydict['pairs_%s' % coverage_id])
+                        amount = float(querydict['amount_%s' % coverage_id])
+                        amount_total = amount * quantity
+                        coverage_remaining = coverage_type.coverage_remaining()
+                        if (quantity > coverage_type.quantity
+                                or amount_total > coverage_remaining):
+                            valid = False
+                            messages.add_message(
+                                request, messages.ERROR,
+                                "Pairs Claimed is more than Pair Remaining"
+                                ", or Claim Amount * Pairs Claimed is more "
+                                "than Coverage Remaining")
+                        else:
+                            coverage_type.quantity -= quantity
+                            coverage_type.total_claimed += amount_total
+                            coverage_type.save()
+                            coverage_percent = coverage_type.coverage_percent
 
-                        amount_claimed_total += amount_total
-                        expected_back_total += float(
-                            amount_total * (float(coverage_percent) / 100))
-                claim.amount_claimed = amount_claimed_total
-                claim.expected_back = expected_back_total
+                            amount_claimed_total += amount_total
+                            expected_back_total += float(
+                                amount_total * (float(coverage_percent) / 100))
+                    claim.amount_claimed = amount_claimed_total
+                    claim.expected_back = expected_back_total
+                else:
+                    valid = False
+                    messages.add_message(
+                        request, messages.ERROR,
+                        "Please select a Coverage Type.")
             else:
                 valid = False
+                messages.add_message(
+                    request, messages.ERROR,
+                    "Please select a Patient.")
 
             if valid:
                 claim.client = client
@@ -514,12 +531,9 @@ def makeClaimView(request, client_id):
                     claim.coverage_types.add(coverage_type)
 
                 return redirect('claim', client.id, claim.id)
-    else:
-        client_form = ClientForm(instance=client)
 
     return render_to_response('clients/make_claim.html',
                               {'client': client,
-                               'client_form': client_form,
                                'insurances': insurances,
                                'claim_form': claim_form},
                               context)
