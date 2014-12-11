@@ -1,12 +1,37 @@
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
-    ProofOfManufacturing
+    ProofOfManufacturing, Client
 from clients.forms.forms import ClaimForm, InvoiceForm, ItemFormSet, \
     InsuranceLetterForm, ProofOfManufacturingForm, \
     LaboratoryProofOfManufacturingFormSet, LaboratoryInsuranceLetterFormSet
+
+
+class CreateClaimView(CreateView):
+    template_name = 'clients/claim/create_claim.html'
+    model = Claim
+    form_class = ClaimForm
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        client = Client.objects.get(id=self.kwargs['client_id'])
+        self.object.client = client
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('claim_detail',
+                                        kwargs={'client_id': self.object.id})
+        return self.success_url
+
+
+class DetailClaimView(DetailView):
+    template_name = 'clients/claim/detail_claim.html'
+    model = Claim
 
 
 class UpdateClaimView(UpdateView):
