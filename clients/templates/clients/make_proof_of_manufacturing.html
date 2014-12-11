@@ -22,7 +22,7 @@
 <h1>Proof of Manufacturing for {{ client.full_name }}</h1>
 <div>
     {% if proof_of_manufacturing %}
-        <a href="{% url 'proof_of_manufacturing_edit' proof_of_manufacturing.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'proof_of_manufacturing_update' proof_of_manufacturing.id %}" class="btn btn-primary">Edit</a>
     {% else %}
         <a href="{% url 'proof_of_manufacturing_create' claim.id %}" class="btn btn-primary">Create</a>
     {% endif %}

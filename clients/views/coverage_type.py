@@ -42,12 +42,11 @@ class CreateCoverageTypeView(CreateView):
         saved = form.save(commit=False)
         insurance = Insurance.objects.get(id=self.kwargs['insurance_id'])
         saved.insurance = insurance
-        saved.totalClaimed = 0
         saved.save()
 
         return HttpResponseRedirect(self.get_success_url(insurance))
 
     def get_success_url(self, insurance):
-        self.success_url = reverse_lazy('insurance_edit',
+        self.success_url = reverse_lazy('insurance_update',
                                         kwargs={'insurance_id': insurance.id})
         return self.success_url

@@ -73,7 +73,7 @@ class DependentForm(forms.ModelForm):
 
         # fields = ('firstName', 'lastName', 'birthdate', 'gender',
         #           'relationship')
-        fields = ('__all__')
+        exclude = ('client',)
 
     # def clean(self):
     #     cleaned_data = super(DependentForm, self).clean()

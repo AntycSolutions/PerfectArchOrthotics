@@ -1,6 +1,7 @@
 from datetime import date
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 '''
     Char/Text Field is always set to '', doesnt need null=True
@@ -34,28 +35,19 @@ class Person(models.Model):
             return "%s %s" % (self.first_name, self.last_name)
         return None
 
+    def get_absolute_url(self):
+        try:
+            return Client.objects.get(id=self.id).get_absolute_url()
+        except:
+            pass
+        try:
+            return Dependent.objects.get(id=self.id).get_absolute_url()
+        except:
+            pass
+        return None
+
     def __unicode__(self):
         return "Person - %s" % (self.full_name())
-
-    def __str__(self):
-        return self.__unicode__()
-
-
-class Dependent(Person):
-    SPOUSE = 's'
-    CHILD = 'c'
-    RELATIONSHIPS = ((SPOUSE, 'Spouse'),
-                     (CHILD, 'Child'))
-
-    relationship = models.CharField(
-        "Relationship", max_length=4, choices=RELATIONSHIPS,
-        blank=True)
-
-    # ManyToMany
-    # Client
-
-    def __unicode__(self):
-        return "Dependent - %s" % (self.full_name())
 
     def __str__(self):
         return self.__unicode__()
@@ -89,17 +81,12 @@ class Client(Person):
     employer = models.CharField(
         "Employer", max_length=128,
         blank=True)
-    credit = models.SmallIntegerField(
-        "Credit", default=0)
-    referred_by = models.CharField(
-        "Referred By", max_length=128,
-        blank=True)
+    referred_by = models.ForeignKey(
+        Person, verbose_name="Referred By", related_name="referred_by",
+        blank=True, null=True)
     notes = models.TextField(
         "Notes",
         blank=True)
-    dependents = models.ManyToManyField(
-        Dependent, verbose_name="Dependents",
-        blank=True, null=True)
 
     # Foreign keys
     # Insurance, Claim
@@ -109,8 +96,46 @@ class Client(Person):
             return date.today().year - self.birth_date.year
         return None
 
+    def credit(self):
+        total_payment_made = 0
+        for claim in self.claim_set.all():
+            for invoice in claim.invoice_set.all():
+                total_payment_made += invoice.payment_made
+        credit = total_payment_made / 200
+        return credit
+
+    def get_absolute_url(self):
+        return reverse('client', kwargs={'client_id': self.id})
+
     def __unicode__(self):
         return "Client - %s" % (self.full_name())
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class Dependent(Person):
+    SPOUSE = 's'
+    CHILD = 'c'
+    RELATIONSHIPS = ((SPOUSE, 'Spouse'),
+                     (CHILD, 'Child'))
+
+    client = models.ForeignKey(
+        Client, verbose_name="Client")
+    relationship = models.CharField(
+        "Relationship", max_length=4, choices=RELATIONSHIPS,
+        blank=True)
+
+    # ManyToMany
+    # Client
+
+    def get_absolute_url(self):
+        return "%s#%s" % (reverse('client',
+                                  kwargs={'client_id': self.client.id}),
+                          self.id)
+
+    def __unicode__(self):
+        return "Dependent - %s" % (self.full_name())
 
     def __str__(self):
         return self.__unicode__()
@@ -159,19 +184,21 @@ class CoverageType(models.Model):
     ORTHOTICS = "o"
     COMPRESSION_STOCKINGS = "cs"
     ORTHOPEDIC_SHOES = "os"
+    BACK_SUPPORT = "bs"
     COVERAGE_TYPES = ((ORTHOTICS, "Orthotics"),
                       (COMPRESSION_STOCKINGS, "Compression Stockings"),
-                      (ORTHOPEDIC_SHOES, "Orthopedic Shoes"))
+                      (ORTHOPEDIC_SHOES, "Orthopedic Shoes"),
+                      (BACK_SUPPORT, "Back Support"))
     BENEFIT_YEAR = 1
     CALENDAR_YEAR = 2
     TWELVE_ROLLING_MONTHS = 12
     TWENTY_FOUR_ROLLING_MONTHS = 24
     THIRTY_SIX_ROLLING_MONTHS = 36
-    PERIODS = ((TWELVE_ROLLING_MONTHS, '12 Rolling Months'),
-               (TWENTY_FOUR_ROLLING_MONTHS, '24 Rolling Months'),
-               (THIRTY_SIX_ROLLING_MONTHS, '36 Rolling Months'),
-               (BENEFIT_YEAR, 'Benefit Year'),
-               (CALENDAR_YEAR, 'Calendar Year'))
+    PERIODS = ((TWELVE_ROLLING_MONTHS, "12 Rolling Months"),
+               (TWENTY_FOUR_ROLLING_MONTHS, "24 Rolling Months"),
+               (THIRTY_SIX_ROLLING_MONTHS, "36 Rolling Months"),
+               (BENEFIT_YEAR, "Benefit Year"),
+               (CALENDAR_YEAR, "Calendar Year"))
 
     insurance = models.ForeignKey(
         Insurance, verbose_name="Insurance")

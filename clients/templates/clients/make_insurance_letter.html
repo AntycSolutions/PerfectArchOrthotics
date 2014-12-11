@@ -22,7 +22,7 @@
 <h1>Insurance Letter for {{ client.full_name }}</h1>
 <div>
     {% if insurance_letter %}
-        <a href="{% url 'insurance_letter_edit' insurance_letter.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'insurance_letter_update' insurance_letter.id %}" class="btn btn-primary">Edit</a>
     {% else %}
         <a href="{% url 'insurance_letter_create' claim.id %}" class="btn btn-primary">Create</a>
     {% endif %}

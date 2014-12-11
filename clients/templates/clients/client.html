@@ -22,34 +22,61 @@
     <div style="width: 50%; float: left;">
         <h5>Personal</h5>
         <ul>
-            <li>{% verbose_field_name client "birth_date" %}: {{ client.birth_date }}</li>
-            <li>{% verbose_field_name client "gender" %}: {{ client.get_gender_display }}</li>
-            <li>{% verbose_field_name client "employer" %}: {{ client.employer }}</li>
-            <li>{% verbose_field_name client "referred_by" %}: {{ client.referred_by }}</li>
+            <li>{% verbose_field_name client "birth_date" %}:
+                {{ client.birth_date }}
+            </li>
+            <li>{% verbose_field_name client "gender" %}:
+                {{ client.get_gender_display }}
+            </li>
+            <li>{% verbose_field_name client "employer" %}:
+                {{ client.employer }}
+            </li>
         </ul>
         <h5>Location</h5>
         <ul>
-            <li>{% verbose_field_name client "address" %}: {{client.address}}</li>
-            <li>{% verbose_field_name client "city" %}: {{client.city}}</li>
-            <li>{% verbose_field_name client "postal_code" %}: {{client.postal_code}}</li>
+            <li>{% verbose_field_name client "address" %}:
+                {{ client.address }}
+            </li>
+            <li>{% verbose_field_name client "city" %}:
+                {{ client.city }}
+            </li>
+            <li>{% verbose_field_name client "postal_code" %}:
+                {{ client.postal_code }}
+            </li>
         </ul>
         <h5>Contact</h5>
         <ul>
-            <li>{% verbose_field_name client "phone_number" %}: {{client.phone_number}}</li>
-            <li>{% verbose_field_name client "cell_number" %}: {{client.cell_number}}</li>
-            <li>{% verbose_field_name client "email" %}: {{client.email}}</li>
+            <li>{% verbose_field_name client "phone_number" %}:
+                {{ client.phone_number }}
+            </li>
+            <li>{% verbose_field_name client "cell_number" %}:
+                {{ client.cell_number }}
+            </li>
+            <li>{% verbose_field_name client "email" %}:
+                {{ client.email }}
+            </li>
         </ul>
     </div>
     <div style="width: 50%; float: right;">
         <h5>Healthcare</h5>
         <ul>
-            <li>{% verbose_field_name client "health_care_number" %}: {{client.health_care_number }}</li>
+            <li>{% verbose_field_name client "health_care_number" %}:
+                {{client.health_care_number }}
+            </li>
         </ul>
         <h5>Other</h5>
         <ul>
-            <li>{% verbose_field_name client "credit" %}: {{client.credit}}</li>
-            <li>{% verbose_field_name client "referred_by" %}: {{client.referred_by}}</li>
-            <li>{% verbose_field_name client "notes" %}: {{client.notes}}</li>
+            <li>Credit (All Payments Made / 200):
+                {{ client.credit }}
+            </li>
+            <li>{% verbose_field_name client "referred_by" %}:
+                <a href="{{ client.referred_by.get_absolute_url }}">
+                    {{ client.referred_by.full_name }}
+                </a>
+            </li>
+            <li>{% verbose_field_name client "notes" %}:
+                {{ client.notes }}
+            </li>
         </ul>
     </div>
     <br style="clear: both;"/>
@@ -101,7 +128,7 @@
         <tbody>
             {% for child in children %}
                 <tr>
-                    <td>{{ child.full_name }}</td>
+                    <td id="{{ child.id }}">{{ child.full_name }}</td>
                     <td>{{ child.birth_date }}</td>
                     <td>{{ child.get_gender_display }}</td>
                     <td>

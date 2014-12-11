@@ -402,7 +402,7 @@ def clientView(request, client_id):
 
     client = Client.objects.get(id=client_id)
     insurance = client.insurance_set.all()
-    dependents = client.dependents.all()
+    dependents = client.dependent_set.all()
     claims = client.claim_set.all()
     spouse = None
     children = []
@@ -544,11 +544,13 @@ def editDependentsView(request, client_id, dependent_id):
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
-    dependent = client.dependents.get(id=dependent_id)
+    dependent = client.dependent_set.get(id=dependent_id)
     if request.method == 'POST':
         dependent_form = DependentForm(request.POST, instance=dependent)
         if dependent_form.is_valid():
-            dependent_form.save()
+            saved = dependent_form.save(commit=False)
+            saved.client = client
+            saved.save()
             return redirect('client', client_id)
 
     else:
@@ -569,10 +571,11 @@ def add_new_dependent(request, client_id):
         form = DependentForm(request.POST)
 
         if form.is_valid():
-            saved = form.save(commit=True)
+            saved = form.save(commit=False)
 
             client = Client.objects.get(id=client_id)
-            client.dependents.add(saved)
+            saved.client = client
+            saved.save()
             return redirect('client', client_id)
     else:
         form = DependentForm()
@@ -588,7 +591,7 @@ def deleteDependentsView(request, client_id, dependent_id):
     # context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
-    dependent = client.dependents.get(id=dependent_id)
+    dependent = client.dependent_set.get(id=dependent_id)
     dependent.delete()
     return redirect('client', client_id)
 
@@ -604,10 +607,11 @@ def add_dependent(request, client_id):
         form = DependentForm(request.POST)
 
         if form.is_valid():
-            saved = form.save(commit=True)
+            saved = form.save(commit=False)
 
             client = Client.objects.get(id=client_id)
-            client.dependents.add(saved)
+            saved.client = client
+            saved.save()
 
             if request.POST['submit'] == "Create and proceed":
                 # This means we want to add insurance

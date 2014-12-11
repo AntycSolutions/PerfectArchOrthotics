@@ -34,15 +34,12 @@ def populate():
     SPOUSE = Dependent.SPOUSE
     CHILD = Dependent.CHILD
     # Add Dependents
-    kid_one = add_dependent("Kid", "one", CHILD, MALE,
+    kid_one = add_dependent(eric, "Kid", "one", CHILD, MALE,
                             datetime.date(1999, 1, 1))
-    kid_two = add_dependent("Kid", "two", CHILD, FEMALE,
+    kid_two = add_dependent(eric, "Kid", "two", CHILD, FEMALE,
                             datetime.date(2001, 1, 1))
-    wife = add_dependent("Jane", "Doe", SPOUSE, FEMALE,
+    wife = add_dependent(eric, "Jane", "Doe", SPOUSE, FEMALE,
                          datetime.date(1985, 12, 8))
-    eric.dependents.add(kid_one)
-    eric.dependents.add(kid_two)
-    eric.dependents.add(wife)
 
     # Constants for insurance model
     DIRECT = Insurance.DIRECT
@@ -138,8 +135,10 @@ def add_client(firstName, lastName, address, city,
     return c[0]
 
 
-def add_dependent(firstName, lastName, relationship, gender, birthdate):
-    d = Dependent.objects.get_or_create(first_name=firstName,
+def add_dependent(client, firstName, lastName,
+                  relationship, gender, birthdate):
+    d = Dependent.objects.get_or_create(client=client,
+                                        first_name=firstName,
                                         last_name=lastName,
                                         relationship=relationship,
                                         gender=gender,

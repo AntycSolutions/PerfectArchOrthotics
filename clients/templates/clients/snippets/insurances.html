@@ -24,14 +24,14 @@
                         </a>
                     {% endif %}
                 </td>
-                <td>{{insurance.client.employer}}</td>
-                <td>{{insurance.provider}}</td>
-                <td>{{insurance.policy_number}}</td>
-                <td>{{insurance.contract_number}}</td>
+                <td>{{ insurance.client.employer }}</td>
+                <td>{{ insurance.provider }}</td>
+                <td>{{ insurance.policy_number }}</td>
+                <td>{{ insurance.contract_number }}</td>
                 <td>{{ insurance.get_billing_display }}</td>
                 <td>
                     <div class="pull-right">
-                        <a href="{% url 'insurance_edit' insurance.id %}" class="btn btn-default">Edit</a>
+                        <a href="{% url 'insurance_update' insurance.id %}" class="btn btn-default">Edit</a>
                         <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-default">Delete</a>
                     </div>
                 </td>
@@ -64,7 +64,7 @@
                                             <td>{{ coverageType.get_period_display }}</td>
                                             <!-- <td>
                                                 <div class="pull-right">
-                                                    <a href="{% url 'coverage_type_edit' coverageType.id %}" class="btn btn-default">Edit</a>
+                                                    <a href="{% url 'coverage_type_update' coverageType.id %}" class="btn btn-default">Edit</a>
                                                     <a href="{% url 'coverage_type_delete' coverageType.id %}" class="btn btn-default">Delete</a>
                                                 </div>
                                             </td> -->
