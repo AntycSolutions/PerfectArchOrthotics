@@ -29,6 +29,8 @@ PRACTITIONERS = ()
 
 # Get from file
 MOLL = ''
+OOLI = ''
+AROR = ''
 LABORATORIES = ()
 
 # Get from file

@@ -11,18 +11,17 @@ SECRET_KEY = ''
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['perfectarch.antyc.ca']
+# Get from file
+ALLOWED_HOSTS = []
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         # Get from file
+        'ENGINE': '',
         'NAME': '',
-        # Get from file
         'USER': '',
-        # Get from file
         'PASSWORD': '',
-        'HOST': 'localhost'
+        'HOST': ''
     }
 }
 
@@ -35,6 +34,8 @@ PRACTITIONERS = ()
 
 # Get from file
 MOLL = ''
+OOLI = ''
+AROR = ''
 LABORATORIES = ()
 
 # Get from file
