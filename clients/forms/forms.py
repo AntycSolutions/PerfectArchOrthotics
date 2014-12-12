@@ -131,8 +131,8 @@ class ClaimForm(forms.ModelForm):
         model = Claim
 
         # fields = ('claimType', 'paymentType',)
-        exclude = ('client', 'patient', 'coverage_types', 'amount_claimed',
-                   'expected_back')
+        exclude = ('client', 'patient', 'insurance', 'coverage_types',
+                   'amount_claimed', 'expected_back')
 
 
 class InvoiceForm(forms.ModelForm):

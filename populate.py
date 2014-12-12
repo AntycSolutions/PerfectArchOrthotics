@@ -42,24 +42,24 @@ def populate():
                          datetime.date(1985, 12, 8))
 
     # Constants for insurance model
-    DIRECT = Insurance.DIRECT
-    INDIRECT = Insurance.INDIRECT
+    ASSIGNMENT = Insurance.ASSIGNMENT
+    NON_ASSIGNMENT = Insurance.NON_ASSIGNMENT
     # Add Insurances
     # Commening out for now, looks like we are changing the way we do this
     eric_insurance = add_insurance(eric, "Some_provider",
-                                   "PN9999", "CN9999", DIRECT)
+                                   "PN9999", "CN9999", ASSIGNMENT)
     chris_insurance = add_insurance(chris, "Some_provider",
-                                    "PN9998", "CN9998", DIRECT)
+                                    "PN9998", "CN9998", ASSIGNMENT)
     jay_insurance = add_insurance(jay, "Some_provider",
-                                  "PN9997", "CN9997", DIRECT)
+                                  "PN9997", "CN9997", ASSIGNMENT)
     dan_insurance = add_insurance(dan, "Some_provider",
-                                  "PN9996", "CN9996", DIRECT)
+                                  "PN9996", "CN9996", ASSIGNMENT)
     cloney_insurance = add_insurance(cloney, "Some_provider",
-                                     "PN9995", "CN9995", DIRECT)
+                                     "PN9995", "CN9995", ASSIGNMENT)
     jane_insurance = add_insurance(jane, "Some_provider",
-                                   "PN9994", "CN9994", DIRECT)
+                                   "PN9994", "CN9994", ASSIGNMENT)
     john_insurance = add_insurance(john, "Some_provider",
-                                   "PN9994", "CN9994", INDIRECT)
+                                   "PN9994", "CN9994", NON_ASSIGNMENT)
 
     # Constants for coverage types model
     ORTHOTICS = CoverageType.ORTHOTICS
@@ -146,12 +146,13 @@ def add_dependent(client, firstName, lastName,
     return d[0]
 
 
-def add_insurance(client, provider, policyNumber, contractNumber, billing):
+def add_insurance(client, provider, policyNumber, contractNumber,
+                  benefits):
     i = Insurance.objects.get_or_create(client=client,
                                         provider=provider,
                                         policy_number=policyNumber,
                                         contract_number=contractNumber,
-                                        billing=billing)
+                                        benefits=benefits)
     return i[0]
 
 

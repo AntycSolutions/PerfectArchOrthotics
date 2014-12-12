@@ -7,12 +7,22 @@
 {% block extrahead %}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script>
+<script type="text/javascript">
     $(function() {
         $( "#id_paid_date" ).datepicker(
             {changeMonth: true,
              changeYear: true,
              yearRange: "1900:2015"});
+    });
+    $(document).ready(function() {
+        $('.trigger').click(function() {
+            // Hide other insurance's coverage types
+            $('.content').hide();
+            $('.content input').attr('disabled', 'disabled');
+            // Show selected insurance's coverage types
+            $('.' + $(this).data('rel')).show();
+            $('.' + $(this).data('rel') + ' input').removeAttr('disabled');
+        });
     });
 </script>
 {% endblock %}
@@ -40,9 +50,19 @@
         <h5>Patient</h5>
         <input type="radio" name="patient" value={{ client.id }}>
             Client - {{ client.full_name }}<br>
-        {% for dependent in client.dependents.all %}
+        {% for dependent in client.dependent_set.all %}
             <input type="radio" name="patient" value={{ dependent.id }}>
-                {{ dependent.get_relationship_display }} - {{ dependent.full_name }}<br>
+            {{ dependent.get_relationship_display }} - {{ dependent.full_name }}<br />
+        {% endfor %}
+    </div>
+
+    <div>
+        <h5>Insurances available</h5>
+        {% for insurance in insurances %}
+            <input type="radio" name="insurance" class="trigger" value="{{ insurance.id }}" data-rel="insurance_{{ insurance.id }}">
+            Provider: {{ insurance.provider }}
+            {{ insurance.person.full_name }}
+            <br />
         {% endfor %}
     </div>
 
@@ -64,11 +84,11 @@
                         <th>Pairs Claimed</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for insurance in insurances %}
+                {% for insurance in insurances %}
+                    <tbody class="insurance_{{ insurance.id }} content" style="display: none;">
                         {% for coverage in insurance.coveragetype_set.all %}
                             <tr>
-                                <td><input type="checkbox" name="coverageSelected" value="{{ coverage.id }}"></td>
+                                <td><input type="checkbox" name="coverageSelected" value="{{ coverage.id }}" disabled="disabled"></td>
                                 <td>{{ coverage.get_coverage_type_display }}</td>
                                 <td>{{ coverage.coverage_percent }}</td>
                                 <td>{{ coverage.max_claim_amount }}</td>
@@ -76,19 +96,20 @@
                                 <td>{{ coverage.total_claimed }}</td>
                                 <td>{{ coverage.quantity }}</td>
                                 <td>{{ coverage.get_period_display }}</td>
-                                <td><input type="number" name="amount_{{ coverage.id }}" value=0></td>
-                                <td><input type="number" name="pairs_{{ coverage.id }}" value=1></td>
+                                <td><input type="number" name="amount_{{ coverage.id }}" value="0" disabled="disabled"></td>
+                                <td><input type="number" name="pairs_{{ coverage.id }}" value="1" disabled="disabled"></td>
                             </tr>
                         {% endfor %}
-                    {% endfor %}
-                </tbody>
+                    </tbody>
+                {% endfor %}
             </table>
         <p><strong>Before saving please review that everything is entered correctly</strong></p>
         <input type="submit" name="submit" value="Make Claim" />
         {% else %}
-            <p><strong>Between the client and spouse no coverages are available to make a claim</strong></p>
+            <p>Between the client and spouse no coverages are available to make a claim.</p>
         {% endif %}
     </div>
 </form>
+<br />
 
 {% endblock %}

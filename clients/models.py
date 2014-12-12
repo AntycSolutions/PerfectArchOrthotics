@@ -26,6 +26,9 @@ class Person(models.Model):
     birth_date = models.DateField(
         "Birth Date",
         blank=True, null=True)
+    health_care_number = models.CharField(
+        "Health Care Number", max_length=20,
+        blank=True)
 
     # ForeignKey
     # Client, Dependent
@@ -75,9 +78,6 @@ class Client(Person):
     email = models.EmailField(
         "Email", max_length=254,
         blank=True, null=True)
-    health_care_number = models.CharField(
-        "Health Care Number", max_length=20,
-        blank=True)
     employer = models.CharField(
         "Employer", max_length=128,
         blank=True)
@@ -89,7 +89,7 @@ class Client(Person):
         blank=True)
 
     # Foreign keys
-    # Insurance, Claim
+    # Insurance, Claim, Client
 
     def age(self):
         if self.birth_date.year:
@@ -126,9 +126,6 @@ class Dependent(Person):
         "Relationship", max_length=4, choices=RELATIONSHIPS,
         blank=True)
 
-    # ManyToMany
-    # Client
-
     def get_absolute_url(self):
         return "%s#%s" % (reverse('client',
                                   kwargs={'client_id': self.client.id}),
@@ -142,10 +139,10 @@ class Dependent(Person):
 
 
 class Insurance(models.Model):
-    DIRECT = "d"
-    INDIRECT = "i"
-    BILLINGS = ((DIRECT, "Direct"),
-                (INDIRECT, "Indirect"))
+    ASSIGNMENT = "a"
+    NON_ASSIGNMENT = "na"
+    BENEFITS = ((ASSIGNMENT, "Assignment"),
+                (NON_ASSIGNMENT, "Non-assignment"))
 
     client = models.ForeignKey(
         Client, verbose_name="Client")
@@ -154,16 +151,15 @@ class Insurance(models.Model):
         Dependent, verbose_name="Spouse",
         blank=True, null=True)
     provider = models.CharField(
-        "Provider", max_length=128,
-        blank=True)
+        "Provider", max_length=128)
     policy_number = models.CharField(
         "Policy Number", max_length=128,
         blank=True)
     contract_number = models.CharField(
         "Contract Number", max_length=128,
         blank=True)
-    billing = models.CharField(
-        "Billing", max_length=4, choices=BILLINGS,
+    benefits = models.CharField(
+        "Benefits", max_length=4, choices=BENEFITS,
         blank=True)
     gait_scan = models.BooleanField(
         "Gait Scan", default=False)
@@ -172,6 +168,11 @@ class Insurance(models.Model):
 
     # ForeignKey
     # CoverageType
+
+    def person(self):
+        if self.spouse:
+            return self.spouse
+        return self.client
 
     def __unicode__(self):
         return "Insurance - %s - %s" % (self.provider, self.client)
@@ -244,6 +245,9 @@ class Claim(models.Model):
     patient = models.ForeignKey(
         Person, verbose_name="Patient", related_name="patient",
         blank=True, null=True)
+    insurance = models.ForeignKey(
+        Insurance, verbose_name="Insurance",
+        blank=True, null=True)
     coverage_types = models.ManyToManyField(
         CoverageType, verbose_name="Coverage Types",
         blank=True, null=True)
@@ -265,6 +269,11 @@ class Claim(models.Model):
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing
 
+    def person(self):
+        if self.patient:
+            return self.patient
+        return self.client
+
     def __unicode__(self):
         return "Claim - %s - %s" % (self.submitted_date, self.client)
 
@@ -273,18 +282,10 @@ class Claim(models.Model):
 
 
 class Invoice(models.Model):
-    ASSIGNMENT = "a"
-    NON_ASSIGNMENT = "na"
-    PAYMENT_TYPES = ((ASSIGNMENT, "Assignment"),
-                     (NON_ASSIGNMENT, "Non-assignment"))
-
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
     dispensed_by = models.CharField(
         "Dispensed By", max_length=128,
-        blank=True)
-    payment_type = models.CharField(
-        "Payment Type", max_length=4, choices=PAYMENT_TYPES,
         blank=True)
     payment_terms = models.CharField(
         "Payment Terms", max_length=256,

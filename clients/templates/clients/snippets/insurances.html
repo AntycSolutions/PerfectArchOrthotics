@@ -6,7 +6,7 @@
             <th>Provider</th>
             <th>Policy Number</th>
             <th>Contract Number</th>
-            <th>Billing</th>
+            <th>Benefits</th>
             <th></th>
         </tr>
     </thead>
@@ -15,7 +15,7 @@
             <tr>
                 <td>
                     {% if insurance.spouse %}
-                        <a href="{% url 'client' insurance.client.id %}#{{ insurance.spouse.id }}">
+                        <a href="{{ insurance.spouse.get_absolute_url }}">
                             {{ insurance.spouse.full_name }}
                         </a>
                     {% else %}
@@ -28,7 +28,7 @@
                 <td>{{ insurance.provider }}</td>
                 <td>{{ insurance.policy_number }}</td>
                 <td>{{ insurance.contract_number }}</td>
-                <td>{{ insurance.get_billing_display }}</td>
+                <td>{{ insurance.get_benefits_display }}</td>
                 <td>
                     <div class="pull-right">
                         <a href="{% url 'insurance_update' insurance.id %}" class="btn btn-default">Edit</a>

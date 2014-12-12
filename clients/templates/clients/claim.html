@@ -2,25 +2,13 @@
 
 {% load verbose_name %}
 
-{% include 'navbar.html' %}
+{% block title %} - Claim for {{ claim.person.full_name }}{% endblock %}
 
-{% block title %} - Claim for
-    {% if client.patient %}
-        {{ client.patient.full_name }}
-    {% else %}
-        {{ client.full_name }}
-    {% endif %}
-{% endblock %}
+{% include 'navbar.html' %}
 
 {% block content %}
 
-<h1>Claim for
-    {% if claim.patient %}
-        {{ claim.patient.full_name }}
-    {% else %}
-        {{ client.full_name }}
-    {% endif %}
-</h1>
+<h1>Claim for {{ claim.person.full_name }}</h1>
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
     <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>
@@ -29,11 +17,11 @@
 <h5>Claim Details</h5>
 <ul>
     <li>{% verbose_field_name claim "patient" %}:
-        {% if claim.patient %}
-            {{ claim.patient.full_name }}
-        {% else %}
-            {{ client.full_name }}
-        {% endif %}
+        {{ claim.person.full_name }}
+    </li>
+    <li>{% verbose_field_name claim "insurance" %}
+        {% verbose_field_name claim.insurance "provider" %}:
+        {{ claim.insurance.provider }}
     </li>
     <li>{% verbose_field_name claim "coverage_types" %}:
         <ul>

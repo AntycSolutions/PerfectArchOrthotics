@@ -3,23 +3,17 @@
 {% load verbose_name %}
 {% load nbsp %}
 
-{% include 'navbar.html' %}
+{% block title %} - Insurance Letter for {{ claim.person.full_name }}{% endblock %}
 
-{% block title %} - Insurance Letter for {{ client.full_name }}{% endblock %}
+{% include 'navbar.html' %}
 
 {% block content %}
 
-<h1>Claim for
-    {% if claim.patient %}
-        {{ claim.patient.full_name }}
-    {% else %}
-        {{ client.full_name }}
-    {% endif %}
-</h1>
+<h1>Claim for {{ claim.person.full_name }}</h1>
 <div>
     <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
-<h1>Insurance Letter for {{ client.full_name }}</h1>
+<h1>Insurance Letter for {{ claim.person.full_name }}</h1>
 <div>
     {% if insurance_letter %}
         <a href="{% url 'insurance_letter_update' insurance_letter.id %}" class="btn btn-primary">Edit</a>

@@ -2,23 +2,17 @@
 
 {% load verbose_name %}
 
-{% include 'navbar.html' %}
+{% block title %} - Invoice for {{ claim.person.full_name }}{% endblock %}
 
-{% block title %} - Invoice for {{ client.full_name }}{% endblock %}
+{% include 'navbar.html' %}
 
 {% block content %}
 
-<h1>Claim for
-    {% if claim.patient %}
-        {{ claim.patient.full_name }}
-    {% else %}
-        {{ client.full_name }}
-    {% endif %}
-</h1>
+<h1>Claim for {{ claim.person.full_name }}</h1>
 <div>
     <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
-<h1>Invoice for {{ claim.client.full_name }}</h1>
+<h1>Invoice for {{ claim.person.full_name }}</h1>
 <div>
     {% if invoice %}
         <a href="{% url 'invoice_update' invoice.id %}" class="btn btn-primary">Edit</a>
@@ -29,9 +23,18 @@
 {% if invoice %}
     <h5>Please make sure the following is correct:</h5>
     <ul>
-        <li>{% verbose_field_name invoice "dispensed_by" %}: {{ invoice.dispensed_by }}</li>
-        <li>{% verbose_field_name invoice "payment_type" %}: {{ invoice.payment_type }}</li>
-        <li>{% verbose_field_name invoice "payment_terms" %}: {{ invoice.payment_terms }}<!-- Due on reciept --></li>
+        <li>Invoice #:
+            {{ invoice_number }}
+        </li>
+        <li>{% verbose_field_name invoice "dispensed_by" %}:
+            {{ invoice.dispensed_by }}
+        </li>
+        <li>{% verbose_field_name insurance_class "benefits" %}:
+            {{ claim.insurance.get_benefits_display }}
+        </li>
+        <li>{% verbose_field_name invoice "payment_terms" %}:
+            {{ invoice.payment_terms }}<!-- Due on reciept -->
+        </li>
         <li>Items:</li>
         <ul>
             {% for item in invoice.item_set.all %}
