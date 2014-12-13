@@ -403,7 +403,9 @@
             <td colspan="20">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.dispensing_practitioner }}</td>
         </tr>
         <tr>
-            <td colspan="20">{% verbose_field_name insurance_letter "dispense_date" %}: {{ insurance_letter.dispense_date }}</td>
+            <td colspan="20">
+                Dispense Date: {{ insurance_letter.dispense_date }}
+            </td>
         </tr>
         <tr>
             <td colspan="5">

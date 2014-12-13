@@ -98,6 +98,7 @@ def invoice_view(request, client_id, claim_id):
                           'perfect_arch_name': perfect_arch_name,
                           'perfect_arch_address': perfect_arch_address,
                           'item_class': Item,
+                          'insurance_class': Insurance,
                           'business_number': settings.BUSINESS_NUMBER}
                          )
 
@@ -202,6 +203,7 @@ def fillOutInvoiceView(request, client_id, claim_id):
                               {'client': client,
                                'claim': claim,
                                'invoice': invoice,
+                               'insurance_class': Insurance,
                                'business_number': settings.BUSINESS_NUMBER,
                                'invoice_number': invoice_number},
                               context)

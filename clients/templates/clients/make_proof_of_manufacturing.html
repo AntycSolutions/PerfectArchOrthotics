@@ -27,8 +27,8 @@
         <li>Invoice #:
             {{ invoice_number }}
         </li>
-        <li>{% verbose_field_name proof_of_manufacturing "invoice_date" %}:
-            {{ proof_of_manufacturing.invoice_date }}
+        <li>{{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
+            {{ proof_of_manufacturing.proof_of_manufacturing_date }}
         </li>
         <li>Bill To:<br />
             {{ bill_to|safe }}

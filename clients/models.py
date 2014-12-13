@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -236,9 +236,9 @@ class Claim(models.Model):
     CASH = "ca"
     CHEQUE = "ch"
     CREDIT = "cr"
-    PAYMENTS = ((CASH, "Cash"),
-                (CHEQUE, "Cheque"),
-                (CREDIT, "Credit"))
+    PAYMENT_TYPES = ((CASH, "Cash"),
+                     (CHEQUE, "Cheque"),
+                     (CREDIT, "Credit"))
 
     client = models.ForeignKey(
         Client, verbose_name="Client")
@@ -263,7 +263,7 @@ class Claim(models.Model):
     expected_back = models.IntegerField(
         "Expected Back", default=0)
     payment_type = models.CharField(
-        "Payment Type", max_length=4, choices=PAYMENTS,
+        "Payment Type", max_length=4, choices=PAYMENT_TYPES,
         blank=True)
 
     # ForeignKey
@@ -282,13 +282,17 @@ class Claim(models.Model):
 
 
 class Invoice(models.Model):
+    DUE_ON_RECEIPT = 'dor'
+    PAYMENT_TERMS = ((DUE_ON_RECEIPT, 'Due On Receipt'),)
+
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
     dispensed_by = models.CharField(
         "Dispensed By", max_length=128,
         blank=True)
     payment_terms = models.CharField(
-        "Payment Terms", max_length=256,
+        "Payment Terms", max_length=4, choices=PAYMENT_TERMS,
+        default=DUE_ON_RECEIPT,
         blank=True)
     payment_made = models.IntegerField(
         "Payment Made", default=0)
@@ -296,10 +300,11 @@ class Invoice(models.Model):
     # ForeignKey
     # Item
 
+    def invoice_date(self):
+        return self.claim.submitted_date
+
     def balance(self):
-        if (self.total() != 0) and self.payment_made:
-            return self.total() - self.payment_made
-        return None
+        return self.total() - self.payment_made
 
     def total(self):
         total = 0
@@ -349,9 +354,6 @@ class InsuranceLetter(models.Model):
     dispensing_practitioner = models.CharField(
         "Dispensing Practitioner", max_length=128,
         blank=True)
-    dispense_date = models.DateField(
-        "Dispense Date",
-        blank=True, null=True)
 
     orthopedic_shoes = models.BooleanField(
         "Orthopedic Shoes", default=False)
@@ -450,6 +452,9 @@ class InsuranceLetter(models.Model):
 
     # ForeignKey
     # Laboratory
+
+    def dispense_date(self):
+        return self.claim.submitted_date
 
     def _verbose_name(self, field):
         return InsuranceLetter._meta.get_field(field).verbose_name
@@ -555,12 +560,10 @@ class InsuranceLetter(models.Model):
 
 
 class ProofOfManufacturing(models.Model):
+    proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
+
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
-
-    invoice_date = models.DateField(
-        "Invoice Date",
-        blank=True, null=True)
 
     product = models.CharField(
         "Product", max_length=256,
@@ -583,6 +586,9 @@ class ProofOfManufacturing(models.Model):
 
     # ForeignKey
     # Laboratory
+
+    def proof_of_manufacturing_date(self):
+        return self.claim.submitted_date - timedelta(weeks=1)
 
     def __unicode__(self):
         return "Proof of Manufacturing - %s - %s" % (self.product,

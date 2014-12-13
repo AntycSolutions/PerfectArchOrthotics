@@ -139,7 +139,7 @@
             {{ client.address }}<br>
             {{ client.city }} &nbsp;{{ client.postal_code }}<br/>
         </p>
-        <p>{% now "DATE_FORMAT" %}</p>
+        <p>Invoice Date: {{ invoice.invoice_date }}</p>
     </div>
     <br><br><br>
 
@@ -150,7 +150,7 @@
         {% verbose_field_name claim.insurance "benefits" %}:
         {{ claim.insurance.get_benefits_display }} </br>
         {% verbose_field_name invoice "payment_terms" %}:
-        {{ invoice.payment_terms }}</br>
+        {{ invoice.get_payment_terms_display }}</br>
         <strong>Please cover payment in 10 days.</strong>
     </p>
 
