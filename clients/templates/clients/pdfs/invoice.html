@@ -141,8 +141,9 @@
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
     </div>
-    <br><br><br>
+    <br /><br />
 
+    <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
     <p class='info'>
         To: {{ client.full_name }}</br>
         {% verbose_field_name invoice "dispensed_by" %}:

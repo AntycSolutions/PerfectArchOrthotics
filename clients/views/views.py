@@ -1,7 +1,6 @@
 # Python
 import os
 import io
-from datetime import date
 from cgi import escape
 
 # Django
@@ -117,8 +116,8 @@ def _invoice(client_id, claim_id):
 
 
 def insurance_letter_view(request, client_id, claim_id):
-    claim, client, insurance_letter, today = _insurance_letter(client_id,
-                                                               claim_id)
+    claim, client, insurance_letter = _insurance_letter(client_id,
+                                                        claim_id)
 
     # Because !@#$ xhtml2pdf (putting these in css classes didnt work)
     underline = (
@@ -136,7 +135,6 @@ def insurance_letter_view(request, client_id, claim_id):
     return render_to_pdf(request,
                          'clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
-                          'today': today,
                           'claim': claim,
                           'client': client,
                           'insurance_letter': insurance_letter,
@@ -152,32 +150,20 @@ def _insurance_letter(client_id, claim_id):
         insurance_letter = claim.insuranceletter_set.all()[0]
     except:
         pass
-    today = date.today()
 
-    return claim, client, insurance_letter, today
+    return claim, client, insurance_letter
 
 
 def proof_of_manufacturing_view(request, client_id, claim_id):
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
         claim_id)
-    laboratory_information = None
-    try:
-        laboratory = proof_of_manufacturing.laboratory_set.all()[0]
-        information = laboratory.get_information_display()
-        laboratory_information = information.split('\n')[0]
-    except:
-        pass
 
     return render_to_pdf(request,
                          'clients/pdfs/proof_of_manufacturing.html',
                          {'pagesize': 'A4',
                           'claim': claim,
                           'proof_of_manufacturing': proof_of_manufacturing,
-                          'invoice_number': invoice_number,
-                          'laboratory_information': laboratory_information,
-                          'bill_to': settings.BILL_TO[0][1],
-                          'ship_to': settings.SHIP_TO[0][1]}
-                         )
+                          'invoice_number': invoice_number})
 
 
 def _proof_of_manufacturing(claim_id):
@@ -236,9 +222,7 @@ def fillOutProofOfManufacturingView(request, client_id, claim_id):
         {'client': client,
          'claim': claim,
          'proof_of_manufacturing': proof_of_manufacturing,
-         'invoice_number': invoice_number,
-         'bill_to': settings.BILL_TO[0][1],
-         'ship_to': settings.SHIP_TO[0][1]},
+         'invoice_number': invoice_number},
         context)
 
 
@@ -473,62 +457,85 @@ def makeClaimView(request, client_id):
     client = Client.objects.get(id=client_id)
     insurances = client.insurance_set.all()
     claim_form = ClaimForm()
+    items = {}
+    for coverage_type in CoverageType.COVERAGE_TYPES:
+        items[coverage_type[0]] = Item.objects.filter(
+            coverage_type=coverage_type[0]).order_by('gender', 'product_code')
     # SUPER GROSS, MOVE TO FORM!
     if request.method == 'POST':
         # the check for if the right coverage and amount are selected
         claim_form = ClaimForm(request.POST)
         if claim_form.is_valid():
-            claim = claim_form.save(commit=False)
-            coverage_types = []
             valid = True
             querydict = request.POST
-            if 'patient' in querydict:
-                if 'insurance' in querydict:
-                    if 'coverageSelected' in querydict:
-                        amount_claimed_total = 0
-                        expected_back_total = 0
-                        for coverage_id in querydict.getlist('coverageSelected'):
-                            coverage_type = CoverageType.objects.get(
-                                id=coverage_id)
-                            coverage_types.append(coverage_type)
-                            quantity = float(querydict['pairs_%s' % coverage_id])
-                            amount = float(querydict['amount_%s' % coverage_id])
-                            amount_total = amount * quantity
-                            coverage_remaining = coverage_type.coverage_remaining()
-                            if (quantity > coverage_type.quantity
-                                    or amount_total > coverage_remaining):
-                                valid = False
-                                messages.add_message(
-                                    request, messages.ERROR,
-                                    "Pairs Claimed is more than Pair Remaining"
-                                    ", or Claim Amount * Pairs Claimed is more "
-                                    "than Coverage Remaining")
-                            else:
-                                coverage_type.quantity -= quantity
-                                coverage_type.total_claimed += amount_total
-                                coverage_type.save()
-                                coverage_percent = coverage_type.coverage_percent
-
-                                amount_claimed_total += amount_total
-                                expected_back_total += float(
-                                    amount_total * (float(coverage_percent) / 100))
-                        claim.amount_claimed = amount_claimed_total
-                        claim.expected_back = expected_back_total
-                    else:
-                        valid = False
-                        messages.add_message(
-                            request, messages.ERROR,
-                            "Please select a Coverage Type.")
-                else:
-                    valid = False
-                    messages.add_message(
-                        request, messages.ERROR,
-                        "Please select an Insurance.")
-            else:
+            if 'patient' not in querydict:
                 valid = False
                 messages.add_message(
                     request, messages.ERROR,
                     "Please select a Patient.")
+            if 'insurance' not in querydict:
+                valid = False
+                messages.add_message(
+                    request, messages.ERROR,
+                    "Please select an Insurance.")
+            if 'coverageSelected' not in querydict:
+                valid = False
+                messages.add_message(
+                    request, messages.ERROR,
+                    "Please select at least one Coverage Type.")
+
+            claim = claim_form.save(commit=False)
+            coverage_types = []
+            if valid:
+                amount_claimed_total = 0
+                expected_back_total = 0
+                for coverage_id in querydict.getlist('coverageSelected'):
+                    coverage_type = CoverageType.objects.get(
+                        id=coverage_id)
+                    coverage_types.append(coverage_type)
+                    item_selected = ('item_selected_'
+                                     + coverage_type.coverage_type)
+                    if item_selected not in querydict:
+                        valid = False
+                        messages.add_message(
+                            request, messages.ERROR,
+                            "Please select at least one Item for "
+                            + coverage_type.get_coverage_type_display() + ".")
+                        continue
+                    item_list = querydict.getlist(item_selected)
+                    for item_id in item_list:
+                        quantity = float(querydict['pairs_%s' % item_id])
+                        amount = float(querydict['amount_%s' % item_id])
+                        amount_total = amount * quantity
+                        coverage_remaining = coverage_type.coverage_remaining()
+                        if quantity > coverage_type.quantity:
+                            valid = False
+                            messages.add_message(
+                                request, messages.ERROR,
+                                "Product Code: "
+                                + querydict['product_code_%s' % item_id]
+                                + " Quantity is more than "
+                                + coverage_type.get_coverage_type_display()
+                                + " Pair Remaining.")
+                        elif amount_total > coverage_remaining:
+                            valid = False
+                            messages.add_message(
+                                request, messages.ERROR,
+                                "Product Code: "
+                                + querydict['product_code_%s' % item_id]
+                                + " Claim Amount * Quantity is more than "
+                                + coverage_type.get_coverage_type_display()
+                                + " Coverage Remaining")
+                        else:
+                            coverage_type.quantity -= quantity
+                            coverage_type.total_claimed += amount_total
+
+                            coverage_percent = coverage_type.coverage_percent
+                            amount_claimed_total += amount_total
+                            expected_back_total += float(
+                                amount_total * (float(coverage_percent) / 100))
+                claim.amount_claimed = amount_claimed_total
+                claim.expected_back = expected_back_total
 
             if valid:
                 claim.client = client
@@ -540,6 +547,7 @@ def makeClaimView(request, client_id):
                 claim.save()
 
                 for coverage_type in coverage_types:
+                    coverage_type.save()
                     claim.coverage_types.add(coverage_type)
 
                 return redirect('claim', client.id, claim.id)
@@ -547,7 +555,10 @@ def makeClaimView(request, client_id):
     return render_to_response('clients/make_claim.html',
                               {'client': client,
                                'insurances': insurances,
-                               'claim_form': claim_form},
+                               'claim_form': claim_form,
+                               'items': items,
+                               # 'claim_items_form': claim_items_form
+                               },
                               context)
 
 

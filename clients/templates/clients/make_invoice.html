@@ -40,16 +40,24 @@
         <li>Items:</li>
         <ul>
             {% for item in invoice.item_set.all %}
-                <li>{% verbose_field_name item "description" %}: {{ item.description }}</li>
-                <li>{% verbose_field_name item "unit_price" %}: {{ item.unit_price }}</li>
-                <li>{% verbose_field_name item "quantity" %}: {{ item.quantity }}</li>
-                <li>Total: {{ item.total }}</li>
+                <li>{% verbose_field_name item "description" %}:
+                    {{ item.description }}</li>
+                <li>{% verbose_field_name item "unit_price" %}:
+                    {{ item.unit_price }}</li>
+                <li>{% verbose_field_name item "quantity" %}:
+                    {{ item.quantity }}</li>
+                <li>Total:
+                    {{ item.total }}</li>
             {% endfor %}
         </ul>
-        <li>Total: {{ invoice.total }}</li>
-        <li>{% verbose_field_name invoice "payment_made" %}: {{ invoice.payment_made }}</li>
-        <li>Balance: {{ invoice.balance }}</li>
+        <li>Total:
+            {{ invoice.total }}</li>
+        <li>{% verbose_field_name invoice "payment_made" %}:
+            {{ invoice.payment_made }}</li>
+        <li>Balance:
+            {{ invoice.balance }}</li>
     </ul>
+    <strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
     <a href="{% url 'invoice' claim.client.id claim.id %}" class="btn btn-default">View Invoice</a>
 {% endif %}
 

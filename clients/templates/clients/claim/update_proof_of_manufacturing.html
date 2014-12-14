@@ -4,19 +4,6 @@
 
 {% block title %} - Edit Proof of Manufacturing{% endblock %}
 
-{% block extrahead %}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script>
-    $(function() {
-        $( "#id_invoice_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-</script>
-{% endblock %}
-
 {% block content %}
 
 <h1>Edit proof of manufacturing information for: {{ proof_of_manufacturing.claim.client.full_name }}</h1>
@@ -33,24 +20,6 @@
                     {{ field.label_tag}} {{ field }}
                 </div>
             </div>
-        {% endfor %}
-    </fieldset>
-    <fieldset>
-        <h5>Laboratories</h5>
-        {{ laboratory_form.management_form }}
-        {{ laboratory_form.non_form_errors }}
-        {% for form in laboratory_form %}
-            {{ form.id }}
-            {% for field in form.visible_fields %}
-                <div class="form-group">
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
-                    <div class="col-lg-10">
-                        {{ field.label_tag}} {{ field }}
-                    </div>
-                </div>
-            {% endfor %}
         {% endfor %}
     </fieldset>
     <input type="submit" name="submit" value="Save" />

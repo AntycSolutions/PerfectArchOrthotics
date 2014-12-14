@@ -30,11 +30,8 @@
         <li>{{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
             {{ proof_of_manufacturing.proof_of_manufacturing_date }}
         </li>
-        <li>Bill To:<br />
-            {{ bill_to|safe }}
-        </li>
-        <li>Ship To:<br />
-            {{ ship_to|safe }}
+        <li>Bill/Ship To:<br />
+            {{ proof_of_manufacturing.bill_to|safe }}
         </li>
         <li>{% verbose_field_name proof_of_manufacturing.claim "patient" %}:
             {{ proof_of_manufacturing.claim.patient.full_name }}
@@ -47,27 +44,9 @@
         </li>
         <li>Laboratory:
             <ul>
-                {% for lab in proof_of_manufacturing.laboratory_set.all %}
-                    <li>{% verbose_field_name lab "information" %}:
-                        {{ lab.get_information_display|nbsp|linebreaksbr }}
-                    </li>
-                {% empty %}
-                    <li>There is currently no laboratory for this proof of manufacturing.
-                    </li>
-                {% endfor %}
+                <li>{{ proof_of_manufacturing.laboratory }}
+                </li>
             </ul>
-        </li>
-        <li>{% verbose_field_name proof_of_manufacturing "laboratory_supervisor" %}:
-            {{ proof_of_manufacturing.laboratory_supervisor }}
-            </li>
-        <li>{% verbose_field_name proof_of_manufacturing "raw_materials" %}:
-            {{ proof_of_manufacturing.raw_materials }}
-        </li>
-        <li>{% verbose_field_name proof_of_manufacturing "manufacturing" %}:
-            {{ proof_of_manufacturing.manufacturing }}
-        </li>
-        <li>{% verbose_field_name proof_of_manufacturing "casting_technique" %}:
-            {{ proof_of_manufacturing.casting_technique }}
         </li>
     </ul>
     <a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>

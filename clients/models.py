@@ -161,8 +161,8 @@ class Insurance(models.Model):
     benefits = models.CharField(
         "Benefits", max_length=4, choices=BENEFITS,
         blank=True)
-    gait_scan = models.BooleanField(
-        "Gait Scan", default=False)
+    three_d_laser_scan = models.BooleanField(
+        "3D Laser Scan", default=False)
     insurance_card = models.BooleanField(
         "Insurance Card", default=False)
 
@@ -232,6 +232,34 @@ class CoverageType(models.Model):
         return self.__unicode__()
 
 
+class Item(models.Model):
+    # Fixture
+    # items.json
+
+    WOMENS = 'wo'
+    MENS = 'me'
+    GENDERS = ((WOMENS, "Women's"),
+               (MENS, "Men's"))
+
+    coverage_type = models.CharField(
+        "Coverage Type", max_length=4, choices=CoverageType.COVERAGE_TYPES)
+    gender = models.CharField(
+        "Gender", max_length=4, choices=GENDERS,
+        blank=True)
+    product_code = models.CharField(
+        "Product Code", max_length=12)
+    description = models.CharField(
+        "Description", max_length=128)
+    unit_price = models.IntegerField(
+        "Unit Price", default=0)
+
+    def __unicode__(self):
+        return "Item - %s" % (self.product_code)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
 class Claim(models.Model):
     CASH = "ca"
     CHEQUE = "ch"
@@ -250,6 +278,9 @@ class Claim(models.Model):
         blank=True, null=True)
     coverage_types = models.ManyToManyField(
         CoverageType, verbose_name="Coverage Types",
+        blank=True, null=True)
+    items = models.ManyToManyField(
+        Item, verbose_name="Item", through="ClaimItems",
         blank=True, null=True)
     submitted_date = models.DateField(
         "Submitted Date", auto_now_add=True)
@@ -281,6 +312,15 @@ class Claim(models.Model):
         return self.__unicode__()
 
 
+class ClaimItems(models.Model):
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
+    item = models.ForeignKey(
+        Item, verbose_name="Item")
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+
+
 class Invoice(models.Model):
     DUE_ON_RECEIPT = 'dor'
     PAYMENT_TERMS = ((DUE_ON_RECEIPT, 'Due On Receipt'),)
@@ -296,9 +336,8 @@ class Invoice(models.Model):
         blank=True)
     payment_made = models.IntegerField(
         "Payment Made", default=0)
-
-    # ForeignKey
-    # Item
+    estimate = models.BooleanField(
+        "Estimate", default=False)
 
     def invoice_date(self):
         return self.claim.submitted_date
@@ -317,24 +356,6 @@ class Invoice(models.Model):
 
     def __str__(self):
         return self.__unicode__()
-
-
-class Item(models.Model):
-    invoice = models.ForeignKey(
-        Invoice, verbose_name="Invoice")
-    description = models.CharField(
-        "Description", max_length=512,
-        blank=True)
-    unit_price = models.IntegerField(
-        "Unit Price", default=0)
-    quantity = models.IntegerField(
-        "Quantity", default=0)
-
-    def total(self):
-        return self.unit_price * self.quantity
-
-    def __unicode__(self):
-        return "Item - %s - %s" % (self.description, self.invoice)
 
 
 class InsuranceLetter(models.Model):
@@ -364,8 +385,6 @@ class InsuranceLetter(models.Model):
 
     foam_plaster = models.BooleanField(
         "Foam / Plaster", default=False)
-    gaitscan = models.BooleanField(
-        "Gait Scan(TM)", default=False)
 
     plantar_fasciitis = models.BooleanField(
         "Plantar Fasciitis", default=False)
@@ -560,8 +579,6 @@ class InsuranceLetter(models.Model):
 
 
 class ProofOfManufacturing(models.Model):
-    proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
-
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
 
@@ -571,21 +588,15 @@ class ProofOfManufacturing(models.Model):
     quantity = models.IntegerField(
         "Quantity", default=0)
 
-    laboratory_supervisor = models.CharField(
-        "Laboratory Supervisor", max_length=128,
-        blank=True)
-    raw_materials = models.TextField(
-        "Raw Materials",
-        blank=True)
-    manufacturing = models.TextField(
-        "Manufacturing",
-        blank=True)
-    casting_technique = models.TextField(
-        "Casting Technique",
-        blank=True)
+    bill_to = settings.BILL_TO[0][1]
+    ship_to = settings.BILL_TO[0][1]
 
-    # ForeignKey
-    # Laboratory
+    # MOLL
+    laboratory = settings.LABORATORIES[0][1]
+    laboratory_information = laboratory.split('\n')[0]
+    laboratory_supervisor = laboratory.split('\n')[6]
+
+    proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
     def proof_of_manufacturing_date(self):
         return self.claim.submitted_date - timedelta(weeks=1)
@@ -604,9 +615,6 @@ class Laboratory(models.Model):
         "Information", max_length=8, choices=settings.LABORATORIES)
     insurance_letter = models.ForeignKey(
         InsuranceLetter, verbose_name="Insurance Letter",
-        null=True, blank=True)
-    proof_of_manufacturing = models.ForeignKey(
-        ProofOfManufacturing, verbose_name="Proof of Manufacturing",
         null=True, blank=True)
 
     def __unicode__(self):
@@ -632,3 +640,9 @@ class SiteStatistics(models.Model):
         for claim in Claim.objects.all():
             revenue += claim.amount_claimed - claim.expected_back
         return revenue
+
+    def __unicode__(self):
+        return "Site Statistics"
+
+    def __str__(self):
+        return self.__unicode__()

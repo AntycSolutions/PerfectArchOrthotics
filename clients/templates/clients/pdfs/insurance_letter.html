@@ -744,7 +744,7 @@
                                 <td colspan="1"></td>
                                 <td colspan="19">
                                     {% verbose_field_name lab "information" %}:<br />
-                                    {{ lab.get_information_display|nbsp|linebreaksbr }}
+                                    {{ lab.get_information_display|nbsp }}
                                 </td>
                             </tr>
                         {% empty %}
@@ -767,16 +767,20 @@
 				{{ insurance_letter.foam_plaster|yesno:"X,&nbsp;"|safe }}
 				</td></tr></table>
             </td>
-            <td colspan="19"><strong>Foam/plaster:</strong> Non-weight bearing 3D volumetric cast in subtalar neutral. This data is scanned by technicians. Copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.</td>
+            <td colspan="19">
+                <strong>Foam/plaster:</strong> Non-weight bearing 3D volumetric cast in subtalar neutral. This data is scanned by technicians. Copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+            </td>
         </tr>
         <tr>
             <td colspan="1" valign="top">
                 <table><tr><td style="{{ underline }}">
                 {# This needs the &nbsp; plus safe for the border to appear #}
-                {{ insurance_letter.gaitscan|yesno:"X,&nbsp;"|safe }}
+                {{ claim.insurance.three_d_laser_scan|yesno:"X,&nbsp;"|safe }}
 				</td></tr></table>
             </td>
-            <td colspan="19"><strong>Gaitscan(TM):</strong> 3D Laser Scan data was taken using proprietary Oolab technology combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.</td>
+            <td colspan="19">
+                <strong>{% verbose_field_name claim.insurance "three_d_laser_scan" %}:</strong> Using Sharp Shape 3-Dimensional scanner to capture the foot in a non-weightbearing position with the subtalar joint in neutral. The Sharp Shape 3-Dimmensional data was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+            </td>
         </tr>
     </table>
     <h3><strong><u>Raw Materials Used for Custom-made Orthotics:</u></strong></h3>

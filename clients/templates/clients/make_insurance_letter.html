@@ -444,7 +444,7 @@
                             <tr>
                                 <td></td>
                                 <td>{% verbose_field_name lab "information" %}:<br />
-                                    {{ lab.get_information_display|nbsp|linebreaksbr }}
+                                    {{ lab.get_information_display|nbsp }}
                                 </td>
                             </tr>
                         {% empty %}
@@ -464,17 +464,21 @@
                     {{ insurance_letter.foam_plaster|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>{% verbose_field_name insurance_letter "foam_plaster" %}</strong>
+                <strong>
+                    {% verbose_field_name insurance_letter "foam_plaster" %}
+                </strong>
             </td>
         </tr>
         <tr>
             <td colspan="20" valign="top">
                 <span class="underline">
                     <u>&nbsp;
-                    {{ insurance_letter.gaitscan|yesno:"X,_" }}
+                    {{ claim.insurance.three_d_laser_scan|yesno:"X,_" }}
                     &nbsp;</u>
                 </span>
-                <strong>{% verbose_field_name insurance_letter "gaitscan" %}</strong>
+                <strong>
+                    {% verbose_field_name claim.insurance "three_d_laser_scan" %}
+                </strong>
             </td>
         </tr>
     </table>
