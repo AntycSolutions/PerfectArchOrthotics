@@ -8,8 +8,7 @@ urlpatterns = patterns(
     '',  # Tells django to view the rest as str
     url(r'^$', 'views.index', name='index'),
     url(r'^login/',
-        # 'views.user_login',
-        'django.contrib.auth.views.login',  # doesnt use next, make own
+        'django.contrib.auth.views.login',
         {'template_name': 'login.html'},
         name='user_login'),
     url(r'^logout/', 'views.user_logout', name='user_logout'),
