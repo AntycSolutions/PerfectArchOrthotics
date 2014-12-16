@@ -40,6 +40,9 @@ BILL_TO = ()
 SHIP_TO = BILL_TO
 
 # Get from file
+BUSINESS_NUMBER = ''
+
+# Get from file
 # EMAIL_HOST_USER = ''
 # Get from file
 # EMAIL_HOST_PASSWORD = ''
