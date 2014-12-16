@@ -150,12 +150,19 @@
                 {% verbose_field_name claim "items" %}:
             </td>
             <td colspan="9">
-                {% for item in claim.items.all %}
-                    {% if item.coverage_type == "o" %}
-                        {{ item.get_gender_display }}
-                        {{ item.product_code }}
-                        {{ item.description }}
-                        {{ item.unit_price }}<br />
+                {% for claim_item in proof_of_manufacturing.claim.claimitem_set.all %}
+                    {% if claim_item.item.coverage_type == "o" %}
+                        {# Orthotics dont have gender #}
+                        {% verbose_field_name claim_item.item "product_code" %}:
+                        {{ claim_item.item.product_code }}
+                        {% verbose_field_name claim_item.item "description" %}:
+                        {{ claim_item.item.description }}
+                        {% verbose_field_name claim_item.item "unit_price" %}:
+                        {{ claim_item.item.unit_price }}
+                        {% verbose_field_name claim_item "quantity" %}:
+                        {{ claim_item.quantity }}
+                        Total:
+                        {{ claim_item.total }}<br />
                     {% endif %}
                 {% empty %}
                     There are no items for this claim.<br />

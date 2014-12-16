@@ -40,7 +40,15 @@
         <li>Items:</li>
         <ul>
             {% for claim_item in invoice.claim.claimitem_set.all %}
-                <li>{% verbose_field_name claim_item.item "description" %}:
+                <li>{% verbose_field_name claim_item.item "coverage_type" %}:
+                    {{ claim_item.item.get_coverage_type_display }}
+                    {% if claim_item.item.gender %}
+                        {% verbose_field_name claim_item.item "gender" %}:
+                        {{ claim_item.item.get_gender_display }}
+                    {% endif %}
+                    {% verbose_field_name claim_item.item "product_code" %}:
+                    {{ claim_item.item.product_code }}
+                    {% verbose_field_name claim_item.item "description" %}:
                     {{ claim_item.item.description }}
                     {% verbose_field_name claim_item.item "unit_price" %}:
                     {{ claim_item.item.unit_price }}

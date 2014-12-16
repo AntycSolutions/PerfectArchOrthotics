@@ -49,12 +49,23 @@
     </li>
     <li>{% verbose_field_name claim "items" %}:
         <ul>
-            {% for item in claim.items.all %}
-                <li>{{ item.get_coverage_type_display }}
-                    {{ item.get_gender_display }}
-                    {{ item.product_code }}
-                    {{ item.description }}
-                    {{ item.unit_price }}
+            {% for claim_item in claim.claimitem_set.all %}
+                <li>{% verbose_field_name claim_item.item "coverage_type" %}:
+                    {{ claim_item.item.get_coverage_type_display }}
+                    {% if claim_item.item.gender %}
+                        {% verbose_field_name claim_item.item "gender" %}:
+                        {{ claim_item.item.get_gender_display }}
+                    {% endif %}
+                    {% verbose_field_name claim_item.item "product_code" %}:
+                    {{ claim_item.item.product_code }}
+                    {% verbose_field_name claim_item.item "description" %}:
+                    {{ claim_item.item.description }}
+                    {% verbose_field_name claim_item.item "unit_price" %}:
+                    {{ claim_item.item.unit_price }}
+                    {% verbose_field_name claim_item "quantity" %}:
+                    {{ claim_item.quantity }}
+                    Total:
+                    {{ claim_item.total }}
                 </li>
             {% empty %}
                 <li>There are no items for this claim.
