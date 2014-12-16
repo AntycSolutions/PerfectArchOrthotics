@@ -280,7 +280,7 @@ class Claim(models.Model):
         CoverageType, verbose_name="Coverage Types",
         blank=True, null=True)
     items = models.ManyToManyField(
-        Item, verbose_name="Item", through="ClaimItems",
+        Item, verbose_name="Items", through="ClaimItem",
         blank=True, null=True)
     submitted_date = models.DateField(
         "Submitted Date", auto_now_add=True)
@@ -289,10 +289,10 @@ class Claim(models.Model):
         blank=True, null=True)
     amount_claimed = models.IntegerField(
         "Amount Claimed", default=0)
-    # TODO validate based on clients insurance, amount left in coverage
-    #  and coverage percent
-    expected_back = models.IntegerField(
-        "Expected Back", default=0)
+    estimated_expected_back = models.IntegerField(
+        "Estimated Expected Back", default=0)
+    actual_expected_back = models.IntegerField(
+        "Actual Expected Back", default=0)
     payment_type = models.CharField(
         "Payment Type", max_length=4, choices=PAYMENT_TYPES,
         blank=True)
@@ -312,13 +312,16 @@ class Claim(models.Model):
         return self.__unicode__()
 
 
-class ClaimItems(models.Model):
+class ClaimItem(models.Model):
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
     item = models.ForeignKey(
         Item, verbose_name="Item")
     quantity = models.IntegerField(
         "Quantity", default=0)
+
+    def total(self):
+        return self.item.unit_price * self.quantity
 
 
 class Invoice(models.Model):
@@ -328,7 +331,8 @@ class Invoice(models.Model):
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
     dispensed_by = models.CharField(
-        "Dispensed By", max_length=128,
+        "Dispensed By", max_length=4, choices=settings.PRACTITIONERS,
+        default=settings.DM,
         blank=True)
     payment_terms = models.CharField(
         "Payment Terms", max_length=4, choices=PAYMENT_TERMS,
@@ -347,8 +351,8 @@ class Invoice(models.Model):
 
     def total(self):
         total = 0
-        for item in self.item_set.all():
-            total += item.total()
+        for claim_item in self.claim.claimitem_set.all():
+            total += claim_item.total()
         return total
 
     def __unicode__(self):
@@ -363,17 +367,19 @@ class InsuranceLetter(models.Model):
         Claim, verbose_name="Claim")
 
     practitioner_name = models.CharField(
-        "Practitioner Name", max_length=128, choices=settings.PRACTITIONERS,
+        "Practitioner Name", max_length=4, choices=settings.PRACTITIONERS,
         default=settings.DM,
         blank=True)
     biomedical_and_gait_analysis_date = models.DateField(
         "Biomedical and Gait Analysis Date",
         blank=True, null=True)
     examiner = models.CharField(
-        "Examiner", max_length=128,
+        "Examiner", max_length=4, choices=settings.PRACTITIONERS,
+        default=settings.DM,
         blank=True)
     dispensing_practitioner = models.CharField(
-        "Dispensing Practitioner", max_length=128,
+        "Dispensing Practitioner", max_length=4,
+        choices=settings.PRACTITIONERS, default=settings.DM,
         blank=True)
 
     orthopedic_shoes = models.BooleanField(
@@ -582,19 +588,15 @@ class ProofOfManufacturing(models.Model):
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
 
-    product = models.CharField(
-        "Product", max_length=256,
-        blank=True)
-    quantity = models.IntegerField(
-        "Quantity", default=0)
-
     bill_to = settings.BILL_TO[0][1]
     ship_to = settings.BILL_TO[0][1]
 
     # MOLL
     laboratory = settings.LABORATORIES[0][1]
     laboratory_information = laboratory.split('\n')[0]
-    laboratory_supervisor = laboratory.split('\n')[6]
+    laboratory_supervisor = laboratory.split('\n')[6].replace(
+        'Laboratory Supervisor:', '')
+    laboratory_address = laboratory.replace(laboratory.split('\n')[6], '')
 
     proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
@@ -626,8 +628,6 @@ class Laboratory(models.Model):
 
 
 class SiteStatistics(models.Model):
-    home_page_views = models.IntegerField(
-        "Home Page Views", default=0)
 
     def outstanding_fees(self):
         return 0
@@ -638,7 +638,7 @@ class SiteStatistics(models.Model):
     def revenue(self):
         revenue = 0
         for claim in Claim.objects.all():
-            revenue += claim.amount_claimed - claim.expected_back
+            revenue += claim.amount_claimed - claim.actual_expected_back
         return revenue
 
     def __unicode__(self):

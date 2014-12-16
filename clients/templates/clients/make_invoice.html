@@ -39,15 +39,16 @@
         </li>
         <li>Items:</li>
         <ul>
-            {% for item in invoice.item_set.all %}
-                <li>{% verbose_field_name item "description" %}:
-                    {{ item.description }}</li>
-                <li>{% verbose_field_name item "unit_price" %}:
-                    {{ item.unit_price }}</li>
-                <li>{% verbose_field_name item "quantity" %}:
-                    {{ item.quantity }}</li>
-                <li>Total:
-                    {{ item.total }}</li>
+            {% for claim_item in invoice.claim.claimitem_set.all %}
+                <li>{% verbose_field_name claim_item.item "description" %}:
+                    {{ claim_item.item.description }}
+                    {% verbose_field_name claim_item.item "unit_price" %}:
+                    {{ claim_item.item.unit_price }}
+                    {% verbose_field_name claim_item "quantity" %}:
+                    {{ claim_item.quantity }}
+                    Total:
+                    {{ claim_item.total }}
+                </li>
             {% endfor %}
         </ul>
         <li>Total:

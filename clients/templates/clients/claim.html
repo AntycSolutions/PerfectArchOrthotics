@@ -12,12 +12,14 @@
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
     <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>
-    <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Proof of Manufacturing</a>
+    {% if has_orthotics %}
+        <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Proof of Manufacturing</a>
+    {% endif %}
 </div>
 <h5>Claim Details</h5>
 <ul>
     <li>{% verbose_field_name claim "patient" %}:
-        {{ claim.person.full_name }}
+        <a href="{{ claim.person.get_absolute_url }}">{{ claim.person.full_name }}</a>
     </li>
     <li>{% verbose_field_name claim "insurance" %}
         {% verbose_field_name claim.insurance "provider" %}:
@@ -45,14 +47,32 @@
             {% endfor %}
         </ul>
     </li>
+    <li>{% verbose_field_name claim "items" %}:
+        <ul>
+            {% for item in claim.items.all %}
+                <li>{{ item.get_coverage_type_display }}
+                    {{ item.get_gender_display }}
+                    {{ item.product_code }}
+                    {{ item.description }}
+                    {{ item.unit_price }}
+                </li>
+            {% empty %}
+                <li>There are no items for this claim.
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
     <li>{% verbose_field_name claim "payment_type" %}:
         {{ claim.get_payment_type_display }}
     </li>
     <li>{% verbose_field_name claim "amount_claimed" %}:
         {{ claim.amount_claimed }}
     </li>
-    <li>{% verbose_field_name claim "expected_back" %}:
-        {{ claim.expected_back }}
+    <li>{% verbose_field_name claim "estimated_expected_back" %}:
+        {{ claim.estimated_expected_back }}
+    </li>
+    <li>{% verbose_field_name claim "actual_expected_back" %}:
+        {{ claim.actual_expected_back }}
     </li>
 </ul>
 <h5>Payment Status</h5>

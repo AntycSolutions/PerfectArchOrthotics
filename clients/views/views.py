@@ -20,7 +20,7 @@ import xhtml2pdf.pisa as pisa
 # PerfectArchOrthotics
 from search import get_query
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
-    Person, Item
+    Person, Item, ClaimItem
 from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
     CoverageForm, ClaimForm
 
@@ -97,6 +97,7 @@ def invoice_view(request, client_id, claim_id):
                           'perfect_arch_name': perfect_arch_name,
                           'perfect_arch_address': perfect_arch_address,
                           'item_class': Item,
+                          'claim_item_class': ClaimItem,
                           'insurance_class': Insurance,
                           'business_number': settings.BUSINESS_NUMBER}
                          )
@@ -199,8 +200,8 @@ def fillOutInvoiceView(request, client_id, claim_id):
 def fillOutInsuranceLetterView(request, client_id, claim_id):
     context = RequestContext(request)
 
-    claim, client, insurance_letter, today = _insurance_letter(client_id,
-                                                               claim_id)
+    claim, client, insurance_letter = _insurance_letter(client_id,
+                                                        claim_id)
 
     return render_to_response('clients/make_insurance_letter.html',
                               {'client': client,
@@ -270,7 +271,9 @@ def claimView(request, client_id, claim_id):
 
     client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
-    context_dict = {'claim': claim, 'client': client}
+    has_orthotics = claim.coverage_types.filter(coverage_type="o").count() > 0
+    context_dict = {'claim': claim, 'client': client,
+                    'has_orthotics': has_orthotics}
     return render_to_response('clients/claim.html', context_dict, context)
 
 
@@ -486,9 +489,10 @@ def makeClaimView(request, client_id):
 
             claim = claim_form.save(commit=False)
             coverage_types = []
+            claim_items = []
             if valid:
                 amount_claimed_total = 0
-                expected_back_total = 0
+                estimated_expected_back_total = 0
                 for coverage_id in querydict.getlist('coverageSelected'):
                     coverage_type = CoverageType.objects.get(
                         id=coverage_id)
@@ -505,6 +509,9 @@ def makeClaimView(request, client_id):
                     item_list = querydict.getlist(item_selected)
                     for item_id in item_list:
                         quantity = float(querydict['pairs_%s' % item_id])
+                        new_item = Item.objects.get(id=item_id)
+                        claim_items.append(ClaimItem(item=new_item,
+                                                     quantity=quantity))
                         amount = float(querydict['amount_%s' % item_id])
                         amount_total = amount * quantity
                         coverage_remaining = coverage_type.coverage_remaining()
@@ -532,10 +539,11 @@ def makeClaimView(request, client_id):
 
                             coverage_percent = coverage_type.coverage_percent
                             amount_claimed_total += amount_total
-                            expected_back_total += float(
-                                amount_total * (float(coverage_percent) / 100))
+                            estimated_expected_back_total += float(
+                                amount_total * (float(coverage_percent)
+                                                / 100))
                 claim.amount_claimed = amount_claimed_total
-                claim.expected_back = expected_back_total
+                claim.estimated_expected_back = estimated_expected_back_total
 
             if valid:
                 claim.client = client
@@ -549,6 +557,9 @@ def makeClaimView(request, client_id):
                 for coverage_type in coverage_types:
                     coverage_type.save()
                     claim.coverage_types.add(coverage_type)
+                for claim_item in claim_items:
+                    claim_item.claim = claim
+                    claim_item.save()
 
                 return redirect('claim', client.id, claim.id)
 
@@ -557,7 +568,6 @@ def makeClaimView(request, client_id):
                                'insurances': insurances,
                                'claim_form': claim_form,
                                'items': items,
-                               # 'claim_items_form': claim_items_form
                                },
                               context)
 

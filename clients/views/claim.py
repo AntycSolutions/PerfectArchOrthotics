@@ -70,37 +70,7 @@ class UpdateInvoiceView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "invoice_id"
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        item_form = ItemFormSet(instance=self.object)
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  item_form=item_form))
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        item_form = ItemFormSet(request.POST, instance=self.object)
-        if (form.is_valid() and item_form.is_valid()):
-            return self.form_valid(form, item_form)
-        else:
-            return self.form_invalid(form, item_form)
-
-    def form_valid(self, form, item_form):
-        self.object = form.save()
-        item_form.save()
-
-        return HttpResponseRedirect(self.get_success_url(self.object.claim))
-
-    def form_invalid(self, form, item_form):
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  item_form=item_form))
-
-    def get_success_url(self, claim):
+    def get_success_url(self):
         client_id = self.object.claim.client.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
@@ -114,43 +84,17 @@ class CreateInvoiceView(CreateView):
     model = Invoice
     form_class = InvoiceForm
 
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        item_form = ItemFormSet()
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  item_form=item_form))
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        item_form = ItemFormSet(request.POST)
-        if (form.is_valid() and item_form.is_valid()):
-            return self.form_valid(form, item_form)
-        else:
-            return self.form_invalid(form, item_form)
-
-    def form_valid(self, form, item_form):
+    def form_valid(self, form):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         self.object.claim = claim
         self.object.save()
-        item_form.instance = self.object
-        item_form.save()
 
-        return HttpResponseRedirect(self.get_success_url(claim))
+        return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form, item_form):
-        return self.render_to_response(
-            self.get_context_data(form=form,
-                                  item_form=item_form))
-
-    def get_success_url(self, claim):
-        client_id = claim.client.id
-        claim_id = claim.id
+    def get_success_url(self):
+        client_id = self.object.claim.client.id
+        claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
                                         kwargs={'client_id': client_id,
                                                 'claim_id': claim_id})
@@ -302,11 +246,11 @@ class CreateProofOfManufacturingView(CreateView):
         self.object.claim = claim
         self.object.save()
 
-        return HttpResponseRedirect(self.get_success_url(claim))
+        return HttpResponseRedirect(self.get_success_url())
 
-    def get_success_url(self, claim):
-        client_id = claim.client.id
-        claim_id = claim.id
+    def get_success_url(self):
+        client_id = self.object.claim.client.id
+        claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
                                         kwargs={'client_id': client_id,
                                                 'claim_id': claim_id})

@@ -397,10 +397,10 @@
             <td colspan="20">{% verbose_field_name insurance_letter "biomedical_and_gait_analysis_date" %}: {{ insurance_letter.biomedical_and_gait_analysis_date }}</td>
         </tr>
         <tr>
-            <td colspan="20">{% verbose_field_name insurance_letter "examiner" %}: {{ insurance_letter.examiner }}</td>
+            <td colspan="20">{% verbose_field_name insurance_letter "examiner" %}: {{ insurance_letter.get_examiner_display }}</td>
         </tr>
         <tr>
-            <td colspan="20">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.dispensing_practitioner }}</td>
+            <td colspan="20">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.get_dispensing_practitioner_display }}</td>
         </tr>
         <tr>
             <td colspan="20">

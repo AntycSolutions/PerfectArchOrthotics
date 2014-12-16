@@ -687,11 +687,11 @@
         <tr><td></td></tr>
         <tr>
             <td colspan="10">{% verbose_field_name insurance_letter "biomedical_and_gait_analysis_date" %}: {{ insurance_letter.biomedical_and_gait_analysis_date }}</td>
-            <td colspan="10">{% verbose_field_name insurance_letter "examiner" %}: {{ insurance_letter.examiner }}</td>
+            <td colspan="10">{% verbose_field_name insurance_letter "examiner" %}: {{ insurance_letter.get_examiner_display }}</td>
         </tr>
         <tr><td></td></tr>
         <tr>
-            <td colspan="10">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.dispensing_practitioner }}</td>
+            <td colspan="10">{% verbose_field_name insurance_letter "dispensing_practitioner" %}: {{ insurance_letter.get_dispensing_practitioner_display }}</td>
             <td colspan="10">
                 Dispense Date: {{ insurance_letter.dispense_date }}
             </td>
@@ -786,7 +786,7 @@
     <h3><strong><u>Raw Materials Used for Custom-made Orthotics:</u></strong></h3>
     <table>
         <tr>
-            <td colspan="20">Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers).</td>
+            <td colspan="20">Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers). Includes some or all of the following: polypropylene, carbon fibre, EVA, poron, v-phoam, puff, durasole, polyplastic, ppt, plastazote, p-cell, cork.</td>
         </tr>
     </table>
     <h3><strong><u>Prognosis:</u></strong></h3>
@@ -813,6 +813,35 @@
             <td colspan="4"></td>
         </tr>
     </table>
+</div>
+<div>
+    <pdf:nextpage />
+    <h2>Ares Orthotics</h2>
+    <h3>fit. function. finish</h3>
+
+    <h1>Process for manufacturing custom foot orthotics.</h1>
+
+    <ul>
+        <li>The negative casts are evaluated against the prescription. Clinician is contacted if necessary for clarifications.</li>
+        <li>The negatives are then laser scanned with a 3-D laser which generates the positive.</li>
+        <li>A technician does the corrections, according to the clinician prescription, via specialized CAD software.</li>
+        <li>The positives are milled using CAM and a CNC.</li>
+        <li>The positives are critiqued against the order and the negatives to ensure accuracy.</li>
+        <li>The orthotic shells are made from positives via heat, vacuum forming using materials specified by clinician.</li>
+        <li>The shells are ground to shape and size according to the prescription and positive.</li>
+        <li>Posts are added and ground to clinician specified corrections.</li>
+        <li>Any additions are then added and transitioned.</li>
+        <li>Top covers are added as prescribed by clinician.</li>
+        <li>Finish grinding and polishing of the orthotics.</li>
+        <li>The orthotics are then cleaned and inspected.</li>
+        <li>Final revision of the orthotics against the prescription and negatives to ensure accuracy, and then is packaged and shipped.</li>
+    </ul>
+    <br />
+    Materials include some or all of the following: polypropylene, carbon fibre, EVA, poron, v-phoam, puff, durasole, polyplastic, ppt, plastazote, p-cell, cork.<br />
+    <br />
+    <strong>Qualified Staff:</strong>
+    <br />
+    Blaine Dombowsky - B.Sc.P.T., B.P.E.
 </div>
 
 {% endblock %}

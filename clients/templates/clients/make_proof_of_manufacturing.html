@@ -36,12 +36,22 @@
         <li>{% verbose_field_name proof_of_manufacturing.claim "patient" %}:
             {{ proof_of_manufacturing.claim.patient.full_name }}
         </li>
-        <li>{% verbose_field_name proof_of_manufacturing "product" %}:
-            {{ proof_of_manufacturing.product }}
-        </li>
-        <li>{% verbose_field_name proof_of_manufacturing "quantity" %}:
-            {{ proof_of_manufacturing.quantity }}
-        </li>
+        <li>{% verbose_field_name claim "items" %}:
+        <ul>{% for item in claim.items.all %}
+                {% if item.coverage_type == "o" %}
+                    <li>
+                        {{ item.get_gender_display }}
+                        {{ item.product_code }}
+                        {{ item.description }}
+                        {{ item.unit_price }}
+                    </li>
+                {% endif %}
+            {% empty %}
+                <li>There are no items for this claim.
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
         <li>Laboratory:
             <ul>
                 <li>{{ proof_of_manufacturing.laboratory }}

@@ -56,7 +56,7 @@ class ClaimForm(forms.ModelForm):
     class Meta:
         model = Claim
         exclude = ('client', 'patient', 'insurance', 'coverage_types', 'items',
-                   'amount_claimed', 'expected_back')
+                   'amount_claimed', 'estimated_expected_back')
 
 
 class InvoiceForm(forms.ModelForm):

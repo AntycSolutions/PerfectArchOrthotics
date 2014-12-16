@@ -48,12 +48,16 @@
                 <td>
                     <table>
                         <tr>
-                            <th>Amount Claimed&nbsp;</th>
+                            <th>Amount Claimed</th>
                             <td>{{ claim.amount_claimed }}</td>
                         </tr>
                         <tr>
-                            <th>Expected Back</th>
-                            <td>{{ claim.expected_back }}</td>
+                            <th>Estimated Expected Back&nbsp;</th>
+                            <td>{{ claim.estimated_expected_back }}</td>
+                        </tr>
+                        <tr>
+                            <th>Actual Expected Back</th>
+                            <td>{{ claim.actual_expected_back }}</td>
                         </tr>
                     </table>
                 <td>{{ claim.get_payment_type_display }}</td>

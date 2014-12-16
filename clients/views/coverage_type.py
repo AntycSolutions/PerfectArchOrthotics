@@ -14,6 +14,12 @@ class UpdateCoverageTypeView(UpdateView):
     slug_url_kwarg = "coverage_type_id"
 
     def get_success_url(self):
+        if 'client_id' in self.kwargs:
+            self.success_url = reverse_lazy(
+                'make_claim',
+                kwargs={'client_id': self.kwargs['client_id']})
+            return self.success_url
+
         client_id = self.object.insurance.client.id
         self.success_url = reverse_lazy('client',
                                         kwargs={'client_id': client_id})

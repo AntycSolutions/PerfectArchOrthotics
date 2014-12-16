@@ -101,6 +101,7 @@
                         <th>Total Claimed</th>
                         <th>Pair Remaining</th>
                         <th>Period</th>
+                        <th></th>
                     </tr>
                 </thead>
                 {% for insurance in insurances %}
@@ -116,6 +117,10 @@
                                 <td>{{ coverage.total_claimed }}</td>
                                 <td>{{ coverage.quantity }}</td>
                                 <td>{{ coverage.get_period_display }}</td>
+                                <td><div class="pull-right">
+                                    <a href="{% url 'coverage_type_update_from_claim' coverage.id client.id %}" class="btn btn-default">Edit</a>
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -179,7 +184,6 @@
     </div>
 
     <div>
-        <p><strong>Before saving please review that everything is entered correctly</strong></p>
         <input type="submit" name="submit" value="Make Claim" />
     </div>
 </form>

@@ -168,11 +168,17 @@
         <table>
             <thead>
                 <tr style="border: 1px;">
-                    <th colspan="2" style="text-align: left;"><strong>
+                    <th colspan="1" style="text-align: left;"><strong>
+                        {% verbose_field_name item_class "gender" %}
+                    </strong></th>
+                    <th colspan="1" style="text-align: left;"><strong>
+                        {% verbose_field_name item_class "product_code" %}
+                    </strong></th>
+                    <th colspan="4" style="text-align: left;"><strong>
                         {% verbose_field_name item_class "description" %}
                     </strong></th>
                     <th colspan="1" style="text-align: left;"><strong>
-                        {% verbose_field_name item_class "quantity" %}
+                        {% verbose_field_name claim_item_class "quantity" %}
                     </strong></th>
                     <th colspan="1" style="text-align: left;"><strong>
                         {% verbose_field_name item_class "unit_price" %}
@@ -183,19 +189,25 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in invoice.item_set.all %}
+                {% for claim_item in invoice.claim.claimitem_set.all %}
                     <tr>
-                        <td colspan="2">
-                            {{ item.description }}
+                        <td colspan="1">
+                            {{ claim_item.item.gender }}
                         </td>
                         <td colspan="1">
-                            {{ item.quantity }}
+                            {{ claim_item.item.product_code }}
+                        </td>
+                        <td colspan="4">
+                            {{ claim_item.item.description }}
                         </td>
                         <td colspan="1">
-                            {{ item.unit_price }}
+                            {{ claim_item.quantity }}
+                        </td>
+                        <td colspan="1">
+                            {{ claim_item.item.unit_price }}
                         </td>
                         <td colspan="1" style="text-align: right;">
-                            {{ item.total }}
+                            {{ claim_item.total }}
                         </td>
                     </tr>
                 {% endfor %}
