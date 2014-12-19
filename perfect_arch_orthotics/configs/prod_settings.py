@@ -30,6 +30,7 @@ ADMINS = ()
 
 # Get from file
 DM = ''
+DS = ''
 PRACTITIONERS = ()
 
 # Get from file
