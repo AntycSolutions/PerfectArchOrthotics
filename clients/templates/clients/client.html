@@ -12,7 +12,7 @@
 <div>
     <a href="{% url 'make_claim' client.id %}" class="btn btn-primary">Make Claim</a>
 </div>
-<br>
+<br />
 <div class="pull-right">
     <a href="{% url 'client_edit' client.id %}" class="btn btn-default">Edit</a>
     <a href="{% url 'client_delete' client.id %}" class="btn btn-default">Delete</a>
@@ -113,6 +113,8 @@
             </tr>
         </tbody>
     </table>
+{% else %}
+    <p>There is no Spouse for this Client currently.</p>
 {% endif %}
 {% if children %}
     <h4>Children</h4>
@@ -141,6 +143,8 @@
             {% endfor %}
         </tbody>
     </table>
+{% else %}
+    <p>There are no Children for this Client currently.</p>
 {% endif %}
 </div>
 
@@ -154,7 +158,7 @@
             {% include 'clients/snippets/insurances.html' %}
         {% endwith %}
     {% else %}
-        <p>There are no insurances for this client currently.</p>
+        <p>There are no Insurances for this Client currently.</p>
     {% endif %}
 </div>
 
@@ -165,7 +169,7 @@
             {% include 'clients/snippets/claims.html' %}
         {% endwith %}
     {% else %}
-        <p>There are no claims for this client currenty.</p>
+        <p>There are no Claims for this Client currenty.</p>
     {% endif %}
 </div>
 

@@ -30,7 +30,7 @@ class Person(models.Model):
         "Health Care Number", max_length=20,
         blank=True)
 
-    # ForeignKey
+    # ModelInheritance
     # Client, Dependent
 
     def full_name(self):
@@ -50,7 +50,7 @@ class Person(models.Model):
         return None
 
     def __unicode__(self):
-        return "Person - %s" % (self.full_name())
+        return "Person (%s) - %s" % (self.pk, self.full_name())
 
     def __str__(self):
         return self.__unicode__()
@@ -88,8 +88,8 @@ class Client(Person):
         "Notes",
         blank=True)
 
-    # Foreign keys
-    # Insurance, Claim, Client
+    # ForeignKey
+    # Insurance, Claim, Client, Dependent
 
     def age(self):
         if self.birth_date.year:
@@ -108,7 +108,7 @@ class Client(Person):
         return reverse('client', kwargs={'client_id': self.id})
 
     def __unicode__(self):
-        return "Client - %s" % (self.full_name())
+        return "Client (%s) - %s" % (self.pk, self.full_name())
 
     def __str__(self):
         return self.__unicode__()
@@ -126,13 +126,16 @@ class Dependent(Person):
         "Relationship", max_length=4, choices=RELATIONSHIPS,
         blank=True)
 
+    # ForeignKey
+    # Insurance
+
     def get_absolute_url(self):
         return "%s#%s" % (reverse('client',
                                   kwargs={'client_id': self.client.id}),
                           self.id)
 
     def __unicode__(self):
-        return "Dependent - %s" % (self.full_name())
+        return "Dependent (%s) - %s" % (self.pk, self.full_name())
 
     def __str__(self):
         return self.__unicode__()
@@ -167,7 +170,7 @@ class Insurance(models.Model):
         "Insurance Card", default=False)
 
     # ForeignKey
-    # CoverageType
+    # CoverageType, Claim
 
     def person(self):
         if self.spouse:
@@ -175,7 +178,8 @@ class Insurance(models.Model):
         return self.client
 
     def __unicode__(self):
-        return "Insurance - %s - %s" % (self.provider, self.client)
+        return "Insurance (%s) - %s - %s" % (
+            self.pk, self.provider, self.client)
 
     def __str__(self):
         return self.__unicode__()
@@ -218,15 +222,15 @@ class CoverageType(models.Model):
         "Period", choices=PERIODS,
         blank=True, null=True)
 
-    # ForeignKey
+    # ManyToManyField
     # Claim
 
     def coverage_remaining(self):
         return self.max_claim_amount - self.total_claimed
 
     def __unicode__(self):
-        return "Coverage Type - %s - %s" % (self.get_coverage_type_display(),
-                                            self.insurance)
+        return "Coverage Type (%s) - %s - %s" % (
+            self.pk, self.get_coverage_type_display(), self.insurance)
 
     def __str__(self):
         return self.__unicode__()
@@ -247,66 +251,45 @@ class Item(models.Model):
         "Gender", max_length=4, choices=GENDERS,
         blank=True)
     product_code = models.CharField(
-        "Product Code", max_length=12)
+        "Product Code", max_length=12, unique=True)
     description = models.CharField(
         "Description", max_length=128)
     unit_price = models.IntegerField(
         "Unit Price", default=0)
 
+    # ManyToManyField
+    # Claim
+    # ForeignKey
+    # ClaimItem
+
     def __unicode__(self):
-        return "Item - %s" % (self.product_code)
+        return "Item (%s) - %s" % (self.pk, self.product_code)
 
     def __str__(self):
         return self.__unicode__()
 
 
 class Claim(models.Model):
-    CASH = "ca"
-    CHEQUE = "ch"
-    CREDIT = "cr"
-    PAYMENT_TYPES = ((CASH, "Cash"),
-                     (CHEQUE, "Cheque"),
-                     (CREDIT, "Credit"))
-
     client = models.ForeignKey(
         Client, verbose_name="Client")
     patient = models.ForeignKey(
-        Person, verbose_name="Patient", related_name="patient",
-        blank=True, null=True)
+        Person, verbose_name="Patient", related_name="patient")
     insurance = models.ForeignKey(
-        Insurance, verbose_name="Insurance",
-        blank=True, null=True)
+        Insurance, verbose_name="Insurance")
     coverage_types = models.ManyToManyField(
         CoverageType, verbose_name="Coverage Types",
-        blank=True, null=True)
+        through="ClaimCoverageType")
     items = models.ManyToManyField(
-        Item, verbose_name="Items", through="ClaimItem",
-        blank=True, null=True)
+        Item, verbose_name="Items", through="ClaimItem")
     submitted_date = models.DateField(
         "Submitted Date", auto_now_add=True)
-    paid_date = models.DateField(
-        "Paid Date",
-        blank=True, null=True)
-    amount_claimed = models.IntegerField(
-        "Amount Claimed", default=0)
-    estimated_expected_back = models.IntegerField(
-        "Estimated Expected Back", default=0)
-    actual_expected_back = models.IntegerField(
-        "Actual Expected Back", default=0)
-    payment_type = models.CharField(
-        "Payment Type", max_length=4, choices=PAYMENT_TYPES,
-        blank=True)
 
     # ForeignKey
-    # Invoice, InsuranceLetter, ProofOfManufacturing
-
-    def person(self):
-        if self.patient:
-            return self.patient
-        return self.client
+    # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimItem
 
     def __unicode__(self):
-        return "Claim - %s - %s" % (self.submitted_date, self.client)
+        return "Claim (%s) - %s - %s" % (self.pk,
+                                         self.submitted_date, self.client)
 
     def __str__(self):
         return self.__unicode__()
@@ -323,8 +306,43 @@ class ClaimItem(models.Model):
     def total(self):
         return self.item.unit_price * self.quantity
 
+    def __unicode__(self):
+        return "Claim Item (%s) - %s - %s" % (self.pk, self.item, self.claim)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class ClaimCoverageType(models.Model):
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
+    coverage_type = models.ForeignKey(
+        CoverageType, verbose_name="Item")
+
+    estimated_amount_claimed = models.IntegerField(
+        "Estimated Amount Claimed", default=0)
+    actual_amount_claimed = models.IntegerField(
+        "Actual Amount Claimed", default=0)
+    estimated_expected_back = models.IntegerField(
+        "Estimated Expected Back", default=0)
+    actual_expected_back = models.IntegerField(
+        "Actual Expected Back", default=0)
+
+    def __unicode__(self):
+        return "Claim Coverage Type (%s) - %s - %s" % (
+            self.pk, self.coverage_type, self.claim)
+
+    def __str__(self):
+        return self.__unicode__()
+
 
 class Invoice(models.Model):
+    CASH = "ca"
+    CHEQUE = "ch"
+    CREDIT = "cr"
+    PAYMENT_TYPES = ((CASH, "Cash"),
+                     (CHEQUE, "Cheque"),
+                     (CREDIT, "Credit"))
     DUE_ON_RECEIPT = 'dor'
     PAYMENT_TERMS = ((DUE_ON_RECEIPT, 'Due On Receipt'),)
 
@@ -332,7 +350,9 @@ class Invoice(models.Model):
         Claim, verbose_name="Claim")
     dispensed_by = models.CharField(
         "Dispensed By", max_length=4, choices=settings.PRACTITIONERS,
-        default=settings.DM,
+        blank=True)
+    payment_type = models.CharField(
+        "Payment Type", max_length=4, choices=PAYMENT_TYPES,
         blank=True)
     payment_terms = models.CharField(
         "Payment Terms", max_length=4, choices=PAYMENT_TERMS,
@@ -340,6 +360,14 @@ class Invoice(models.Model):
         blank=True)
     payment_made = models.IntegerField(
         "Payment Made", default=0)
+    payment_date = models.DateField(
+        "Payment Date",
+        blank=True, null=True)
+    deposit = models.IntegerField(
+        "Deposit", default=0)
+    deposit_date = models.DateField(
+        "Deposite Date",
+        blank=True, null=True)
     estimate = models.BooleanField(
         "Estimate", default=False)
 
@@ -347,7 +375,7 @@ class Invoice(models.Model):
         return self.claim.submitted_date
 
     def balance(self):
-        return self.total() - self.payment_made
+        return self.total() - self.deposit - self.payment_made
 
     def total(self):
         total = 0
@@ -356,7 +384,8 @@ class Invoice(models.Model):
         return total
 
     def __unicode__(self):
-        return "Invoice - %s - %s" % (self.dispensed_by, self.claim)
+        return "Invoice (%s) - %s - %s" % (
+            self.pk, self.dispensed_by, self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -577,8 +606,8 @@ class InsuranceLetter(models.Model):
         return str(diagnosis).strip("[]").replace("'", "")
 
     def __unicode__(self):
-        return "Insurance Letter - %s - %s" % (self.practitioner_name,
-                                               self.claim)
+        return "Insurance Letter (%s) - %s - %s" % (
+            self.pk, self.practitioner_name, self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -604,8 +633,8 @@ class ProofOfManufacturing(models.Model):
         return self.claim.submitted_date - timedelta(weeks=1)
 
     def __unicode__(self):
-        return "Proof of Manufacturing - %s - %s" % (self.product,
-                                                     self.claim)
+        return "Proof of Manufacturing (%s) - %s - %s" % (
+            self.pk, self.product, self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -620,8 +649,8 @@ class Laboratory(models.Model):
         null=True, blank=True)
 
     def __unicode__(self):
-        return "Laboratory - %s - %s" % (self.name,
-                                         self.insurance_letter)
+        return "Laboratory (%s) - %s - %s" % (
+            self.pk, self.name, self.insurance_letter)
 
     def __str__(self):
         return self.__unicode__()
@@ -637,12 +666,12 @@ class SiteStatistics(models.Model):
 
     def revenue(self):
         revenue = 0
-        for claim in Claim.objects.all():
-            revenue += claim.amount_claimed - claim.actual_expected_back
+        for invoice in Invoice.objects.all():
+            revenue += invoice.payment_made + invoice.deposit
         return revenue
 
     def __unicode__(self):
-        return "Site Statistics"
+        return "Site Statistics (%s)" % self.pk
 
     def __str__(self):
         return self.__unicode__()

@@ -12,7 +12,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
-from django.contrib import messages
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -20,7 +19,7 @@ import xhtml2pdf.pisa as pisa
 # PerfectArchOrthotics
 from search import get_query
 from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
-    Person, Item, ClaimItem
+    Person, Item, ClaimItem, ClaimCoverageType
 from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
     CoverageForm, ClaimForm
 
@@ -273,7 +272,8 @@ def claimView(request, client_id, claim_id):
     claim = Claim.objects.get(id=claim_id)
     has_orthotics = claim.coverage_types.filter(coverage_type="o").count() > 0
     context_dict = {'claim': claim, 'client': client,
-                    'has_orthotics': has_orthotics}
+                    'has_orthotics': has_orthotics,
+                    }
     return render_to_response('clients/claim.html', context_dict, context)
 
 
@@ -458,116 +458,17 @@ def makeClaimView(request, client_id):
     context = RequestContext(request)
 
     client = Client.objects.get(id=client_id)
-    insurances = client.insurance_set.all()
-    claim_form = ClaimForm()
-    items = {}
-    for coverage_type in CoverageType.COVERAGE_TYPES:
-        items[coverage_type[0]] = Item.objects.filter(
-            coverage_type=coverage_type[0]).order_by('gender', 'product_code')
-    # SUPER GROSS, MOVE TO FORM!
+    claim_form = ClaimForm(client)
     if request.method == 'POST':
-        # the check for if the right coverage and amount are selected
-        claim_form = ClaimForm(request.POST)
+        claim_form = ClaimForm(client, request.POST)
         if claim_form.is_valid():
-            valid = True
-            querydict = request.POST
-            if 'patient' not in querydict:
-                valid = False
-                messages.add_message(
-                    request, messages.ERROR,
-                    "Please select a Patient.")
-            if 'insurance' not in querydict:
-                valid = False
-                messages.add_message(
-                    request, messages.ERROR,
-                    "Please select an Insurance.")
-            if 'coverageSelected' not in querydict:
-                valid = False
-                messages.add_message(
-                    request, messages.ERROR,
-                    "Please select at least one Coverage Type.")
+            claim = claim_form.save()
 
-            claim = claim_form.save(commit=False)
-            coverage_types = []
-            claim_items = []
-            if valid:
-                amount_claimed_total = 0
-                estimated_expected_back_total = 0
-                for coverage_id in querydict.getlist('coverageSelected'):
-                    coverage_type = CoverageType.objects.get(
-                        id=coverage_id)
-                    coverage_types.append(coverage_type)
-                    item_selected = ('item_selected_'
-                                     + coverage_type.coverage_type)
-                    if item_selected not in querydict:
-                        valid = False
-                        messages.add_message(
-                            request, messages.ERROR,
-                            "Please select at least one Item for "
-                            + coverage_type.get_coverage_type_display() + ".")
-                        continue
-                    item_list = querydict.getlist(item_selected)
-                    for item_id in item_list:
-                        quantity = float(querydict['pairs_%s' % item_id])
-                        new_item = Item.objects.get(id=item_id)
-                        claim_items.append(ClaimItem(item=new_item,
-                                                     quantity=quantity))
-                        amount = float(querydict['amount_%s' % item_id])
-                        amount_total = amount * quantity
-                        coverage_remaining = coverage_type.coverage_remaining()
-                        if quantity > coverage_type.quantity:
-                            valid = False
-                            messages.add_message(
-                                request, messages.ERROR,
-                                "Product Code: "
-                                + querydict['product_code_%s' % item_id]
-                                + " Quantity is more than "
-                                + coverage_type.get_coverage_type_display()
-                                + " Pair Remaining.")
-                        elif amount_total > coverage_remaining:
-                            valid = False
-                            messages.add_message(
-                                request, messages.ERROR,
-                                "Product Code: "
-                                + querydict['product_code_%s' % item_id]
-                                + " Claim Amount * Quantity is more than "
-                                + coverage_type.get_coverage_type_display()
-                                + " Coverage Remaining")
-                        else:
-                            coverage_type.quantity -= quantity
-                            coverage_type.total_claimed += amount_total
-
-                            coverage_percent = coverage_type.coverage_percent
-                            amount_claimed_total += amount_total
-                            estimated_expected_back_total += float(
-                                amount_total * (float(coverage_percent)
-                                                / 100))
-                claim.amount_claimed = amount_claimed_total
-                claim.estimated_expected_back = estimated_expected_back_total
-
-            if valid:
-                claim.client = client
-                patient = Person.objects.get(id=querydict['patient'])
-                claim.patient = patient
-                insurance = Insurance.objects.get(id=querydict['insurance'])
-                claim.insurance = insurance
-
-                claim.save()
-
-                for coverage_type in coverage_types:
-                    coverage_type.save()
-                    claim.coverage_types.add(coverage_type)
-                for claim_item in claim_items:
-                    claim_item.claim = claim
-                    claim_item.save()
-
-                return redirect('claim', client.id, claim.id)
+            return redirect('claim', client.id, claim.id)
 
     return render_to_response('clients/make_claim.html',
                               {'client': client,
-                               'insurances': insurances,
                                'claim_form': claim_form,
-                               'items': items,
                                },
                               context)
 

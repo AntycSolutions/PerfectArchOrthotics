@@ -10,6 +10,7 @@
     @page {
         size: {{ pagesize|default:"A4" }};
         margin: 2cm;
+        margin-top: 3.25cm;
 
         @frame header {
             -pdf-frame-content: header_content;
@@ -141,13 +142,13 @@
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
     </div>
-    <br /><br />
+    <br />
 
     <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
     <p class='info'>
         To: {{ client.full_name }}</br>
         {% verbose_field_name invoice "dispensed_by" %}:
-        {{ invoice.dispensed_by }}</br>
+        {{ invoice.get_dispensed_by_display }}</br>
         {% verbose_field_name claim.insurance "benefits" %}:
         {{ claim.insurance.get_benefits_display }} </br>
         {% verbose_field_name invoice "payment_terms" %}:
@@ -223,7 +224,7 @@
         <table>
             <tbody>
                 <tr style="border: 0;">
-                    <td colspan="4"></td>
+                    <td colspan="8"></td>
                     <td colspan="2" style="text-align: right;"><strong>
                         Total:&nbsp;
                     </strong></td>
@@ -232,7 +233,46 @@
                     </strong></td>
                 </tr>
                 <tr style="border: 0;">
-                    <td colspan="4"></td>
+                    {% if invoice.deposit_date %}
+                        <td colspan="4"></td>
+                        <td colspan="2" style="text-align: right;"><strong>
+                            {% verbose_field_name invoice "deposit_date" %}:&nbsp;
+                        </strong></td>
+                        <td colspan="2" style="text-align: right;"><strong>
+                            {{ invoice.deposit_date }}
+                        </strong></td>
+                    {% else %}
+                        <td colspan="8"></td>
+                    {% endif %}
+                    <td colspan="2" style="text-align: right;"><strong>
+                        {% verbose_field_name invoice "deposit" %}:&nbsp;
+                    </strong></td>
+                    <td colspan="1" style="text-align: right;"><strong>
+                        {{ invoice.deposit }}
+                    </strong></td>
+                </tr>
+                <tr style="border: 0;">
+                    {% if invoice.payment_type %}
+                        <td colspan="1"></td>
+                        <td colspan="2" style="text-align: right;"><strong>
+                            {% verbose_field_name invoice "payment_type" %}:&nbsp;
+                        </strong></td>
+                        <td colspan="1" style="text-align: right;"><strong>
+                            {{ invoice.get_payment_type_display }}
+                        </strong></td>
+                    {% else %}
+                        <td colspan="4"></td>
+                    {% endif %}
+                    {% if invoice.payment_date %}
+                        <td colspan="2" style="text-align: right;"><strong>
+                            {% verbose_field_name invoice "payment_date" %}:&nbsp;
+                        </strong></td>
+                        <td colspan="2" style="text-align: right;"><strong>
+                            {{ invoice.payment_date }}
+                        </strong></td>
+                    {% else %}
+                        <td colspan="4"></td>
+                    {% endif %}
                     <td colspan="2" style="text-align: right;"><strong>
                         {% verbose_field_name invoice "payment_made" %}:&nbsp;
                     </strong></td>
@@ -241,7 +281,7 @@
                     </strong></td>
                 </tr>
                 <tr style="border: 0;">
-                    <td colspan="4"></td>
+                    <td colspan="8"></td>
                     <td colspan="2" style="text-align: right;"><strong>
                         Balance:&nbsp;
                     </strong></td>

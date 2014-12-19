@@ -2,10 +2,10 @@
     <thead>
         <tr>
             <th></th>
-            <th>Name</th>
-            <th>Date</th>
-            <th></th>
-            <th>Payment Type</th>
+            <th>Client</th>
+            <th>Patient</th>
+            <th>Provider</th>
+            <th>Submitted Date</th>
             <th></th>
         </tr>
     </thead>
@@ -15,52 +15,10 @@
                 <td>
                     <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
                 </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Client</th>
-                            <td>{{ claim.client.full_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Patient&nbsp;</th>
-                            <td>
-                                {% if claim.patient %}
-                                    {{ claim.patient.full_name }}
-                                {% else %}
-                                    {{ claim.client.full_name }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Submitted&nbsp;</th>
-                            <td>{{ claim.submitted_date }}</td>
-                        </tr>
-                        <tr>
-                            <th>Paid</th>
-                            <td>{{ claim.paid_date }}</td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Amount Claimed</th>
-                            <td>{{ claim.amount_claimed }}</td>
-                        </tr>
-                        <tr>
-                            <th>Estimated Expected Back&nbsp;</th>
-                            <td>{{ claim.estimated_expected_back }}</td>
-                        </tr>
-                        <tr>
-                            <th>Actual Expected Back</th>
-                            <td>{{ claim.actual_expected_back }}</td>
-                        </tr>
-                    </table>
-                <td>{{ claim.get_payment_type_display }}</td>
+                <td>{{ claim.client.full_name }}</td>
+                <td>{{ claim.patient.full_name }}</td>
+                <td>{{ claim.insurance.provider }}</td>
+                <td>{{ claim.submitted_date }}</td>
                 <td>
                     <div class="pull-right">
                         <a href="{% url 'claim_update' claim.id %}" class="btn btn-default">Edit</a>

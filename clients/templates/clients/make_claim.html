@@ -1,191 +1,185 @@
 {% extends 'base.html' %}
 
-{% include 'navbar.html' %}
+{% load static %}
 
-{% block title %} - Edit Client{% endblock %}
+{% block title %} - Make Claim{% endblock %}
 
 {% block extrahead %}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script type="text/javascript">
-    $(function() {
-        $( "#id_paid_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-    $(document).ready(function() {
-        $('.insurance_trigger').click(function() {
-            // Hide other insurance's coverage types
-            $('.insurance_content').hide();
-            $('.insurance_content input').attr('disabled', 'disabled');
-            // Show selected insurance's coverage types
-            $('.' + $(this).data('rel')).show();
-            $('.' + $(this).data('rel') + ' input').removeAttr('disabled');
-        });
-        var ct_msg = 0;
-        $('.coverage_type_trigger').click(function() {
-            if($(this).is(':checked')) {
-                // Show selected coverage types's items
-                $('.' + $(this).data('rel')).show();
-                $('.' + $(this).data('rel') + ' input').removeAttr('disabled');
-                ct_msg++;
-                if (ct_msg > 0) {
-                    $('.coverage_type_content_message').hide();
-                }
-            }
-            else {
-                // Hide selected coverage types's items
-                $('.' + $(this).data('rel')).hide();
-                $('.' + $(this).data('rel') + ' input').attr('disabled', 'disabled');
-                ct_msg--;
-                if (ct_msg <= 0) {
-                    $('.coverage_type_content_message').show();
-                }
-            }
-        });
-    });
-</script>
+
+<link href="{% static 'css/div_table.css' %}" rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+<script src="{% static 'js/claim.js' %}"></script>
+
 {% endblock %}
+
+{% include 'navbar.html' %}
 
 {% block content %}
 
 {% include 'clients/snippets/messages.html' %}
 <h1>Make a Claim</h1>
+<p>Client: <a href="{{ client.get_absolute_url }}">{{ client.full_name }}</a>
+</p>
+
 <form id="claim_add_form" class="form-horizontal" method="post">
-    <fieldset>
-        {% csrf_token %}
-        {% for field in claim_form.visible_fields %}
-        <div class="form-group">
+    {% csrf_token %}
+    {% for field in claim_form.visible_fields %}
+        {% if field.name == "coverage_types" %}
             {% if field.errors %}
                 {{ field.errors }}
             {% endif %}
-            <div class="col-lg-10">
-                {{ field.label_tag}} {{ field }}
-            </div>
-        </div>
-        {% endfor %}
-    </fieldset>
-
-    <div>
-        <h5>Patient</h5>
-        <input type="radio" name="patient" value={{ client.id }}>
-            Client - {{ client.full_name }}<br>
-        {% for dependent in client.dependent_set.all %}
-            <input type="radio" name="patient" value={{ dependent.id }}>
-            {{ dependent.get_relationship_display }} - {{ dependent.full_name }}<br />
-        {% endfor %}
-    </div>
-
-    <div>
-        <h5>Insurances available</h5>
-        {% for insurance in insurances %}
-            <input type="radio" name="insurance" class="insurance_trigger" value="{{ insurance.id }}" data-rel="insurance_{{ insurance.id }}">
-            Provider: {{ insurance.provider }} - {{ insurance.person.full_name }}
-            <br />
-        {% endfor %}
-    </div>
-
-    <div>
-        <h5>Coverages available</h5>
-        {% if insurances %}
-            <table class="table table-striped table-cover">
-                <thead>
-                    <tr>
-                        <th>Select</th>
-                        <th>Provider</th>
-                        <th>Coverage Type</th>
-                        <th>Coverage Percent</th>
-                        <th>Max Claim Amount</th>
-                        <th>Coverage Remaining</th>
-                        <th>Total Claimed</th>
-                        <th>Pair Remaining</th>
-                        <th>Period</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                {% for insurance in insurances %}
-                    <tbody class="insurance_{{ insurance.id }} insurance_content" style="display: none;">
-                        {% for coverage in insurance.coveragetype_set.all %}
-                            <tr>
-                                <td><input type="checkbox" name="coverageSelected" class="coverage_type_trigger" value="{{ coverage.id }}" data-rel="coverage_type_{{ coverage.coverage_type }}" disabled="disabled"></td>
-                                <td>{{ coverage.insurance.provider }}</td>
-                                <td>{{ coverage.get_coverage_type_display }}</td>
-                                <td>{{ coverage.coverage_percent }}</td>
-                                <td>{{ coverage.max_claim_amount }}</td>
-                                <td>{{ coverage.coverage_remaining }}</td>
-                                <td>{{ coverage.total_claimed }}</td>
-                                <td>{{ coverage.quantity }}</td>
-                                <td>{{ coverage.get_period_display }}</td>
-                                <td><div class="pull-right">
-                                    <a href="{% url 'coverage_type_update_from_claim' coverage.id client.id %}" class="btn btn-default">Edit</a>
+            {{ field.label_tag|title }}
+            <div class="div_table div_table_striped">
+                <div class="div_head">
+                    <div class="div_tr">
+                        <div class="div_th">Select</div>
+                        <div class="div_th">Coverage Type</div>
+                        <div class="div_th">Coverage Percent</div>
+                        <div class="div_th">Max Claim Amount</div>
+                        <div class="div_th">Coverage Remaining</div>
+                        <div class="div_th">Total Claimed</div>
+                        <div class="div_th">Pair Remaining</div>
+                        <div class="div_th">Period</div>
+                        <div class="div_th">Actual Amount Claimed</div>
+                        <div class="div_th">Actual Expected Back</div>
+                        <div class="div_th"></div>
+                    </div>
+                </div>
+                {% regroup field.field.choices_dict by obj.insurance.id as grouped_choices %}
+                {% for group in grouped_choices %}
+                    <div class="div_body insurance_{{ group.grouper }} insurance_content" style="display: none;">
+                        {% for choice in group.list %}
+                            {% with value=choice.value coverage=choice.obj %}
+                                <div class="div_tr">
+                                    <div class="div_td">
+                                        {% spaceless %}
+                                        {% for checkbox in field %}
+                                            {% if checkbox.choice_value == coverage.pk|slugify %}
+                                                {% with checked=checkbox.is_checked|yesno:" checked," %}
+                                                    <input{{ checked }} name="coverage_types" class="coverage_type_trigger" value="{{ value }}" data-rel="coverage_type_{{ coverage.coverage_type }}" type="checkbox" disabled="disabled">
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% endspaceless %}
                                     </div>
-                                </td>
-                            </tr>
+                                    <div class="div_td">
+                                        {{ coverage.get_coverage_type_display }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.coverage_percent }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.max_claim_amount }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.coverage_remaining }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.total_claimed }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.quantity }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ coverage.get_period_display }}
+                                    </div>
+                                    <div class="div_td">
+                                        <input type="number" name="claimed_{{ coverage.id }}" value="0" disabled="disabled">
+                                    </div>
+                                    <div class="div_td">
+                                        <input type="number" name="expected_{{ coverage.id }}" value="0" disabled="disabled">
+                                    </div>
+                                    <div class="div_td">
+                                        <div class="pull-right">
+                                            <a href="{% url 'coverage_type_update_from_claim' coverage.id client.id %}" class="btn btn-default">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endwith %}
                         {% endfor %}
-                    </tbody>
+                    </div>
                 {% endfor %}
-                <tbody class="insurance_content">
-                    <tr>
-                        <td colspan="8">Please select an insurance to select coverage types.</td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="div_caption insurance_ insurance_content" style="display: none;">
+                    Please select an Insurance to select Coverage Types.
+                </div>
+            </div>
+        {% elif field.name == "items" %}
+            {% if field.errors %}
+                {{ field.errors }}
+            {% endif %}
+            {{ field.label_tag }}
+            <div class="div_table div_table_striped">
+                <div class="div_head">
+                    <div class="div_tr">
+                        <div class="div_th">Select</div>
+                        <div class="div_th">Coverage Type</div>
+                        <div class="div_th">Gender</div>
+                        <div class="div_th">Product Code</div>
+                        <div class="div_th">Description</div>
+                        <div class="div_th">Unit Price</div>
+                        <div class="div_th">Quantity</div>
+                    </div>
+                </div>
+                {% regroup field.field.choices_dict by obj.coverage_type as grouped_choices %}
+                {% for group in grouped_choices %}
+                    <div class="div_body coverage_type_{{ group.grouper }} coverage_type_content" style="display: none;">
+                        {% for choice in group.list %}
+                            {% with value=choice.value item=choice.obj %}
+                                <div class="div_tr">
+                                    <div class="div_td">
+                                        {% spaceless %}
+                                        {% for checkbox in field %}
+                                            {% if checkbox.choice_value == item.pk|slugify %}
+                                                {% with checked=checkbox.is_checked|yesno:" checked," %}
+                                                    <input{{ checked }} name="items" value="{{ value }}" type="checkbox" disabled="disabled">
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% endspaceless %}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ item.get_coverage_type_display }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ item.get_gender_display }}
+                                    </div>
+                                    <div class="div_td">
+                                        <input type="hidden" name="product_code_{{ item.id }}" value="{{ item.product_code }}" disabled="disabled">
+                                        {{ item.product_code }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ item.description }}
+                                    </div>
+                                    <div class="div_td">
+                                        {{ item.unit_price }}
+                                    </div>
+                                    <div class="div_td">
+                                        <input type="number" name="pairs_{{ item.id }}" value="1" disabled="disabled">
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="div_caption coverage_type_content_msg coverage_type_content" style="display: none;">
+                    Please select a Coverage Type to select Items.
+                </div>
+            </div>
         {% else %}
-            <p>Between the client and spouse no coverages are available to make a claim.</p>
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
         {% endif %}
-    </div>
+    {% endfor %}
 
-    <div>
-        <h5>Items available</h5>
-        <table class="table table-striped table-cover">
-            <thead>
-                <tr>
-                    <th>Select</th>
-                    <th>Coverage Type</th>
-                    <th>Gender</th>
-                    <th>Product Code</th>
-                    <th>Description</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            {% for coverage_type, item_list in items.items %}
-                <tbody class="coverage_type_{{ coverage_type }} coverage_type_content" style="display: none;">
-                    {% for item in item_list %}
-                        <tr>
-                            <td><input type="checkbox" name="item_selected_{{ coverage_type }}" value="{{ item.id }}" disabled="disabled">
-                            </td>
-                            <td>{{ item.get_coverage_type_display }}</td>
-                            <td>{{ item.get_gender_display }}</td>
-                            <td><input type="hidden" name="product_code_{{ item.id }}" value="{{ item.product_code }}" disabled="disabled">
-                                {{ item.product_code }}
-                            </td>
-                            <td>{{ item.description }}</td>
-                            <td><input type="hidden" name="amount_{{ item.id }}" value="{{ item.unit_price }}" disabled="disabled">
-                                {{ item.unit_price }}
-                            </td>
-                            <td><input type="number" name="pairs_{{ item.id }}" value="1" disabled="disabled">
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr><td>There are no Items for this Coverage Type.</td></tr>
-                    {% endfor %}
-                </tbody>
-            {% empty %}
-                <p>There are no Items in the system.</p>
-            {% endfor %}
-            <tbody class="coverage_type_content_message">
-                <tr>
-                    <td colspan="8">Please select a coverage type to select items.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div>
-        <input type="submit" name="submit" value="Make Claim" />
-    </div>
+    <input type="submit" name="submit" value="Make Claim" />
 </form>
 <br />
 

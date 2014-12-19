@@ -1,6 +1,5 @@
 import os
 import datetime
-from django.utils import timezone
 
 
 def populate():
@@ -81,24 +80,29 @@ def populate():
     john_coverage_type = add_coverage_type(john_insurance, ORTHO_SHOES,
                                            100, 350)
 
-    # Constants for claim model
-    CASH = Claim.CASH
     # Add Claims
-    eric_claim = add_claim(eric, timezone.now(), CASH)
-    chris_claim = add_claim(chris, timezone.now(), CASH)
-    jay_claim = add_claim(jay, timezone.now(), CASH)
-    dan_claim = add_claim(dan, timezone.now(), CASH)
-    cloney_claim = add_claim(cloney, timezone.now(), CASH)
-    jane_claim = add_claim(jane, timezone.now(), CASH)
-    john_claim = add_claim(john, timezone.now(), CASH)
+    eric_claim = add_claim(eric, eric_insurance, eric)
+    chris_claim = add_claim(chris, chris_insurance, chris)
+    jay_claim = add_claim(jay, jay_insurance, jay)
+    dan_claim = add_claim(dan, dan_insurance, dan)
+    cloney_claim = add_claim(cloney, cloney_insurance, cloney)
+    jane_claim = add_claim(jane, jane_insurance, jane)
+    john_claim = add_claim(john, john_insurance, john)
 
-    eric_claim.coverage_types.add(eric_coverage_type)
-    chris_claim.coverage_types.add(chris_coverage_type)
-    jay_claim.coverage_types.add(jay_coverage_type)
-    dan_claim.coverage_types.add(dan_coverage_type)
-    cloney_claim.coverage_types.add(cloney_coverage_type)
-    jane_claim.coverage_types.add(jane_coverage_type)
-    john_claim.coverage_types.add(john_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=eric_claim, coverage_type=eric_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=chris_claim, coverage_type=chris_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=jay_claim, coverage_type=jay_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=dan_claim, coverage_type=dan_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=cloney_claim, coverage_type=cloney_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=jane_claim, coverage_type=jane_coverage_type)
+    ClaimCoverageType.objects.create(
+        claim=john_claim, coverage_type=john_coverage_type)
 
     # Add admin users
     # Have to hash passwords so get_or_create will work
@@ -165,10 +169,10 @@ def add_coverage_type(insurance, coverage_type, coverage_percent,
     return c[0]
 
 
-def add_claim(client, submittedDate, paymentType):
+def add_claim(client, insurance, patient):
     c = Claim.objects.get_or_create(client=client,
-                                    submitted_date=submittedDate,
-                                    payment_type=paymentType)
+                                    insurance=insurance,
+                                    patient=patient)
     return c[0]
 
 
@@ -181,6 +185,6 @@ if __name__ == '__main__':
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Insurance, Claim, \
-        Dependent, CoverageType
+        Dependent, CoverageType, ClaimCoverageType
     populate()
     print("Finished PerfectArchOrthotics database population script.")

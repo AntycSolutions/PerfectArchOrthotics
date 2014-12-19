@@ -4,6 +4,23 @@
 
 {% block title %} - Add Invoice{% endblock %}
 
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#id_payment_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+        $( "#id_deposit_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 
 <h3>Add Invoice Information</h3>

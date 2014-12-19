@@ -13,7 +13,9 @@ from clients.forms.forms import ClaimForm, InvoiceForm, \
 class CreateClaimView(CreateView):
     template_name = 'clients/claim/create_claim.html'
     model = Claim
-    form_class = ClaimForm
+
+    def get_form_class(self):
+        return ClaimForm(self.object)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -41,10 +43,16 @@ class UpdateClaimView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "claim_id"
 
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        return form_class(self.object.client, **self.get_form_kwargs())
+
     def get_success_url(self):
         client_id = self.object.client.id
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client_id})
+        self.success_url = reverse_lazy('claim',
+                                        kwargs={'client_id': client_id,
+                                                'claim_id': self.object.id})
         return self.success_url
 
 

@@ -2,98 +2,94 @@
 
 {% load verbose_name %}
 
-{% block title %} - Claim for {{ claim.person.full_name }}{% endblock %}
+{% block title %} - Claim for {{ claim.patient.full_name }}{% endblock %}
 
 {% include 'navbar.html' %}
 
 {% block content %}
 
-<h1>Claim for {{ claim.person.full_name }}</h1>
+<h1>Claim for {{ claim.patient.full_name }}</h1>
+<div>
+    <a href="{% url 'claim_update' claim.id %}" class="btn btn-primary">Edit</a>
+</div>
+<br />
+<div class="well">
+    <h3>Information</h3>
+    <ul>
+        <li>{% verbose_field_name claim "patient" %}:
+            <a href="{{ claim.patient.get_absolute_url }}">{{ claim.patient.full_name }}</a>
+        </li>
+        <li>{% verbose_field_name claim "insurance" %}
+            {% verbose_field_name claim.insurance "provider" %}:
+            {{ claim.insurance.provider }}
+        </li>
+        <li>{% verbose_field_name claim "coverage_types" %}:
+            <ul>
+                {% for claim_coverage_type in claim.claimcoveragetype_set.all %}
+                    <li>{{ claim_coverage_type.coverage_type.get_coverage_type_display }}<br />
+                        {% verbose_field_name claim_coverage_type.coverage_type "coverage_percent" %}:
+                        {{ claim_coverage_type.coverage_type.coverage_percent }}
+                        {% verbose_field_name claim_coverage_type.coverage_type "max_claim_amount" %}:
+                        {{ claim_coverage_type.coverage_type.max_claim_amount }}
+                        {% verbose_field_name claim_coverage_type.coverage_type "total_claimed" %}:
+                        {{ claim_coverage_type.coverage_type.total_claimed }}
+                        Coverage Remaining:
+                        {{ claim_coverage_type.coverage_type.coverage_remaining }}
+                        {% verbose_field_name claim_coverage_type.coverage_type "quantity" %}:
+                        {{ claim_coverage_type.coverage_type.quantity }}
+                        {% verbose_field_name claim_coverage_type.coverage_type "period" %}:
+                        {{ claim_coverage_type.coverage_type.get_period_display }}<br />
+                        {% verbose_field_name claim_coverage_type "estimated_amount_claimed" %}:
+                        {{ claim_coverage_type.estimated_amount_claimed }}
+                        {% verbose_field_name claim_coverage_type "actual_amount_claimed" %}:
+                        {{ claim_coverage_type.actual_amount_claimed }}
+                        {% verbose_field_name claim_coverage_type "estimated_expected_back" %}:
+                        {{ claim_coverage_type.estimated_expected_back }}
+                        {% verbose_field_name claim_coverage_type "actual_expected_back" %}:
+                        {{ claim_coverage_type.actual_expected_back }}
+                {% empty %}
+                    <li>There are no coverage types for this claim.
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li>{% verbose_field_name claim "items" %}:
+            <ul>
+                {% for claim_item in claim.claimitem_set.all %}
+                    <li>{% verbose_field_name claim_item.item "coverage_type" %}:
+                        {{ claim_item.item.get_coverage_type_display }}
+                        {% if claim_item.item.gender %}
+                            {% verbose_field_name claim_item.item "gender" %}:
+                            {{ claim_item.item.get_gender_display }}
+                        {% endif %}
+                        {% verbose_field_name claim_item.item "product_code" %}:
+                        {{ claim_item.item.product_code }}
+                        {% verbose_field_name claim_item.item "description" %}:
+                        {{ claim_item.item.description }}
+                        {% verbose_field_name claim_item.item "unit_price" %}:
+                        {{ claim_item.item.unit_price }}
+                        {% verbose_field_name claim_item "quantity" %}:
+                        {{ claim_item.quantity }}
+                        Total:
+                        {{ claim_item.total }}
+                    </li>
+                {% empty %}
+                    <li>There are no items for this claim.
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li>{% verbose_field_name claim "submitted_date" %}:
+            {{ claim.submitted_date }}
+        </li>
+    </ul>
+</div>
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
-    <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Insurance Letter</a>
+    <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Generate Insurance Letter</a>
     {% if has_orthotics %}
-        <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Proof of Manufacturing</a>
+        <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Generate Proof of Manufacturing</a>
     {% endif %}
 </div>
-<h5>Claim Details</h5>
-<ul>
-    <li>{% verbose_field_name claim "patient" %}:
-        <a href="{{ claim.person.get_absolute_url }}">{{ claim.person.full_name }}</a>
-    </li>
-    <li>{% verbose_field_name claim "insurance" %}
-        {% verbose_field_name claim.insurance "provider" %}:
-        {{ claim.insurance.provider }}
-    </li>
-    <li>{% verbose_field_name claim "coverage_types" %}:
-        <ul>
-            {% for coverage_type in claim.coverage_types.all %}
-                <li>{{ coverage_type.get_coverage_type_display }}<br />
-                    {% verbose_field_name coverage_type "coverage_percent" %}: {{ coverage_type.coverage_percent }}
-                    {% verbose_field_name coverage_type "max_claim_amount" %}:
-                    {{ coverage_type.max_claim_amount }}
-                    {% verbose_field_name coverage_type "total_claimed" %}:
-                    {{ coverage_type.total_claimed }}
-                    Coverage Remaining:
-                    {{ coverage_type.coverage_remaining }}
-                    {% verbose_field_name coverage_type "quantity" %}:
-                    {{ coverage_type.quantity }}
-                    {% verbose_field_name coverage_type "period" %}:
-                    {{ coverage_type.get_period_display }}
-                </li>
-            {% empty %}
-                <li>There are no coverage types for this claim.
-                </li>
-            {% endfor %}
-        </ul>
-    </li>
-    <li>{% verbose_field_name claim "items" %}:
-        <ul>
-            {% for claim_item in claim.claimitem_set.all %}
-                <li>{% verbose_field_name claim_item.item "coverage_type" %}:
-                    {{ claim_item.item.get_coverage_type_display }}
-                    {% if claim_item.item.gender %}
-                        {% verbose_field_name claim_item.item "gender" %}:
-                        {{ claim_item.item.get_gender_display }}
-                    {% endif %}
-                    {% verbose_field_name claim_item.item "product_code" %}:
-                    {{ claim_item.item.product_code }}
-                    {% verbose_field_name claim_item.item "description" %}:
-                    {{ claim_item.item.description }}
-                    {% verbose_field_name claim_item.item "unit_price" %}:
-                    {{ claim_item.item.unit_price }}
-                    {% verbose_field_name claim_item "quantity" %}:
-                    {{ claim_item.quantity }}
-                    Total:
-                    {{ claim_item.total }}
-                </li>
-            {% empty %}
-                <li>There are no items for this claim.
-                </li>
-            {% endfor %}
-        </ul>
-    </li>
-    <li>{% verbose_field_name claim "payment_type" %}:
-        {{ claim.get_payment_type_display }}
-    </li>
-    <li>{% verbose_field_name claim "amount_claimed" %}:
-        {{ claim.amount_claimed }}
-    </li>
-    <li>{% verbose_field_name claim "estimated_expected_back" %}:
-        {{ claim.estimated_expected_back }}
-    </li>
-    <li>{% verbose_field_name claim "actual_expected_back" %}:
-        {{ claim.actual_expected_back }}
-    </li>
-</ul>
-<h5>Payment Status</h5>
-<ul>
-    <li>{% verbose_field_name claim "submitted_date" %}:
-        {{ claim.submitted_date }}
-    </li>
-    <li>{% verbose_field_name claim "paid_date" %}:
-        {{ claim.paid_date }}
-    </li>
-</ul>
 
 {% endblock %}
