@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load m2m %}
 
 {% block title %} - Edit Claim{% endblock %}
 
@@ -83,10 +84,12 @@
                                         {{ coverage.get_period_display }}
                                     </div>
                                     <div class="div_td">
-                                        <input type="number" name="claimed_{{ coverage.id }}" value="0" disabled="disabled">
+                                        {% claim_coverage_type_actual_amount_claimed claim coverage as actual_amount_claimed %}
+                                        <input type="number" name="claimed_{{ coverage.id }}" value="{{ actual_amount_claimed }}" disabled="disabled">
                                     </div>
                                     <div class="div_td">
-                                        <input type="number" name="expected_{{ coverage.id }}" value="0" disabled="disabled">
+                                        {% claim_coverage_type_actual_expected_back claim coverage as actual_expected_back %}
+                                        <input type="number" name="expected_{{ coverage.id }}" value="{{ actual_expected_back }}" disabled="disabled">
                                     </div>
                                     <div class="div_td">
                                         <div class="pull-right">
@@ -153,7 +156,8 @@
                                         {{ item.unit_price }}
                                     </div>
                                     <div class="div_td">
-                                        <input type="number" name="pairs_{{ item.id }}" value="1" disabled="disabled">
+                                        {% claim_item_quantity claim item as quantity %}
+                                        <input type="number" name="pairs_{{ item.id }}" value="{{ quantity }}" disabled="disabled">
                                     </div>
                                 </div>
                             {% endwith %}
