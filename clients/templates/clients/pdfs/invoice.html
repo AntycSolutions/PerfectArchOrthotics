@@ -10,7 +10,7 @@
     @page {
         size: {{ pagesize|default:"A4" }};
         margin: 2cm;
-        margin-top: 3.25cm;
+        margin-top: 3.75cm;
 
         @frame header {
             -pdf-frame-content: header_content;
@@ -142,7 +142,6 @@
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
     </div>
-    <br />
 
     <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
     <p class='info'>
