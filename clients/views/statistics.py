@@ -4,7 +4,7 @@ from ..models import SiteStatistics
 
 
 class Statistics(TemplateView):
-    template_name = "statistics.html"
+    template_name = "clients/statistics.html"
     context = dict()
 
     def get(self, request, *args, **kwargs):
