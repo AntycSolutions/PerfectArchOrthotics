@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from clients.views import views
 from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
     CreateInsuranceView
-from clients.views.client import DeleteClientView
+from clients.views.client import CreateClientView, DeleteClientView
 from clients.views.coverage_type import UpdateCoverageTypeView, \
     DeleteCoverageTypeView, CreateCoverageTypeView
 from clients.views.claim import UpdateClaimView, DeleteClaimView, \
@@ -56,7 +56,7 @@ claim_patterns = patterns(
     url(r'^delete/(?P<claim_id>\w+)/$',
         login_required(DeleteClaimView.as_view()),
         name='claim_delete'),
-    url(r'^invoice/update`/(?P<invoice_id>\w+)/$',
+    url(r'^invoice/update/(?P<invoice_id>\w+)/$',
         login_required(UpdateInvoiceView.as_view()),
         name='invoice_update'),
     url(r'^invoice/create/(?P<claim_id>\w+)/$',
@@ -85,6 +85,7 @@ urlpatterns = patterns(
     url(r'^add_dependent/(?P<client_id>\w+)/$', views.add_dependent,
         name='add_dependent'),
     url(r'^add_client/$', views.add_client, name='add_client'),
+    url(r'^add_client_test/$', CreateClientView.as_view(), name='add_client_test'),
     url(r'^client_search/$', views.clientSearchView, name='client_search'),
     url(r'^claim_search/$', views.claimSearchView, name='claim_search'),
     url(r'^insurance_search/$', views.insuranceSearchView,
