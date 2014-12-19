@@ -104,7 +104,7 @@
     "fields": {
       "coverage_type": "cs",
       "gender": "wo",
-      "product_code": "862NMLW99",
+      "product_code": "862NMLW33",
       "description": "Sigvaris Black Thigh High 20-30mmHg Compression Hose",
       "unit_price": "230"
     }
@@ -139,7 +139,7 @@
       "gender": "wo",
       "product_code": "232NSSW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -150,7 +150,7 @@
       "gender": "wo",
       "product_code": "232NSLW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -161,7 +161,7 @@
       "gender": "wo",
       "product_code": "232NMSW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -172,7 +172,7 @@
       "gender": "wo",
       "product_code": "232NMLW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -183,7 +183,7 @@
       "gender": "wo",
       "product_code": "232NLSW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -194,7 +194,7 @@
       "gender": "wo",
       "product_code": "232NLLW99",
       "description": "Sigvaris Black Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -205,7 +205,7 @@
       "gender": "wo",
       "product_code": "232NSSW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -216,7 +216,7 @@
       "gender": "wo",
       "product_code": "232NSLW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -227,7 +227,7 @@
       "gender": "wo",
       "product_code": "232NMSW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -238,7 +238,7 @@
       "gender": "wo",
       "product_code": "232NMLW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -249,7 +249,7 @@
       "gender": "wo",
       "product_code": "232NLSW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -260,7 +260,7 @@
       "gender": "wo",
       "product_code": "232NLLW66",
       "description": "Sigvaris Crispa Cotton Thigh High 20-30mmHg Compression Hose",
-      "unit_price": "230"
+      "unit_price": "205"
     }
   },
   {
@@ -705,6 +705,17 @@
       "product_code": "406",
       "description": "Carbon Fibre Orthotic",
       "unit_price": "625"
+    }
+  },
+  {
+    "model": "clients.item",
+    "pk": "65",
+    "fields": {
+      "coverage_type": "cs",
+      "gender": "wo",
+      "product_code": "862PSSW33",
+      "description": "Sigvaris Natural Pantyhose 20-30mmHg Compression Hose",
+      "unit_price": "230"
     }
   }
 ]
