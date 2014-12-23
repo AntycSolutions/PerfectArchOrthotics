@@ -3,7 +3,7 @@
 {% load static %}
 {% load m2m %}
 
-{% block title %} - Edit Claim{% endblock %}
+{% block title %} - Make Claim{% endblock %}
 
 {% block extrahead %}
 
@@ -21,22 +21,17 @@
         var coverage_total_forms = $(
             '#id_' + coverage_prefix + '-TOTAL_FORMS');
         coverage_total_forms.val({{ nestedformset.total_form_count }});
-        // Assume we can set this because original html value does not match
+        // Assume we can set this becuase original html value does not match
         var item_total_forms = $(
             '#id_' + coverage_prefix + '-0-' + item_prefix + '-TOTAL_FORMS');
         item_total_forms.val({{ nestedformset.forms.0.nested.total_form_count }});
 
-        // Management
         var empty_item_form_mngmt = $('#empty_item_form_mngmt').html();
         var re = new RegExp(coverage_prefix + '-0-' + item_prefix, "g");
         empty_item_form_mngmt = empty_item_form_mngmt
             .replace(re, coverage_prefix + '-__coverageprefix__-' + item_prefix);
         $(empty_item_form_mngmt).insertBefore(
             '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        // Set to default
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-TOTAL_FORMS').val(1);
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-INITIAL_FORMS').val(0);
-        // Item
         // Assume we can grab this
         var item_form = $('#empty_item_form-0').html();
         item_form = item_form
@@ -46,23 +41,18 @@
         item_form = '<div id="item_form-' + coverage_prefix + '-__coverageprefix__">' + item_form + '</div>';
         $(item_form).insertBefore(
             '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-0-claim_coverage').val('');
-        // Empty Item
         var empty_item_form = $('#empty_item_form-0').html();
         empty_item_form = empty_item_form
             .replace(/__prefix__/g, '__itemprefix__')
             .replace(/{{ nestedformset.get_default_prefix }}-0/g,
-                     coverage_prefix + '-__coverageprefix__')
-            .replace(/<input/g, '<input disabled="disabled"')
-            .replace(/<select/g, '<select disabled="disabled"');
+                     coverage_prefix + '-__coverageprefix__');
         empty_item_form = '<div id="empty_item_form-' + coverage_prefix + '-__coverageprefix__" style="display: none;">' + empty_item_form + '</div>';
         $(empty_item_form).insertBefore(
             '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-__itemprefix__-claim_coverage').val('');
 
         // Don't post the empty/hidden, must be after empty item form is added
-        var empty_coverage_form = $('#empty_coverage_form input, #empty_coverage_form select');
-        empty_coverage_form.attr('disabled', 'disabled');
+        var empty_item_form = $('#empty_coverage_form input, #empty_coverage_form select');
+        empty_item_form.attr('disabled', 'disabled');
 
         $('#add_coverage_form').click(function() {
             var coverage_form_idx = coverage_total_forms.val();
@@ -72,7 +62,6 @@
                 .replace(/__prefix__/g, coverage_form_idx)
                 .replace(/ disabled="disabled"/g, '');
             $(coverage_form).insertBefore('#add_coverage_form');
-            $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' input, #empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' select').attr('disabled', 'disabled');
 
             $('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx)
                 .click(function() {
@@ -80,9 +69,7 @@
                         '#id_' + coverage_prefix + '-' + coverage_form_idx + '-' + item_prefix + '-TOTAL_FORMS');
                     var item_form_idx = item_total_forms.val();
                     var form = $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx).html();
-                    form = form
-                        .replace(/__itemprefix__/g, item_form_idx)
-                        .replace(/ disabled="disabled"/g, '');
+                    form = form.replace(/__itemprefix__/g, item_form_idx);
                     $(form).insertBefore('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx);
                     item_total_forms.val(parseInt(item_form_idx) + 1);
                 });
@@ -114,10 +101,12 @@
 
 {% block content %}
 
-<h1>Edit Claim information</h1>
-<p>Client: <a href="{{ claim.patient.get_client.get_absolute_url }}">{{ claim.patient.get_client.full_name }}</a>
+{% include 'clients/snippets/messages.html' %}
+<h1>Make a Claim</h1>
+<p>Client: <a href="{{ claim_form.client.get_absolute_url }}">{{ claim_form.client.full_name }}</a>
 </p>
-<form id="update_claim_form" class="form-horizontal" method="post">
+
+<form id="claim_add_form" class="form-horizontal" method="post">
     {% csrf_token %}
     <h5>Claim</h5>
     {{ claim_form.non_field_errors }}
@@ -190,16 +179,14 @@
                                         {{ coverage.get_period_display }}
                                     </div>
                                     <!-- <div class="div_td">
-                                        {% claim_coverage_type_amount_claimed claim coverage as amount_claimed %}
-                                        <input type="number" name="claimed_{{ coverage.id }}" value="{{ amount_claimed }}" disabled="disabled">
+                                        <input type="number" name="claimed_{{ coverage.id }}" value="0" disabled="disabled">
                                     </div>
                                     <div class="div_td">
-                                        {% claim_coverage_type_expected_back claim coverage as expected_back %}
-                                        <input type="number" name="expected_{{ coverage.id }}" value="{{ expected_back }}" disabled="disabled">
+                                        <input type="number" name="expected_{{ coverage.id }}" value="0" disabled="disabled">
                                     </div> -->
                                     <div class="div_td">
                                         <div class="pull-right">
-                                            <a href="{% url 'coverage_type_update_from_claim' coverage.id claim.patient.id %}" class="btn btn-default">Edit</a>
+                                            <a href="{% url 'coverage_type_update_from_claim' coverage.id claim_form.client.id %}" class="btn btn-default">Edit</a>
                                         </div>
                                     </div>
                                 </div>
@@ -262,8 +249,7 @@
                                         {{ item.unit_price }}
                                     </div>
                                     <div class="div_td">
-                                        {% claim_item_quantity claim item as quantity %}
-                                        <input type="number" name="pairs_{{ item.id }}" value="{{ quantity }}" disabled="disabled">
+                                        <input type="number" name="pairs_{{ item.id }}" value="1" disabled="disabled">
                                     </div>
                                 </div>
                             {% endwith %}
@@ -316,7 +302,7 @@
                 {{ coverage_form.nested.non_form_errors }}
                 {% for item_form in coverage_form.nested %}
                     {{ item_form.non_field_errors }}
-                    {% for hidden in item_form.hidden_fields %}
+                    {% for hidden in coverage_form.hidden_fields %}
                         {% if hidden.errors %}
                             {{ hidden.errors }}
                         {% endif %}
@@ -343,11 +329,11 @@
                         {{ hidden }}
                     {% endfor %}
                     {% for field in coverage_form.nested.empty_form.visible_fields %}
-                        <!-- <div class="form-group">
-                            <div class="col-lg-10"> -->
+                        <!-- <div class="form-group"> -->
+                            <!-- <div class="col-lg-10"> -->
                                 {{ field.label_tag }} {{ field }}
-                            <!-- </div>
-                        </div> -->
+                            <!-- </div> -->
+                        <!-- </div> -->
                     {% endfor %}
                     <br />
                 </div>
@@ -380,7 +366,7 @@
         </div>
     </fieldset>
     <br />
-    <input type="submit" name="submit" value="Save" />
+    <input type="submit" name="submit" value="Make Claim" />
 </form>
 <br />
 

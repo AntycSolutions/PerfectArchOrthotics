@@ -23,73 +23,117 @@
             {% verbose_field_name claim.insurance "provider" %}:
             {{ claim.insurance.provider }}
         </li>
-        <li>{% verbose_field_name claim "coverage_types" %}:
-            <ul>
-                {% for claim_coverage_type in claim.claimcoveragetype_set.all %}
-                    <li>{{ claim_coverage_type.coverage_type.get_coverage_type_display }}<br />
-                        {% verbose_field_name claim_coverage_type.coverage_type "coverage_percent" %}:
-                        {{ claim_coverage_type.coverage_type.coverage_percent }}
-                        {% verbose_field_name claim_coverage_type.coverage_type "max_claim_amount" %}:
-                        {{ claim_coverage_type.coverage_type.max_claim_amount }}
-                        {% verbose_field_name claim_coverage_type.coverage_type "total_claimed" %}:
-                        {{ claim_coverage_type.coverage_type.total_claimed }}
-                        Coverage Remaining:
-                        {{ claim_coverage_type.coverage_type.coverage_remaining }}
-                        {% verbose_field_name claim_coverage_type.coverage_type "quantity" %}:
-                        {{ claim_coverage_type.coverage_type.quantity }}
-                        {% verbose_field_name claim_coverage_type.coverage_type "period" %}:
-                        {{ claim_coverage_type.coverage_type.get_period_display }}<br />
-                        {% verbose_field_name claim_coverage_type "estimated_amount_claimed" %}:
-                        {{ claim_coverage_type.estimated_amount_claimed }}
-                        {% verbose_field_name claim_coverage_type "actual_amount_claimed" %}:
-                        {{ claim_coverage_type.actual_amount_claimed }}
-                        {% verbose_field_name claim_coverage_type "estimated_expected_back" %}:
-                        {{ claim_coverage_type.estimated_expected_back }}
-                        {% verbose_field_name claim_coverage_type "actual_expected_back" %}:
-                        {{ claim_coverage_type.actual_expected_back }}
-                {% empty %}
-                    <li>There are no coverage types for this claim.
-                    </li>
-                {% endfor %}
-            </ul>
-        </li>
-        <li>{% verbose_field_name claim "items" %}:
-            <ul>
-                {% for claim_item in claim.claimitem_set.all %}
-                    <li>{% verbose_field_name claim_item.item "coverage_type" %}:
-                        {{ claim_item.item.get_coverage_type_display }}
-                        {% if claim_item.item.gender %}
-                            {% verbose_field_name claim_item.item "gender" %}:
-                            {{ claim_item.item.get_gender_display }}
-                        {% endif %}
-                        {% verbose_field_name claim_item.item "product_code" %}:
-                        {{ claim_item.item.product_code }}
-                        {% verbose_field_name claim_item.item "description" %}:
-                        {{ claim_item.item.description }}
-                        {% verbose_field_name claim_item.item "unit_price" %}:
-                        {{ claim_item.item.unit_price }}
-                        {% verbose_field_name claim_item "quantity" %}:
-                        {{ claim_item.quantity }}
-                        Total:
-                        {{ claim_item.total }}
-                    </li>
-                {% empty %}
-                    <li>There are no items for this claim.
-                    </li>
-                {% endfor %}
-            </ul>
-        </li>
-        <li>{% verbose_field_name claim "submitted_date" %}:
-            {{ claim.submitted_date }}
+        <li>{% verbose_field_name claim "submitted_datetime" %}:
+            {{ claim.submitted_datetime.date }}
         </li>
     </ul>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Total Amount Claimed</th>
+            <th>Total Quantity Claimed</th>
+            <th>Total Expected Back</th>
+            <th>Total Max Quantity</th>
+            <th>Total Max Expected Back</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% with totals=claim.total_amount_quantity_claimed %}
+                <td>{{ totals.total_amount_claimed }}</td>
+                <td>{{ totals.total_quantity_claimed }}</td>
+            {% endwith %}
+            <td>{{ claim.total_expected_back }}</td>
+            {% with totals=claim.total_max_expected_back_quantity %}
+                <td>{{ totals.total_max_quantity }}</td>
+                <td>{{ totals.total_max_expected_back }}</td>
+            {% endwith %}
+        </tr>
+        </tbody>
+    </table>
+    <ul><li>{% verbose_field_name claim "coverages" %}:</li></ul>
+    {% if claim.claimcoverage_set.all %}
+        <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{% verbose_field_name coverage_class "coverage_type" %}</th>
+            <th>Claim Amount Remaining</th>
+            <th>Quantity Remaining</th>
+            <th>Total Amount</th>
+            <th>Total Quantity</th>
+            <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
+            <th>Max Quantity</th>
+            <th>Max Expected Back</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for claim_coverage in claim.claimcoverage_set.all %}
+            <tr>
+                <td>{{ claim_coverage.coverage.get_coverage_type_display }}</td>
+                <td>{{ claim_coverage.coverage.claim_amount_remaining }}</td>
+                <td>{{ claim_coverage.coverage.quantity_remaining }}</td>
+                {% with totals=claim_coverage.total_amount_quantity %}
+                    <td>{{ totals.total_amount }}</td>
+                    <td>{{ totals.total_quantity }}</td>
+                {% endwith %}
+                <td>{{ claim_coverage.expected_back }}</td>
+                {% with maxes=claim_coverage.max_expected_back_quantity %}
+                    <td>{{ maxes.max_quantity }}</td>
+                    <td>{{ maxes.max_expected_back }}</td>
+                {% endwith %}
+            </tr>
+            <tr>
+                <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
+                <td colspan="6">
+                    <div class="pull-left">
+                        {% if claim_coverage.claimitem_set.all %}
+                            <table class="table" style="display: inline-block;">
+                            <thead>
+                            <tr>
+                                <th>{% verbose_field_name item_class "coverage_type" %}</th>
+                                <th>{% verbose_field_name item_class "gender" %}</th>
+                                <th>{% verbose_field_name item_class "product_code" %}</th>
+                                <th>{% verbose_field_name item_class "description" %}</th>
+                                <th>{% verbose_field_name item_class "unit_price" %}</th>
+                                <th>{% verbose_field_name claim_item_class "quantity" %}</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for claim_item in claim_coverage.claimitem_set.all %}
+                                <tr>
+                                    <td>{{ claim_item.item.get_coverage_type_display }}</td>
+                                    <td>{{ claim_item.item.get_gender_display }}</td>
+                                    <td>{{ claim_item.item.product_code }}</td>
+                                    <td>{{ claim_item.item.description }}</td>
+                                    <td>{{ claim_item.item.unit_price }}</td>
+                                    <td>{{ claim_item.quantity }}</td>
+                                    <td>{{ claim_item.amount }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            </table>
+                        {% else %}
+                            <p>There are no Items for this Coverage.</p>
+                        {% endif %}
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+        <p>There are no Coverages for this Claim.</p>
+    {% endif %}
 </div>
 <div>
     <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
-    <a href="{% url 'fillOutInsurance' client.id claim.id %}" class="btn btn-default">Generate Insurance Letter</a>
+    <a href="{% url 'fillOutInsurance' claim.id %}" class="btn btn-default">Generate Insurance Letter</a>
     {% if has_orthotics %}
         <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Generate Proof of Manufacturing</a>
     {% endif %}
 </div>
+<br />
 
 {% endblock %}

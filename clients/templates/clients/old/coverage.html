@@ -16,18 +16,15 @@
                 </tr>
             </thead>
             <tbody>
-        {% for insurance in insurances %}
-                <tr>
-                    <td>{{ insurance.client.full_name }}</td>
-                    <td>{{insurance.coverageType}}</td>
-                    <td>{{insurance.coveragePercent}}</td>
-                    <td>{{insurance.quantity}}</td>
-                </tr>
-        {% endfor %}
+                {% for insurance in insurances %}
+                    <tr>
+                        <td>{{ insurance.client.full_name }}</td>
+                        <td>{{insurance.coverage}}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     {% else %}
         <p>No converage information could be found</p>
     {% endif %}
 {% endblock %}
-

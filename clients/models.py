@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+import collections
+
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -32,6 +34,10 @@ class Person(models.Model):
 
     # ModelInheritance
     # Client, Dependent
+    # ManyToManyField
+    # Insurance
+    # ForeignKey
+    # Client, Insurance, Coverage, Claim
 
     def full_name(self):
         if self.first_name or self.last_name:
@@ -45,6 +51,17 @@ class Person(models.Model):
             pass
         try:
             return Dependent.objects.get(id=self.id).get_absolute_url()
+        except:
+            pass
+        return None
+
+    def get_client(self):
+        try:
+            return Client.objects.get(id=self.id)
+        except:
+            pass
+        try:
+            return Dependent.objects.get(id=self.id).client
         except:
             pass
         return None
@@ -89,7 +106,7 @@ class Client(Person):
         blank=True)
 
     # ForeignKey
-    # Insurance, Claim, Client, Dependent
+    # Client, Dependent
 
     def age(self):
         if self.birth_date.year:
@@ -126,9 +143,6 @@ class Dependent(Person):
         "Relationship", max_length=4, choices=RELATIONSHIPS,
         blank=True)
 
-    # ForeignKey
-    # Insurance
-
     def get_absolute_url(self):
         return "%s#%s" % (reverse('client',
                                   kwargs={'client_id': self.client.id}),
@@ -147,12 +161,8 @@ class Insurance(models.Model):
     BENEFITS = ((ASSIGNMENT, "Assignment"),
                 (NON_ASSIGNMENT, "Non-assignment"))
 
-    client = models.ForeignKey(
-        Client, verbose_name="Client")
-    # A spouse can have their own insurance
-    spouse = models.ForeignKey(
-        Dependent, verbose_name="Spouse",
-        blank=True, null=True)
+    main_claimant = models.ForeignKey(
+        Person, verbose_name="Claimant")
     provider = models.CharField(
         "Provider", max_length=128)
     policy_number = models.CharField(
@@ -169,23 +179,26 @@ class Insurance(models.Model):
     insurance_card = models.BooleanField(
         "Insurance Card", default=False)
 
-    # ForeignKey
-    # CoverageType, Claim
+    claimants = models.ManyToManyField(
+        Person, verbose_name="claimants", through="Coverage",
+        related_name="claimants")
 
-    def person(self):
-        if self.spouse:
-            return self.spouse
-        return self.client
+    # ForeignKey
+    # Coverage
 
     def __unicode__(self):
+        try:
+            main_claimant = self.main_claimant
+        except:
+            main_claimant = None
         return "Insurance (%s) - %s - %s" % (
-            self.pk, self.provider, self.client)
+            self.pk, self.provider, main_claimant)
 
     def __str__(self):
         return self.__unicode__()
 
 
-class CoverageType(models.Model):
+class Coverage(models.Model):
     ORTHOTICS = "o"
     COMPRESSION_STOCKINGS = "cs"
     ORTHOPEDIC_SHOES = "os"
@@ -207,6 +220,9 @@ class CoverageType(models.Model):
 
     insurance = models.ForeignKey(
         Insurance, verbose_name="Insurance")
+    claimant = models.ForeignKey(
+        Person, verbose_name="Claimant")
+
     coverage_type = models.CharField(
         "Coverage Type", max_length=4, choices=COVERAGE_TYPES,
         blank=True)
@@ -214,23 +230,46 @@ class CoverageType(models.Model):
         "Coverage Percent", default=0)
     max_claim_amount = models.IntegerField(
         "Max Claim Amount", default=0)
-    total_claimed = models.IntegerField(
-        "Total Claimed", default=0)
-    quantity = models.IntegerField(
-        "Quantity", default=0)
+    max_quantity = models.IntegerField(
+        "Max Quantity", default=0)
     period = models.IntegerField(
         "Period", choices=PERIODS,
+        blank=True, null=True)
+    period_date = models.DateField(
+        "Period Date",
         blank=True, null=True)
 
     # ManyToManyField
     # Claim
+    # ForeignKey
+    # ClaimCoverage
 
-    def coverage_remaining(self):
-        return self.max_claim_amount - self.total_claimed
+    def total_amount_claimed(self):
+        total_amount_claimed = 0
+        for claim_coverage in self.claimcoverage_set.all():
+            total_amount_claimed += claim_coverage.expected_back
+        return total_amount_claimed
+
+    def claim_amount_remaining(self):
+        return self.max_claim_amount - self.total_amount_claimed()
+
+    def total_quantity_claimed(self):
+        total_quantity_claimed = 0
+        for claim_coverage in self.claimcoverage_set.all():
+            for claim_item in claim_coverage.claimitem_set.all():
+                total_quantity_claimed += claim_item.quantity
+        return total_quantity_claimed
+
+    def quantity_remaining(self):
+        return self.max_quantity - self.total_quantity_claimed()
 
     def __unicode__(self):
-        return "Coverage Type (%s) - %s - %s" % (
-            self.pk, self.get_coverage_type_display(), self.insurance)
+        try:
+            insurance = self.insurance
+        except:
+            insurance = None
+        return "Coverage (%s) - %s - %s" % (
+            self.pk, self.get_coverage_type_display(), insurance)
 
     def __str__(self):
         return self.__unicode__()
@@ -246,7 +285,7 @@ class Item(models.Model):
                (MENS, "Men's"))
 
     coverage_type = models.CharField(
-        "Coverage Type", max_length=4, choices=CoverageType.COVERAGE_TYPES)
+        "Coverage Type", max_length=4, choices=Coverage.COVERAGE_TYPES)
     gender = models.CharField(
         "Gender", max_length=4, choices=GENDERS,
         blank=True)
@@ -270,67 +309,168 @@ class Item(models.Model):
 
 
 class Claim(models.Model):
-    client = models.ForeignKey(
-        Client, verbose_name="Client")
     patient = models.ForeignKey(
-        Person, verbose_name="Patient", related_name="patient")
+        Person, verbose_name="Patient")
     insurance = models.ForeignKey(
         Insurance, verbose_name="Insurance")
-    coverage_types = models.ManyToManyField(
-        CoverageType, verbose_name="Coverage Types",
-        through="ClaimCoverageType")
-    items = models.ManyToManyField(
-        Item, verbose_name="Items", through="ClaimItem")
-    submitted_date = models.DateField(
+
+    coverages = models.ManyToManyField(
+        Coverage, verbose_name="Coverages",
+        through="ClaimCoverage")
+
+    submitted_datetime = models.DateTimeField(
         "Submitted Date", auto_now_add=True)
 
     # ForeignKey
-    # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimItem
+    # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage
+
+    def total_expected_back(self):
+        total_expected_back = 0
+        for claim_coverage in self.claimcoverage_set.all():
+            total_expected_back += claim_coverage.expected_back
+        return total_expected_back
+
+    def total_max_expected_back_quantity(self):
+        Totals = collections.namedtuple('Totals', ['total_max_expected_back',
+                                                   'total_max_quantity'])
+        total_max_expected_back = 0
+        total_max_quantity = 0
+        for claim_coverage in self.claimcoverage_set.all():
+            maxes = claim_coverage.max_expected_back_quantity()
+            total_max_expected_back += maxes.max_expected_back
+            total_max_quantity += maxes.max_quantity
+        return Totals(total_max_expected_back, total_max_quantity)
+
+    def total_amount_quantity_claimed(self):
+        Totals = collections.namedtuple('Totals', ['total_amount_claimed',
+                                                   'total_quantity_claimed'])
+        total_amount_claimed = 0
+        total_quantity_claimed = 0
+        for claim_coverage in self.claimcoverage_set.all():
+            totals = claim_coverage.total_amount_quantity()
+            total_amount_claimed += totals.total_amount
+            total_quantity_claimed += totals.total_quantity
+        return Totals(total_amount_claimed, total_quantity_claimed)
 
     def __unicode__(self):
+        try:
+            patient = self.patient
+        except:
+            patient = None
         return "Claim (%s) - %s - %s" % (self.pk,
-                                         self.submitted_date, self.client)
+                                         self.submitted_datetime.date(),
+                                         patient)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class ClaimCoverage(models.Model):
+    claim = models.ForeignKey(
+        Claim, verbose_name="Claim")
+    coverage = models.ForeignKey(
+        Coverage, verbose_name="Coverage")
+
+    items = models.ManyToManyField(
+        Item, verbose_name="Items", through="ClaimItem")
+
+    expected_back = models.IntegerField(
+        "Expected Back", default=0)
+
+    # ManyToManyField
+    # Claim
+
+    def total_amount_quantity(self):
+        Totals = collections.namedtuple('Totals', ['total_amount',
+                                                   'total_quantity'])
+        total_amount = 0
+        total_quantity = 0
+        for claim_item in self.claimitem_set.all():
+            total_amount += claim_item.amount()
+            total_quantity += claim_item.quantity
+        return Totals(total_amount, total_quantity)
+
+    def _coverage_total_amount_claimed(self):
+        total_amount_claimed = 0
+        claim_coverages = self.coverage.claimcoverage_set.exclude(pk=self.pk)
+        for claim_coverage in claim_coverages:
+            if (claim_coverage.claim.submitted_datetime
+                    < self.claim.submitted_datetime):
+                total_amount_claimed += claim_coverage.expected_back
+        return total_amount_claimed
+
+    def _coverage_claim_amount_remaining(self):
+        return (self.coverage.max_claim_amount
+                - self._coverage_total_amount_claimed())
+
+    def max_expected_back_quantity(self):
+        Maxes = collections.namedtuple('Maxes', ['max_expected_back',
+                                                 'max_quantity'])
+
+        totals = self.total_amount_quantity()
+        max_expected_back = min(
+            self._coverage_claim_amount_remaining(),
+            (totals.total_amount * (self.coverage.coverage_percent / 100))
+        )
+        max_quantity = totals.total_quantity
+
+        quantity_remaining = self.coverage.quantity_remaining()
+        if totals.total_quantity <= quantity_remaining:
+            return Maxes(max_expected_back, max_quantity)
+        else:
+            max_expected_back = 0
+            max_quantity = 0
+
+        claim_item_dict = collections.defaultdict(int)
+        for claim_item in self.claimitem_set.all():
+            claim_item_dict[claim_item.item.unit_price] += claim_item.quantity
+
+        while (max_quantity < (quantity_remaining + totals.total_quantity)):
+            values = list(claim_item_dict.values())
+            keys = list(claim_item_dict.keys())
+            max_unit_price = keys[values.index(max(values))]
+            max_expected_back += max_unit_price
+            claim_item_dict[max_unit_price] -= 1
+            if claim_item_dict[max_unit_price] == 0:
+                claim_item_dict.pop(max_unit_price)
+            max_quantity += 1
+
+        return Maxes(max_expected_back, max_quantity)
+
+    def __unicode__(self):
+        try:
+            coverage = self.coverage
+        except:
+            coverage = None
+        try:
+            claim = self.claim
+        except:
+            claim = None
+        return "Claim Coverage (%s) - %s - %s" % (
+            self.pk, coverage, claim)
 
     def __str__(self):
         return self.__unicode__()
 
 
 class ClaimItem(models.Model):
-    claim = models.ForeignKey(
-        Claim, verbose_name="Claim")
+    claim_coverage = models.ForeignKey(
+        ClaimCoverage, verbose_name="Claim Coverage")
     item = models.ForeignKey(
         Item, verbose_name="Item")
+
     quantity = models.IntegerField(
         "Quantity", default=0)
 
-    def total(self):
+    # ManyToManyField
+    # ClaimCoverage
+
+    def amount(self):
         return self.item.unit_price * self.quantity
 
     def __unicode__(self):
-        return "Claim Item (%s) - %s - %s" % (self.pk, self.item, self.claim)
-
-    def __str__(self):
-        return self.__unicode__()
-
-
-class ClaimCoverageType(models.Model):
-    claim = models.ForeignKey(
-        Claim, verbose_name="Claim")
-    coverage_type = models.ForeignKey(
-        CoverageType, verbose_name="Item")
-
-    estimated_amount_claimed = models.IntegerField(
-        "Estimated Amount Claimed", default=0)
-    actual_amount_claimed = models.IntegerField(
-        "Actual Amount Claimed", default=0)
-    estimated_expected_back = models.IntegerField(
-        "Estimated Expected Back", default=0)
-    actual_expected_back = models.IntegerField(
-        "Actual Expected Back", default=0)
-
-    def __unicode__(self):
-        return "Claim Coverage Type (%s) - %s - %s" % (
-            self.pk, self.coverage_type, self.claim)
+        return "Claim Item (%s) - %s - %s" % (self.pk, self.item,
+                                              self.claim_coverage)
 
     def __str__(self):
         return self.__unicode__()
@@ -372,16 +512,13 @@ class Invoice(models.Model):
         "Estimate", default=False)
 
     def invoice_date(self):
-        return self.claim.submitted_date
+        return self.claim.submitted_datetime.date()
 
     def balance(self):
-        return self.total() - self.deposit - self.payment_made
-
-    def total(self):
-        total = 0
-        for claim_item in self.claim.claimitem_set.all():
-            total += claim_item.total()
-        return total
+        totals = self.claim.total_amount_quantity_claimed()
+        return (totals.total_amount_claimed
+                - self.deposit
+                - self.payment_made)
 
     def __unicode__(self):
         return "Invoice (%s) - %s - %s" % (
@@ -504,11 +641,15 @@ class InsuranceLetter(models.Model):
     over_pronation = models.BooleanField(
         "Over Pronation", default=False)
 
+    other = models.CharField(
+        "Other", max_length=64,
+        blank=True)
+
     # ForeignKey
     # Laboratory
 
     def dispense_date(self):
-        return self.claim.submitted_date
+        return self.claim.submitted_datetime.date()
 
     def _verbose_name(self, field):
         return InsuranceLetter._meta.get_field(field).verbose_name
@@ -598,6 +739,8 @@ class InsuranceLetter(models.Model):
             diagnosis.append(self._verbose_name('ulcers'))
         if self.over_pronation:
             diagnosis.append(self._verbose_name('over_pronation'))
+        if self.other:
+            diagnosis.append(self.other)
 
         if diagnosis:
             diagnosis.append("as per prescription.")
@@ -630,7 +773,7 @@ class ProofOfManufacturing(models.Model):
     proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
     def proof_of_manufacturing_date(self):
-        return self.claim.submitted_date - timedelta(weeks=1)
+        return self.claim.submitted_datetime.date() - timedelta(weeks=1)
 
     def __unicode__(self):
         return "Proof of Manufacturing (%s) - %s - %s" % (

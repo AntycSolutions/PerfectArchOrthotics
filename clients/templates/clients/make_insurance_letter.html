@@ -11,7 +11,7 @@
 
 <h1>Claim for {{ claim.patient.full_name }}</h1>
 <div>
-    <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+    <a href="{% url 'claim' claim.patient.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
 <h1>Insurance Letter for {{ claim.patient.full_name }}</h1>
 <div>
@@ -22,8 +22,8 @@
     {% endif %}
 </div>
 <br />
-<div class="well">
-    {% if insurance_letter %}
+{% if insurance_letter %}
+    <div class="well">
         <h3>Information</h3>
         <!-- ah yeah in file css -->
         <style type="text/css">
@@ -391,6 +391,16 @@
                     </span>
                     <strong>{% verbose_field_name insurance_letter "over_pronation" %}</strong>
                 </td>
+                {% if insurance_letter.other %}
+                    <td colspan="5">
+                        <span class="underline">
+                            <u>&nbsp;
+                                X
+                            &nbsp;</u>
+                        </span>
+                        <strong>{{ insurance_letter.other }}</strong>
+                    </td>
+                {% endif %}
             </tr>
             <tr>
                 <td colspan="20">Diagnosis: {{ insurance_letter.diagnosis }}</td>
@@ -484,9 +494,9 @@
                 </td>
             </tr>
         </table>
-    {% endif %}
-</div>
-<a href="{% url 'insurance_letter' client.id claim.id %}" class="btn btn-default">View Insurance Letter</a>
+    </div>
+    <a href="{% url 'insurance_letter' claim.id %}" class="btn btn-default">View Insurance Letter</a>
+{% endif %}
 <br /><br />
 
 {% endblock %}

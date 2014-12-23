@@ -2,35 +2,82 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 
 from clients.models import Client, Insurance, Claim, Dependent, \
-    CoverageType, Person, Invoice, Item, InsuranceLetter, \
-    Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverageType
+    Coverage, Person, Invoice, Item, InsuranceLetter, \
+    Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverage
 
-admin.site.register(Client)
-admin.site.register(Person)
-admin.site.register(Insurance)
-admin.site.register(CoverageType)
+
+class DependentInline(admin.TabularInline):
+    model = Dependent
+    fk_name = "client"
+
+
+class ClientAdmin(admin.ModelAdmin):
+    inlines = (DependentInline,)
+
+admin.site.register(Dependent)
+admin.site.register(Client, ClientAdmin)
+
+
+class CoverageInline(admin.TabularInline):
+    model = Coverage
+
+
+class InsuranceAdmin(admin.ModelAdmin):
+    inlines = (CoverageInline,)
+
+
+class PersonAdmin(admin.ModelAdmin):
+    inlines = (CoverageInline,)
+
+admin.site.register(Person, PersonAdmin)
+admin.site.register(Insurance, InsuranceAdmin)
+
+
+class ClaimCoverageInline(admin.TabularInline):
+    model = ClaimCoverage
+
+
+class ClaimAdmin(admin.ModelAdmin):
+    inlines = (ClaimCoverageInline,)
+
+
+class CoverageAdmin(admin.ModelAdmin):
+    inlines = (ClaimCoverageInline,)
+
+admin.site.register(Coverage, CoverageAdmin)
+admin.site.register(Claim, ClaimAdmin)
+
+admin.site.register(ClaimItem)
 
 
 class ClaimItemInline(admin.TabularInline):
     model = ClaimItem
 
 
-class ClaimCoverageTypeInline(admin.TabularInline):
-    model = ClaimCoverageType
+class ItemAdmin(admin.ModelAdmin):
+    inlines = (ClaimItemInline,)
 
 
-class ClaimAdmin(admin.ModelAdmin):
-    inlines = (ClaimCoverageTypeInline, ClaimItemInline)
-admin.site.register(Claim, ClaimAdmin)
+class ClaimCoverageAdmin(admin.ModelAdmin):
+    inlines = (ClaimItemInline,)
 
-admin.site.register(Item)
-admin.site.register(Laboratory)
-admin.site.register(Dependent)
+admin.site.register(Item, ItemAdmin)
+admin.site.register(ClaimCoverage, ClaimCoverageAdmin)
+
 admin.site.register(Invoice)
-admin.site.register(InsuranceLetter)
-admin.site.register(ProofOfManufacturing)
-admin.site.register(ClaimItem)
-admin.site.register(ClaimCoverageType)
 
-# Unused, dont display
+
+class LaboratoryInline(admin.TabularInline):
+    model = Laboratory
+
+
+class InsuranceLetterAdmin(admin.ModelAdmin):
+    inlines = (LaboratoryInline,)
+
+admin.site.register(Laboratory)
+admin.site.register(InsuranceLetter, InsuranceLetterAdmin)
+
+admin.site.register(ProofOfManufacturing)
+
+# Unused, don't display
 admin.site.unregister(Group)

@@ -147,25 +147,21 @@
         </tr>
         <tr>
             <td colspan="1" valign="top">
-                {% verbose_field_name claim "items" %}:
+                Items:
             </td>
             <td colspan="9">
-                {% for claim_item in proof_of_manufacturing.claim.claimitem_set.all %}
-                    {% if claim_item.item.coverage_type == "o" %}
-                        {# Orthotics dont have gender #}
-                        {% verbose_field_name claim_item.item "product_code" %}:
-                        {{ claim_item.item.product_code }}
-                        {% verbose_field_name claim_item.item "description" %}:
-                        {{ claim_item.item.description }}
-                        {% verbose_field_name claim_item.item "unit_price" %}:
-                        {{ claim_item.item.unit_price }}
-                        {% verbose_field_name claim_item "quantity" %}:
-                        {{ claim_item.quantity }}
-                        Total:
-                        {{ claim_item.total }}<br />
-                    {% endif %}
-                {% empty %}
-                    There are no items for this claim.<br />
+                {% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
+                    {% for claim_item in claim_coverage.claimitem_set.all %}
+                        {% if claim_item.item.coverage_type == "o" %}
+                            {# Orthotics dont have gender #}
+                            {{ claim_item.item.product_code }} -
+                            {{ claim_item.item.description }} -
+                            {% verbose_field_name claim_item "quantity" %}:
+                            {{ claim_item.quantity }}<br />
+                        {% endif %}
+                    {% empty %}
+                        There are no items for this claim.<br />
+                    {% endfor %}
                 {% endfor %}
             </td>
         </tr>

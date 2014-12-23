@@ -1,5 +1,6 @@
 import os
 import datetime
+import time
 
 
 def populate():
@@ -61,48 +62,54 @@ def populate():
                                    "PN9994", "CN9994", NON_ASSIGNMENT)
 
     # Constants for coverage types model
-    ORTHOTICS = CoverageType.ORTHOTICS
-    COMPRESSION = CoverageType.COMPRESSION_STOCKINGS
-    ORTHO_SHOES = CoverageType.ORTHOPEDIC_SHOES
-    # Add CoverageTypes
-    eric_coverage_type = add_coverage_type(eric_insurance, ORTHOTICS,
-                                           100, 250)
-    chris_coverage_type = add_coverage_type(chris_insurance, COMPRESSION,
-                                            100, 300)
-    jay_coverage_type = add_coverage_type(jay_insurance, ORTHO_SHOES,
-                                          100, 350)
-    dan_coverage_type = add_coverage_type(dan_insurance, ORTHO_SHOES,
-                                          100, 350)
-    cloney_coverage_type = add_coverage_type(cloney_insurance, ORTHO_SHOES,
-                                             100, 350)
-    jane_coverage_type = add_coverage_type(jane_insurance, ORTHO_SHOES,
-                                           100, 350)
-    john_coverage_type = add_coverage_type(john_insurance, ORTHO_SHOES,
-                                           100, 350)
+    ORTHOTICS = Coverage.ORTHOTICS
+    COMPRESSION = Coverage.COMPRESSION_STOCKINGS
+    ORTHO_SHOES = Coverage.ORTHOPEDIC_SHOES
+    # Add Coverages
+    eric_coverage = add_coverage(
+        eric_insurance, ORTHOTICS, 100, 250, eric)
+    chris_coverage = add_coverage(
+        chris_insurance, COMPRESSION, 100, 300, chris)
+    jay_coverage = add_coverage(
+        jay_insurance, ORTHO_SHOES, 100, 350, jay)
+    dan_coverage = add_coverage(
+        dan_insurance, ORTHO_SHOES, 100, 350, dan)
+    cloney_coverage = add_coverage(
+        cloney_insurance, ORTHO_SHOES, 100, 350, cloney)
+    jane_coverage = add_coverage(
+        jane_insurance, ORTHO_SHOES, 100, 350, jane)
+    john_coverage = add_coverage(
+        john_insurance, ORTHO_SHOES, 100, 350, john)
 
     # Add Claims
     eric_claim = add_claim(eric, eric_insurance, eric)
+    time.sleep(0.01)
     chris_claim = add_claim(chris, chris_insurance, chris)
+    time.sleep(0.01)
     jay_claim = add_claim(jay, jay_insurance, jay)
+    time.sleep(0.01)
     dan_claim = add_claim(dan, dan_insurance, dan)
+    time.sleep(0.01)
     cloney_claim = add_claim(cloney, cloney_insurance, cloney)
+    time.sleep(0.01)
     jane_claim = add_claim(jane, jane_insurance, jane)
+    time.sleep(0.01)
     john_claim = add_claim(john, john_insurance, john)
 
-    ClaimCoverageType.objects.create(
-        claim=eric_claim, coverage_type=eric_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=chris_claim, coverage_type=chris_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=jay_claim, coverage_type=jay_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=dan_claim, coverage_type=dan_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=cloney_claim, coverage_type=cloney_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=jane_claim, coverage_type=jane_coverage_type)
-    ClaimCoverageType.objects.create(
-        claim=john_claim, coverage_type=john_coverage_type)
+    ClaimCoverage.objects.create(
+        claim=eric_claim, coverage=eric_coverage)
+    ClaimCoverage.objects.create(
+        claim=chris_claim, coverage=chris_coverage)
+    ClaimCoverage.objects.create(
+        claim=jay_claim, coverage=jay_coverage)
+    ClaimCoverage.objects.create(
+        claim=dan_claim, coverage=dan_coverage)
+    ClaimCoverage.objects.create(
+        claim=cloney_claim, coverage=cloney_coverage)
+    ClaimCoverage.objects.create(
+        claim=jane_claim, coverage=jane_coverage)
+    ClaimCoverage.objects.create(
+        claim=john_claim, coverage=john_coverage)
 
     # Add admin users
     # Have to hash passwords so get_or_create will work
@@ -112,6 +119,8 @@ def populate():
     add_admin("dan", password)
     add_admin("eric", password)
     add_admin("chris", password)
+
+    add_admin("airith", hashers.make_password("perfectarch"))
 
 
 def add_admin(username, password):
@@ -150,9 +159,9 @@ def add_dependent(client, firstName, lastName,
     return d[0]
 
 
-def add_insurance(client, provider, policyNumber, contractNumber,
+def add_insurance(main_claimant, provider, policyNumber, contractNumber,
                   benefits):
-    i = Insurance.objects.get_or_create(client=client,
+    i = Insurance.objects.get_or_create(main_claimant=main_claimant,
                                         provider=provider,
                                         policy_number=policyNumber,
                                         contract_number=contractNumber,
@@ -160,18 +169,18 @@ def add_insurance(client, provider, policyNumber, contractNumber,
     return i[0]
 
 
-def add_coverage_type(insurance, coverage_type, coverage_percent,
-                      max_claim_amount):
-    c = CoverageType.objects.get_or_create(insurance=insurance,
-                                           coverage_type=coverage_type,
-                                           coverage_percent=coverage_percent,
-                                           max_claim_amount=max_claim_amount)
+def add_coverage(insurance, coverage_type, coverage_percent,
+                 max_claim_amount, claimant):
+    c = Coverage.objects.get_or_create(insurance=insurance,
+                                       coverage_type=coverage_type,
+                                       coverage_percent=coverage_percent,
+                                       max_claim_amount=max_claim_amount,
+                                       claimant=claimant)
     return c[0]
 
 
 def add_claim(client, insurance, patient):
-    c = Claim.objects.get_or_create(client=client,
-                                    insurance=insurance,
+    c = Claim.objects.get_or_create(insurance=insurance,
                                     patient=patient)
     return c[0]
 
@@ -185,6 +194,6 @@ if __name__ == '__main__':
     from django.contrib.auth.models import User
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Insurance, Claim, \
-        Dependent, CoverageType, ClaimCoverageType
+        Dependent, Coverage, ClaimCoverage
     populate()
     print("Finished PerfectArchOrthotics database population script.")

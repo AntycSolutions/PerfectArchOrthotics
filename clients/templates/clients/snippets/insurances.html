@@ -1,7 +1,7 @@
 <table class="table table-striped table-cover">
     <thead>
         <tr>
-            <th>Client / Spouse</th>
+            <th>Main Claimant</th>
             <th>Employer</th>
             <th>Provider</th>
             <th>Policy Number</th>
@@ -14,22 +14,16 @@
         {% for insurance in insurances %}
             <tr>
                 <td>
-                    {% if insurance.spouse %}
-                        <a href="{{ insurance.spouse.get_absolute_url }}">
-                            {{ insurance.spouse.full_name }}
-                        </a>
-                    {% else %}
-                        <a href="{% url 'client' insurance.client.id %}">
-                            {{ insurance.client.full_name }}
-                        </a>
-                    {% endif %}
+                    <a href="{{ insurance.main_claimant.get_absolute_url }}">
+                        {{ insurance.main_claimant.full_name }}
+                    </a>
                 </td>
-                <td>{{ insurance.client.employer }}</td>
+                <td>{{ insurance.main_claimant.get_client.employer }}</td>
                 <td>{{ insurance.provider }}</td>
                 <td>{{ insurance.policy_number }}</td>
                 <td>{{ insurance.contract_number }}</td>
                 <td>{{ insurance.get_benefits_display }}</td>
-                <td>
+                <td style="width: 140px;">
                     <div class="pull-right">
                         <a href="{% url 'insurance_update' insurance.id %}" class="btn btn-default">Edit</a>
                         <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-default">Delete</a>
@@ -37,35 +31,36 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="6">
+                <td colspan="2"><ul class="pull-right"><li>Coverages:</li></ul></td>
+                <td colspan="4">
                     <div class="pull-right">
-                        {% if insurance.coveragetype_set.all %}
+                        {% if insurance.coverage_set.all %}
                             <table class="table" style="display: inline-block;">
                                 <thead>
                                     <tr>
+                                        <th>Claimant</th>
                                         <th>Coverage Type</th>
                                         <th>Coverage Percent</th>
-                                        <th>Max Coverage</th>
-                                        <th>Coverage Remaining</th>
-                                        <th>Total Claimed</th>
-                                        <th>Quantity</th>
+                                        <th>Claim Amount Remaining</th>
+                                        <th>Quantity Remaining</th>
                                         <th>Period</th>
+                                        <th>Period Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for coverageType in insurance.coveragetype_set.all %}
+                                    {% for coverage in insurance.coverage_set.all %}
                                         <tr>
-                                            <td>{{ coverageType.get_coverage_type_display }}</td>
-                                            <td>{{ coverageType.coverage_percent }}</td>
-                                            <td>{{ coverageType.max_claim_amount }}</td>
-                                            <td>{{ coverageType.coverage_remaining }}</td>
-                                            <td>{{ coverageType.total_claimed }}</td>
-                                            <td>{{ coverageType.quantity }}</td>
-                                            <td>{{ coverageType.get_period_display }}</td>
+                                            <td><a href="{{ coverage.claimant.get_absolute_url }}">{{ coverage.claimant.full_name }}</a></td>
+                                            <td>{{ coverage.get_coverage_type_display }}</td>
+                                            <td>{{ coverage.coverage_percent }}</td>
+                                            <td>{{ coverage.claim_amount_remaining }}</td>
+                                            <td>{{ coverage.quantity_remaining }}</td>
+                                            <td>{{ coverage.get_period_display }}</td>
+                                            <td>{{ coverage.period_date }}</td>
                                             <!-- <td>
                                                 <div class="pull-right">
-                                                    <a href="{% url 'coverage_type_update' coverageType.id %}" class="btn btn-default">Edit</a>
-                                                    <a href="{% url 'coverage_type_delete' coverageType.id %}" class="btn btn-default">Delete</a>
+                                                    <a href="{% url 'coverage_type_update' coverage.id %}" class="btn btn-default">Edit</a>
+                                                    <a href="{% url 'coverage_type_delete' coverage.id %}" class="btn btn-default">Delete</a>
                                                 </div>
                                             </td> -->
                                         </tr>
@@ -73,7 +68,7 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            There are no coverage types for this insurance currenty.
+                            There are no Coverages for this Insurance currenty.
                         {% endif %}
                     </div>
                 </td>

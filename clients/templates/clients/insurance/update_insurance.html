@@ -1,8 +1,43 @@
 {% extends 'base.html' %}
 
-{% include 'navbar.html' %}
-
 {% block title %}Edit Insurance{% endblock %}
+
+{% block extrahead %}
+
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var form_count = {{ coverage_formset.total_form_count }};
+        $('#add_form').click(function() {
+            form_count++;
+            var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
+            form = form
+                .replace(/__prefix__/g, form_count)
+                .replace(/<p>/g,
+                         '<div class="form-group"><div class="col-lg-10">')
+                .replace(/<\/p>/g, '</div></div>');
+            $(form).insertBefore('#add_form');
+            $('#id_coverage_set-TOTAL_FORMS').val(form_count);
+            $('#id_coverage_set-' + form_count + '-period_date').datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+        });
+    });
+    {% for form in coverage_formset %}
+        $(function() {
+            $( "#id_coverage_set-{{ forloop.counter0 }}-period_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+        });
+    {% endfor %}
+</script>
+
+{% endblock %}
+
+{% include 'navbar.html' %}
 
 {% block content %}
 
@@ -22,44 +57,31 @@
             </div>
         {% endfor %}
     </fieldset>
+    <fieldset id="coverage_formset">
+        <h5>Coverages</h5>
+        {{ coverage_formset.management_form }}
+        {{ coverage_formset.non_form_errors }}
+        {% for form in coverage_formset %}
+            {{ form.id }}
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <a href="javascript:void(0)" id="add_form" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            Add another Coverage
+        </a>
+    </fieldset>
+    <br />
     <input type="submit" name="submit" value="Save" />
 </form>
-<div class="pull-right">
-    <a href="{% url 'coverage_type_create' insurance.id %}" class="btn btn-default">Add Coverage Type</a>
-</div>
-<h3>coverage types information:</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Coverage Type</th>
-            <th>Coverage Percent</th>
-            <th>Max Coverage</th>
-            <th>Total Claimed</th>
-            <th>Coverage Remaining</th>
-            <th>Quantity</th>
-            <th>Period</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for coverageType in insurance.coveragetype_set.all %}
-        <tr>
-            <td>{{ coverageType.get_coverage_type_display }}</td>
-            <td>{{ coverageType.coverage_percent }}</td>
-            <td>{{ coverageType.max_claim_amount }}</td>
-            <td>{{ coverageType.total_claimed }}</td>
-            <td>{{ coverageType.coverage_remaining }}</td>
-            <td>{{ coverageType.quantity }}</td>
-            <td>{{ coverageType.get_period_display }}</td>
-            <td>
-                <div class="pull-right">
-                    <a href="{% url 'coverage_type_update' coverageType.id %}" class="btn btn-default">Edit</a>
-                    <a href="{% url 'coverage_type_delete' coverageType.id %}" class="btn btn-default">Delete</a>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<br />
 
 {% endblock %}

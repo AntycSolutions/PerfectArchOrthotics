@@ -11,7 +11,7 @@
 
 <h1>Claim for {{ claim.patient.full_name }}</h1>
 <div>
-    <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+    <a href="{% url 'claim' claim.patient.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
 <h1>Proof of Manufacturing for {{ claim.patient.full_name }}</h1>
 <div>
@@ -22,8 +22,8 @@
     {% endif %}
 </div>
 <br />
-<div class="well">
-    {% if proof_of_manufacturing %}
+{% if proof_of_manufacturing %}
+    <div class="well">
         <h3>Information</h3>
         <ul>
             <li>Invoice #:
@@ -38,25 +38,21 @@
             <li>{% verbose_field_name proof_of_manufacturing.claim "patient" %}:
                 {{ proof_of_manufacturing.claim.patient.full_name }}
             </li>
-            <li>{% verbose_field_name claim "items" %}:
-            <ul>{% for claim_item in proof_of_manufacturing.claim.claimitem_set.all %}
-                    {% if claim_item.item.coverage_type == "o" %}
-                        <li>{# Orthotics dont have gender #}
-                            {% verbose_field_name claim_item.item "product_code" %}:
-                            {{ claim_item.item.product_code }}
-                            {% verbose_field_name claim_item.item "description" %}:
-                            {{ claim_item.item.description }}
-                            {% verbose_field_name claim_item.item "unit_price" %}:
-                            {{ claim_item.item.unit_price }}
-                            {% verbose_field_name claim_item "quantity" %}:
-                            {{ claim_item.quantity }}
-                            Total:
-                            {{ claim_item.total }}
+            <li>Items:
+            <ul>{% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
+                    {% for claim_item in claim_coverage.claimitem_set.all %}
+                        {% if claim_item.item.coverage_type == "o" %}
+                            <li>{# Orthotics dont have gender #}
+                                {{ claim_item.item.product_code }} -
+                                {{ claim_item.item.description }} -
+                                {% verbose_field_name claim_item "quantity" %}:
+                                {{ claim_item.quantity }}
+                            </li>
+                        {% endif %}
+                    {% empty %}
+                        <li>There are no items for this claim.
                         </li>
-                    {% endif %}
-                {% empty %}
-                    <li>There are no items for this claim.
-                    </li>
+                    {% endfor %}
                 {% endfor %}
             </ul>
         </li>
@@ -67,9 +63,9 @@
                 </ul>
             </li>
         </ul>
-    {% endif %}
-</div>
-<a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
+    </div>
+    <a href="{% url 'proof' client.id claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
+{% endif %}
 <br /><br />
 
 {% endblock %}

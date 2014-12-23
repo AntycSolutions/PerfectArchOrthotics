@@ -1,9 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.forms.models import inlineformset_factory
 
-from clients.models import Insurance, Client, Dependent
-from clients.forms.forms import InsuranceForm, CoverageForm
+from clients.models import Insurance, Person, Client, Dependent, Coverage
+from clients.forms.forms import InsuranceForm
 
 
 class UpdateInsuranceView(UpdateView):
@@ -13,10 +14,107 @@ class UpdateInsuranceView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        insurance_form = self.get_form(form_class)
+
+        InsuranceCoverageFormSet = inlineformset_factory(
+            Insurance,
+            Coverage,
+            extra=1,
+            exclude=('insurance',)
+        )
+        coverage_formset = InsuranceCoverageFormSet(
+            instance=self.object)
+
+        try:
+            main_claimant = Dependent.objects.get(
+                id=self.object.main_claimant.pk)
+            dependents = main_claimant.client.dependent_set.all()
+        except:
+            main_claimant = Client.objects.get(
+                id=self.object.main_claimant.pk)
+            dependents = main_claimant.dependent_set.all()
+        dependents_pks = list(dependents.values_list('pk', flat=True))
+        pks = dependents_pks + [main_claimant.pk]
+        claimants = Person.objects.filter(pk__in=pks)
+        label = lambda obj: obj.full_name()
+        coverage_formset.form.base_fields[
+            'claimant'].queryset = claimants
+        coverage_formset.form.base_fields[
+            'claimant'].label_from_instance = label
+        for coverage_form in coverage_formset:
+            coverage_form.fields['claimant'].queryset = claimants
+            coverage_form.fields['claimant'].label_from_instance = label
+
+        return self.render_to_response(
+            self.get_context_data(form=insurance_form,
+                                  coverage_formset=coverage_formset
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        insurance_form = self.get_form(form_class)
+
+        InsuranceCoverageFormSet = inlineformset_factory(
+            Insurance,
+            Coverage,
+            extra=1,
+            exclude=('insurance',)
+        )
+        coverage_formset = InsuranceCoverageFormSet(
+            request.POST, instance=self.object)
+
+        try:
+            main_claimant = Dependent.objects.get(
+                id=self.object.main_claimant.pk)
+            dependents = main_claimant.client.dependent_set.all()
+        except:
+            main_claimant = Client.objects.get(
+                id=self.object.main_claimant.pk)
+            dependents = main_claimant.dependent_set.all()
+        dependents_pks = list(dependents.values_list('pk', flat=True))
+        pks = dependents_pks + [main_claimant.pk]
+        claimants = Person.objects.filter(pk__in=pks)
+        label = lambda obj: obj.full_name()
+        coverage_formset.form.base_fields[
+            'claimant'].queryset = claimants
+        coverage_formset.form.base_fields[
+            'claimant'].label_from_instance = label
+        for coverage_form in coverage_formset:
+            coverage_form.fields['claimant'].queryset = claimants
+            coverage_form.fields['claimant'].label_from_instance = label
+
+        if (insurance_form.is_valid()
+                and coverage_formset.is_valid()):
+            return self.form_valid(insurance_form,
+                                   coverage_formset
+                                   )
+        else:
+            return self.form_invalid(insurance_form,
+                                     coverage_formset
+                                     )
+
+    def form_valid(self, form,
+                   coverage_formset
+                   ):
+        self.object = form.save()
+        coverage_formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form,
+                     coverage_formset
+                     ):
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  coverage_formset=coverage_formset
+                                  ))
+
     def get_success_url(self):
-        client_id = self.object.client.id
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client_id})
+        self.success_url = self.object.main_claimant.get_absolute_url()
         return self.success_url
 
 
@@ -38,72 +136,106 @@ class CreateInsuranceView(CreateView):
     model = Insurance
     form_class = InsuranceForm
 
-    def get_context_data(self, **kwargs):
-        context = super(CreateInsuranceView, self).get_context_data(**kwargs)
-        client = Client.objects.get(id=self.kwargs['client_id'])
-        coverage_form1 = CoverageForm(
-            prefix="coverage_form1")
-        coverage_form2 = CoverageForm(
-            prefix="coverage_form2")
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        insurance_form = self.get_form(form_class)
 
-        coverage_form3 = CoverageForm(
-            prefix="coverage_form3")
+        InsuranceCoverageFormSet = inlineformset_factory(
+            Insurance,
+            Coverage,
+            extra=1,
+            exclude=('insurance',)
+        )
+        coverage_formset = InsuranceCoverageFormSet()
 
-        context['coverage_form1'] = coverage_form1
-        context['coverage_form2'] = coverage_form2
-        context['coverage_form3'] = coverage_form3
-        context['client'] = client
-
-        return context
-
-    def form_valid(self, form):
-        coverage_form1 = CoverageForm(
-            self.request.POST, prefix="coverage_form1")
-        coverage_form2 = CoverageForm(
-            self.request.POST, prefix="coverage_form2")
-        coverage_form3 = CoverageForm(
-            self.request.POST, prefix="coverage_form3")
-
-        if (coverage_form1.is_valid()
-                and coverage_form2.is_valid()
-                and coverage_form3.is_valid()):
-            saved = form.save(commit=False)
-            client = Client.objects.get(id=self.kwargs['client_id'])
-            saved.client = client
-            if 'spouse_id' in self.kwargs:
-                spouse = Dependent.objects.get(id=self.kwargs['spouse_id'])
-                saved.spouse = spouse
-            saved.save()
-
-            coverage_1 = coverage_form1.save(commit=False)
-            if coverage_1.coverage_percent == 0:
-                pass
-            else:
-                coverage_1.insurance = saved
-                coverage_1.total_claimed = 0
-                coverage_1.save()
-
-            coverage_2 = coverage_form2.save(commit=False)
-            if coverage_2.coverage_percent == 0:
-                pass
-            else:
-                coverage_2.insurance = saved
-                coverage_2.total_claimed = 0
-                coverage_2.save()
-
-            coverage_3 = coverage_form3.save(commit=False)
-            if coverage_3.coverage_percent == 0:
-                pass
-            else:
-                coverage_3.insurance = saved
-                coverage_3.total_claimed = 0
-                coverage_3.save()
-
-            return HttpResponseRedirect(self.get_success_url(client))
+        if 'spouse_id' in self.kwargs:
+            main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
+            dependents = main_claimant.client.dependent_set.all()
         else:
-            return self.form_invalid(form)
+            main_claimant = Client.objects.get(id=self.kwargs['client_id'])
+            dependents = main_claimant.dependent_set.all()
+        dependents_pks = list(dependents.values_list('pk', flat=True))
+        pks = dependents_pks + [main_claimant.pk]
+        claimants = Person.objects.filter(pk__in=pks)
+        label = lambda obj: obj.full_name()
+        coverage_formset.form.base_fields[
+            'claimant'].queryset = claimants
+        coverage_formset.form.base_fields[
+            'claimant'].label_from_instance = label
+        for coverage_form in coverage_formset:
+            coverage_form.fields['claimant'].queryset = claimants
+            coverage_form.fields['claimant'].label_from_instance = label
 
-    def get_success_url(self, client):
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client.id})
+        return self.render_to_response(
+            self.get_context_data(form=insurance_form,
+                                  coverage_formset=coverage_formset
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        insurance_form = self.get_form(form_class)
+
+        InsuranceCoverageFormSet = inlineformset_factory(
+            Insurance,
+            Coverage,
+            extra=1,
+            exclude=('insurance',)
+        )
+        coverage_formset = InsuranceCoverageFormSet(request.POST)
+
+        if 'spouse_id' in self.kwargs:
+            main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
+            dependents = main_claimant.client.dependent_set.all()
+        else:
+            main_claimant = Client.objects.get(id=self.kwargs['client_id'])
+            dependents = main_claimant.dependent_set.all()
+        dependents_pks = list(dependents.values_list('pk', flat=True))
+        pks = dependents_pks + [main_claimant.pk]
+        claimants = Person.objects.filter(pk__in=pks)
+        label = lambda obj: obj.full_name()
+        coverage_formset.form.base_fields[
+            'claimant'].queryset = claimants
+        coverage_formset.form.base_fields[
+            'claimant'].label_from_instance = label
+        for coverage_form in coverage_formset:
+            coverage_form.fields['claimant'].queryset = claimants
+            coverage_form.fields['claimant'].label_from_instance = label
+
+        if (insurance_form.is_valid()
+                and coverage_formset.is_valid()):
+            return self.form_valid(insurance_form,
+                                   coverage_formset
+                                   )
+        else:
+            return self.form_invalid(insurance_form,
+                                     coverage_formset
+                                     )
+
+    def form_valid(self, form,
+                   coverage_formset
+                   ):
+        self.object = form.save(commit=False)
+        if 'spouse_id' in self.kwargs:
+            main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
+        else:
+            main_claimant = Client.objects.get(id=self.kwargs['client_id'])
+        self.object.main_claimant = main_claimant
+        self.object.save()
+        coverage_formset.instance = self.object
+        coverage_formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form,
+                     coverage_formset
+                     ):
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  coverage_formset=coverage_formset
+                                  ))
+
+    def get_success_url(self):
+        self.success_url = self.object.main_claimant.get_absolute_url()
         return self.success_url

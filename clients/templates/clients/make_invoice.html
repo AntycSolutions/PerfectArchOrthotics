@@ -10,7 +10,7 @@
 
 <h1>Claim for {{ claim.patient.full_name }}</h1>
 <div>
-    <a href="{% url 'claim' claim.client.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+    <a href="{% url 'claim' claim.patient.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
 <h1>Invoice for {{ claim.patient.full_name }}</h1>
 <div>
@@ -21,8 +21,8 @@
     {% endif %}
 </div>
 <br />
-<div class="well">
-    {% if invoice %}
+{% if invoice %}
+    <div class="well">
         <h3>Information</h3>
         <ul>
             <li>Invoice #:
@@ -41,28 +41,30 @@
             </li>
             <li>Items:</li>
             <ul>
-                {% for claim_item in invoice.claim.claimitem_set.all %}
-                    <li>{% verbose_field_name claim_item.item "coverage_type" %}:
-                        {{ claim_item.item.get_coverage_type_display }}
-                        {% if claim_item.item.gender %}
-                            {% verbose_field_name claim_item.item "gender" %}:
-                            {{ claim_item.item.get_gender_display }}
-                        {% endif %}
-                        {% verbose_field_name claim_item.item "product_code" %}:
-                        {{ claim_item.item.product_code }}
-                        {% verbose_field_name claim_item.item "description" %}:
-                        {{ claim_item.item.description }}
-                        {% verbose_field_name claim_item.item "unit_price" %}:
-                        {{ claim_item.item.unit_price }}
-                        {% verbose_field_name claim_item "quantity" %}:
-                        {{ claim_item.quantity }}
-                        Total:
-                        {{ claim_item.total }}
-                    </li>
+                {% for claim_coverage in invoice.claim.claimcoverage_set.all %}
+                    {% for claim_item in claim_coverage.claimitem_set.all %}
+                        <li>{% verbose_field_name claim_item.item "coverage_type" %}:
+                            {{ claim_item.item.get_coverage_type_display }}
+                            {% if claim_item.item.gender %}
+                                {% verbose_field_name claim_item.item "gender" %}:
+                                {{ claim_item.item.get_gender_display }}
+                            {% endif %}
+                            {% verbose_field_name claim_item.item "product_code" %}:
+                            {{ claim_item.item.product_code }}
+                            {% verbose_field_name claim_item.item "description" %}:
+                            {{ claim_item.item.description }}
+                            {% verbose_field_name claim_item.item "unit_price" %}:
+                            {{ claim_item.item.unit_price }}
+                            {% verbose_field_name claim_item "quantity" %}:
+                            {{ claim_item.quantity }}
+                            Amount:
+                            {{ claim_item.amount }}
+                        </li>
+                    {% endfor %}
                 {% endfor %}
             </ul>
             <li>Total:
-                {{ invoice.total }}</li>
+                {{ invoice.claim.total_amount_quantity_claimed.total_amount_claimed }}</li>
             <li>{% verbose_field_name invoice "deposit_date" %}:
                 {{ invoice.deposit_date }}
             </li>
@@ -80,10 +82,10 @@
             <li>Balance:
                 {{ invoice.balance }}</li>
         </ul>
-    {% endif %}
-</div>
-<strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
-<a href="{% url 'invoice' claim.client.id claim.id %}" class="btn btn-default">View Invoice</a>
+    </div>
+    <strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
+    <a href="{% url 'invoice' claim.patient.id claim.id %}" class="btn btn-default">View Invoice</a>
+{% endif %}
 <br /><br />
 
 {% endblock %}

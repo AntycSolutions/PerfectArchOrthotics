@@ -4,30 +4,169 @@ from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
-    ProofOfManufacturing, Client
+    ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem
 from clients.forms.forms import ClaimForm, InvoiceForm, \
     InsuranceLetterForm, ProofOfManufacturingForm, \
-    LaboratoryInsuranceLetterFormSet
+    LaboratoryInsuranceLetterFormSet, nestedformset_factory
 
 
 class CreateClaimView(CreateView):
     template_name = 'clients/claim/create_claim.html'
     model = Claim
+    form_class = ClaimForm
 
-    def get_form_class(self):
-        return ClaimForm(self.object)
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        client = Client.objects.get(pk=self.kwargs['client_id'])
+        return form_class(client, **self.get_form_kwargs())
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        client = Client.objects.get(id=self.kwargs['client_id'])
-        self.object.client = client
-        self.object.save()
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        claim_form = self.get_form(form_class)
+
+        ClaimCoverageFormFormSet = nestedformset_factory(
+            Claim, ClaimCoverage, ClaimItem,
+            extra=1, exclude=('items',),  # formset=CoverageFormSet,
+            nested_extra=1, nested_fields='__all__')
+        nestedformset = ClaimCoverageFormFormSet()
+
+        coverages = Coverage.objects.filter(
+            insurance__in=claim_form.client.insurance_set.all())
+        label = (
+            lambda obj:
+                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                % (
+                    obj.get_coverage_type_display(),
+                    obj.claimant.full_name(),
+                    obj.coverage_percent,
+                    obj.claim_amount_remaining(),
+                    obj.quantity_remaining())
+        )
+        items_label = (
+            lambda obj:
+                "%s - %s - %s - $%s" % (
+                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.description, obj.unit_price)
+        )
+        nestedformset.form.base_fields[
+            'coverage'].queryset = coverages
+        nestedformset.form.base_fields[
+            'coverage'].label_from_instance = label
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].label_from_instance = items_label
+        items = nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset = items.order_by('coverage_type', 'product_code',
+                                              'gender')
+        for form in nestedformset:
+            form.fields['coverage'].queryset = coverages
+            form.fields['coverage'].label_from_instance = label
+            form.nested.form.base_fields[
+                'item'].label_from_instance = items_label
+            items = form.nested.form.base_fields[
+                'item'].queryset
+            form.nested.form.base_fields[
+                'item'].queryset = items.order_by('coverage_type',
+                                                  'product_code', 'gender')
+
+        return self.render_to_response(
+            self.get_context_data(claim_form=claim_form,
+                                  nestedformset=nestedformset
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        claim_form = self.get_form(form_class)
+
+        ClaimCoverageFormFormSet = nestedformset_factory(
+            Claim, ClaimCoverage, ClaimItem,
+            extra=1, exclude=('items',),  # formset=CoverageFormSet,
+            nested_extra=1, nested_fields='__all__')
+        nestedformset = ClaimCoverageFormFormSet(request.POST)
+
+        coverages = Coverage.objects.filter(
+            insurance__in=claim_form.client.insurance_set.all())
+        label = (
+            lambda obj:
+                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                % (
+                    obj.get_coverage_type_display(),
+                    obj.claimant.full_name(),
+                    obj.coverage_percent,
+                    obj.claim_amount_remaining(),
+                    obj.quantity_remaining())
+        )
+        items_label = (
+            lambda obj:
+                "%s - %s - %s - $%s" % (
+                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.description, obj.unit_price)
+        )
+        nestedformset.form.base_fields[
+            'coverage'].queryset = coverages
+        nestedformset.form.base_fields[
+            'coverage'].label_from_instance = label
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].label_from_instance = items_label
+        items = nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset = items.order_by('coverage_type', 'product_code',
+                                              'gender')
+        for form in nestedformset:
+            form.fields['coverage'].queryset = coverages
+            form.fields['coverage'].label_from_instance = label
+            form.nested.form.base_fields[
+                'item'].label_from_instance = items_label
+            items = form.nested.form.base_fields[
+                'item'].queryset
+            form.nested.form.base_fields[
+                'item'].queryset = items.order_by('coverage_type',
+                                                  'product_code', 'gender')
+
+        if (claim_form.is_valid()
+                and nestedformset.is_valid()):
+            return self.form_valid(claim_form,
+                                   nestedformset
+                                   )
+        else:
+            return self.form_invalid(claim_form,
+                                     nestedformset
+                                     )
+
+    def form_valid(self, claim_form,
+                   nestedformset
+                   ):
+        self.object = claim_form.save()
+        object_tuples = nestedformset.save(commit=False)
+        for claim_coverage, claim_items in object_tuples:
+            if claim_coverage:
+                claim_coverage.claim = self.object
+                claim_coverage.save()
+                if claim_items:
+                    for claim_item in claim_items:
+                        claim_item.claim_coverage = claim_coverage
+                        claim_item.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
+    def form_invalid(self, claim_form,
+                     nestedformset
+                     ):
+        return self.render_to_response(
+            self.get_context_data(claim_form=claim_form,
+                                  nestedformset=nestedformset
+                                  ))
+
     def get_success_url(self):
-        self.success_url = reverse_lazy('claim_detail',
-                                        kwargs={'client_id': self.object.id})
+        client_id = self.object.patient.get_client().pk
+        self.success_url = reverse_lazy('claim',
+                                        kwargs={'client_id': client_id,
+                                                'claim_id': self.object.id})
         return self.success_url
 
 
@@ -46,10 +185,152 @@ class UpdateClaimView(UpdateView):
     def get_form(self, form_class=None):
         if form_class is None:
             form_class = self.get_form_class()
-        return form_class(self.object.client, **self.get_form_kwargs())
+        client = self.object.patient.get_client()
+        return form_class(client, **self.get_form_kwargs())
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        claim_form = self.get_form(form_class)
+
+        ClaimCoverageFormFormSet = nestedformset_factory(
+            Claim, ClaimCoverage, ClaimItem,
+            extra=1, exclude=('items',),  # formset=CoverageFormSet,
+            nested_extra=1, nested_fields='__all__')
+        nestedformset = ClaimCoverageFormFormSet(instance=self.object)
+
+        coverages = Coverage.objects.filter(
+            insurance__in=claim_form.client.insurance_set.all())
+        label = (
+            lambda obj:
+                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                % (
+                    obj.get_coverage_type_display(),
+                    obj.claimant.full_name(),
+                    obj.coverage_percent,
+                    obj.claim_amount_remaining(),
+                    obj.quantity_remaining())
+        )
+        items_label = (
+            lambda obj:
+                "%s - %s - %s - $%s" % (
+                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.description, obj.unit_price)
+        )
+        nestedformset.form.base_fields[
+            'coverage'].queryset = coverages
+        nestedformset.form.base_fields[
+            'coverage'].label_from_instance = label
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].label_from_instance = items_label
+        items = nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset = items.order_by('coverage_type', 'product_code',
+                                              'gender')
+        for form in nestedformset:
+            form.fields['coverage'].queryset = coverages
+            form.fields['coverage'].label_from_instance = label
+            form.nested.form.base_fields[
+                'item'].label_from_instance = items_label
+            items = form.nested.form.base_fields[
+                'item'].queryset
+            form.nested.form.base_fields[
+                'item'].queryset = items.order_by('coverage_type',
+                                                  'product_code', 'gender')
+
+        return self.render_to_response(
+            self.get_context_data(claim_form=claim_form,
+                                  nestedformset=nestedformset
+                                  ))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        claim_form = self.get_form(form_class)
+
+        ClaimCoverageFormFormSet = nestedformset_factory(
+            Claim, ClaimCoverage, ClaimItem,
+            extra=1, exclude=('items',),  # formset=CoverageFormSet,
+            nested_extra=1, nested_fields='__all__')
+        nestedformset = ClaimCoverageFormFormSet(
+            request.POST, instance=self.object)
+
+        coverages = Coverage.objects.filter(
+            insurance__in=claim_form.client.insurance_set.all())
+        label = (
+            lambda obj:
+                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                % (
+                    obj.get_coverage_type_display(),
+                    obj.claimant.full_name(),
+                    obj.coverage_percent,
+                    obj.claim_amount_remaining(),
+                    obj.quantity_remaining())
+        )
+        items_label = (
+            lambda obj:
+                "%s - %s - %s - $%s" % (
+                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.description, obj.unit_price)
+        )
+        nestedformset.form.base_fields[
+            'coverage'].queryset = coverages
+        nestedformset.form.base_fields[
+            'coverage'].label_from_instance = label
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].label_from_instance = items_label
+        items = nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset
+        nestedformset.nested_formset_class.form.base_fields[
+            'item'].queryset = items.order_by('coverage_type', 'product_code',
+                                              'gender')
+        for form in nestedformset:
+            form.fields['coverage'].queryset = coverages
+            form.fields['coverage'].label_from_instance = label
+            form.nested.form.base_fields[
+                'item'].label_from_instance = items_label
+            items = form.nested.form.base_fields[
+                'item'].queryset
+            form.nested.form.base_fields[
+                'item'].queryset = items.order_by('coverage_type',
+                                                  'product_code', 'gender')
+
+        if (claim_form.is_valid()
+                and nestedformset.is_valid()):
+            return self.form_valid(claim_form,
+                                   nestedformset
+                                   )
+        else:
+            return self.form_invalid(claim_form,
+                                     nestedformset
+                                     )
+
+    def form_valid(self, claim_form,
+                   nestedformset
+                   ):
+        self.object = claim_form.save()
+        object_tuples = nestedformset.save(commit=False)
+        for claim_coverage, claim_items in object_tuples:
+            if claim_coverage:
+                claim_coverage.save()
+                if claim_items:
+                    for claim_item in claim_items:
+                        claim_item.claim_coverage = claim_coverage
+                        claim_item.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, claim_form,
+                     nestedformset
+                     ):
+        return self.render_to_response(
+            self.get_context_data(claim_form=claim_form,
+                                  nestedformset=nestedformset
+                                  ))
 
     def get_success_url(self):
-        client_id = self.object.client.id
+        client_id = self.object.patient.get_client().pk
         self.success_url = reverse_lazy('claim',
                                         kwargs={'client_id': client_id,
                                                 'claim_id': self.object.id})
@@ -64,12 +345,6 @@ class DeleteClaimView(DeleteView):
     slug_url_kwarg = "claim_id"
     success_url = reverse_lazy('claims')
 
-    def get_success_url(self):
-        client_id = self.object.client.id
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client_id})
-        return self.success_url
-
 
 class UpdateInvoiceView(UpdateView):
     template_name = 'clients/claim/update_invoice.html'
@@ -79,7 +354,7 @@ class UpdateInvoiceView(UpdateView):
     slug_url_kwarg = "invoice_id"
 
     def get_success_url(self):
-        client_id = self.object.claim.client.id
+        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
                                         kwargs={'client_id': client_id,
@@ -92,6 +367,13 @@ class CreateInvoiceView(CreateView):
     model = Invoice
     form_class = InvoiceForm
 
+    def get_context_data(self, **kwargs):
+        context = super(CreateInvoiceView, self).get_context_data(**kwargs)
+        claim = Claim.objects.get(id=self.kwargs['claim_id'])
+        context['claim'] = claim
+
+        return context
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
@@ -101,7 +383,7 @@ class CreateInvoiceView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        client_id = self.object.claim.client.id
+        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
                                         kwargs={'client_id': client_id,
@@ -160,11 +442,9 @@ class UpdateInsuranceLetterView(UpdateView):
                                   ))
 
     def get_success_url(self):
-        client_id = self.object.claim.client.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInsurance',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url
 
 
@@ -219,11 +499,9 @@ class CreateInsuranceLetterView(CreateView):
                                   ))
 
     def get_success_url(self, claim):
-        client_id = claim.client.id
         claim_id = claim.id
         self.success_url = reverse_lazy('fillOutInsurance',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url
 
 
@@ -235,7 +513,7 @@ class UpdateProofOfManufacturingView(UpdateView):
     slug_url_kwarg = "proof_of_manufacturing_id"
 
     def get_success_url(self):
-        client_id = self.object.claim.client.id
+        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
                                         kwargs={'client_id': client_id,
@@ -257,7 +535,7 @@ class CreateProofOfManufacturingView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        client_id = self.object.claim.client.id
+        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
                                         kwargs={'client_id': client_id,

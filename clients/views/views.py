@@ -18,10 +18,10 @@ import xhtml2pdf.pisa as pisa
 
 # PerfectArchOrthotics
 from search import get_query
-from clients.models import Client, Dependent, Claim, Insurance, CoverageType, \
-    Person, Item, ClaimItem, ClaimCoverageType
-from clients.forms.forms import ClientForm, DependentForm, InsuranceForm, \
-    CoverageForm, ClaimForm
+from clients.models import Client, Dependent, Claim, Insurance, \
+    Item, Coverage, ClaimItem, ClaimCoverage
+from clients.forms.forms import ClientForm, DependentForm, \
+    ClaimForm, nestedformset_factory
 
 
 #TODO: split into multiple views
@@ -80,7 +80,7 @@ def render_to_pdf(request, template_src, context_dict):
 
 
 def invoice_view(request, client_id, claim_id):
-    claim, client, invoice, invoice_number = _invoice(
+    claim, patient, invoice, invoice_number = _invoice(
         client_id, claim_id)
     bill_to = settings.BILL_TO[0][1]
     perfect_arch_name = bill_to.split('\n')[0]
@@ -90,21 +90,21 @@ def invoice_view(request, client_id, claim_id):
                          'clients/pdfs/invoice.html',
                          {'pagesize': 'A4',
                           'claim': claim,
-                          'client': client,
                           'invoice': invoice,
                           'invoice_number': invoice_number,
                           'perfect_arch_name': perfect_arch_name,
                           'perfect_arch_address': perfect_arch_address,
                           'item_class': Item,
                           'claim_item_class': ClaimItem,
-                          'insurance_class': Insurance,
-                          'business_number': settings.BUSINESS_NUMBER}
+                          # 'insurance_class': Insurance,
+                          'business_number': settings.BUSINESS_NUMBER,
+                          'is_prod': request.get_host() == "perfectarch.ca"}
                          )
 
 
 def _invoice(client_id, claim_id):
     claim = Claim.objects.get(id=claim_id)
-    client = claim.client
+    patient = claim.patient
     invoice = None
     try:
         invoice = claim.invoice_set.all()[0]
@@ -112,12 +112,11 @@ def _invoice(client_id, claim_id):
         pass
     invoice_number = "{0:04d}".format(claim.id)
 
-    return claim, client, invoice, invoice_number
+    return claim, patient, invoice, invoice_number
 
 
-def insurance_letter_view(request, client_id, claim_id):
-    claim, client, insurance_letter = _insurance_letter(client_id,
-                                                        claim_id)
+def insurance_letter_view(request, claim_id):
+    claim, patient, insurance_letter = _insurance_letter(claim_id)
 
     # Because !@#$ xhtml2pdf (putting these in css classes didnt work)
     underline = (
@@ -136,22 +135,22 @@ def insurance_letter_view(request, client_id, claim_id):
                          'clients/pdfs/insurance_letter.html',
                          {'pagesize': 'A4',
                           'claim': claim,
-                          'client': client,
+                          'patient': patient,
                           'insurance_letter': insurance_letter,
                           'underline': underline,
                           'notunderline': notunderline})
 
 
-def _insurance_letter(client_id, claim_id):
+def _insurance_letter(claim_id):
     claim = Claim.objects.get(id=claim_id)
-    client = claim.client
+    patient = claim.patient
     insurance_letter = None
     try:
         insurance_letter = claim.insuranceletter_set.all()[0]
     except:
         pass
 
-    return claim, client, insurance_letter
+    return claim, patient, insurance_letter
 
 
 def proof_of_manufacturing_view(request, client_id, claim_id):
@@ -182,11 +181,11 @@ def _proof_of_manufacturing(claim_id):
 def fillOutInvoiceView(request, client_id, claim_id):
     context = RequestContext(request)
 
-    claim, client, invoice, invoice_number = _invoice(
+    claim, patient, invoice, invoice_number = _invoice(
         client_id, claim_id)
 
     return render_to_response('clients/make_invoice.html',
-                              {'client': client,
+                              {'patient': patient,
                                'claim': claim,
                                'invoice': invoice,
                                'insurance_class': Insurance,
@@ -196,14 +195,13 @@ def fillOutInvoiceView(request, client_id, claim_id):
 
 
 @login_required
-def fillOutInsuranceLetterView(request, client_id, claim_id):
+def fillOutInsuranceLetterView(request, claim_id):
     context = RequestContext(request)
 
-    claim, client, insurance_letter = _insurance_letter(client_id,
-                                                        claim_id)
+    claim, patient, insurance_letter = _insurance_letter(claim_id)
 
     return render_to_response('clients/make_insurance_letter.html',
-                              {'client': client,
+                              {'patient': patient,
                                'claim': claim,
                                'insurance_letter': insurance_letter},
                               context)
@@ -270,9 +268,13 @@ def claimView(request, client_id, claim_id):
 
     client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
-    has_orthotics = claim.coverage_types.filter(coverage_type="o").count() > 0
+    has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
     context_dict = {'claim': claim, 'client': client,
                     'has_orthotics': has_orthotics,
+                    'claim_coverage_class': ClaimCoverage,
+                    'coverage_class': Coverage,
+                    'claim_item_class': ClaimItem,
+                    'item_class': Item
                     }
     return render_to_response('clients/claim.html', context_dict, context)
 
@@ -394,12 +396,13 @@ def clientView(request, client_id):
     client = Client.objects.get(id=client_id)
     insurance = client.insurance_set.all()
     dependents = client.dependent_set.all()
-    claims = client.claim_set.all()
+    claims = client.claim_set.all().order_by('-submitted_datetime')
     spouse = None
     children = []
     for dependent in dependents:
         if dependent.relationship == Dependent.SPOUSE:
             spouse = dependent
+            insurance = insurance | spouse.insurance_set.all()
         else:
             children.append(dependent)
 
@@ -453,24 +456,51 @@ def editClientView(request, client_id):
                               context)
 
 
-@login_required
-def makeClaimView(request, client_id):
-    context = RequestContext(request)
+# @login_required
+# def makeClaimView(request, client_id):
+#     context = RequestContext(request)
 
-    client = Client.objects.get(id=client_id)
-    claim_form = ClaimForm(client)
-    if request.method == 'POST':
-        claim_form = ClaimForm(client, request.POST)
-        if claim_form.is_valid():
-            claim = claim_form.save()
+#     client = Client.objects.get(id=client_id)
+#     claim_form = ClaimForm(client)
+#     ClaimCoverageFormFormSet = nestedformset_factory(
+#         Claim, ClaimCoverage, ClaimItem,
+#         extra=1, exclude=('items',),  # formset=CoverageFormSet,
+#         nested_extra=1, nested_fields='__all__')
 
-            return redirect('claim', client.id, claim.id)
+#     nestedformset = ClaimCoverageFormFormSet()
+#     nestedformset.form.base_fields[
+#         'coverage'].queryset = Coverage.objects.filter(
+#             insurance__in=client.insurance_set.all())
+#     nestedformset.form.base_fields[
+#         'coverage'].label_from_instance = (
+#             lambda obj:
+#                 "%s - %s" % (obj.get_coverage_type_display(),
+#                              obj.claimant.full_name())
+#         )
 
-    return render_to_response('clients/make_claim.html',
-                              {'client': client,
-                               'claim_form': claim_form,
-                               },
-                              context)
+#     if request.method == 'POST':
+#         claim_form = ClaimForm(client, request.POST)
+#         nestedformset = ClaimCoverageFormFormSet(request.POST)
+#         if (claim_form.is_valid()
+#                 and nestedformset.is_valid()):
+#             claim = claim_form.save()
+#             object_tuples = nestedformset.save(commit=False)
+#             for claim_coverage, claim_items in object_tuples:
+#                 if claim_coverage:
+#                     claim_coverage.claim = claim
+#                     claim_coverage.save()
+#                     for claim_item in claim_items:
+#                         claim_item.claim_coverage = claim_coverage
+#                         claim_item.save()
+
+#             return redirect('claim', client.id, claim.id)
+
+#     return render_to_response('clients/make_claim.html',
+#                               {'client': client,
+#                                'claim_form': claim_form,
+#                                'nestedformset': nestedformset,
+#                                },
+#                               context)
 
 
 @login_required
@@ -536,7 +566,7 @@ def add_dependent(request, client_id):
 
     if request.method == 'POST':
         if request.POST['submit'] == "Skip step":
-            return redirect('add_insurance', client_id)
+            return redirect('insurance_create', client_id=client_id)
 
         form = DependentForm(request.POST)
 
@@ -549,7 +579,7 @@ def add_dependent(request, client_id):
 
             if request.POST['submit'] == "Create and proceed":
                 # This means we want to add insurance
-                return redirect('add_insurance', client_id)
+                return redirect('insurance_create', client_id=client_id)
             else:
                 # This means we want to add another
                 form = DependentForm()
@@ -559,68 +589,3 @@ def add_dependent(request, client_id):
 
     return render_to_response('clients/dependent/add_dependent.html',
                               {'form': form}, context)
-
-
-@login_required
-def add_insurance(request, client_id):
-    context = RequestContext(request)
-
-    if request.method == 'POST':
-        insurance_form = InsuranceForm(request.POST, prefix="insurance_form")
-        coverage_form1 = CoverageForm(
-            request.POST, prefix="coverage_form1")
-        coverage_form2 = CoverageForm(
-            request.POST, prefix="coverage_form2")
-        coverage_form3 = CoverageForm(
-            request.POST, prefix="coverage_form3")
-
-        if (insurance_form.is_valid()
-                and coverage_form1.is_valid()
-                and coverage_form2.is_valid()
-                and coverage_form3.is_valid()):
-            saved = insurance_form.save(commit=False)
-            client = Client.objects.get(id=client_id)
-            saved.client = client
-            saved.save()
-
-            coverage_1 = coverage_form1.save(commit=False)
-            if coverage_1.coverage_percent == 0:
-                pass
-            else:
-                coverage_1.insurance = saved
-                coverage_1.total_claimed = 0
-                coverage_1.save()
-
-            coverage_2 = coverage_form2.save(commit=False)
-            if coverage_2.coverage_percent == 0:
-                pass
-            else:
-                coverage_2.insurance = saved
-                coverage_2.total_claimed = 0
-                coverage_2.save()
-
-            coverage_3 = coverage_form3.save(commit=False)
-            if coverage_3.coverage_percent == 0:
-                pass
-            else:
-                coverage_3.insurance = saved
-                coverage_3.total_claimed = 0
-                coverage_3.save()
-
-            return redirect('clients')
-    else:
-        insurance_form = InsuranceForm(prefix="insurance_form")
-        coverage_form1 = CoverageForm(
-            prefix="coverage_form1")
-        coverage_form2 = CoverageForm(
-            prefix="coverage_form2")
-
-        coverage_form3 = CoverageForm(
-            prefix="coverage_form3")
-
-    return render_to_response('clients/add_insurance.html',
-                              {'insurance_form': insurance_form,
-                               'coverage_form1': coverage_form1,
-                               'coverage_form2': coverage_form2,
-                               'coverage_form3': coverage_form3},
-                              context)

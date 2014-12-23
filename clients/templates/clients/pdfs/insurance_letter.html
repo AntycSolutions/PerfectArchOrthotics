@@ -678,6 +678,21 @@
 				</td>
 				</tr></table>
             </td>
+            {% if insurance_letter.other %}
+                <td colspan="5">
+                    <table><tr>
+                    <td style="{{ underline }}">
+                    X
+                    </td>
+                    <td style="{{ notunderline }}">
+                    &nbsp;
+                    <strong>
+                    {{ insurance_letter.other }}
+                    </strong>
+                    </td>
+                    </tr></table>
+                </td>
+            {% endif %}
         </tr>
     </table>
     <table>

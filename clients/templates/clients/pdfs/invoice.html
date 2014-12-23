@@ -34,10 +34,6 @@
 {% block extra_style %}
 
 <style type="text/css">
-    /*@font-face { font-family: Lato; src: url(/static/fonts/Lato-Bol.ttf); font-weight: bold; }
-    @font-face { font-family: Lato; src: url(/static/fonts/Lato-Reg.ttf); }
-    @font-face { font-family: "Lato Light"; src: url(/static/fonts/Lato-Lig.ttf); }*/
-
     html {
         font-family: "Lato", "Helvetica", "sans-serif";
         color: #333333;
@@ -135,28 +131,28 @@
 <div id="content">
     <div class="recipient bottom-10">
         <p class="bottom-10">
-            <strong>{{ client.employer }}</strong><br>
-            {{ client.full_name }}<br>
-            {{ client.address }}<br>
-            {{ client.city }} &nbsp;{{ client.postal_code }}<br/>
+            {{ claim.patient.get_client.full_name }}<br>
+            {{ claim.patient.get_client.address }}<br>
+            {{ claim.patient.get_client.city }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
+        <br />
     </div>
 
     <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
     <p class='info'>
-        To: {{ client.full_name }}</br>
         {% verbose_field_name invoice "dispensed_by" %}:
         {{ invoice.get_dispensed_by_display }}</br>
         {% verbose_field_name claim.insurance "benefits" %}:
         {{ claim.insurance.get_benefits_display }} </br>
         {% verbose_field_name invoice "payment_terms" %}:
         {{ invoice.get_payment_terms_display }}</br>
-        <strong>Please cover payment in 10 days.</strong>
+        {% verbose_field_name invoice "payment_type" %}:
+        {{ invoice.get_payment_type_display }}
     </p>
 
     <div class="main">
-        <h1>Sample Invoice</h1><!-- TODO: remove -->
+        {% if not is_prod %}<h1>Sample Invoice</h1>{% endif %}
         <br>
         <table>
             <tr>
@@ -169,15 +165,9 @@
             <thead>
                 <tr style="border: 1px;">
                     <th colspan="2" style="text-align: left;"><strong>
-                        {% verbose_field_name item_class "coverage_type" %}
-                    </strong></th>
-                    <th colspan="1" style="text-align: left;"><strong>
-                        {% verbose_field_name item_class "gender" %}
-                    </strong></th>
-                    <th colspan="2" style="text-align: left;"><strong>
                         {% verbose_field_name item_class "product_code" %}
                     </strong></th>
-                    <th colspan="4" style="text-align: left;"><strong>
+                    <th colspan="5" style="text-align: left;"><strong>
                         {% verbose_field_name item_class "description" %}
                     </strong></th>
                     <th colspan="1" style="text-align: left;"><strong>
@@ -187,35 +177,31 @@
                         {% verbose_field_name claim_item_class "quantity" %}
                     </strong></th>
                     <th colspan="1" style="text-align: right;"><strong>
-                        Total
+                        Amount
                     </strong></th>
                 </tr>
             </thead>
             <tbody>
-                {% for claim_item in invoice.claim.claimitem_set.all %}
-                    <tr>
-                        <td colspan="2">
-                            {{ claim_item.item.get_coverage_type_display }}
-                        </td>
-                        <td colspan="1">
-                            {{ claim_item.item.get_gender_display }}
-                        </td>
-                        <td colspan="2">
-                            {{ claim_item.item.product_code }}
-                        </td>
-                        <td colspan="4">
-                            {{ claim_item.item.description }}
-                        </td>
-                        <td colspan="1">
-                            {{ claim_item.item.unit_price }}
-                        </td>
-                        <td colspan="1">
-                            {{ claim_item.quantity }}
-                        </td>
-                        <td colspan="1" style="text-align: right;">
-                            {{ claim_item.total }}
-                        </td>
-                    </tr>
+                {% for claim_coverage in invoice.claim.claimcoverage_set.all %}
+                    {% for claim_item in claim_coverage.claimitem_set.all %}
+                        <tr>
+                            <td colspan="2">
+                                {{ claim_item.item.product_code }}
+                            </td>
+                            <td colspan="5">
+                                {{ claim_item.item.description }}
+                            </td>
+                            <td colspan="1">
+                                {{ claim_item.item.unit_price }}
+                            </td>
+                            <td colspan="1">
+                                {{ claim_item.quantity }}
+                            </td>
+                            <td colspan="1" style="text-align: right;">
+                                {{ claim_item.amount }}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
@@ -228,15 +214,12 @@
                         Total:&nbsp;
                     </strong></td>
                     <td colspan="1" style="text-align: right;"><strong>
-                        {{ invoice.total }}
+                        {{ invoice.claim.total_amount_quantity_claimed.total_amount_claimed }}
                     </strong></td>
                 </tr>
                 <tr style="border: 0;">
                     {% if invoice.deposit_date %}
-                        <td colspan="4"></td>
-                        <td colspan="2" style="text-align: right;"><strong>
-                            {% verbose_field_name invoice "deposit_date" %}:&nbsp;
-                        </strong></td>
+                        <td colspan="6"></td>
                         <td colspan="2" style="text-align: right;"><strong>
                             {{ invoice.deposit_date }}
                         </strong></td>
@@ -251,26 +234,13 @@
                     </strong></td>
                 </tr>
                 <tr style="border: 0;">
-                    {% if invoice.payment_type %}
-                        <td colspan="1"></td>
-                        <td colspan="2" style="text-align: right;"><strong>
-                            {% verbose_field_name invoice "payment_type" %}:&nbsp;
-                        </strong></td>
-                        <td colspan="1" style="text-align: right;"><strong>
-                            {{ invoice.get_payment_type_display }}
-                        </strong></td>
-                    {% else %}
-                        <td colspan="4"></td>
-                    {% endif %}
                     {% if invoice.payment_date %}
-                        <td colspan="2" style="text-align: right;"><strong>
-                            {% verbose_field_name invoice "payment_date" %}:&nbsp;
-                        </strong></td>
+                        <td colspan="6"></td>
                         <td colspan="2" style="text-align: right;"><strong>
                             {{ invoice.payment_date }}
                         </strong></td>
                     {% else %}
-                        <td colspan="4"></td>
+                        <td colspan="8"></td>
                     {% endif %}
                     <td colspan="2" style="text-align: right;"><strong>
                         {% verbose_field_name invoice "payment_made" %}:&nbsp;

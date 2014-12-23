@@ -1,8 +1,43 @@
 {% extends 'base.html' %}
 
-{% include 'navbar.html' %}
-
 {% block title %} - Add Client Insurance{% endblock %}
+
+{% block extrahead %}
+
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var form_count = {{ coverage_formset.total_form_count }};
+        $('#add_form').click(function() {
+            form_count++;
+            var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
+            form = form
+                .replace(/__prefix__/g, form_count)
+                .replace(/<p>/g,
+                         '<div class="form-group"><div class="col-lg-10">')
+                .replace(/<\/p>/g, '</div></div>');
+            $(form).insertBefore('#add_form');
+            $('#id_coverage_set-TOTAL_FORMS').val(form_count);
+            $('#id_coverage_set-' + form_count + '-period_date').datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+        });
+    });
+    {% for form in coverage_formset %}
+        $(function() {
+            $( "#id_coverage_set-{{ forloop.counter0 }}-period_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+        });
+    {% endfor %}
+</script>
+
+{% endblock %}
+
+{% include 'navbar.html' %}
 
 {% block content %}
 
@@ -11,7 +46,38 @@
 <form id="create_insurance_form" class="form-horizontal" method="post">
     <fieldset>
         {% csrf_token %}
-            <!-- Insurance info form -->
+        <h5>Insurance</h5>
+        {{ form.non_field_errors }}
+        {% for hidden in form.hidden_fields %}
+            {% if hidden.errors %}
+                {{ hidden.errors }}
+            {% endif %}
+            {{ hidden }}
+        {% endfor %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-10">
+                    {{ field.label_tag}} {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset id="coverage_formset">
+        <h5>Coverages</h5>
+        {{ coverage_formset.management_form }}
+        {{ coverage_formset.non_form_errors }}
+        {% for form in coverage_formset %}
+            {{ form.id }}
+            {{ form.non_field_errors }}
+            {% for hidden in form.hidden_fields %}
+                {% if hidden.errors %}
+                    {{ hidden.errors }}
+                {% endif %}
+                {{ hidden }}
+            {% endfor %}
             {% for field in form.visible_fields %}
                 <div class="form-group">
                     {% if field.errors %}
@@ -22,44 +88,15 @@
                     </div>
                 </div>
             {% endfor %}
-            <!-- Coverage forms -->
-            <h5>Coverage Types</h5>
-            <p>NOTE: Please leave fields for unused coverage types zeroed out</p>
-            {% for field in coverage_form1.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
-                </div>
-            </div>
-            {% endfor %}
-
-            {% for field in coverage_form2.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
-                </div>
-            </div>
-            {% endfor %}
-
-            {% for field in coverage_form3.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
-                </div>
-            </div>
-            {% endfor %}
+        {% endfor %}
+        <a href="javascript:void(0)" id="add_form" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            Add another Coverage
+        </a>
     </fieldset>
+    <br />
     <input type="submit" name="submit" value="Add Insurance Information" />
 </form>
-<br>
+<br />
 
 {% endblock %}

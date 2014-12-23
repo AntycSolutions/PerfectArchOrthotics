@@ -2,13 +2,13 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
-from clients.models import CoverageType, Insurance
+from clients.models import Coverage, Insurance
 from clients.forms.forms import CoverageForm
 
 
-class UpdateCoverageTypeView(UpdateView):
-    template_name = 'clients/coverage_type/update_coverage_type.html'
-    model = CoverageType
+class UpdateCoverageView(UpdateView):
+    template_name = 'clients/coverage_type/update_coverage.html'
+    model = Coverage
     form_class = CoverageForm
     slug_field = "id"
     slug_url_kwarg = "coverage_type_id"
@@ -16,7 +16,7 @@ class UpdateCoverageTypeView(UpdateView):
     def get_success_url(self):
         if 'client_id' in self.kwargs:
             self.success_url = reverse_lazy(
-                'make_claim',
+                'claim_create',
                 kwargs={'client_id': self.kwargs['client_id']})
             return self.success_url
 
@@ -26,9 +26,9 @@ class UpdateCoverageTypeView(UpdateView):
         return self.success_url
 
 
-class DeleteCoverageTypeView(DeleteView):
-    template_name = 'clients/coverage_type/delete_coverage_type.html'
-    model = CoverageType
+class DeleteCoverageView(DeleteView):
+    template_name = 'clients/coverage_type/delete_coverage.html'
+    model = Coverage
     slug_field = "id"
     slug_url_kwarg = "coverage_type_id"
 
@@ -39,9 +39,9 @@ class DeleteCoverageTypeView(DeleteView):
         return self.success_url
 
 
-class CreateCoverageTypeView(CreateView):
-    template_name = 'clients/coverage_type/create_coverage_type.html'
-    model = CoverageType
+class CreateCoverageView(CreateView):
+    template_name = 'clients/coverage_type/create_coverage.html'
+    model = Coverage
     form_class = CoverageForm
 
     def form_valid(self, form):

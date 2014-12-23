@@ -5,12 +5,12 @@ from clients.views import views
 from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
     CreateInsuranceView
 from clients.views.client import CreateClientView, DeleteClientView
-from clients.views.coverage_type import UpdateCoverageTypeView, \
-    DeleteCoverageTypeView, CreateCoverageTypeView
+from clients.views.coverage_type import UpdateCoverageView, \
+    DeleteCoverageView, CreateCoverageView
 from clients.views.claim import UpdateClaimView, DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
     CreateInsuranceLetterView, UpdateProofOfManufacturingView, \
-    CreateProofOfManufacturingView
+    CreateProofOfManufacturingView, CreateClaimView
 from clients.views.statistics import Statistics
 
 
@@ -34,22 +34,25 @@ insurance_patterns = patterns(
 coverage_type_patterns = patterns(
     '',
     url(r'^update/(?P<coverage_type_id>\w+)/$',
-        login_required(UpdateCoverageTypeView.as_view()),
+        login_required(UpdateCoverageView.as_view()),
         name='coverage_type_update'),
     url(r'^update/(?P<coverage_type_id>\w+)/(?P<client_id>\w+)/$',
-        login_required(UpdateCoverageTypeView.as_view()),
+        login_required(UpdateCoverageView.as_view()),
         name='coverage_type_update_from_claim'),
     url(r'^delete/(?P<coverage_type_id>\w+)/$',
-        login_required(DeleteCoverageTypeView.as_view()),
+        login_required(DeleteCoverageView.as_view()),
         name='coverage_type_delete'),
     url(r'^create/(?P<insurance_id>\w+)/$',
-        login_required(CreateCoverageTypeView.as_view()),
+        login_required(CreateCoverageView.as_view()),
         name='coverage_type_create'),
 )
 
 claim_patterns = patterns(
     '',
     url(r'^$', views.claimsView, name='claims'),
+    url(r'^create/(?P<client_id>\w+)/$',
+        login_required(CreateClaimView.as_view()),
+        name='claim_create'),
     url(r'^update/(?P<claim_id>\w+)/$',
         login_required(UpdateClaimView.as_view()),
         name='claim_update'),
@@ -80,12 +83,13 @@ claim_patterns = patterns(
 urlpatterns = patterns(
     '',  # Tells django to view the rest as str
     url(r'^$', views.clients, name='clients'),
-    url(r'^add_insurance/(?P<client_id>\w+)/$', views.add_insurance,
-        name='add_insurance'),
+    # url(r'^add_insurance/(?P<client_id>\w+)/$', views.add_insurance,
+    #     name='add_insurance'),
     url(r'^add_dependent/(?P<client_id>\w+)/$', views.add_dependent,
         name='add_dependent'),
     url(r'^add_client/$', views.add_client, name='add_client'),
-    url(r'^add_client_test/$', CreateClientView.as_view(), name='add_client_test'),
+    url(r'^add_client_test/$', CreateClientView.as_view(),
+        name='add_client_test'),
     url(r'^client_search/$', views.clientSearchView, name='client_search'),
     url(r'^claim_search/$', views.claimSearchView, name='claim_search'),
     url(r'^insurance_search/$', views.insuranceSearchView,
@@ -96,13 +100,13 @@ urlpatterns = patterns(
         name='claim'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/invoice/$',
         views.invoice_view, name='invoice'),
-    url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/insurance_letter/$',
+    url(r'^claim/(?P<claim_id>\w+)/insurance_letter/$',
         views.insurance_letter_view, name='insurance_letter'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/proof_of_manufacturing/$',
         views.proof_of_manufacturing_view, name='proof'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/fill_out_invoice/$',
         views.fillOutInvoiceView, name='fillOutInvoice'),
-    url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/fill_out_insurance_letter/$',
+    url(r'^claim/(?P<claim_id>\w+)/fill_out_insurance_letter/$',
         views.fillOutInsuranceLetterView, name='fillOutInsurance'),
     url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/fill_out_proof_of_manufacturing/$',
         views.fillOutProofOfManufacturingView, name='fillOutProof'),
@@ -118,8 +122,8 @@ urlpatterns = patterns(
     url(r'^delete_client/(?P<client_id>\w+)/$',
         login_required(DeleteClientView.as_view()),
         name='client_delete'),
-    url(r'^make_claim/(?P<client_id>\w+)/$', views.makeClaimView,
-        name='make_claim'),
+    # url(r'^make_claim/(?P<client_id>\w+)/$', views.makeClaimView,
+    #     name='make_claim'),
     url(r'^edit_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
         views.editDependentsView, name='dependent_edit'),
     url(r'^delete_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',

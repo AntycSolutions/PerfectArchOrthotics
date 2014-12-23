@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% include 'navbar.html' %}
+{% load verbose_name %}
 
 {% block title %} - Add Invoice{% endblock %}
 
@@ -21,14 +21,35 @@
 </script>
 {% endblock %}
 
+{% include 'navbar.html' %}
+
 {% block content %}
 
-<h3>Add Invoice Information</h3>
+<h1>Add Invoice Information</h1>
 
 <form id="create_invoice_form" class="form-horizontal" method="post">
+    {% csrf_token %}
+    <h5>Claim</h5>
+    {% with claim.amount_quantity_claimed_total as totals %}
+        {% with amount_claimed_total=totals.0 quantity_claimed_total=totals.1 %}
+            <p>Amount Claimed Total: {{ amount_claimed_total }}</p>
+            <p>Quantity Claimed Total: {{ quantity_claimed_total }}</p>
+        {% endwith %}
+    {% endwith %}
+    <p>Expected Back Total: {{ claim.expected_back_total }}</p>
+    <p>Max Expected Back Total: {{ claim.max_expected_back_total }}</p>
+    <h5>Insurance</h5>
+    <p>{% verbose_field_name claim.insurance "benefits" %}:
+        {{ claim.insurance.get_benefits_display }}</p>
+    <h5>Invoice</h5>
     <fieldset>
-        {% csrf_token %}
-        <h5>Invoice</h5>
+        {{ form.non_field_errors }}
+        {% for hidden in form.hidden_fields %}
+            {% if hidden.errors %}
+                {{ hidden.errors }}
+            {% endif %}
+            {{ hidden }}
+        {% endfor %}
         {% for field in form.visible_fields %}
             <div class="form-group">
                 {% if field.errors %}
@@ -40,26 +61,8 @@
             </div>
         {% endfor %}
     </fieldset>
-    <fieldset>
-        <h5>Items</h5>
-        {{ item_form.management_form }}
-        {{ item_form.non_form_errors }}
-        {% for form in item_form %}
-            {{ form.id }}
-            {% for field in form.visible_fields %}
-                <div class="form-group">
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
-                    <div class="col-lg-10">
-                        {{ field.label_tag}} {{ field }}
-                    </div>
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </fieldset>
     <input type="submit" name="submit" value="Add Invoice" />
 </form>
-<br>
+<br />
 
 {% endblock %}

@@ -2,11 +2,11 @@
 
 {% include 'navbar.html' %}
 
-{% block title %}Edit Coverage Type{% endblock %}
+{% block title %}Edit Coverage{% endblock %}
 
 {% block content %}
 
-<h1>Edit coverage type information for: {{ coveragetype.insurance.client.full_name }}</h1>
+<h1>Edit coverage information for: {{ coverage.insurance.client.full_name }}</h1>
 <h3>insurance information:</h3>
 <table class="table table-striped table-cover">
     <thead>
@@ -20,11 +20,11 @@
     </thead>
     <tbody>
         <tr>
-            <td>{{ coveragetype.insurance.client.employer }}
-            <td>{{ coveragetype.insurance.provider }}</td>
-            <td>{{ coveragetype.insurance.policy_number }}</td>
-            <td>{{ coveragetype.insurance.contract_number }}</td>
-            <td>{{ coveragetype.insurance.benefits }}</td>
+            <td>{{ coverage.insurance.client.employer }}
+            <td>{{ coverage.insurance.provider }}</td>
+            <td>{{ coverage.insurance.policy_number }}</td>
+            <td>{{ coverage.insurance.contract_number }}</td>
+            <td>{{ coverage.insurance.benefits }}</td>
         </tr>
     </tbody>
 </table>
