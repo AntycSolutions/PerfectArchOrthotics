@@ -35,12 +35,12 @@ PRACTITIONERS = ()
 
 # Get from file
 MOLL = ''
+OOLI = ''
+AROR = ''
 LABORATORIES = ()
 
 # Get from file
 PAOI = ''
-OOLI = ''
-AROR = ''
 BILL_TO = ()
 
 SHIP_TO = BILL_TO
