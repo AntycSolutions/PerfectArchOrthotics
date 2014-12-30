@@ -118,6 +118,13 @@ class Client(Person):
 
     def credit(self):
         total_payment_made = 0
+        for dependent in self.dependent_set.all():
+            for claim in dependent.claim_set.all():
+                if not claim.insurance_paid_date:
+                    continue
+                for invoice in claim.invoice_set.all():
+                    total_payment_made += (invoice.payment_made
+                                           + invoice.deposit)
         for claim in self.claim_set.all():
             if not claim.insurance_paid_date:
                 continue
