@@ -269,12 +269,17 @@ class UpdateClaimView(UpdateView):
         nestedformset = ClaimCoverageFormFormSet(
             request.POST, instance=self.object)
 
-        coverages = Coverage.objects.filter(
-            insurance__in=claim_form.client.insurance_set.all())
+        insurances = claim_form.client.insurance_set.all()
+        for dependent in claim_form.client.dependent_set.all():
+            if dependent.relationship == Dependent.SPOUSE:
+                insurances = insurances | dependent.insurance_set.all()
+        coverages = Coverage.objects.filter(insurance__in=insurances)
         label = (
             lambda obj:
-                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                "%s - %s - %s"
+                " [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
                 % (
+                    obj.insurance.provider,
                     obj.get_coverage_type_display(),
                     obj.claimant.full_name(),
                     obj.coverage_percent,
