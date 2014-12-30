@@ -8,9 +8,15 @@
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        var coverage_prefix = "{{ coverage_formset.get_default_prefix }}";
+
+        // Original html value does not match
+        var coverage_total_forms = $(
+            '#id_' + coverage_prefix + '-TOTAL_FORMS');
+        coverage_total_forms.val({{ nestedformset.total_form_count }});
+
         var form_count = {{ coverage_formset.total_form_count }};
         $('#add_form').click(function() {
-            form_count++;
             var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
             form = form
                 .replace(/__prefix__/g, form_count)
@@ -18,11 +24,11 @@
                          '<div class="form-group"><div class="col-lg-10">')
                 .replace(/<\/p>/g, '</div></div>');
             $(form).insertBefore('#add_form');
-            $('#id_coverage_set-TOTAL_FORMS').val(form_count);
             $('#id_coverage_set-' + form_count + '-period_date').datepicker(
                 {changeMonth: true,
                  changeYear: true,
                  yearRange: "1900:2015"});
+            $('#id_coverage_set-TOTAL_FORMS').val(parseInt(form_count) + 1);
         });
     });
     {% for form in coverage_formset %}
@@ -70,7 +76,6 @@
         {{ coverage_formset.management_form }}
         {{ coverage_formset.non_form_errors }}
         {% for form in coverage_formset %}
-            {{ form.id }}
             {{ form.non_field_errors }}
             {% for hidden in form.hidden_fields %}
                 {% if hidden.errors %}

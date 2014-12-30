@@ -133,7 +133,7 @@
         <p class="bottom-10">
             {{ claim.patient.get_client.full_name }}<br>
             {{ claim.patient.get_client.address }}<br>
-            {{ claim.patient.get_client.city }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
+            {{ claim.patient.get_client.city }} {{ claim.patient.get_client.province }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
         <br />

@@ -96,7 +96,7 @@ urlpatterns = patterns(
         name='insurance_search'),
     url(r'^(?P<client_id>\d+)/$', views.clientView, name='client'),
     url(r'^claim/', include(claim_patterns)),
-    url(r'^(?P<client_id>\d+)/claim/(?P<claim_id>\w+)/$', views.claimView,
+    url(r'^claim/(?P<claim_id>\w+)/$', views.claimView,
         name='claim'),
     url(r'^claim/(?P<claim_id>\w+)/invoice/$',
         views.invoice_view, name='invoice'),

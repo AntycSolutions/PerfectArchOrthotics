@@ -31,6 +31,9 @@ class Person(models.Model):
     health_care_number = models.CharField(
         "Health Care Number", max_length=20,
         blank=True)
+    employer = models.CharField(
+        "Employer", max_length=128,
+        blank=True)
 
     # ModelInheritance
     # Client, Dependent
@@ -80,6 +83,9 @@ class Client(Person):
     city = models.CharField(
         "City", max_length=128,
         blank=True)
+    province = models.CharField(
+        "Province", max_length=128,
+        blank=True)
     postal_code = models.CharField(
         "Postal Code", max_length=6,
         blank=True)
@@ -95,9 +101,6 @@ class Client(Person):
     email = models.EmailField(
         "Email", max_length=254,
         blank=True, null=True)
-    employer = models.CharField(
-        "Employer", max_length=128,
-        blank=True)
     referred_by = models.ForeignKey(
         Person, verbose_name="Referred By", related_name="referred_by",
         blank=True, null=True)

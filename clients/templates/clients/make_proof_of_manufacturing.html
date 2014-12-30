@@ -11,7 +11,7 @@
 
 <h1>Claim for {{ claim.patient.full_name }}</h1>
 <div>
-    <a href="{% url 'claim' claim.patient.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+    <a href="{% url 'claim' claim.id %}"><button type="button" class="btn btn-info">View</button></a>
 </div>
 <h1>Proof of Manufacturing for {{ claim.patient.full_name }}</h1>
 <div>

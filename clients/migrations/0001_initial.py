@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('submitted_datetime', models.DateTimeField(auto_now_add=True, verbose_name='Submitted Date')),
-                ('insurance_paid_date', models.DateField(null=True, blank=True, verbose_name='Insurance Paid Date')),
+                ('insurance_paid_date', models.DateField(verbose_name='Insurance Paid Date', blank=True, null=True)),
             ],
             options={
             },
@@ -47,12 +47,12 @@ class Migration(migrations.Migration):
             name='Coverage',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('coverage_type', models.CharField(max_length=4, choices=[('o', 'Orthotics'), ('cs', 'Compression Stockings'), ('os', 'Orthopedic Shoes'), ('bs', 'Back Support')], blank=True, verbose_name='Coverage Type')),
+                ('coverage_type', models.CharField(choices=[('o', 'Orthotics'), ('cs', 'Compression Stockings'), ('os', 'Orthopedic Shoes'), ('bs', 'Back Support')], verbose_name='Coverage Type', blank=True, max_length=4)),
                 ('coverage_percent', models.IntegerField(default=0, verbose_name='Coverage Percent')),
                 ('max_claim_amount', models.IntegerField(default=0, verbose_name='Max Claim Amount')),
                 ('max_quantity', models.IntegerField(default=0, verbose_name='Max Quantity')),
-                ('period', models.IntegerField(null=True, choices=[(12, '12 Rolling Months'), (24, '24 Rolling Months'), (36, '36 Rolling Months'), (1, 'Benefit Year'), (2, 'Calendar Year')], blank=True, verbose_name='Period')),
-                ('period_date', models.DateField(null=True, blank=True, verbose_name='Period Date')),
+                ('period', models.IntegerField(choices=[(12, '12 Rolling Months'), (24, '24 Rolling Months'), (36, '36 Rolling Months'), (1, 'Benefit Year'), (2, 'Calendar Year')], verbose_name='Period', blank=True, null=True)),
+                ('period_date', models.DateField(verbose_name='Period Date', blank=True, null=True)),
             ],
             options={
             },
@@ -62,10 +62,10 @@ class Migration(migrations.Migration):
             name='Insurance',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('provider', models.CharField(max_length=128, verbose_name='Provider')),
-                ('policy_number', models.CharField(max_length=128, blank=True, verbose_name='Policy Number')),
-                ('contract_number', models.CharField(max_length=128, blank=True, verbose_name='Contract Number')),
-                ('benefits', models.CharField(max_length=4, choices=[('a', 'Assignment'), ('na', 'Non-assignment')], blank=True, verbose_name='Benefits')),
+                ('provider', models.CharField(verbose_name='Provider', max_length=128)),
+                ('policy_number', models.CharField(verbose_name='Policy Number', blank=True, max_length=128)),
+                ('contract_number', models.CharField(verbose_name='Contract Number', blank=True, max_length=128)),
+                ('benefits', models.CharField(choices=[('a', 'Assignment'), ('na', 'Non-assignment')], verbose_name='Benefits', blank=True, max_length=4)),
                 ('three_d_laser_scan', models.BooleanField(default=False, verbose_name='3D Laser Scan')),
                 ('insurance_card', models.BooleanField(default=False, verbose_name='Insurance Card')),
             ],
@@ -77,10 +77,10 @@ class Migration(migrations.Migration):
             name='InsuranceLetter',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('practitioner_name', models.CharField(max_length=4, default='dm', choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], blank=True, verbose_name='Practitioner Name')),
-                ('biomedical_and_gait_analysis_date', models.DateField(null=True, blank=True, verbose_name='Biomedical and Gait Analysis Date')),
-                ('examiner', models.CharField(max_length=4, default='dm', choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], blank=True, verbose_name='Examiner')),
-                ('dispensing_practitioner', models.CharField(max_length=4, default='dm', choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], blank=True, verbose_name='Dispensing Practitioner')),
+                ('practitioner_name', models.CharField(choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], verbose_name='Practitioner Name', default='dm', blank=True, max_length=4)),
+                ('biomedical_and_gait_analysis_date', models.DateField(verbose_name='Biomedical and Gait Analysis Date', blank=True, null=True)),
+                ('examiner', models.CharField(choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], verbose_name='Examiner', default='dm', blank=True, max_length=4)),
+                ('dispensing_practitioner', models.CharField(choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], verbose_name='Dispensing Practitioner', default='dm', blank=True, max_length=4)),
                 ('orthopedic_shoes', models.BooleanField(default=False, verbose_name='Orthopedic Shoes')),
                 ('foot_orthotics_orthosis', models.BooleanField(default=False, verbose_name='Foot Orthotics Orthosis')),
                 ('internally_modified_footwear', models.BooleanField(default=False, verbose_name='Internally Modified Orthosis')),
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
                 ('achilles_tendinitis', models.BooleanField(default=False, verbose_name='Achilles Tendinitis')),
                 ('ulcers', models.BooleanField(default=False, verbose_name='Ulcers')),
                 ('over_pronation', models.BooleanField(default=False, verbose_name='Over Pronation')),
-                ('other', models.CharField(max_length=64, blank=True, verbose_name='Other')),
+                ('other', models.CharField(verbose_name='Other', blank=True, max_length=64)),
                 ('claim', models.ForeignKey(to='clients.Claim', verbose_name='Claim')),
             ],
             options={
@@ -137,13 +137,13 @@ class Migration(migrations.Migration):
             name='Invoice',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('dispensed_by', models.CharField(max_length=4, choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], blank=True, verbose_name='Dispensed By')),
-                ('payment_type', models.CharField(max_length=4, choices=[('ca', 'Cash'), ('ch', 'Cheque'), ('cr', 'Credit')], blank=True, verbose_name='Payment Type')),
-                ('payment_terms', models.CharField(max_length=4, default='dor', choices=[('dor', 'Due On Receipt')], blank=True, verbose_name='Payment Terms')),
+                ('dispensed_by', models.CharField(choices=[('dm', 'D. Mu C.Ped.'), ('ds', 'Dr. Sefcik D.P.M.')], verbose_name='Dispensed By', blank=True, max_length=4)),
+                ('payment_type', models.CharField(choices=[('ca', 'Cash'), ('ch', 'Cheque'), ('cr', 'Credit')], verbose_name='Payment Type', blank=True, max_length=4)),
+                ('payment_terms', models.CharField(choices=[('dor', 'Due On Receipt')], verbose_name='Payment Terms', default='dor', blank=True, max_length=4)),
                 ('payment_made', models.IntegerField(default=0, verbose_name='Payment Made')),
-                ('payment_date', models.DateField(null=True, blank=True, verbose_name='Payment Date')),
+                ('payment_date', models.DateField(verbose_name='Payment Date', blank=True, null=True)),
                 ('deposit', models.IntegerField(default=0, verbose_name='Deposit')),
-                ('deposit_date', models.DateField(null=True, blank=True, verbose_name='Deposite Date')),
+                ('deposit_date', models.DateField(verbose_name='Deposite Date', blank=True, null=True)),
                 ('estimate', models.BooleanField(default=False, verbose_name='Estimate')),
                 ('claim', models.ForeignKey(to='clients.Claim', verbose_name='Claim')),
             ],
@@ -155,10 +155,10 @@ class Migration(migrations.Migration):
             name='Item',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('coverage_type', models.CharField(max_length=4, choices=[('o', 'Orthotics'), ('cs', 'Compression Stockings'), ('os', 'Orthopedic Shoes'), ('bs', 'Back Support')], verbose_name='Coverage Type')),
-                ('gender', models.CharField(max_length=4, choices=[('wo', "Women's"), ('me', "Men's")], blank=True, verbose_name='Gender')),
-                ('product_code', models.CharField(max_length=12, unique=True, verbose_name='Product Code')),
-                ('description', models.CharField(max_length=128, verbose_name='Description')),
+                ('coverage_type', models.CharField(choices=[('o', 'Orthotics'), ('cs', 'Compression Stockings'), ('os', 'Orthopedic Shoes'), ('bs', 'Back Support')], verbose_name='Coverage Type', max_length=4)),
+                ('gender', models.CharField(choices=[('wo', "Women's"), ('me', "Men's")], verbose_name='Gender', blank=True, max_length=4)),
+                ('product_code', models.CharField(verbose_name='Product Code', unique=True, max_length=12)),
+                ('description', models.CharField(verbose_name='Description', max_length=128)),
                 ('unit_price', models.IntegerField(default=0, verbose_name='Unit Price')),
             ],
             options={
@@ -169,8 +169,8 @@ class Migration(migrations.Migration):
             name='Laboratory',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('information', models.CharField(max_length=8, choices=[('moll', 'MA Orthotics Laboratory Ltd\n11975 W Sample Rd\nCoral Springs, FL  331000\nUSA\nPhone: (754) 206-6110\nFax: (754) 206-6109\nLaboratory Supervisor: M. Asam C.Ped.'), ('ooli', 'OOLab Inc.\n42 Niagara St\nHamilton, ON  L8L 6A2\nCanada\nToll Free: 1-888-873-3316\nPhone: (905) 521-1230\nFax: (905) 521-1210\nEmail: info@oolab.com\nLaboratory Supervisor: A. Boyle'), ('aror', 'Ares Orthotics\n107 Ave SE\nCalgary, AB  T2Z 3R7\nCanada\nPhone: (403) 398-5629\nFax: (403) 398-5635\nEmail: acct@aresorthotics.com\nLaboratory Supervisor: B. Domosky')], verbose_name='Information')),
-                ('insurance_letter', models.ForeignKey(blank=True, verbose_name='Insurance Letter', null=True, to='clients.InsuranceLetter')),
+                ('information', models.CharField(choices=[('moll', 'MA Orthotics Laboratory Ltd\n11975 W Sample Rd\nCoral Springs, FL  331000\nUSA\nPhone: (754) 206-6110\nFax: (754) 206-6109\nLaboratory Supervisor: M. Asam C.Ped.'), ('ooli', 'OOLab Inc.\n42 Niagara St\nHamilton, ON  L8L 6A2\nCanada\nToll Free: 1-888-873-3316\nPhone: (905) 521-1230\nFax: (905) 521-1210\nEmail: info@oolab.com\nLaboratory Supervisor: A. Boyle'), ('aror', 'Ares Orthotics\n107 Ave SE\nCalgary, AB  T2Z 3R7\nCanada\nPhone: (403) 398-5629\nFax: (403) 398-5635\nEmail: acct@aresorthotics.com\nLaboratory Supervisor: B. Domosky')], verbose_name='Information', max_length=8)),
+                ('insurance_letter', models.ForeignKey(to='clients.InsuranceLetter', blank=True, verbose_name='Insurance Letter', null=True)),
             ],
             options={
             },
@@ -180,11 +180,12 @@ class Migration(migrations.Migration):
             name='Person',
             fields=[
                 ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=128, verbose_name='First Name')),
-                ('last_name', models.CharField(max_length=128, blank=True, verbose_name='Last Name')),
-                ('gender', models.CharField(max_length=4, choices=[('m', 'Male'), ('f', 'Female')], blank=True, verbose_name='Gender')),
-                ('birth_date', models.DateField(null=True, blank=True, verbose_name='Birth Date')),
-                ('health_care_number', models.CharField(max_length=20, blank=True, verbose_name='Health Care Number')),
+                ('first_name', models.CharField(verbose_name='First Name', max_length=128)),
+                ('last_name', models.CharField(verbose_name='Last Name', blank=True, max_length=128)),
+                ('gender', models.CharField(choices=[('m', 'Male'), ('f', 'Female')], verbose_name='Gender', blank=True, max_length=4)),
+                ('birth_date', models.DateField(verbose_name='Birth Date', blank=True, null=True)),
+                ('health_care_number', models.CharField(verbose_name='Health Care Number', blank=True, max_length=20)),
+                ('employer', models.CharField(verbose_name='Employer', blank=True, max_length=128)),
             ],
             options={
             },
@@ -193,8 +194,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Dependent',
             fields=[
-                ('person_ptr', models.OneToOneField(auto_created=True, serialize=False, to='clients.Person', primary_key=True, parent_link=True)),
-                ('relationship', models.CharField(max_length=4, choices=[('s', 'Spouse'), ('c', 'Child')], blank=True, verbose_name='Relationship')),
+                ('person_ptr', models.OneToOneField(parent_link=True, to='clients.Person', auto_created=True, serialize=False, primary_key=True)),
+                ('relationship', models.CharField(choices=[('s', 'Spouse'), ('c', 'Child')], verbose_name='Relationship', blank=True, max_length=4)),
             ],
             options={
             },
@@ -203,16 +204,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Client',
             fields=[
-                ('person_ptr', models.OneToOneField(auto_created=True, serialize=False, to='clients.Person', primary_key=True, parent_link=True)),
-                ('address', models.CharField(max_length=128, blank=True, verbose_name='Address')),
-                ('city', models.CharField(max_length=128, blank=True, verbose_name='City')),
-                ('postal_code', models.CharField(max_length=6, blank=True, verbose_name='Postal Code')),
-                ('phone_number', models.CharField(max_length=14, blank=True, verbose_name='Phone Number')),
-                ('cell_number', models.CharField(max_length=14, blank=True, verbose_name='Cell Number')),
-                ('email', models.EmailField(max_length=254, null=True, blank=True, verbose_name='Email')),
-                ('employer', models.CharField(max_length=128, blank=True, verbose_name='Employer')),
+                ('person_ptr', models.OneToOneField(parent_link=True, to='clients.Person', auto_created=True, serialize=False, primary_key=True)),
+                ('address', models.CharField(verbose_name='Address', blank=True, max_length=128)),
+                ('city', models.CharField(verbose_name='City', blank=True, max_length=128)),
+                ('province', models.CharField(verbose_name='Province', blank=True, max_length=128)),
+                ('postal_code', models.CharField(verbose_name='Postal Code', blank=True, max_length=6)),
+                ('phone_number', models.CharField(verbose_name='Phone Number', blank=True, max_length=14)),
+                ('cell_number', models.CharField(verbose_name='Cell Number', blank=True, max_length=14)),
+                ('email', models.EmailField(verbose_name='Email', null=True, blank=True, max_length=254)),
                 ('notes', models.TextField(blank=True, verbose_name='Notes')),
-                ('referred_by', models.ForeignKey(related_name='referred_by', blank=True, verbose_name='Referred By', null=True, to='clients.Person')),
+                ('referred_by', models.ForeignKey(to='clients.Person', blank=True, verbose_name='Referred By', related_name='referred_by', null=True)),
             ],
             options={
             },
@@ -240,7 +241,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='insurance',
             name='claimants',
-            field=models.ManyToManyField(to='clients.Person', related_name='claimants', verbose_name='claimants', through='clients.Coverage'),
+            field=models.ManyToManyField(to='clients.Person', through='clients.Coverage', related_name='claimants', verbose_name='claimants'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -282,13 +283,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='claimcoverage',
             name='items',
-            field=models.ManyToManyField(to='clients.Item', verbose_name='Items', through='clients.ClaimItem'),
+            field=models.ManyToManyField(to='clients.Item', through='clients.ClaimItem', verbose_name='Items'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='claim',
             name='coverages',
-            field=models.ManyToManyField(to='clients.Coverage', verbose_name='Coverages', through='clients.ClaimCoverage'),
+            field=models.ManyToManyField(to='clients.Coverage', through='clients.ClaimCoverage', verbose_name='Coverages'),
             preserve_default=True,
         ),
         migrations.AddField(

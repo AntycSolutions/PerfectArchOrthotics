@@ -172,10 +172,8 @@ class CreateClaimView(CreateView):
                                   ))
 
     def get_success_url(self):
-        client_id = self.object.patient.get_client().pk
         self.success_url = reverse_lazy('claim',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': self.object.id})
+                                        kwargs={'claim_id': self.object.id})
         return self.success_url
 
 
@@ -345,10 +343,8 @@ class UpdateClaimView(UpdateView):
                                   ))
 
     def get_success_url(self):
-        client_id = self.object.patient.get_client().pk
         self.success_url = reverse_lazy('claim',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': self.object.id})
+                                        kwargs={'claim_id': self.object.id})
         return self.success_url
 
 

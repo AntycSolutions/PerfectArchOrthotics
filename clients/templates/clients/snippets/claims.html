@@ -4,6 +4,7 @@
             <th></th>
             <th>Patient</th>
             <th>Provider</th>
+            <th>Employer</th>
             <th>Submitted Date</th>
             <th>Insurance Paid Date</th>
             <th>Total Amount Claimed</th>
@@ -18,10 +19,11 @@
         {% for claim in claims %}
             <tr>
                 <td>
-                    <a href="{% url 'claim' claim.patient.id claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+                    <a href="{% url 'claim' claim.id %}"><button type="button" class="btn btn-info">View</button></a>
                 </td>
                 <td>{{ claim.patient.full_name }}</td>
                 <td>{{ claim.insurance.provider }}</td>
+                <td>{{ claim.patient.employer }}</td>
                 <td>{{ claim.submitted_datetime.date }}</td>
                 <td>{{ claim.insurance_paid_date }}</td>
                 {% with totals=claim.total_amount_quantity_claimed %}
@@ -43,7 +45,7 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="4"><ul class="pull-right"><li>Coverages:</li></ul></td>
+                <td colspan="5"><ul class="pull-right"><li>Coverages:</li></ul></td>
                 <td colspan="4">
                     <div class="pull-left">
                         {% if claim.claimcoverage_set.all %}

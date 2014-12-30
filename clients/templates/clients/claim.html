@@ -23,6 +23,9 @@
             {% verbose_field_name claim.insurance "provider" %}:
             {{ claim.insurance.provider }}
         </li>
+        <li>{% verbose_field_name claim.patient "employer" %}:
+            {{ claim.patient.employer }}
+        </li>
         <li>{% verbose_field_name claim "submitted_datetime" %}:
             {{ claim.submitted_datetime.date }}
         </li>

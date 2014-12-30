@@ -257,13 +257,12 @@ def claimsView(request):
 
 
 @login_required
-def claimView(request, client_id, claim_id):
+def claimView(request, claim_id):
     context = RequestContext(request)
 
-    client = Client.objects.get(id=client_id)
     claim = Claim.objects.get(id=claim_id)
     has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
-    context_dict = {'claim': claim, 'client': client,
+    context_dict = {'claim': claim,
                     'has_orthotics': has_orthotics,
                     'claim_coverage_class': ClaimCoverage,
                     'coverage_class': Coverage,
@@ -324,7 +323,8 @@ def claimSearchView(request):
     context = RequestContext(request)
     context_dict = {}
     query_string = request.GET['q']
-    fields = ['client__first_name', 'client__last_name', 'client__employer']
+    fields = ['patient__first_name', 'patient__last_name',
+              'insurance__provider', 'patient__employer']
     claims = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
@@ -351,8 +351,9 @@ def insuranceSearchView(request):
     context = RequestContext(request)
     context_dict = {}
     query_string = request.GET['q']
-    fields = ["client__employer", "provider", "policy_number",
-              "client__first_name", "client__last_name"]
+    fields = ["provider", "policy_number",
+              "main_claimant__first_name", "main_claimant__last_name",
+              "main_claimant__employer"]
     insurances = None
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
@@ -390,19 +391,20 @@ def clientView(request, client_id):
     client = Client.objects.get(id=client_id)
     insurance = client.insurance_set.all()
     dependents = client.dependent_set.all()
-    claims = client.claim_set.all().order_by('-submitted_datetime')
+    claims = client.claim_set.all()
     spouse = None
     children = []
     for dependent in dependents:
         if dependent.relationship == Dependent.SPOUSE:
             spouse = dependent
             insurance = insurance | spouse.insurance_set.all()
+            claims = claims | spouse.claim_set.all()
         else:
             children.append(dependent)
 
     context_dict = {'client': client,
                     'client_insurance': insurance,
-                    'client_claims': claims,
+                    'client_claims': claims.order_by('-submitted_datetime'),
                     'spouse': spouse,
                     'children': children,
                     'dependent_class': Dependent}

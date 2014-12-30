@@ -40,6 +40,9 @@
             <li>{% verbose_field_name client "city" %}:
                 {{ client.city }}
             </li>
+            <li>{% verbose_field_name client "province" %}:
+                {{ client.province }}
+            </li>
             <li>{% verbose_field_name client "postal_code" %}:
                 {{ client.postal_code }}
             </li>
@@ -95,6 +98,7 @@
                 <th>Name</th>
                 <th>{% verbose_field_name spouse "birth_date" %}</th>
                 <th>{% verbose_field_name spouse "gender" %}</th>
+                <th>{% verbose_field_name spouse "employer" %}</th>
                 <th></th>
             </tr>
         </thead>
@@ -103,6 +107,7 @@
                 <td id="{{ spouse.id }}">{{ spouse.full_name }}</td>
                 <td>{{ spouse.birth_date }}</td>
                 <td>{{ spouse.get_gender_display }}</td>
+                <td>{{ spouse.employer }}</td>
                 <td>
                     <div class="pull-right">
                         <a href="{% url 'insurance_create_spouse' client.id spouse.id %}" class="btn btn-default">Add Insurance</a>
