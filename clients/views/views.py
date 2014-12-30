@@ -398,9 +398,9 @@ def clientView(request, client_id):
         if dependent.relationship == Dependent.SPOUSE:
             spouse = dependent
             insurance = insurance | spouse.insurance_set.all()
-            claims = claims | spouse.claim_set.all()
         else:
             children.append(dependent)
+        claims = claims | dependent.claim_set.all()
 
     context_dict = {'client': client,
                     'client_insurance': insurance,
