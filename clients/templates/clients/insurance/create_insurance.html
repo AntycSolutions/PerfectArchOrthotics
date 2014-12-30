@@ -15,8 +15,8 @@
             '#id_' + coverage_prefix + '-TOTAL_FORMS');
         coverage_total_forms.val({{ nestedformset.total_form_count }});
 
-        var form_count = {{ coverage_formset.total_form_count }};
         $('#add_form').click(function() {
+            var form_count = $('#id_coverage_set-TOTAL_FORMS').val();
             var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
             form = form
                 .replace(/__prefix__/g, form_count)
