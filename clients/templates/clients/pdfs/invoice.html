@@ -131,9 +131,10 @@
 <div id="content">
     <div class="recipient bottom-10">
         <p class="bottom-10">
-            {{ claim.patient.get_client.full_name }}<br>
-            {{ claim.patient.get_client.address }}<br>
-            {{ claim.patient.get_client.city }} {{ claim.patient.get_client.province }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
+            {{ claim.patient.get_client.full_name }}<br />
+            {{ claim.patient.get_client.address }}<br />
+            {{ claim.patient.get_client.city }}{% if claim.patient.get_client.city and claim.patient.get_client.province %},{% endif %}
+            {{ claim.patient.get_client.province }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
         </p>
         <p>Invoice Date: {{ invoice.invoice_date }}</p>
         <br />
@@ -142,11 +143,11 @@
     <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
     <p class='info'>
         {% verbose_field_name invoice "dispensed_by" %}:
-        {{ invoice.get_dispensed_by_display }}</br>
+        {{ invoice.get_dispensed_by_display }}<br />
         {% verbose_field_name claim.insurance "benefits" %}:
-        {{ claim.insurance.get_benefits_display }} </br>
+        {{ claim.insurance.get_benefits_display }} <br />
         {% verbose_field_name invoice "payment_terms" %}:
-        {{ invoice.get_payment_terms_display }}</br>
+        {{ invoice.get_payment_terms_display }}<br />
         {% verbose_field_name invoice "payment_type" %}:
         {{ invoice.get_payment_type_display }}
     </p>
