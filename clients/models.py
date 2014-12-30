@@ -87,7 +87,7 @@ class Client(Person):
         "Province", max_length=128,
         blank=True)
     postal_code = models.CharField(
-        "Postal Code", max_length=6,
+        "Postal Code", max_length=7,
         blank=True)
     # TODO Write validators for the phone numbers below
     # In the form of (780)-937-1514
