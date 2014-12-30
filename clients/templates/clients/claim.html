@@ -26,6 +26,9 @@
         <li>{% verbose_field_name claim "submitted_datetime" %}:
             {{ claim.submitted_datetime.date }}
         </li>
+        <li>{% verbose_field_name claim "insurance_paid_date" %}:
+            {{ claim.insurance_paid_date }}
+        </li>
     </ul>
     <table class="table table-striped">
         <thead>
@@ -128,10 +131,10 @@
     {% endif %}
 </div>
 <div>
-    <a href="{% url 'fillOutInvoice' client.id claim.id %}" class="btn btn-default">Generate Invoice</a>
+    <a href="{% url 'fillOutInvoice' claim.id %}" class="btn btn-default">Generate Invoice</a>
     <a href="{% url 'fillOutInsurance' claim.id %}" class="btn btn-default">Generate Insurance Letter</a>
     {% if has_orthotics %}
-        <a href="{% url 'fillOutProof' client.id claim.id %}" class="btn btn-default">Generate Proof of Manufacturing</a>
+        <a href="{% url 'fillOutProof' claim.id %}" class="btn btn-default">Generate Proof of Manufacturing</a>
     {% endif %}
 </div>
 <br />

@@ -84,7 +84,7 @@
         </ul>
     </div>
     <strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
-    <a href="{% url 'invoice' claim.patient.id claim.id %}" class="btn btn-default">View Invoice</a>
+    <a href="{% url 'invoice' claim.id %}" class="btn btn-default">View Invoice</a>
 {% endif %}
 <br /><br />
 

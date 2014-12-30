@@ -320,6 +320,9 @@ class Claim(models.Model):
 
     submitted_datetime = models.DateTimeField(
         "Submitted Date", auto_now_add=True)
+    insurance_paid_date = models.DateField(
+        "Insurance Paid Date",
+        blank=True, null=True)
 
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage

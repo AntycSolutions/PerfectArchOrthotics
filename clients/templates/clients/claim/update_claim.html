@@ -13,6 +13,12 @@
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 <script src="{% static 'js/claim.js' %}"></script>
 <script type="text/javascript">
+    $(function() {
+        $( "#id_insurance_paid_date" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
     $(document).ready(function() {
         var coverage_prefix = "{{ nestedformset.get_default_prefix }}";
         var item_prefix = "{{ nestedformset.nested_formset_class.get_default_prefix }}";

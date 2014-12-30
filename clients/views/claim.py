@@ -4,7 +4,7 @@ from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
-    ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem
+    ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem, Dependent
 from clients.forms.forms import ClaimForm, InvoiceForm, \
     InsuranceLetterForm, ProofOfManufacturingForm, \
     LaboratoryInsuranceLetterFormSet, nestedformset_factory
@@ -32,12 +32,17 @@ class CreateClaimView(CreateView):
             nested_extra=1, nested_fields='__all__')
         nestedformset = ClaimCoverageFormFormSet()
 
-        coverages = Coverage.objects.filter(
-            insurance__in=claim_form.client.insurance_set.all())
+        insurances = claim_form.client.insurance_set.all()
+        for dependent in claim_form.client.dependent_set.all():
+            if dependent.relationship == Dependent.SPOUSE:
+                insurances = insurances | dependent.insurance_set.all()
+        coverages = Coverage.objects.filter(insurance__in=insurances)
         label = (
             lambda obj:
-                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                "%s - %s - %s"
+                " [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
                 % (
+                    obj.insurance.provider,
                     obj.get_coverage_type_display(),
                     obj.claimant.full_name(),
                     obj.coverage_percent,
@@ -47,7 +52,8 @@ class CreateClaimView(CreateView):
         items_label = (
             lambda obj:
                 "%s - %s - %s - $%s" % (
-                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.get_coverage_type_display(),
+                    obj.product_code,
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -88,8 +94,11 @@ class CreateClaimView(CreateView):
             nested_extra=1, nested_fields='__all__')
         nestedformset = ClaimCoverageFormFormSet(request.POST)
 
-        coverages = Coverage.objects.filter(
-            insurance__in=claim_form.client.insurance_set.all())
+        insurances = claim_form.client.insurance_set.all()
+        for dependent in claim_form.client.dependent_set.all():
+            if dependent.relationship == Dependent.SPOUSE:
+                insurances = insurances | dependent.insurance_set.all()
+        coverages = Coverage.objects.filter(insurance__in=insurances)
         label = (
             lambda obj:
                 "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
@@ -199,12 +208,17 @@ class UpdateClaimView(UpdateView):
             nested_extra=1, nested_fields='__all__')
         nestedformset = ClaimCoverageFormFormSet(instance=self.object)
 
-        coverages = Coverage.objects.filter(
-            insurance__in=claim_form.client.insurance_set.all())
+        insurances = claim_form.client.insurance_set.all()
+        for dependent in claim_form.client.dependent_set.all():
+            if dependent.relationship == Dependent.SPOUSE:
+                insurances = insurances | dependent.insurance_set.all()
+        coverages = Coverage.objects.filter(insurance__in=insurances)
         label = (
             lambda obj:
-                "%s - %s [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
+                "%s - %s - %s"
+                " [%%%s, Amount Remaining: $%s, Quantity Remaining: %s]"
                 % (
+                    obj.insurance.provider,
                     obj.get_coverage_type_display(),
                     obj.claimant.full_name(),
                     obj.coverage_percent,
@@ -214,7 +228,8 @@ class UpdateClaimView(UpdateView):
         items_label = (
             lambda obj:
                 "%s - %s - %s - $%s" % (
-                    obj.get_coverage_type_display(), obj.product_code,
+                    obj.get_coverage_type_display(),
+                    obj.product_code,
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -354,11 +369,9 @@ class UpdateInvoiceView(UpdateView):
     slug_url_kwarg = "invoice_id"
 
     def get_success_url(self):
-        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url
 
 
@@ -383,11 +396,9 @@ class CreateInvoiceView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url
 
 
@@ -513,11 +524,9 @@ class UpdateProofOfManufacturingView(UpdateView):
     slug_url_kwarg = "proof_of_manufacturing_id"
 
     def get_success_url(self):
-        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url
 
 
@@ -535,9 +544,7 @@ class CreateProofOfManufacturingView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        client_id = self.object.claim.patient.id
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
-                                        kwargs={'client_id': client_id,
-                                                'claim_id': claim_id})
+                                        kwargs={'claim_id': claim_id})
         return self.success_url

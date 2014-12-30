@@ -79,9 +79,8 @@ def render_to_pdf(request, template_src, context_dict):
     #pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
 
 
-def invoice_view(request, client_id, claim_id):
-    claim, patient, invoice, invoice_number = _invoice(
-        client_id, claim_id)
+def invoice_view(request, claim_id):
+    claim, patient, invoice, invoice_number = _invoice(claim_id)
     bill_to = settings.BILL_TO[0][1]
     perfect_arch_name = bill_to.split('\n')[0]
     perfect_arch_address = bill_to.replace(perfect_arch_name + '\n', '')
@@ -97,12 +96,11 @@ def invoice_view(request, client_id, claim_id):
                           'item_class': Item,
                           'claim_item_class': ClaimItem,
                           # 'insurance_class': Insurance,
-                          'business_number': settings.BUSINESS_NUMBER,
                           'is_prod': request.get_host() == "perfectarch.ca"}
                          )
 
 
-def _invoice(client_id, claim_id):
+def _invoice(claim_id):
     claim = Claim.objects.get(id=claim_id)
     patient = claim.patient
     invoice = None
@@ -153,7 +151,7 @@ def _insurance_letter(claim_id):
     return claim, patient, insurance_letter
 
 
-def proof_of_manufacturing_view(request, client_id, claim_id):
+def proof_of_manufacturing_view(request, claim_id):
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
         claim_id)
 
@@ -178,18 +176,16 @@ def _proof_of_manufacturing(claim_id):
 
 
 @login_required
-def fillOutInvoiceView(request, client_id, claim_id):
+def fillOutInvoiceView(request, claim_id):
     context = RequestContext(request)
 
-    claim, patient, invoice, invoice_number = _invoice(
-        client_id, claim_id)
+    claim, patient, invoice, invoice_number = _invoice(claim_id)
 
     return render_to_response('clients/make_invoice.html',
                               {'patient': patient,
                                'claim': claim,
                                'invoice': invoice,
                                'insurance_class': Insurance,
-                               'business_number': settings.BUSINESS_NUMBER,
                                'invoice_number': invoice_number},
                               context)
 
@@ -208,17 +204,15 @@ def fillOutInsuranceLetterView(request, claim_id):
 
 
 @login_required
-def fillOutProofOfManufacturingView(request, client_id, claim_id):
+def fillOutProofOfManufacturingView(request, claim_id):
     context = RequestContext(request)
 
-    client = Client.objects.get(id=client_id)
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
         claim_id)
 
     return render_to_response(
         'clients/make_proof_of_manufacturing.html',
-        {'client': client,
-         'claim': claim,
+        {'claim': claim,
          'proof_of_manufacturing': proof_of_manufacturing,
          'invoice_number': invoice_number},
         context)

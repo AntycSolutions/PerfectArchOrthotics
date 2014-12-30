@@ -30,14 +30,15 @@ class UpdateInsuranceView(UpdateView):
 
         try:
             main_claimant = Dependent.objects.get(
-                id=self.object.main_claimant.pk)
-            dependents = main_claimant.client.dependent_set.all()
+                pk=self.object.main_claimant.pk)
+            client = main_claimant.get_client()
+            dependents = client.dependent_set.all()
         except:
-            main_claimant = Client.objects.get(
+            client = Client.objects.get(
                 id=self.object.main_claimant.pk)
-            dependents = main_claimant.dependent_set.all()
+            dependents = client.dependent_set.all()
         dependents_pks = list(dependents.values_list('pk', flat=True))
-        pks = dependents_pks + [main_claimant.pk]
+        pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
         label = lambda obj: obj.full_name()
         coverage_formset.form.base_fields[
@@ -69,14 +70,15 @@ class UpdateInsuranceView(UpdateView):
 
         try:
             main_claimant = Dependent.objects.get(
-                id=self.object.main_claimant.pk)
-            dependents = main_claimant.client.dependent_set.all()
+                pk=self.object.main_claimant.pk)
+            client = main_claimant.get_client()
+            dependents = client.dependent_set.all()
         except:
-            main_claimant = Client.objects.get(
+            client = Client.objects.get(
                 id=self.object.main_claimant.pk)
-            dependents = main_claimant.dependent_set.all()
+            dependents = client.dependent_set.all()
         dependents_pks = list(dependents.values_list('pk', flat=True))
-        pks = dependents_pks + [main_claimant.pk]
+        pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
         label = lambda obj: obj.full_name()
         coverage_formset.form.base_fields[
