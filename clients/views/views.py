@@ -170,7 +170,7 @@ def _proof_of_manufacturing(claim_id):
         proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
     except:
         pass
-    invoice_number = "{0:04d}".format(claim.id)
+    invoice_number = "{0:04d}".format(claim.id + 7500)
 
     return claim, proof_of_manufacturing, invoice_number
 
