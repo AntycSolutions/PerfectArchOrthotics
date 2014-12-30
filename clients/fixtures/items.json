@@ -1,7 +1,7 @@
 [
   {
     "model": "clients.item",
-    "pk": "64",
+    "pk": "0",
     "fields": {
       "coverage_type": "cs",
       "gender": "wo",
@@ -298,7 +298,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "0",
+    "pk": "27",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -309,7 +309,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "27",
+    "pk": "28",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -320,7 +320,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "28",
+    "pk": "29",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -331,7 +331,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "29",
+    "pk": "30",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -342,7 +342,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "30",
+    "pk": "31",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -353,7 +353,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "31",
+    "pk": "32",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -364,7 +364,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "32",
+    "pk": "33",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -375,7 +375,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "33",
+    "pk": "34",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -386,7 +386,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "34",
+    "pk": "35",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -397,7 +397,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "35",
+    "pk": "36",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -408,7 +408,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "0",
+    "pk": "37",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -419,7 +419,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "36",
+    "pk": "38",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -430,7 +430,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "37",
+    "pk": "39",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -441,7 +441,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "38",
+    "pk": "40",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -452,7 +452,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "39",
+    "pk": "41",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -463,7 +463,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "40",
+    "pk": "42",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -474,7 +474,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "41",
+    "pk": "43",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -485,7 +485,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "42",
+    "pk": "44",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -496,7 +496,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "43",
+    "pk": "45",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -507,7 +507,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "44",
+    "pk": "46",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -518,7 +518,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "45",
+    "pk": "47",
     "fields": {
       "coverage_type": "cs",
       "gender": "me",
@@ -529,7 +529,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "46",
+    "pk": "48",
     "fields": {
       "coverage_type": "o",
       "product_code": "201",
@@ -539,7 +539,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "47",
+    "pk": "49",
     "fields": {
       "coverage_type": "o",
       "product_code": "202",
@@ -549,7 +549,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "48",
+    "pk": "50",
     "fields": {
       "coverage_type": "o",
       "product_code": "203",
@@ -559,7 +559,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "49",
+    "pk": "51",
     "fields": {
       "coverage_type": "o",
       "product_code": "204",
@@ -569,7 +569,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "50",
+    "pk": "52",
     "fields": {
       "coverage_type": "o",
       "product_code": "205",
@@ -579,7 +579,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "51",
+    "pk": "53",
     "fields": {
       "coverage_type": "o",
       "product_code": "206",
@@ -589,7 +589,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "52",
+    "pk": "54",
     "fields": {
       "coverage_type": "o",
       "product_code": "301",
@@ -599,7 +599,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "53",
+    "pk": "55",
     "fields": {
       "coverage_type": "o",
       "product_code": "302",
@@ -609,7 +609,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "54",
+    "pk": "56",
     "fields": {
       "coverage_type": "o",
       "product_code": "303",
@@ -619,7 +619,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "55",
+    "pk": "57",
     "fields": {
       "coverage_type": "o",
       "product_code": "304",
@@ -629,7 +629,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "56",
+    "pk": "58",
     "fields": {
       "coverage_type": "o",
       "product_code": "305",
@@ -639,7 +639,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "57",
+    "pk": "59",
     "fields": {
       "coverage_type": "o",
       "product_code": "306",
@@ -649,7 +649,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "58",
+    "pk": "60",
     "fields": {
       "coverage_type": "o",
       "product_code": "401",
@@ -659,7 +659,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "59",
+    "pk": "61",
     "fields": {
       "coverage_type": "o",
       "product_code": "402",
@@ -669,7 +669,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "60",
+    "pk": "62",
     "fields": {
       "coverage_type": "o",
       "product_code": "403",
@@ -679,7 +679,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "61",
+    "pk": "63",
     "fields": {
       "coverage_type": "o",
       "product_code": "404",
@@ -689,7 +689,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "62",
+    "pk": "64",
     "fields": {
       "coverage_type": "o",
       "product_code": "405",
@@ -699,7 +699,7 @@
   },
   {
     "model": "clients.item",
-    "pk": "63",
+    "pk": "65",
     "fields": {
       "coverage_type": "o",
       "product_code": "406",
@@ -709,13 +709,43 @@
   },
   {
     "model": "clients.item",
-    "pk": "65",
+    "pk": "66",
     "fields": {
       "coverage_type": "cs",
       "gender": "wo",
       "product_code": "862PSSW33",
       "description": "Sigvaris Natural Pantyhose 20-30mmHg Compression Hose",
       "unit_price": "230"
+    }
+  },
+  {
+    "model": "clients.item",
+    "pk": "67",
+    "fields": {
+      "coverage_type": "bs",
+      "product_code": "28940",
+      "description": "TruTEK Lumbosacral Orthosis",
+      "unit_price": "350"
+    }
+  },
+  {
+    "model": "clients.item",
+    "pk": "68",
+    "fields": {
+      "coverage_type": "bs",
+      "product_code": "28950",
+      "description": "LumboTEK Lumbosacral Support",
+      "unit_price": "300"
+    }
+  },
+  {
+    "model": "clients.item",
+    "pk": "69",
+    "fields": {
+      "coverage_type": "os",
+      "product_code": "501",
+      "description": "Custom Orthopedic Shoe",
+      "unit_price": "600"
     }
   }
 ]
