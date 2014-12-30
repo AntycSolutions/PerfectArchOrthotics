@@ -127,9 +127,7 @@ class DeleteInsuranceView(DeleteView):
     slug_url_kwarg = "insurance_id"
 
     def get_success_url(self):
-        client_id = self.object.client.id
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client_id})
+        self.success_url = self.object.main_claimant.get_absolute_url()
         return self.success_url
 
 
