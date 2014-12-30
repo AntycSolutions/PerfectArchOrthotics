@@ -153,12 +153,13 @@ class CreateInsuranceView(CreateView):
 
         if 'spouse_id' in self.kwargs:
             main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
-            dependents = main_claimant.client.dependent_set.all()
+            client = main_claimant.client
+            dependents = client.dependent_set.all()
         else:
-            main_claimant = Client.objects.get(id=self.kwargs['client_id'])
-            dependents = main_claimant.dependent_set.all()
+            client = Client.objects.get(id=self.kwargs['client_id'])
+            dependents = client.dependent_set.all()
         dependents_pks = list(dependents.values_list('pk', flat=True))
-        pks = dependents_pks + [main_claimant.pk]
+        pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
         label = lambda obj: obj.full_name()
         coverage_formset.form.base_fields[
@@ -189,12 +190,13 @@ class CreateInsuranceView(CreateView):
 
         if 'spouse_id' in self.kwargs:
             main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
-            dependents = main_claimant.client.dependent_set.all()
+            client = main_claimant.client
+            dependents = client.dependent_set.all()
         else:
-            main_claimant = Client.objects.get(id=self.kwargs['client_id'])
-            dependents = main_claimant.dependent_set.all()
+            client = Client.objects.get(id=self.kwargs['client_id'])
+            dependents = client.dependent_set.all()
         dependents_pks = list(dependents.values_list('pk', flat=True))
-        pks = dependents_pks + [main_claimant.pk]
+        pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
         label = lambda obj: obj.full_name()
         coverage_formset.form.base_fields[
