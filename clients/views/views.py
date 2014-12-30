@@ -196,10 +196,24 @@ def fillOutInsuranceLetterView(request, claim_id):
 
     claim, patient, insurance_letter = _insurance_letter(claim_id)
 
+    underline = (
+        'border-bottom: 1pt solid #000000;'
+        ' width: 30px;'
+        ' text-align: center;'
+        ' line-height: 10px;'
+        ' font-family: monospace;'
+    )
+    notunderline = (
+        'text-align: left;'
+        ' line-height: 10px;'
+    )
+
     return render_to_response('clients/make_insurance_letter.html',
                               {'patient': patient,
                                'claim': claim,
-                               'insurance_letter': insurance_letter},
+                               'insurance_letter': insurance_letter,
+                               'underline': underline,
+                               'notunderline': notunderline},
                               context)
 
 
