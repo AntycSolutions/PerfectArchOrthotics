@@ -69,8 +69,8 @@
         </ul>
         <h5>Other</h5>
         <ul>
-            <li>Credit (All Payments Made / 200):
-                {{ client.credit }}
+            <li>Credit: {{ client.credit }}<br />
+                (All Payments and Deposits Made on Claims with an Insurance Paid Date / 150)
             </li>
             <li>{% verbose_field_name client "referred_by" %}:
                 <a href="{{ client.referred_by.get_absolute_url }}">

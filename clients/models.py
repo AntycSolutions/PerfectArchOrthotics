@@ -119,9 +119,11 @@ class Client(Person):
     def credit(self):
         total_payment_made = 0
         for claim in self.claim_set.all():
+            if not claim.insurance_paid_date:
+                continue
             for invoice in claim.invoice_set.all():
-                total_payment_made += invoice.payment_made
-        credit = total_payment_made / 200
+                total_payment_made += invoice.payment_made + invoice.deposit
+        credit = total_payment_made / 150
         return credit
 
     def get_absolute_url(self):
