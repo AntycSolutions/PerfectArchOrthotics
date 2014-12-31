@@ -374,9 +374,10 @@ class Claim(models.Model):
             patient = self.patient
         except:
             patient = None
-        return "Claim (%s) - %s - %s" % (self.pk,
-                                         self.submitted_datetime,
-                                         patient)
+        return "Claim (%s) - %s - %s" % (
+            self.pk,
+            self.submitted_datetime.strftime("%Y-%m-%d %I:%M %p"),
+            patient)
 
     def __str__(self):
         return self.__unicode__()
