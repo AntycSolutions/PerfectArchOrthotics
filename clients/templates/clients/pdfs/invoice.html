@@ -131,7 +131,7 @@
 <div id="content">
     <div class="recipient bottom-10">
         <p class="bottom-10">
-            {{ claim.patient.get_client.full_name }}<br />
+            {{ claim.patient.full_name }}<br />
             {{ claim.patient.get_client.address }}<br />
             {{ claim.patient.get_client.city }}{% if claim.patient.get_client.city and claim.patient.get_client.province %},{% endif %}
             {{ claim.patient.get_client.province }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
