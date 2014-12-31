@@ -1,18 +1,39 @@
 {% extends 'base.html' %}
 
-{% include 'navbar.html' %}
-
 {% block title %} - Claims{% endblock %}
+
+{% block extrahead %}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#dateFromSearchBox" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+        $( "#dateToSearchBox" ).datepicker(
+            {changeMonth: true,
+             changeYear: true,
+             yearRange: "1900:2015"});
+    });
+</script>
+{% endblock %}
+
+{% include 'navbar.html' %}
 
 {% block content %}
 
 <h1>Claims</h1>
 <form method="get" action="{% url 'claim_search' %}">
-    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search">
+    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
+    <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
+    <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
     <input type="submit" class="btn" value="Search">
 </form>
 {% if claims %}
     {% include 'clients/snippets/claims.html' %}
+{% elif q or df or dt %}
+    <p>There are no claims for this search.</p>
 {% else %}
     <p>There are no claims currenty.</p>
 {% endif %}
@@ -21,26 +42,19 @@
 <div class="pagination">
     <span class="step-links">
         {% if claims.has_previous %}
-            {% if q %}
-            <a href="?q={{q}}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% else %}
-            <a href="?page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% endif %}
+            <a href="?q={{q}}&df={{df}}&dt={{dt}}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
         {% endif %}
 
-        <span class="current">
-            Page {{ claims.number }} of {{ claims.paginator.num_pages }}.
-        </span>
+        {% if claims.number %}
+            <span class="current">
+                Page {{ claims.number }} of {{ claims.paginator.num_pages }}.
+            </span>
+        {% endif %}
 
         {% if claims.has_next %}
-            {% if q %}
-            <a href="?q={{q}}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
-            {% else %}
-            <a href="?page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
-            {% endif %}
+            <a href="?q={{q}}&df={{df}}&dt={{dt}}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
         {% endif %}
     </span>
 </div>
 
 {% endblock %}
-

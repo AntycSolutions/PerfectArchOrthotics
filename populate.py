@@ -2,6 +2,8 @@ import os
 import datetime
 import time
 
+from django.utils import timezone
+
 
 def populate():
     # Constants for the client model
@@ -82,19 +84,27 @@ def populate():
         john_insurance, ORTHO_SHOES, 100, 350, john)
 
     # Add Claims
-    eric_claim = add_claim(eric, eric_insurance, eric)
+    tz = timezone.get_current_timezone()
+    eric_claim = add_claim(eric, eric_insurance, eric,
+                           timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    chris_claim = add_claim(chris, chris_insurance, chris)
+    chris_claim = add_claim(chris, chris_insurance, chris,
+                            timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    jay_claim = add_claim(jay, jay_insurance, jay)
+    jay_claim = add_claim(jay, jay_insurance, jay,
+                          timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    dan_claim = add_claim(dan, dan_insurance, dan)
+    dan_claim = add_claim(dan, dan_insurance, dan,
+                          timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    cloney_claim = add_claim(cloney, cloney_insurance, cloney)
+    cloney_claim = add_claim(cloney, cloney_insurance, cloney,
+                             timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    jane_claim = add_claim(jane, jane_insurance, jane)
+    jane_claim = add_claim(jane, jane_insurance, jane,
+                           timezone.make_aware(datetime.datetime.now(), tz))
     time.sleep(0.01)
-    john_claim = add_claim(john, john_insurance, john)
+    john_claim = add_claim(john, john_insurance, john,
+                           timezone.make_aware(datetime.datetime.now(), tz))
 
     ClaimCoverage.objects.create(
         claim=eric_claim, coverage=eric_coverage)
@@ -179,9 +189,10 @@ def add_coverage(insurance, coverage_type, coverage_percent,
     return c[0]
 
 
-def add_claim(client, insurance, patient):
+def add_claim(client, insurance, patient, submitted_datetime):
     c = Claim.objects.get_or_create(insurance=insurance,
-                                    patient=patient)
+                                    patient=patient,
+                                    submitted_datetime=submitted_datetime)
     return c[0]
 
 

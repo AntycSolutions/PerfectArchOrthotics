@@ -11,13 +11,23 @@
 
 <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
+
+{{ claim_form.media }}
+
 <script src="{% static 'js/claim.js' %}"></script>
+
 <script type="text/javascript">
     $(function() {
-        $( "#id_insurance_paid_date" ).datepicker(
+        $("#id_insurance_paid_date").datepicker(
             {changeMonth: true,
              changeYear: true,
              yearRange: "1900:2015"});
+    });
+    $(function() {
+        // This is the same as DateTimePicker widget
+        $("#id_submitted_datetime").datetimepicker({"language": "en-ca", "format": "YYYY-MM-DD hh:mm a"});
     });
     $(document).ready(function() {
         var coverage_prefix = "{{ nestedformset.get_default_prefix }}";
@@ -281,6 +291,15 @@
                 </div>
             </div>
         {% endcomment %}
+        {% elif field.name == "submitted_datetime" %}
+            <div class="form-group">
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                <div class="col-lg-3">
+                    {{ field.label_tag }} {{ field }}
+                </div>
+            </div>
         {% else %}
             <div class="form-group">
                 {% if field.errors %}

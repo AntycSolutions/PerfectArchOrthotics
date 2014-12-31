@@ -70,7 +70,7 @@
         <h5>Other</h5>
         <ul>
             <li>Credit: {{ client.credit }}<br />
-                (All Payments and Deposits Made on Claims with an Insurance Paid Date / 150)
+                (Sum of all Payment Made, Deposit, and Total Expected Back on Invoices/Claims with an Insurance Paid Date divided by 150, rounded up)
             </li>
             <li>{% verbose_field_name client "referred_by" %}:
                 <a href="{{ client.referred_by.get_absolute_url }}">
@@ -170,9 +170,35 @@
 <div class="well">
     <h3>Claims</h3>
     {% if client_claims %}
+<!--         <form method="get" action="{% url 'claim_search' %}">
+            <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
+            <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
+            <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+            <input type="submit" class="btn" value="Search">
+        </form> -->
         {% with claims=client_claims %}
             {% include 'clients/snippets/claims.html' %}
         {% endwith %}
+        <!-- Pagination stuff -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if client_claims.has_previous %}
+                    <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
+                    <a href="?page={{ client_claims.previous_page_number }}" class="btn btn-default">Previous</a>
+                {% endif %}
+
+                {% if client_claims.number %}
+                    <span class="current">
+                        Page {{ client_claims.number }} of {{ client_claims.paginator.num_pages }}.
+                    </span>
+                {% endif %}
+
+                {% if client_claims.has_next %}
+                    <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
+                    <a href="?page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
+                {% endif %}
+            </span>
+        </div>
     {% else %}
         <p>There are no Claims for this Client currenty.</p>
     {% endif %}

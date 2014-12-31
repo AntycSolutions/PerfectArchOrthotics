@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import collections
+import math
 
 from django.db import models
 from django.conf import settings
@@ -117,21 +118,22 @@ class Client(Person):
         return None
 
     def credit(self):
-        total_payment_made = 0
+        total = 0
         for dependent in self.dependent_set.all():
             for claim in dependent.claim_set.all():
                 if not claim.insurance_paid_date:
                     continue
+                total += claim.total_expected_back()
                 for invoice in claim.invoice_set.all():
-                    total_payment_made += (invoice.payment_made
-                                           + invoice.deposit)
+                    total += (invoice.payment_made + invoice.deposit)
         for claim in self.claim_set.all():
             if not claim.insurance_paid_date:
                 continue
+            total += claim.total_expected_back()
             for invoice in claim.invoice_set.all():
-                total_payment_made += invoice.payment_made + invoice.deposit
-        credit = total_payment_made / 150
-        return "{0:.2f}".format(credit)
+                total += invoice.payment_made + invoice.deposit
+        credit = total / 150
+        return math.ceil(credit)
 
     def get_absolute_url(self):
         return reverse('client', kwargs={'client_id': self.id})
@@ -331,7 +333,7 @@ class Claim(models.Model):
         through="ClaimCoverage")
 
     submitted_datetime = models.DateTimeField(
-        "Submitted Date", auto_now_add=True)
+        "Submitted Datetime", unique=True)
     insurance_paid_date = models.DateField(
         "Insurance Paid Date",
         blank=True, null=True)
@@ -503,6 +505,10 @@ class Invoice(models.Model):
 
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
+
+    invoice_date = models.DateField(
+        "Invoice Date",
+        blank=True, null=True)
     dispensed_by = models.CharField(
         "Dispensed By", max_length=4, choices=settings.PRACTITIONERS,
         blank=True)
@@ -525,9 +531,6 @@ class Invoice(models.Model):
         blank=True, null=True)
     estimate = models.BooleanField(
         "Estimate", default=False)
-
-    def invoice_date(self):
-        return self.claim.submitted_datetime.date()
 
     def balance(self):
         totals = self.claim.total_amount_quantity_claimed()
@@ -664,7 +667,9 @@ class InsuranceLetter(models.Model):
     # Laboratory
 
     def dispense_date(self):
-        return self.claim.submitted_datetime.date()
+        for invoice in self.claim.invoice_set.all():
+            return invoice.invoice_date
+        return None
 
     def _verbose_name(self, field):
         return InsuranceLetter._meta.get_field(field).verbose_name
@@ -788,7 +793,9 @@ class ProofOfManufacturing(models.Model):
     proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
     def proof_of_manufacturing_date(self):
-        return self.claim.submitted_datetime.date() - timedelta(weeks=1)
+        for invoice in self.claim.invoice_set.all():
+            return invoice.invoice_date - timedelta(weeks=1)
+        return None
 
     def __unicode__(self):
         return "Proof of Manufacturing (%s) - %s - %s" % (

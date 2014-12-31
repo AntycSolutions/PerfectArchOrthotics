@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'easy_pdf',
     'clients',
     'inventory',
+    'bootstrap3_datetime',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -6,6 +6,8 @@ from django.forms import models, BaseInlineFormSet
 from django.forms import fields
 from django.forms.models import inlineformset_factory
 
+from bootstrap3_datetime.widgets import DateTimePicker
+
 from clients.models import Client, Dependent, Insurance, Coverage, Claim, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person, Item, \
     ClaimItem, ClaimCoverage
@@ -103,6 +105,22 @@ class CustomModelMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 
 class ClaimForm(forms.ModelForm):
+    submitted_datetime = forms.DateTimeField(
+        label="Submitted Datetime",
+        input_formats=['%Y-%m-%d %I:%M %p'],
+        widget=DateTimePicker(
+            options={"format": "YYYY-MM-DD hh:mm a"},
+            # div_attrs={"class": "input-group date",
+            #            "style": "display: inline-block;"},
+            attrs={
+                "class": "form-control",
+                # am/pm -> AM/PM
+                "style": "text-transform: uppercase;"
+                         # " display: inline-block; width: 80%;"
+                },
+            # icon_attrs={"class": "glyphicon glyphicon-calendar",
+            #             "style": "display: inline-block;"}
+            ))
     # items = CustomModelMultipleChoiceField(
     #     required=False,
     #     queryset=Item.objects.all(),

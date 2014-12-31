@@ -17,7 +17,7 @@ from django.template import Context
 import xhtml2pdf.pisa as pisa
 
 # PerfectArchOrthotics
-from search import get_query
+from search import get_query, get_date_query
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients.forms.forms import ClientForm, DependentForm, \
@@ -255,8 +255,7 @@ def clients(request):
 def claimsView(request):
     context = RequestContext(request)
 
-    # TODO: Change this order_by to be on time
-    claim_list = Claim.objects.order_by('-id')
+    claim_list = Claim.objects.order_by('-submitted_datetime')
     paginator = Paginator(claim_list, 5)
     page = request.GET.get('page')
     try:
@@ -336,24 +335,66 @@ def clientSearchView(request):
 def claimSearchView(request):
     context = RequestContext(request)
     context_dict = {}
-    query_string = request.GET['q']
-    fields = ['patient__first_name', 'patient__last_name',
-              'insurance__provider', 'patient__employer']
+
     claims = None
+    # Start from all, drilldown to q df dt
+    found_claims = Claim.objects.all().order_by('-submitted_datetime')
+
     if ('q' in request.GET) and request.GET['q'].strip():
-        page = request.GET.get('page')
+        fields = ['patient__first_name', 'patient__last_name',
+                  'insurance__provider', 'patient__employer']
         query_string = request.GET['q']
         context_dict['q'] = query_string
         claim_query = get_query(query_string, fields)
-        found_claims = Claim.objects.filter(claim_query)
-        paginator = Paginator(found_claims, 5)
-        try:
-            claims = paginator.page(page)
-        except PageNotAnInteger:
-            claims = paginator.page(1)
-        except EmptyPage:
-            claims = paginator.page(paginator.num_pages)
-        context_dict['claims'] = claims
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+
+    if (('df' in request.GET) and request.GET['df'].strip()
+            and ('dt' in request.GET) and request.GET['dt'].strip()):
+        date_fields = ['submitted_datetime', 'insurance_paid_date']
+        query_date_from_string = request.GET['df']
+        query_date_to_string = request.GET['dt']
+        context_dict['df'] = query_date_from_string
+        context_dict['dt'] = query_date_to_string
+        claim_query = get_date_query(query_date_from_string,
+                                     query_date_to_string, date_fields)
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+    elif ('df' in request.GET) and request.GET['df'].strip():
+        date_fields = ['submitted_datetime', 'insurance_paid_date']
+        query_date_from_string = request.GET['df']
+        context_dict['df'] = query_date_from_string
+        claim_query = get_date_query(query_date_from_string,
+                                     None, date_fields)
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+    elif ('dt' in request.GET) and request.GET['dt'].strip():
+        date_fields = ['submitted_datetime', 'insurance_paid_date']
+        query_date_to_string = request.GET['dt']
+        context_dict['dt'] = query_date_to_string
+        claim_query = get_date_query(None,
+                                     query_date_to_string, date_fields)
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+
+    page = request.GET.get('page')
+    paginator = Paginator(found_claims, 5)
+    try:
+        claims = paginator.page(page)
+    except PageNotAnInteger:
+        claims = paginator.page(1)
+    except EmptyPage:
+        claims = paginator.page(paginator.num_pages)
+
+    context_dict['claims'] = claims
 
     return render_to_response('clients/claims.html',
                               context_dict,
@@ -416,9 +457,19 @@ def clientView(request, client_id):
             children.append(dependent)
         claims = claims | dependent.claim_set.all()
 
+    # Paginate Claims
+    page = request.GET.get('page')
+    paginator = Paginator(claims.order_by('-submitted_datetime'), 5)
+    try:
+        claims = paginator.page(page)
+    except PageNotAnInteger:
+        claims = paginator.page(1)
+    except EmptyPage:
+        claims = paginator.page(paginator.num_pages)
+
     context_dict = {'client': client,
                     'client_insurance': insurance,
-                    'client_claims': claims.order_by('-submitted_datetime'),
+                    'client_claims': claims,
                     'spouse': spouse,
                     'children': children,
                     'dependent_class': Dependent}
