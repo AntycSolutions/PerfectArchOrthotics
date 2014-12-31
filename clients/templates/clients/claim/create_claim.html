@@ -282,8 +282,8 @@
                 {% if field.errors %}
                     {{ field.errors }}
                 {% endif %}
-                <div class="col-lg-3">
-                    {{ field.label_tag }} {{ field }}
+                <div class="col-lg-4" style="display: table;">
+                    <div style="display: table-cell;">{{ field.label_tag }}</div> {{ field }}
                 </div>
             </div>
         {% else %}

@@ -110,17 +110,11 @@ class ClaimForm(forms.ModelForm):
         input_formats=['%Y-%m-%d %I:%M %p'],
         widget=DateTimePicker(
             options={"format": "YYYY-MM-DD hh:mm a"},
-            # div_attrs={"class": "input-group date",
-            #            "style": "display: inline-block;"},
-            attrs={
-                "class": "form-control",
-                # am/pm -> AM/PM
-                "style": "text-transform: uppercase;"
-                         # " display: inline-block; width: 80%;"
-                },
-            # icon_attrs={"class": "glyphicon glyphicon-calendar",
-            #             "style": "display: inline-block;"}
-            ))
+            attrs={"class": "form-control",
+                   # am/pm -> AM/PM
+                   "style": "text-transform: uppercase; float: none;"},
+        )
+    )
     # items = CustomModelMultipleChoiceField(
     #     required=False,
     #     queryset=Item.objects.all(),
