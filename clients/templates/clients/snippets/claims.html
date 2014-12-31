@@ -5,7 +5,7 @@
             <th>Patient</th>
             <th>Provider</th>
             <th>Employer</th>
-            <th>Submitted Date</th>
+            <th>Submitted Datetime</th>
             <th>Insurance Paid Date</th>
             <th>Total Amount Claimed</th>
             <th>Total Quantity Claimed</th>
@@ -24,7 +24,7 @@
                 <td>{{ claim.patient.full_name }}</td>
                 <td>{{ claim.insurance.provider }}</td>
                 <td>{{ claim.patient.employer }}</td>
-                <td>{{ claim.submitted_datetime.date }}</td>
+                <td>{{ claim.submitted_datetime }}</td>
                 <td>{{ claim.insurance_paid_date }}</td>
                 {% with totals=claim.total_amount_quantity_claimed %}
                     <td>{{ totals.total_amount_claimed }}</td>

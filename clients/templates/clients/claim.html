@@ -27,7 +27,7 @@
             {{ claim.patient.employer }}
         </li>
         <li>{% verbose_field_name claim "submitted_datetime" %}:
-            {{ claim.submitted_datetime.date }}
+            {{ claim.submitted_datetime }}
         </li>
         <li>{% verbose_field_name claim "insurance_paid_date" %}:
             {{ claim.insurance_paid_date }}

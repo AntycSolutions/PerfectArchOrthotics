@@ -375,7 +375,7 @@ class Claim(models.Model):
         except:
             patient = None
         return "Claim (%s) - %s - %s" % (self.pk,
-                                         self.submitted_datetime.date(),
+                                         self.submitted_datetime,
                                          patient)
 
     def __str__(self):
