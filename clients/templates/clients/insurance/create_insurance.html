@@ -55,16 +55,12 @@
         <h5>Insurance</h5>
         {{ form.non_field_errors }}
         {% for hidden in form.hidden_fields %}
-            {% if hidden.errors %}
-                {{ hidden.errors }}
-            {% endif %}
+            {{ hidden.errors }}
             {{ hidden }}
         {% endfor %}
         {% for field in form.visible_fields %}
             <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
+                {{ field.errors }}
                 <div class="col-lg-10">
                     {{ field.label_tag}} {{ field }}
                 </div>
@@ -78,18 +74,14 @@
         {% for form in coverage_formset %}
             {{ form.non_field_errors }}
             {% for hidden in form.hidden_fields %}
-                {% if hidden.errors %}
-                    {{ hidden.errors }}
-                {% endif %}
+                {{ hidden.errors }}
                 {{ hidden }}
             {% endfor %}
             {% for field in form.visible_fields %}
                 <div class="form-group">
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
+                    {{ field.errors }}
                     <div class="col-lg-10">
-                        {{ field.label_tag}} {{ field }}
+                        {{ field.label_tag }} {{ field }}
                     </div>
                 </div>
             {% endfor %}
