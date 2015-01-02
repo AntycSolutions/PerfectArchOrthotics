@@ -123,13 +123,13 @@ class Client(Person):
             for claim in dependent.claim_set.all():
                 if not claim.insurance_paid_date:
                     continue
-                total += claim.total_expected_back()
+                # total += claim.total_expected_back()
                 for invoice in claim.invoice_set.all():
                     total += (invoice.payment_made + invoice.deposit)
         for claim in self.claim_set.all():
             if not claim.insurance_paid_date:
                 continue
-            total += claim.total_expected_back()
+            # total += claim.total_expected_back()
             for invoice in claim.invoice_set.all():
                 total += invoice.payment_made + invoice.deposit
         credit = total / 150
