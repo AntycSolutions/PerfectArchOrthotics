@@ -21,7 +21,7 @@
                 <td>
                     <a href="{% url 'claim' claim.id %}"><button type="button" class="btn btn-info">View</button></a>
                 </td>
-                <td>{{ claim.patient.full_name }}</td>
+                <td><a href="{{ claim.patient.get_absolute_url }}">{{ claim.patient.full_name }}</a></td>
                 <td>{{ claim.insurance.provider }}</td>
                 <td>{{ claim.patient.employer }}</td>
                 <td>{{ claim.submitted_datetime }}</td>
