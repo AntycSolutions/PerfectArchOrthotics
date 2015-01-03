@@ -800,7 +800,7 @@ class ProofOfManufacturing(models.Model):
 
     def __unicode__(self):
         return "Proof of Manufacturing (%s) - %s - %s" % (
-            self.pk, self.product, self.claim)
+            self.pk, self.proof_of_manufacturing_date(), self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -816,7 +816,8 @@ class Laboratory(models.Model):
 
     def __unicode__(self):
         return "Laboratory (%s) - %s - %s" % (
-            self.pk, self.name, self.insurance_letter)
+            self.pk, self.get_information_display().split('\n')[0],
+            self.insurance_letter)
 
     def __str__(self):
         return self.__unicode__()
