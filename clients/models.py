@@ -1,6 +1,5 @@
 from datetime import date, timedelta
 import collections
-import math
 
 from django.db import models
 from django.conf import settings
@@ -133,7 +132,7 @@ class Client(Person):
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
         credit = total / 150
-        return math.ceil(credit)
+        return round(credit)
 
     def get_absolute_url(self):
         return reverse('client', kwargs={'client_id': self.id})
