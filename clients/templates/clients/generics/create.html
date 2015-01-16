@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %} - Create {{ model_name|title }}{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block content %}
+
+<h1>Create {{ model_name|title }}</h1>
+<form id="create_{{ model_name }}_form" class="form-horizontal" method="post">
+    {% csrf_token %}
+    <h5>{{ model_name|title }}</h5>
+    {{ form.non_field_errors }}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden.errors }}
+        {{ hidden }}
+    {% endfor %}
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+            {{ field.errors }}
+            <div class="col-lg-10">
+                {{ field.label_tag }} {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+    <br />
+    <input type="submit" value="Create" />
+</form>
+<br />
+
+{% endblock %}

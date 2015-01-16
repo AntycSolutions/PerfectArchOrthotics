@@ -289,17 +289,48 @@ class Coverage(models.Model):
         return self.__unicode__()
 
 
-class Item(models.Model):
+class FieldList():
+
+    def get_all_fields(self):
+        """Returns a list of all field names on the instance."""
+        Fields = collections.namedtuple('Fields', ['labels',
+                                                   'name_values'])
+
+        # use OrderedDict so we can look up values later on
+        name_values = collections.OrderedDict()
+        labels = []
+        for f in self._meta.fields:
+            fname = f.name
+            # resolve picklists/choices, with get_xyz_display() function
+            get_choice = 'get_' + fname + '_display'
+            if hasattr(self, get_choice):
+                value = getattr(self, get_choice)()
+            else:
+                try:
+                    value = getattr(self, fname)
+                except:
+                    print("Could not get value of field.")
+                    value = None
+
+            if f.editable:
+                name_values.update({f.name: value})
+                labels.append(f.verbose_name)
+
+        return Fields(labels, name_values)
+
+
+class Item(models.Model, FieldList):
     # Fixture
     # items.json
 
+    COVERAGE_TYPES = Coverage.COVERAGE_TYPES
     WOMENS = 'wo'
     MENS = 'me'
     GENDERS = ((WOMENS, "Women's"),
                (MENS, "Men's"))
 
     coverage_type = models.CharField(
-        "Coverage Type", max_length=4, choices=Coverage.COVERAGE_TYPES)
+        "Coverage Type", max_length=4, choices=COVERAGE_TYPES)
     gender = models.CharField(
         "Gender", max_length=4, choices=GENDERS,
         blank=True)
@@ -314,6 +345,9 @@ class Item(models.Model):
     # Claim
     # ForeignKey
     # ClaimItem
+
+    def get_absolute_url(self):
+        return reverse('item_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
         return "Item (%s) - %s" % (self.pk, self.product_code)

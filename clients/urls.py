@@ -11,7 +11,29 @@ from clients.views.claim import UpdateClaimView, DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
     CreateInsuranceLetterView, UpdateProofOfManufacturingView, \
     CreateProofOfManufacturingView, CreateClaimView
+from .views.item import CreateItemView, ListItemView, DetailItemView, \
+    UpdateItemView, DeleteItemView
 from clients.views.statistics import Statistics
+
+
+item_patterns = patterns(
+    '',
+    url(r'^$',
+        login_required(ListItemView.as_view()),
+        name='item_list'),
+    url(r'^(?P<pk>\d+)/$',
+        login_required(DetailItemView.as_view()),
+        name='item_detail'),
+    url(r'^update/(?P<pk>\d+)/$',
+        login_required(UpdateItemView.as_view()),
+        name='item_update'),
+    url(r'^delete/(?P<pk>\d+)/$',
+        login_required(DeleteItemView.as_view()),
+        name='item_delete'),
+    url(r'^create/$',
+        login_required(CreateItemView.as_view()),
+        name='item_create'),
+)
 
 
 insurance_patterns = patterns(
@@ -112,6 +134,7 @@ urlpatterns = patterns(
         views.fillOutProofOfManufacturingView, name='fillOutProof'),
     url(r'^insurance/', include(insurance_patterns)),
     url(r'^coverage_type/', include(coverage_type_patterns)),
+    url(r'^item/', include(item_patterns)),
     # url(r'^pdftest.pdf$', views.HelloPDFView.as_view(), name='pdf'),
     # url(r'^pdftest2.pdf$', views.invoice_view, name='invoice'),
     # url(r'^pdftest3.pdf$', views.insurance_letter,

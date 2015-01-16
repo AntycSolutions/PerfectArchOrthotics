@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %} - Update {{ model_name }}{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block content %}
+
+<h1>Update {{ model_name }}</h1>
+<form id="update_{{ model_name }}_form" class="form-horizontal" method="post">
+    {% csrf_token %}
+    <h5>{{ model_name }}</h5>
+    {{ form.non_field_errors }}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden.errors }}
+        {{ hidden }}
+    {% endfor %}
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+            {{ field.errors }}
+            <div class="col-lg-10">
+                {{ field.label_tag }} {{ field }}
+            </div>
+        </div>
+    {% endfor %}
+    <br />
+    <input type="submit" value="Update" />
+</form>
+<br />
+
+{% endblock %}

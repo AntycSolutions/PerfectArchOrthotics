@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-{% include 'navbar.html' %}
 
 {% block title %} - Clients{% endblock %}
+
+{% include 'navbar.html' %}
 
 {% block content %}
 
@@ -10,7 +11,7 @@
     <a href="{% url 'add_client' %}" class="btn btn-primary">Add a New Client</a>
     <!-- <a href="{% url 'add_client_test' %}" class="btn btn-primary">Add a New Client</a> -->
 </div>
-</br>
+<br />
 <form method="get" action="{% url 'client_search' %}">
     <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Client Search">
     <input type="submit" class="btn" value="Search">

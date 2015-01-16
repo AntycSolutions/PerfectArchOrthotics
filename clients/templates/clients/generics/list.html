@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %} - {{ model_name_plural|title }}{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block content %}
+
+<h1>{{ model_name_plural|title }}</h1>
+<div>
+    <a href="{% url model_name|add:'_create' %}" class="btn btn-primary">Create {{ indefinite_article }} {{ model_name|title }}</a>
+</div>
+<br />
+<form method="get">
+    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="{{ model_name|title }} Search" value="{{ q }}">
+    <select id="searchDropdownBox" name="d">
+        <option value="">---------</option>
+        {% for option in options %}
+            <option value="{{ option.value }}"{% if d == option.value %} selected="selected"{% endif %}>
+                {{ option.value_display }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" class="btn" value="Search">
+</form>
+{% if object_list %}
+    <table class="table table-striped table-cover">
+        {% for object in object_list %}
+            {% with fields=object.get_all_fields %}
+                {% if forloop.first %}
+                    <thead>
+                        <tr>
+                            {% for label in fields.labels %}
+                                {% if forloop.first %}
+                                    <th></th>
+                                {% else %}
+                                    <th>{{ label }}</th>
+                                {% endif %}
+                            {% endfor %}
+                                    <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                {% endif %}
+                        <tr>
+                            {% for name, value in fields.name_values.items %}
+                                {% if name == "id" %}
+                                    <td><a href="{% url model_name|add:'_detail' value %}"><button type="button" class="btn btn-info">View</button></a></td>
+                                {% else %}
+                                    <td>{{ value }}</td>
+                                {% endif %}
+                            {% endfor %}
+                                    <td style="width: 160px;">
+                                        <div class="pull-right">
+                                            <a href="{% url model_name|add:'_update' fields.name_values.id %}" class="btn btn-default">Update</a>
+                                            <a href="{% url model_name|add:'_delete' fields.name_values.id %}" class="btn btn-default">Delete</a>
+                                        </div>
+                                    </td>
+                        </tr>
+                {% if forloop.last %}
+                    </tbody>
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    </table>
+{% elif q %}
+    <p>There are no Items for this search.</p>
+{% else %}
+    <p>There are no Items currenty.</p>
+{% endif %}
+{% if is_paginated %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
+            {% endif %}
+            {% if page_obj.number %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+<br />
+
+{% endblock %}
