@@ -6,6 +6,11 @@ from django.utils import timezone
 
 
 def populate():
+    clients()
+    inventory()
+
+
+def clients():
     # Constants for the client model
     MALE = Client.MALE
     FEMALE = Client.FEMALE
@@ -133,6 +138,15 @@ def populate():
     add_admin("airith", hashers.make_password("perfectarch"))
 
 
+def inventory():
+    # Constants for Shoe
+    WOMENS = Shoe.WOMENS
+    ORDERABLE = Shoe.ORDERABLE
+    # Add Shoes
+    s1 = add_shoe(
+        category=WOMENS, availability=ORDERABLE, style="Toe Shoe")
+
+
 def add_admin(username, password):
     # Need to try and return here since django admin users are dumb
     try:
@@ -196,6 +210,16 @@ def add_claim(client, insurance, patient, submitted_datetime):
     return c[0]
 
 
+def add_shoe(image, category, size, availability, brand, style, name, sku,
+             colour, description, credit_value, quantity, cost):
+    s = Shoe.objects.get_or_create(
+        image=image, category=category, size=size, availability=availability,
+        brand=brand, style=style, name=name, sku=sku, colour=colour,
+        description=description, credit_value=credit_value, quantity=quantity,
+        cost=cost)
+    return s[0]
+
+
 if __name__ == '__main__':
     print("Starting PerfectArchOrthotics database population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
@@ -206,5 +230,6 @@ if __name__ == '__main__':
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Insurance, Claim, \
         Dependent, Coverage, ClaimCoverage
+    from inventory.models import Shoe
     populate()
     print("Finished PerfectArchOrthotics database population script.")
