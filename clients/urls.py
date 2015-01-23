@@ -35,7 +35,6 @@ item_patterns = patterns(
         name='item_create'),
 )
 
-
 insurance_patterns = patterns(
     '',
     url(r'^$', views.insuranceView, name='insurance'),
