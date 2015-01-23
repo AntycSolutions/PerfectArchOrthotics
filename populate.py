@@ -144,7 +144,7 @@ def inventory():
     ORDERABLE = Shoe.ORDERABLE
     # Add Shoes
     s1 = add_shoe(
-        category=WOMENS, availability=ORDERABLE, style="Toe Shoe")
+        "Test Shoe", category=WOMENS, availability=ORDERABLE, style="Toe Shoe")
 
 
 def add_admin(username, password):
@@ -210,8 +210,9 @@ def add_claim(client, insurance, patient, submitted_datetime):
     return c[0]
 
 
-def add_shoe(image, category, size, availability, brand, style, name, sku,
-             colour, description, credit_value, quantity, cost):
+def add_shoe(name, image=None, category="", size="", availability="",
+             brand="", style="", sku="", colour="", description="",
+             credit_value=0, quantity=0, cost=0):
     s = Shoe.objects.get_or_create(
         image=image, category=category, size=size, availability=availability,
         brand=brand, style=style, name=name, sku=sku, colour=colour,
