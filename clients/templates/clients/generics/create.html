@@ -7,7 +7,7 @@
 {% block content %}
 
 <h1>Create {{ model_name|title }}</h1>
-<form id="create_{{ model_name }}_form" class="form-horizontal" method="post">
+<form id="create_{{ model_name }}_form" class="form-horizontal" method="post" enctype="{{ form_type }}">
     {% csrf_token %}
     <h5>{{ model_name|title }}</h5>
     {{ form.non_field_errors }}

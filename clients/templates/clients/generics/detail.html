@@ -22,7 +22,17 @@
         <tbody>
             <tr>
                 {% for name, value in fields.name_values.items %}
-                    {% if not name == "id" %}
+                    {% if name == "id" %}
+                        <!-- Skip ID -->
+                    {% elif "image" in name %}
+                        <td>
+                            {% if value %}
+                                <a href="{{ value.url }}"><img width="256px;" src="{{ value.url }}" /></a>
+                            {% else %}
+                                <!-- No Image -->
+                            {% endif %}
+                        </td>
+                    {% else %}
                         <td>{{ value }}</td>
                     {% endif %}
                 {% endfor %}

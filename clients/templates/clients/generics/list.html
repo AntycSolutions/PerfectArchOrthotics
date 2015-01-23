@@ -12,15 +12,18 @@
 </div>
 <br />
 <form method="get">
-    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="{{ model_name|title }} Search" value="{{ q }}">
-    <select id="searchDropdownBox" name="d">
-        <option value="">---------</option>
-        {% for option in options %}
-            <option value="{{ option.value }}"{% if d == option.value %} selected="selected"{% endif %}>
-                {{ option.value_display }}
-            </option>
-        {% endfor %}
-    </select>
+    <input type="text" class="input-medium search-query" name="q" placeholder="{{ model_name|title }} Search" value="{{ q }}">
+    {% for name, options in selects.items %}
+        <label for="{{ name }}">{{ name|title }}:</label>
+        <select id="{{ name }}" name="{{ name }}">
+            <option value="">---------</option>
+            {% for option in options %}
+                <option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>
+                    {{ option.value_display }}
+                </option>
+            {% endfor %}
+        </select>
+    {% endfor %}
     <input type="submit" class="btn" value="Search">
 </form>
 {% if object_list %}
@@ -46,6 +49,14 @@
                             {% for name, value in fields.name_values.items %}
                                 {% if name == "id" %}
                                     <td><a href="{% url model_name|add:'_detail' value %}"><button type="button" class="btn btn-info">View</button></a></td>
+                                {% elif "image" in name %}
+                                    <td>
+                                        {% if value %}
+                                            <a href="{{ value.url }}"><img width="128;" src="{{ value.url }}" /></a>
+                                        {% else %}
+                                            <!-- No Image -->
+                                        {% endif %}
+                                    </td>
                                 {% else %}
                                     <td>{{ value }}</td>
                                 {% endif %}
@@ -64,9 +75,9 @@
         {% endfor %}
     </table>
 {% elif q %}
-    <p>There are no Items for this search.</p>
+    <p>There are no {{ model_name_plural|title }} for this search.</p>
 {% else %}
-    <p>There are no Items currenty.</p>
+    <p>There are no {{ model_name_plural|title }} currenty.</p>
 {% endif %}
 {% if is_paginated %}
     <div class="pagination">

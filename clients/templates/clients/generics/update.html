@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %} - Update {{ model_name }}{% endblock %}
+{% block title %} - Update {{ model_name|title }}{% endblock %}
 
 {% include 'navbar.html' %}
 
 {% block content %}
 
-<h1>Update {{ model_name }}</h1>
-<form id="update_{{ model_name }}_form" class="form-horizontal" method="post">
+<h1>Update {{ model_name|title }}</h1>
+<form id="update_{{ model_name }}_form" class="form-horizontal" method="post" enctype="{{ form_type }}">
     {% csrf_token %}
-    <h5>{{ model_name }}</h5>
+    <h5>{{ model_name|title }}</h5>
     {{ form.non_field_errors }}
     {% for hidden in form.hidden_fields %}
         {{ hidden.errors }}
