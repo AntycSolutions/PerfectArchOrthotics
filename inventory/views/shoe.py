@@ -19,6 +19,7 @@ class CreateShoeView(CreateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'a'
+        context['form_type'] = 'multipart/form-data'
         return context
 
     def get_success_url(self):
@@ -38,20 +39,32 @@ class ListShoeView(ListView):
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'a'
 
-        Option = collections.namedtuple('Option', ['value',
-                                                   'value_display'])
-        options = []
-        for coverage_type in Shoe.COVERAGE_TYPES:
-            options.append(Option(coverage_type[0], coverage_type[1]))
-        context['options'] = options
-
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
             context['q'] = query_string
 
-        if ('d' in self.request.GET) and self.request.GET['d'].strip():
-            query_string = self.request.GET['d']
-            context['d'] = query_string
+        Option = collections.namedtuple('Option', ['value',
+                                                   'value_display',
+                                                   'selected'])
+        categories = []
+        for category in Shoe.CATEGORIES:
+            if ("category" in self.request.GET
+                    and self.request.GET["category"].strip()
+                    and self.request.GET["category"] == category[0]):
+                categories.append(Option(category[0], category[1], True))
+            else:
+                categories.append(Option(category[0], category[1], False))
+        sizes = []
+        for size in Shoe.SIZES:
+            if ("size" in self.request.GET
+                    and self.request.GET["size"].strip()
+                    and self.request.GET["size"] == size[0]):
+                sizes.append(Option(size[0], size[1], True))
+            else:
+                sizes.append(Option(size[0], size[1], False))
+        selects = {"category": categories, "size": sizes}
+        context['selects'] = selects
+
         return context
 
     def get_queryset(self):
@@ -67,9 +80,20 @@ class ListShoeView(ListView):
             else:
                 queryset = Shoe.objects.filter(shoe_query)
 
-        if ('d' in self.request.GET) and self.request.GET['d'].strip():
-            fields = ['coverage_type']
-            query_string = self.request.GET['d']
+        if ('category' in self.request.GET
+                and self.request.GET['category'].strip()):
+            fields = ['category']
+            query_string = self.request.GET['category']
+            shoe_query = get_query(query_string, fields)
+            if queryset:
+                queryset = queryset.filter(shoe_query)
+            else:
+                queryset = Shoe.objects.filter(shoe_query)
+
+        if ('size' in self.request.GET
+                and self.request.GET['size'].strip()):
+            fields = ['size']
+            query_string = self.request.GET['size']
             shoe_query = get_query(query_string, fields)
             if queryset:
                 queryset = queryset.filter(shoe_query)
@@ -93,6 +117,14 @@ class UpdateShoeView(UpdateView):
     template_name = 'clients/generics/update.html'
     model = Shoe
     fields = '__all__'
+
+    def get_context_data(self, **kwargs):
+        context = super(UpdateShoeView, self).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'a'
+        context['form_type'] = 'multipart/form-data'
+        return context
 
     def get_success_url(self):
         self.success_url = reverse_lazy('shoe_detail',

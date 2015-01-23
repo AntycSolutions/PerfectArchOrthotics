@@ -1,53 +1,78 @@
-"""Models for the inventory app.
-
-The following tables will be contained within:
-- Inventory
-- Orders
-- Invoicing
-
-"""
+from decimal import Decimal
 
 from django.db import models
+from django.core.urlresolvers import reverse
 
-"""
-Table: Invoicing
-Fields:
-Invoice #
-Date created
-Date submitted
-Saved invoices
-"""
+from model_utils import FieldList
 
-"""
-Table: Orders
-Fields:
-Order type (orthotics, shoes, etc)
-Client (or their dependent)
-order date
-arrival date
-dispensing date
-Reports: to place orders for orthotics, compression stockings, shoes
--Orders for ortho, comp and shoes will not be ordered on the spot so we will to have a report the let’s us know when we have placed the order and when we actually submitted the order.
-"""
 
-"""
-* This is an important table, i want to know as much as i can about the reports you want to generate to make sure we ahve all the fields we will need in here.
-"""
+class Shoe(models.Model, FieldList):
+    WOMENS = 'wo'
+    MENS = 'me'
+    JUNIOR = 'ju'
+    KIDS = 'ki'
+    CATEGORIES = ((WOMENS, "Women's"),
+                  (MENS, "Men's"),
+                  (JUNIOR, "Junior"),
+                  (KIDS, "Kids"),)
+    """
+        Women's 5-11 [halfs]
+        Men's 7-14 [halfs]
+        Junior 3-6.5 [halfs]
+        Kids 9-3 (9, 10, 11, 12, 13, 1, 2, 3)
+    """
+    SIZE_RANGE = range(30, 141, 5)  # Use 141 to include 140
+    SIZES = [("1", "1"), ("2", "2")] + [("%g" % (i / 10),
+                                         "%g" % (i / 10)) for i in SIZE_RANGE]
+    ORDERABLE = 'or'
+    DISCONTINUED = 'di'
+    AVAILABILITIES = ((ORDERABLE, "Orderable"),
+                      (DISCONTINUED, "Discontinued"),)
 
-"""
-* using shoes as a first example
-Table: Inventory
-Fields:
-Brand
-Name of shoe
-Style
-SKU
-size
-Color
-Price
-notes/details
-"""
+    image = models.ImageField(
+        "Image", upload_to='inventory/shoes/%Y/%m/%d',
+        null=True, blank=True)
+    category = models.CharField(
+        "Category", max_length=4, choices=CATEGORIES,
+        blank=True)
+    size = models.CharField(
+        "Size", max_length=4, choices=SIZES,
+        blank=True)
+    availability = models.CharField(
+        "Availability", max_length=4, choices=AVAILABILITIES,
+        blank=True)
+    brand = models.CharField(
+        "Brand", max_length=32,
+        blank=True)
+    style = models.CharField(
+        "Style", max_length=32,
+        blank=True)
+    name = models.CharField(
+        "Name", max_length=32)
+    sku = models.CharField(
+        "SKU", max_length=32,
+        blank=True)
+    colour = models.CharField(
+        "Colour", max_length=32,
+        blank=True)
+    description = models.TextField(
+        "Description",
+        blank=True)
+    credit_value = models.IntegerField(
+        "Credit Value", default=0)
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+    cost = models.DecimalField(
+        "Cost", max_digits=6, decimal_places=2, default=Decimal(0.00))
 
+    def get_absolute_url(self):
+        return reverse('shoe_detail', kwargs={'pk': self.pk})
+
+    def __unicode__(self):
+        return "Shoe (%s) - %s" % (self.pk, self.name)
+
+    def __str__(self):
+        return self.__unicode__()
 
 """
 Reports:
