@@ -492,6 +492,16 @@ def add_client(request):
                                        # {'form': form}, context)
     else:
         form = ClientForm()
+        queryset = form.fields['referred_by'].queryset
+        queryset = queryset.extra(
+            select={
+                'lower_first_name': 'lower(first_name)'
+                }).order_by('lower_first_name')
+        form.fields['referred_by'].queryset = queryset
+        form.fields['referred_by'].label_from_instance = (
+            lambda obj:
+                "%s" % (obj.full_name())
+        )
 
     return render_to_response('clients/add_client.html',
                               {'form': form}, context)
@@ -510,6 +520,16 @@ def editClientView(request, client_id):
 
     else:
         client_form = ClientForm(instance=client)
+        queryset = client_form.fields['referred_by'].queryset
+        queryset = queryset.extra(
+            select={
+                'lower_first_name': 'lower(first_name)'
+                }).order_by('lower_first_name')
+        client_form.fields['referred_by'].queryset = queryset
+        client_form.fields['referred_by'].label_from_instance = (
+            lambda obj:
+                "%s" % (obj.full_name())
+        )
 
     return render_to_response('clients/edit_client.html',
                               {'client': client,
