@@ -17,7 +17,7 @@ from django.template import Context
 import xhtml2pdf.pisa as pisa
 
 # PerfectArchOrthotics
-from search import get_query, get_date_query
+from utils.search import get_query, get_date_query
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients.forms.forms import ClientForm, DependentForm, \

@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from model_utils import FieldList
+from utils.model_utils import FieldList
 
 '''
     Char/Text Field is always set to '', doesnt need null=True

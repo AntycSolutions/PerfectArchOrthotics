@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'easy_pdf',
+    'utils',
     'clients',
     'inventory',
     'bootstrap3_datetime',

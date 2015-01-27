@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from decimal import Decimal
-import model_utils
+from utils import model_utils
 
 
 class Migration(migrations.Migration):

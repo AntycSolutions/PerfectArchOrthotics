@@ -5,15 +5,13 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 from django.core.urlresolvers import reverse_lazy
 
-from search import get_query
+from utils.search import get_query
 from clients.models import Item
-# from clients.forms.forms import ItemForm
 
 
 class CreateItemView(CreateView):
-    template_name = 'clients/generics/create.html'
+    template_name = 'utils/generics/create.html'
     model = Item
-    # form_class = ItemForm
     fields = '__all__'
 
     def get_context_data(self, **kwargs):
@@ -30,7 +28,7 @@ class CreateItemView(CreateView):
 
 
 class ListItemView(ListView):
-    template_name = "clients/generics/list.html"
+    template_name = "utils/generics/list.html"
     model = Item
     paginate_by = 5
 
@@ -82,7 +80,7 @@ class ListItemView(ListView):
 
 
 class DetailItemView(DetailView):
-    template_name = "clients/generics/detail.html"
+    template_name = "utils/generics/detail.html"
     model = Item
 
     def get_context_data(self, **kwargs):
@@ -92,9 +90,8 @@ class DetailItemView(DetailView):
 
 
 class UpdateItemView(UpdateView):
-    template_name = 'clients/generics/update.html'
+    template_name = 'utils/generics/update.html'
     model = Item
-    # form_class = ItemForm
     fields = '__all__'
 
     def get_success_url(self):
@@ -104,7 +101,7 @@ class UpdateItemView(UpdateView):
 
 
 class DeleteItemView(DeleteView):
-    template_name = 'clients/generics/delete.html'
+    template_name = 'utils/generics/delete.html'
     model = Item
 
     def get_context_data(self, **kwargs):
