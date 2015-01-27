@@ -1,5 +1,4 @@
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
 
@@ -40,7 +39,7 @@ class UpdateInsuranceView(UpdateView):
         dependents_pks = list(dependents.values_list('pk', flat=True))
         pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
-        label = lambda obj: obj.full_name()
+        label = (lambda obj: obj.full_name())
         coverage_formset.form.base_fields[
             'claimant'].queryset = claimants
         coverage_formset.form.base_fields[
@@ -80,7 +79,7 @@ class UpdateInsuranceView(UpdateView):
         dependents_pks = list(dependents.values_list('pk', flat=True))
         pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
-        label = lambda obj: obj.full_name()
+        label = (lambda obj: obj.full_name())
         coverage_formset.form.base_fields[
             'claimant'].queryset = claimants
         coverage_formset.form.base_fields[
@@ -159,7 +158,7 @@ class CreateInsuranceView(CreateView):
         dependents_pks = list(dependents.values_list('pk', flat=True))
         pks = dependents_pks + [client.pk]
         claimants = Person.objects.filter(pk__in=pks)
-        label = lambda obj: obj.full_name()
+        label = (lambda obj: obj.full_name())
         coverage_formset.form.base_fields[
             'claimant'].queryset = claimants
         coverage_formset.form.base_fields[
