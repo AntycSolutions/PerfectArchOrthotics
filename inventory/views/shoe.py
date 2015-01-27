@@ -187,7 +187,7 @@ class DetailShoeView(DetailView):
         context = super(DetailShoeView, self).get_context_data(**kwargs)
         context['model_name'] = self.model._meta.verbose_name
         context['inline_set'] = self.object.shoeattributes_set.extra(
-            select={'size_int': 'cast(size as integer)'}
+            select={'size_int': 'cast(size as real)'}
         ).order_by('size_int')
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
         return context
