@@ -145,6 +145,8 @@ def inventory():
     # Add Shoes
     s1 = add_shoe(
         "Test Shoe", category=WOMENS, availability=ORDERABLE, style="Toe Shoe")
+    sa1 = add_shoe_attributes(
+        s1, "1", 1)
 
 
 def add_admin(username, password):
@@ -221,6 +223,12 @@ def add_shoe(name, image=None, category="", size="", availability="",
     return s[0]
 
 
+def add_shoe_attributes(shoe, size, quantity=0):
+    sa = ShoeAttributes.objects.get_or_create(
+        shoe=shoe, size=size, quantity=quantity)
+    return sa[0]
+
+
 if __name__ == '__main__':
     print("Starting PerfectArchOrthotics database population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
@@ -231,6 +239,6 @@ if __name__ == '__main__':
     import django.contrib.auth.hashers as hashers
     from clients.models import Client, Insurance, Claim, \
         Dependent, Coverage, ClaimCoverage
-    from inventory.models import Shoe
+    from inventory.models import Shoe, ShoeAttributes
     populate()
     print("Finished PerfectArchOrthotics database population script.")

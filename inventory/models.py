@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db import models
 from django.core.urlresolvers import reverse
 
-from model_utils import FieldList
+from utils.model_utils import FieldList
 
 
 class Shoe(models.Model, FieldList):
@@ -15,15 +15,6 @@ class Shoe(models.Model, FieldList):
                   (MENS, "Men's"),
                   (JUNIOR, "Junior"),
                   (KIDS, "Kids"),)
-    """
-        Women's 5-11 [halfs]
-        Men's 7-14 [halfs]
-        Junior 3-6.5 [halfs]
-        Kids 9-3 (9, 10, 11, 12, 13, 1, 2, 3)
-    """
-    SIZE_RANGE = range(30, 141, 5)  # Use 141 to include 140
-    SIZES = [("1", "1"), ("2", "2")] + [("%g" % (i / 10),
-                                         "%g" % (i / 10)) for i in SIZE_RANGE]
     ORDERABLE = 'or'
     DISCONTINUED = 'di'
     AVAILABILITIES = ((ORDERABLE, "Orderable"),
@@ -34,9 +25,6 @@ class Shoe(models.Model, FieldList):
         null=True, blank=True)
     category = models.CharField(
         "Category", max_length=4, choices=CATEGORIES,
-        blank=True)
-    size = models.CharField(
-        "Size", max_length=4, choices=SIZES,
         blank=True)
     availability = models.CharField(
         "Availability", max_length=4, choices=AVAILABILITIES,
@@ -60,8 +48,6 @@ class Shoe(models.Model, FieldList):
         blank=True)
     credit_value = models.IntegerField(
         "Credit Value", default=0)
-    quantity = models.IntegerField(
-        "Quantity", default=0)
     cost = models.DecimalField(
         "Cost", max_digits=6, decimal_places=2, default=Decimal(0.00))
 
@@ -70,6 +56,38 @@ class Shoe(models.Model, FieldList):
 
     def __unicode__(self):
         return "Shoe (%s) - %s" % (self.pk, self.name)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class ShoeAttributes(models.Model, FieldList):
+
+    """
+        Women's 5-11 [halfs]
+        Men's 7-14 [halfs]
+        Junior 3-6.5 [halfs]
+        Kids 9-3 (9, 10, 11, 12, 13, 1, 2, 3)
+    """
+    SIZE_RANGE = range(30, 141, 5)  # Use 141 to include 140
+    SIZES = [("1", "1"), ("2", "2")] + [("%g" % (i / 10),
+                                         "%g" % (i / 10)) for i in SIZE_RANGE]
+
+    shoe = models.ForeignKey(
+        Shoe, verbose_name="Shoe")
+    size = models.CharField(
+        "Size", max_length=4, choices=SIZES)
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+
+    class Meta:
+        unique_together = (('shoe', 'size'),)
+
+    def get_absolute_url(self):
+        return self.shoe.get_absolute_url()
+
+    def __unicode__(self):
+        return "Shoe Attributes (%s) - %s" % (self.pk, self.shoe)
 
     def __str__(self):
         return self.__unicode__()
