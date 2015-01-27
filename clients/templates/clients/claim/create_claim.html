@@ -279,18 +279,14 @@
         {% endcomment %}
         {% elif field.name == "submitted_datetime" %}
             <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
+                {{ field.errors }}
                 <div class="col-lg-4" style="display: table;">
                     <div style="display: table-cell;">{{ field.label_tag }}</div> {{ field }}
                 </div>
             </div>
         {% else %}
             <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
+                {{ field.errors }}
                 <div class="col-lg-10">
                     {{ field.label_tag }} {{ field }}
                 </div>
@@ -304,16 +300,12 @@
         {% for coverage_form in nestedformset %}
             {{ coverage_form.non_field_errors }}
             {% for hidden in coverage_form.hidden_fields %}
-                {% if hidden.errors %}
                     {{ hidden.errors }}
-                {% endif %}
                 {{ hidden }}
             {% endfor %}
             {% for field in coverage_form.visible_fields %}
                 <div class="form-group">
-                    {% if field.errors %}
                         {{ field.errors }}
-                    {% endif %}
                     <div class="col-lg-10">
                         {{ field.label_tag }} {{ field }}
                     </div>
@@ -328,16 +320,12 @@
                 {% for item_form in coverage_form.nested %}
                     {{ item_form.non_field_errors }}
                     {% for hidden in coverage_form.hidden_fields %}
-                        {% if hidden.errors %}
                             {{ hidden.errors }}
-                        {% endif %}
                         {{ hidden }}
                     {% endfor %}
                     {% for field in item_form.visible_fields %}
                         <!-- <div class="form-group"> -->
-                            {% if field.errors %}
-                                {{ field.errors }}
-                            {% endif %}
+                            {{ field.errors }}
                             <!-- <div class="col-lg-10"> -->
                                 {{ field.label_tag }} {{ field }}
                             <!-- </div> -->
