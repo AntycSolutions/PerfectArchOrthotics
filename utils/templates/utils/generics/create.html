@@ -35,6 +35,7 @@
 {% block content %}
 
 <h1>Create {{ model_name|title }}</h1>
+{% include 'clients/snippets/messages.html' %}
 <form id="create_{{ model_name }}_form" class="form-horizontal" method="post" enctype="{{ form_type }}">
     <fieldset>
         {% csrf_token %}
