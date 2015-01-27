@@ -70,7 +70,7 @@ class CreateShoeView(CreateView):
             shoe_attributes_formset.instance = self.object
             shoe_attributes_formset.save()
         except IntegrityError as e:
-            if "UNIQUE" in str(e):
+            if "UNIQUE" in str(e) or "unique" in str(e):
                 self.object.delete()
                 messages.add_message(self.request, messages.ERROR,
                                      "That Size already exists for this Shoe.")
@@ -252,10 +252,13 @@ class UpdateShoeView(UpdateView):
         self.object = form.save()
         try:
             shoe_attributes_formset.save()
-        except IntegrityError:
-            messages.add_message(self.request, messages.ERROR,
-                                 "That Size already exists for this Shoe.")
-            return self.form_invalid(form, shoe_attributes_formset)
+        except IntegrityError as e:
+            if "UNIQUE" in str(e) or "unique" in str(e):
+                self.object.delete()
+                messages.add_message(self.request, messages.ERROR,
+                                     "That Size already exists for this Shoe.")
+                return self.form_invalid(form, shoe_attributes_formset)
+            raise e
 
         return HttpResponseRedirect(self.get_success_url())
 
