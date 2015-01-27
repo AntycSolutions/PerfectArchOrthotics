@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %} - {{ model_name|title }}{% endblock %}
+
+{% include 'navbar.html' %}
+
+{% block content %}
+
+<h1>{{ model_name|title }}</h1>
+<table class="table table-striped table-cover">
+    {% with fields=object.get_all_fields %}
+        <thead>
+            <tr>
+                {% for label in fields.labels %}
+                    {% if not forloop.first %}
+                        <th>{{ label }}</th>
+                    {% endif %}
+                {% endfor %}
+                        <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for name, value in fields.name_values.items %}
+                    {% if name == "id" %}
+                        <!-- Skip ID -->
+                    {% elif "image" in name %}
+                        <td>
+                            {% if value %}
+                                <a href="{{ value.url }}"><img width="256px;" src="{{ value.url }}" /></a>
+                            {% else %}
+                                <!-- No Image -->
+                            {% endif %}
+                        </td>
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+                        <td style="width: 160px;">
+                            <div class="pull-right">
+                                <a href="{% url model_name|add:'_update' fields.name_values.id %}" class="btn btn-default">Update</a>
+                                <a href="{% url model_name|add:'_delete' fields.name_values.id %}" class="btn btn-default">Delete</a>
+                            </div>
+                        </td>
+            </tr>
+            {% if inline_set %}
+                        <td colspan="2"><ul class="pull-right"><li>{{ inline_model_name|title }}</li></ul></td>
+                        <td colspan="{{ fields.name_values.items|length|add:'-2' }}"><!-- -1 for offset, -1 for hidden ID -->
+                            <div class="pull-left">
+                                <table class="table" style="display: inline-block;">
+                                    {% for inline in inline_set %}
+                                        {% with fields=inline.get_all_fields %}
+                                            <thead>
+                                                <tr>
+                                                    {% for label in fields.labels %}
+                                                        {% if not forloop.first %}
+                                                            <th>{{ label }}</th>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                            <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    {% for name, value in fields.name_values.items %}
+                                                        {% if name == "id" %}
+                                                            <!-- Skip ID -->
+                                                        {% elif value == object %}
+                                                            <!-- Skip object -->
+                                                        {% else %}
+                                                            <td>{{ value }}</td>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </td>
+            {% endif %}
+        </tbody>
+    {% endwith %}
+</table>
+<br />
+
+{% endblock %}
