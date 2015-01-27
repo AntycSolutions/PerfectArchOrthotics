@@ -5,6 +5,7 @@ class FieldList():
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""
+        Field = collections.namedtuple('Field', ['field', 'value'])
 
         # use OrderedDict so we can look up values later on
         fields = collections.OrderedDict()
@@ -22,6 +23,6 @@ class FieldList():
                     value = None
 
             if f.editable:
-                fields.update({f: value})
+                fields.update({f.name: Field(f, value)})
 
         return fields
