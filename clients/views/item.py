@@ -30,28 +30,57 @@ class CreateItemView(CreateView):
 class ListItemView(ListView):
     template_name = "utils/generics/list.html"
     model = Item
-    paginate_by = 5
+    paginate_by = 20
+
+    def get_paginate_by(self, queryset):
+        if self.request.session.get('rows_per_page', False):
+            self.paginate_by = self.request.session['rows_per_page']
+        if ('rows_per_page' in self.request.GET
+                and self.request.GET['rows_per_page'].strip()):
+            self.paginate_by = self.request.GET['rows_per_page']
+            self.request.session['rows_per_page'] = self.paginate_by
+        return self.paginate_by
 
     def get_context_data(self, **kwargs):
         context = super(ListItemView, self).get_context_data(**kwargs)
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
-
-        Option = collections.namedtuple('Option', ['value',
-                                                   'value_display'])
-        options = []
-        for coverage_type in Item.COVERAGE_TYPES:
-            options.append(Option(coverage_type[0], coverage_type[1]))
-        context['options'] = options
+        context['rows_per_page'] = self.request.session.get(
+            'rows_per_page', self.paginate_by)
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
             context['q'] = query_string
 
-        if ('d' in self.request.GET) and self.request.GET['d'].strip():
-            query_string = self.request.GET['d']
-            context['d'] = query_string
+        Option = collections.namedtuple('Option', ['value',
+                                                   'value_display',
+                                                   'selected'])
+        Select = collections.namedtuple('Select', ['label', 'options'])
+        genders = []
+        for gender in Item.GENDERS:
+            if ("gender" in self.request.GET
+                    and self.request.GET["gender"].strip()
+                    and self.request.GET["gender"] == gender[0]):
+                genders.append(Option(gender[0], gender[1], True))
+            else:
+                genders.append(Option(gender[0], gender[1], False))
+        coverage_types = []
+        for coverage_type in Item.COVERAGE_TYPES:
+            if ("coverage_type" in self.request.GET
+                    and self.request.GET["coverage_type"].strip()
+                    and self.request.GET["coverage_type"] == coverage_type[0]):
+                coverage_types.append(
+                    Option(coverage_type[0], coverage_type[1], True))
+            else:
+                coverage_types.append(
+                    Option(coverage_type[0], coverage_type[1], False))
+        selects = collections.OrderedDict()
+        selects.update(
+            {"coverage_type": Select("Coverage Type", coverage_types)})
+        selects.update({"gender": Select("Gender", genders)})
+        context['selects'] = selects
+
         return context
 
     def get_queryset(self):
@@ -67,9 +96,20 @@ class ListItemView(ListView):
             else:
                 queryset = Item.objects.filter(item_query)
 
-        if ('d' in self.request.GET) and self.request.GET['d'].strip():
+        if ('gender' in self.request.GET
+                and self.request.GET['gender'].strip()):
+            fields = ['gender']
+            query_string = self.request.GET['gender']
+            item_query = get_query(query_string, fields)
+            if queryset:
+                queryset = queryset.filter(item_query)
+            else:
+                queryset = Item.objects.filter(item_query)
+
+        if ('coverage_type' in self.request.GET
+                and self.request.GET['coverage_type'].strip()):
             fields = ['coverage_type']
-            query_string = self.request.GET['d']
+            query_string = self.request.GET['coverage_type']
             item_query = get_query(query_string, fields)
             if queryset:
                 queryset = queryset.filter(item_query)

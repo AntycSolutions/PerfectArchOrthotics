@@ -16,11 +16,11 @@
 <br />
 <form method="get">
     <input type="text" class="input-medium search-query" name="q" placeholder="{{ model_name|title }} Search" value="{{ q }}">
-    {% for name, options in selects.items %}
-        <label for="{{ name }}">{{ name|title }}:</label>
+    {% for name, select in selects.items %}
+        <label for="{{ name }}">{{ select.label }}:</label>
         <select id="{{ name }}" name="{{ name }}">
             <option value="">---------</option>
-            {% for option in options %}
+            {% for option in select.options %}
                 <option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>
                     {{ option.value_display }}
                 </option>
@@ -89,7 +89,7 @@
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
+                <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Previous</a>
             {% endif %}
             {% if page_obj.number %}
                 <span class="current">
@@ -97,11 +97,24 @@
                 </span>
             {% endif %}
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
+                <a href="?page={{ page_obj.next_page_number }}&q={{ q }}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Next</a>
             {% endif %}
         </span>
     </div>
 {% endif %}
+<form method="GET" style="display: inline-block;">
+    <input type="hidden" name="q" value="{{ q }}">
+    {% for name, select in selects.items %}
+        {% for option in select.options %}
+            {% if option.selected %}
+                <input type="hidden" name="{{ name }}" value="{{ option.value }}">
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    Rows per Page: <input type="number" id="rows_per_page" name="rows_per_page" value="{{ rows_per_page }}">
+    <input type="submit" class="btn" value="Paginate">
+</form>
+{% if not is_paginated %}<br />{% endif %}
 <br />
 
 {% endblock %}

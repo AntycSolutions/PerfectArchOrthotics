@@ -106,13 +106,24 @@ class CreateShoeView(CreateView):
 class ListShoeView(ListView):
     template_name = "utils/generics/list.html"
     model = Shoe
-    paginate_by = 5
+    paginate_by = 20
+
+    def get_paginate_by(self, queryset):
+        if self.request.session.get('rows_per_page', False):
+            self.paginate_by = self.request.session['rows_per_page']
+        if ('rows_per_page' in self.request.GET
+                and self.request.GET['rows_per_page'].strip()):
+            self.paginate_by = self.request.GET['rows_per_page']
+            self.request.session['rows_per_page'] = self.paginate_by
+        return self.paginate_by
 
     def get_context_data(self, **kwargs):
         context = super(ListShoeView, self).get_context_data(**kwargs)
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'a'
+        context['rows_per_page'] = self.request.session.get(
+            'rows_per_page', self.paginate_by)
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
@@ -121,6 +132,7 @@ class ListShoeView(ListView):
         Option = collections.namedtuple('Option', ['value',
                                                    'value_display',
                                                    'selected'])
+        Select = collections.namedtuple('Select', ['label', 'options'])
         categories = []
         for category in Shoe.CATEGORIES:
             if ("category" in self.request.GET
@@ -137,7 +149,9 @@ class ListShoeView(ListView):
                 sizes.append(Option(size[0], size[1], True))
             else:
                 sizes.append(Option(size[0], size[1], False))
-        selects = {"category": categories,  "size": sizes}
+        selects = collections.OrderedDict()
+        selects.update({"category": Select("Category", categories)})
+        selects.update({"size": Select("Size", sizes)})
         context['selects'] = selects
 
         return context
