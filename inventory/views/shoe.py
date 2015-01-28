@@ -129,16 +129,15 @@ class ListShoeView(ListView):
                 categories.append(Option(category[0], category[1], True))
             else:
                 categories.append(Option(category[0], category[1], False))
-        # sizes = []
-        # for size in Shoe.SIZES:
-        #     if ("size" in self.request.GET
-        #             and self.request.GET["size"].strip()
-        #             and self.request.GET["size"] == size[0]):
-        #         sizes.append(Option(size[0], size[1], True))
-        #     else:
-        #         sizes.append(Option(size[0], size[1], False))
-        selects = {"category": categories,  # "size": sizes
-                   }
+        sizes = []
+        for size in ShoeAttributes.SIZES:
+            if ("size" in self.request.GET
+                    and self.request.GET["size"].strip()
+                    and self.request.GET["size"] == size[0]):
+                sizes.append(Option(size[0], size[1], True))
+            else:
+                sizes.append(Option(size[0], size[1], False))
+        selects = {"category": categories,  "size": sizes}
         context['selects'] = selects
 
         return context
@@ -166,15 +165,15 @@ class ListShoeView(ListView):
             else:
                 queryset = Shoe.objects.filter(shoe_query)
 
-        # if ('size' in self.request.GET
-        #         and self.request.GET['size'].strip()):
-        #     fields = ['size']
-        #     query_string = self.request.GET['size']
-        #     shoe_query = get_query(query_string, fields)
-        #     if queryset:
-        #         queryset = queryset.filter(shoe_query)
-        #     else:
-        #         queryset = Shoe.objects.filter(shoe_query)
+        if ('size' in self.request.GET
+                and self.request.GET['size'].strip()):
+            fields = ['shoeattributes__size']
+            query_string = self.request.GET['size']
+            shoe_query = get_query(query_string, fields)
+            if queryset:
+                queryset = queryset.filter(shoe_query)
+            else:
+                queryset = Shoe.objects.filter(shoe_query)
 
         return queryset
 
