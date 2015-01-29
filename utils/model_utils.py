@@ -1,5 +1,8 @@
 import collections
 
+from django.db import models
+from django.core.exceptions import ValidationError
+
 
 class FieldList():
 
@@ -26,3 +29,21 @@ class FieldList():
                 fields.update({f.name: Field(f, value)})
 
         return fields
+
+
+class ImageField(models.ImageField):
+
+    def save_form_data(self, instance, data):
+        if data is not None:
+            file = getattr(instance, self.attname)
+            if file != data:
+                file.delete(save=False)
+        super(ImageField, self).save_form_data(instance, data)
+
+
+def _validate_image(field_file):
+        file_size = field_file.size
+        megabyte_limit = 3.0
+        if file_size > megabyte_limit * 1024 * 1024:  # b*kb*mb
+            raise ValidationError("Max file size is %sMB"
+                                  % str(megabyte_limit))
