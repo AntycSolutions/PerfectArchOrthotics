@@ -7,8 +7,10 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
+from django.forms import fields as form_fields
 
 from utils.search import get_query
+from utils import model_utils
 from inventory.models import Shoe, ShoeAttributes
 
 
@@ -246,6 +248,10 @@ class UpdateShoeView(UpdateView):
         )
         shoe_attributes_formset = ShoeShoeAttributesFormSet(
             request.POST, instance=self.object)
+
+        for field in shoe_form:
+            if isinstance(field.field, form_fields.ImageField):
+                field.field.validators = [model_utils._validate_image]
 
         if (shoe_form.is_valid()
                 and shoe_attributes_formset.is_valid()):
