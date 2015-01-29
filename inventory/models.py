@@ -3,10 +3,10 @@ from decimal import Decimal
 from django.db import models
 from django.core.urlresolvers import reverse
 
-from utils.model_utils import FieldList
+from utils import model_utils
 
 
-class Shoe(models.Model, FieldList):
+class Shoe(models.Model, model_utils.FieldList):
     WOMENS = 'wo'
     MENS = 'me'
     JUNIOR = 'ju'
@@ -20,7 +20,7 @@ class Shoe(models.Model, FieldList):
     AVAILABILITIES = ((ORDERABLE, "Orderable"),
                       (DISCONTINUED, "Discontinued"),)
 
-    image = models.ImageField(
+    image = model_utils.ImageField(
         "Image", upload_to='inventory/shoes/%Y/%m/%d',
         null=True, blank=True)
     category = models.CharField(
@@ -61,7 +61,7 @@ class Shoe(models.Model, FieldList):
         return self.__unicode__()
 
 
-class ShoeAttributes(models.Model, FieldList):
+class ShoeAttributes(models.Model, model_utils.FieldList):
 
     """
         Women's 5-11 [halfs]
