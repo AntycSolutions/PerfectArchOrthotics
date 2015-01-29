@@ -52,6 +52,10 @@ class CreateShoeView(CreateView):
         )
         shoe_attributes_formset = ShoeShoeAttributesFormSet(request.POST)
 
+        for field in shoe_form:
+            if isinstance(field.field, form_fields.ImageField):
+                field.field.validators = [model_utils._validate_image]
+
         if (shoe_form.is_valid()
                 and shoe_attributes_formset.is_valid()):
             return self.form_valid(
