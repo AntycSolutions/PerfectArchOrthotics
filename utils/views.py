@@ -33,7 +33,9 @@ def _rescale(input_file, width, height, force=True):
 
 
 def get_thumbnail(request, width, height, url):
-    path = os.path.join(settings.MEDIA_ROOT,
-                        url.replace(settings.MEDIA_URL, ""))
+    media_root = settings.MEDIA_ROOT
+    media_url = settings.MEDIA_URL
+    partial_path = url.replace(media_url, "")
+    path = os.path.join(media_root, partial_path)
     thumbnail = _rescale(path, width, height, force=False)
     return HttpResponse(thumbnail, 'image/jpg')
