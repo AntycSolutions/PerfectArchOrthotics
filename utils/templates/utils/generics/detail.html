@@ -42,7 +42,7 @@
                 {% elif field_value.field|get_model_field_type|is_image %}
                     <td>
                         {% if field_value.value %}
-                            <a href="{{ field_value.value.url }}"><img width="256px;" src="{{ field_value.value.url }}" /></a>
+                            <a href="{{ field_value.value.url }}"><img width="256px" src="{% url 'get_thumbnail' 256 256 field_value.value.url %}" /></a>
                         {% else %}
                             <!-- No Image -->
                         {% endif %}
