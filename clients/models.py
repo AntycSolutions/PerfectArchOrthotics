@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from utils.model_utils import FieldList
+from utils import model_utils
 
 '''
     Char/Text Field is always set to '', doesnt need null=True
@@ -290,7 +290,7 @@ class Coverage(models.Model):
         return self.__unicode__()
 
 
-class Item(models.Model, FieldList):
+class Item(models.Model, model_utils.FieldList):
     # Fixture
     # items.json
 
