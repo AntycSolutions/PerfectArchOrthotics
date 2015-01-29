@@ -65,7 +65,7 @@
                             {% elif field_value.field|get_model_field_type|is_image %}
                                 <td>
                                     {% if field_value.value %}
-                                        <a href="{{ field_value.value.url }}"><img width="128;" src="{{ field_value.value.url }}" /></a>
+                                        <a href="{{ field_value.value.url }}"><img width="128px" src="{% url 'get_thumbnail' 128 128 field_value.value.url %}" /></a>
                                     {% else %}
                                         <!-- No Image -->
                                     {% endif %}
@@ -89,7 +89,7 @@
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Previous</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Previous</a>
             {% endif %}
             {% if page_obj.number %}
                 <span class="current">
@@ -97,13 +97,15 @@
                 </span>
             {% endif %}
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}&q={{ q }}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Next</a>
+                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Next</a>
             {% endif %}
         </span>
     </div>
 {% endif %}
 <form method="GET" style="display: inline-block;">
-    <input type="hidden" name="q" value="{{ q }}">
+    {% if q %}
+        <input type="hidden" name="q" value="{{ q }}">
+    {% endif %}
     {% for name, select in selects.items %}
         {% for option in select.options %}
             {% if option.selected %}
