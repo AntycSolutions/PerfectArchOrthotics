@@ -1,4 +1,5 @@
 import os
+import urllib
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -33,9 +34,10 @@ def _rescale(input_file, width, height, force=True):
 
 
 def get_thumbnail(request, width, height, url):
+    decoded_url = urllib.parse.unquote(url)
     media_root = settings.MEDIA_ROOT
     media_url = settings.MEDIA_URL
-    partial_path = url.replace(media_url, "")
+    partial_path = decoded_url.replace(media_url, "")
     path = os.path.join(media_root, partial_path)
     thumbnail = _rescale(path, width, height, force=False)
     return HttpResponse(thumbnail, 'image/jpg')
