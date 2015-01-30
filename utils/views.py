@@ -5,6 +5,53 @@ from django.conf import settings
 from django.http import HttpResponse
 
 
+def _get_exif(filename):
+    import piexif
+    # from PIL.ExifTags import TAGS
+
+    orientation = None
+    exif_bytes = None
+
+    # exifinfo = img._getexif()
+    # if exifinfo is not None:
+    #     ret = {}
+    #     for tag, value in exifinfo.items():
+    #         decoded = TAGS.get(tag, tag)
+    #         ret[decoded] = value
+    #     for k, v in ret.items():
+    #         if k == "Orientation":
+    #             orientation = v
+
+    zeroth_ifd, exif_ifd, gps_ifd = piexif.load(filename)
+
+    if piexif.ZerothIFD.Orientation in zeroth_ifd:
+        orientation = zeroth_ifd.pop(piexif.ZerothIFD.Orientation)
+        exif_bytes = piexif.dump(zeroth_ifd, exif_ifd, gps_ifd)
+
+    return orientation, exif_bytes
+
+
+def _update_orientation(img, orientation):
+    from PIL import Image
+
+    if orientation == 2:
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 3:
+        img = img.rotate(180)
+    elif orientation == 4:
+        img = img.rotate(180).transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 5:
+        img = img.rotate(-90).transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 6:
+        img = img.rotate(-90)
+    elif orientation == 7:
+        img = img.rotate(90).transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 8:
+        img = img.rotate(90)
+
+    return img
+
+
 def _rescale(input_file, width, height, force=True):
     from PIL import Image
     from PIL import ImageOps
@@ -24,7 +71,12 @@ def _rescale(input_file, width, height, force=True):
                            method=Image.ANTIALIAS)
 
     tmp = BytesIO()
-    img.save(tmp, 'JPEG')
+    orientation, exif_bytes = _get_exif(input_file)
+    if orientation:
+        img = _update_orientation(img, orientation)
+        img.save(tmp, 'JPEG', exif=exif_bytes)
+    else:
+        img.save(tmp, 'JPEG')
     tmp.seek(0)
     output_data = tmp.getvalue()
     img.close()
