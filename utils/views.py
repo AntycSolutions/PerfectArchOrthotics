@@ -22,11 +22,15 @@ def _get_exif(filename):
     #         if k == "Orientation":
     #             orientation = v
 
-    zeroth_ifd, exif_ifd, gps_ifd = piexif.load(filename)
+    try:
+        zeroth_ifd, exif_ifd, gps_ifd = piexif.load(filename)
 
-    if piexif.ZerothIFD.Orientation in zeroth_ifd:
-        orientation = zeroth_ifd.pop(piexif.ZerothIFD.Orientation)
-        exif_bytes = piexif.dump(zeroth_ifd, exif_ifd, gps_ifd)
+        if piexif.ZerothIFD.Orientation in zeroth_ifd:
+            orientation = zeroth_ifd.pop(piexif.ZerothIFD.Orientation)
+            exif_bytes = piexif.dump(zeroth_ifd, exif_ifd, gps_ifd)
+    except:
+        orientation = None
+        exif_bytes = None
 
     return orientation, exif_bytes
 
