@@ -189,7 +189,7 @@ class ListShoeView(ListView):
                 and self.request.GET['size'].strip()):
             fields = ['shoeattributes__size']
             query_string = self.request.GET['size']
-            shoe_query = get_query(query_string, fields)
+            shoe_query = get_query(query_string, fields, exact=True)
             if queryset:
                 queryset = queryset.filter(shoe_query)
             else:
