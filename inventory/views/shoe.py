@@ -195,7 +195,7 @@ class ListShoeView(ListView):
             else:
                 queryset = Shoe.objects.filter(shoe_query)
 
-        return queryset
+        return queryset.distinct()
 
 
 class DetailShoeView(DetailView):
