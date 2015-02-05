@@ -21,7 +21,7 @@ def normalize_query(query_string, normspace=re.compile(r'\s{2,}').sub,
                       (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
 
-def get_query(query_string, search_fields):
+def get_query(query_string, search_fields, exact=False):
     """Returns a query, that is a combination of Q objects.
 
     That combination aims to search keywords within a model
@@ -33,7 +33,10 @@ def get_query(query_string, search_fields):
     for term in terms:
         or_query = None  # Query to search for a given term in each field
         for field_name in search_fields:
-            q = Q(**{"%s__icontains" % field_name: term})
+            if exact:
+                q = Q(**{"%s" % field_name: term})
+            else:
+                q = Q(**{"%s__icontains" % field_name: term})
             if or_query is None:
                 or_query = q
             else:
