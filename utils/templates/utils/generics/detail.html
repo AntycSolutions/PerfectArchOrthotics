@@ -47,6 +47,14 @@
                             <!-- No Image -->
                         {% endif %}
                     </td>
+                {% elif field_value.field|get_model_field_type|is_foreignkey %}
+                    <td>
+                        {% if field_value.value.get_absolute_url %}
+                            <a href="{{ field_value.value.get_absolute_url }}">{{ field_value.value }}</a>
+                        {% else %}
+                            {{ field_value.value }}
+                        {% endif %}
+                    </td>
                 {% else %}
                     <td>{{ field_value.value }}</td>
                 {% endif %}
