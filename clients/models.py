@@ -72,7 +72,7 @@ class Person(models.Model):
         return None
 
     def __unicode__(self):
-        return "Person (%s) - %s" % (self.pk, self.full_name())
+        return self.full_name()
 
     def __str__(self):
         return self.__unicode__()
@@ -140,7 +140,7 @@ class Client(Person):
         return reverse('client', kwargs={'client_id': self.id})
 
     def __unicode__(self):
-        return "Client (%s) - %s" % (self.pk, self.full_name())
+        return self.full_name()
 
     def __str__(self):
         return self.__unicode__()
@@ -164,7 +164,7 @@ class Dependent(Person):
                           self.id)
 
     def __unicode__(self):
-        return "Dependent (%s) - %s" % (self.pk, self.full_name())
+        return self.full_name()
 
     def __str__(self):
         return self.__unicode__()
@@ -206,8 +206,7 @@ class Insurance(models.Model):
             main_claimant = self.main_claimant
         except:
             main_claimant = None
-        return "Insurance (%s) - %s - %s" % (
-            self.pk, self.provider, main_claimant)
+        return "%s - %s" % (self.provider, main_claimant)
 
     def __str__(self):
         return self.__unicode__()
@@ -283,17 +282,18 @@ class Coverage(models.Model):
             insurance = self.insurance
         except:
             insurance = None
-        return "Coverage (%s) - %s - %s" % (
-            self.pk, self.get_coverage_type_display(), insurance)
+        try:
+            claimant = self.claimant
+        except:
+            claimant = None
+        return "%s %s - %s" % (
+            self.get_coverage_type_display(), claimant, insurance)
 
     def __str__(self):
         return self.__unicode__()
 
 
 class Item(models.Model, model_utils.FieldList):
-    # Fixture
-    # items.json
-
     COVERAGE_TYPES = Coverage.COVERAGE_TYPES
     WOMENS = 'wo'
     MENS = 'me'
@@ -307,6 +307,7 @@ class Item(models.Model, model_utils.FieldList):
         blank=True)
     product_code = models.CharField(
         "Product Code", max_length=12, unique=True)
+    # Should be name or changed to TextField
     description = models.CharField(
         "Description", max_length=128)
     unit_price = models.IntegerField(
@@ -321,7 +322,7 @@ class Item(models.Model, model_utils.FieldList):
         return reverse('item_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
-        return "Item (%s) - %s" % (self.pk, self.product_code)
+        return "%s %s" % (self.product_code, self.description)
 
     def __str__(self):
         return self.__unicode__()
@@ -379,10 +380,14 @@ class Claim(models.Model):
             patient = self.patient
         except:
             patient = None
-        return "Claim (%s) - %s - %s" % (
-            self.pk,
+        try:
+            insurance = self.insurance
+        except:
+            insurance = None
+        return "Submitted Datetime: %s %s - %s" % (
             self.submitted_datetime.strftime("%Y-%m-%d %I:%M %p"),
-            patient)
+            patient,
+            insurance)
 
     def __str__(self):
         return self.__unicode__()
@@ -469,8 +474,7 @@ class ClaimCoverage(models.Model):
             claim = self.claim
         except:
             claim = None
-        return "Claim Coverage (%s) - %s - %s" % (
-            self.pk, coverage, claim)
+        return "%s - %s" % (coverage, claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -492,8 +496,7 @@ class ClaimItem(models.Model):
         return self.item.unit_price * self.quantity
 
     def __unicode__(self):
-        return "Claim Item (%s) - %s - %s" % (self.pk, self.item,
-                                              self.claim_coverage)
+        return "%s - %s" % (self.item, self.claim_coverage)
 
     def __str__(self):
         return self.__unicode__()
@@ -545,8 +548,7 @@ class Invoice(models.Model):
                 - self.payment_made)
 
     def __unicode__(self):
-        return "Invoice (%s) - %s - %s" % (
-            self.pk, self.dispensed_by, self.claim)
+        return "Invoice Date: %s - %s" % (self.invoice_date, self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -775,8 +777,8 @@ class InsuranceLetter(models.Model):
         return str(diagnosis).strip("[]").replace("'", "")
 
     def __unicode__(self):
-        return "Insurance Letter (%s) - %s - %s" % (
-            self.pk, self.practitioner_name, self.claim)
+        # Needs better choice than practitioner_name
+        return "Dispense Date: %s - %s" % (self.dispense_date(), self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -800,12 +802,13 @@ class ProofOfManufacturing(models.Model):
 
     def proof_of_manufacturing_date(self):
         for invoice in self.claim.invoice_set.all():
-            return invoice.invoice_date - timedelta(weeks=1)
+            if invoice.invoice_date:
+                return invoice.invoice_date - timedelta(weeks=1)
         return None
 
     def __unicode__(self):
-        return "Proof of Manufacturing (%s) - %s - %s" % (
-            self.pk, self.proof_of_manufacturing_date(), self.claim)
+        return "Proof of Manufacturing Date: %s - %s" % (
+            self.proof_of_manufacturing_date(), self.claim)
 
     def __str__(self):
         return self.__unicode__()
@@ -820,9 +823,7 @@ class Laboratory(models.Model):
         null=True, blank=True)
 
     def __unicode__(self):
-        return "Laboratory (%s) - %s - %s" % (
-            self.pk, self.get_information_display().split('\n')[0],
-            self.insurance_letter)
+        return self.get_information_display().split('\n')[0]
 
     def __str__(self):
         return self.__unicode__()
@@ -843,6 +844,7 @@ class SiteStatistics(models.Model):
         return revenue
 
     def __unicode__(self):
+        # Shouldnt be called
         return "Site Statistics (%s)" % self.pk
 
     def __str__(self):
