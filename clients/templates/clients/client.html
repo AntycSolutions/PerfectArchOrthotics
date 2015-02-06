@@ -170,7 +170,7 @@
 <div class="well">
     <h3>Claims</h3>
     {% if client_claims %}
-<!--         <form method="get" action="{% url 'claim_search' %}">
+        <!-- <form method="get" action="{% url 'claim_search' %}">
             <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
             <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
             <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
@@ -201,6 +201,17 @@
         </div>
     {% else %}
         <p>There are no Claims for this Client currenty.</p>
+    {% endif %}
+</div>
+
+<div class="well">
+    <h3>Orders</h3>
+    {% if client_orders %}
+        {% with object_list=client_orders model_name="order" %}
+            {% include 'utils/generics/list_table.html' %}
+        {% endwith %}
+    {% else %}
+        <p>There are no Orders for this Client currenty.</p>
     {% endif %}
 </div>
 
