@@ -1,37 +1,39 @@
-<div class="navbar navbar-default">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collpase">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">Perfect Arch Orthotics</a>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Perfect Arch Orthotics</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            {% if user.is_authenticated %}
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'clients' %}">Clients</a></li>
+                    <li><a href="{% url 'claims' %}">Claims</a></li>
+                    <li><a href="{% url 'insurance' %}">Insurances</a></li>
+                    <li><a href="{% url 'item_list' %}">Items</a></li>
+                    <li><a href="{% url 'inventory_index' %}">Inventory</a></li>
+                    <li><a href="{% url 'order_list' %}">Orders</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'statistics' %}">Statistics</a></li>
+                    <li><a href="/admin/">Admin</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'user_login' %}">Login</a></li>
+                </ul>
+            {% endif %}
+        </div>
     </div>
-    {% if user.is_authenticated %}
-        <div class="navbar-collapse collapse navbar-responsive-collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="{% url 'clients' %}">Clients</a></li>
-                <li><a href="{% url 'claims' %}">Claims</a></li>
-                <li><a href="{% url 'insurance' %}">Insurances</a></li>
-                <li><a href="{% url 'item_list' %}">Items</a></li>
-                <li><a href="{% url 'inventory_index' %}">Inventory</a></li>
-            </ul>
-            <!--form method="get" action="{% url 'client_search' %}" class="navbar-form navbar-left">
-                <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Search">
-                <input type="submit" class="btn" value="Submit">
-                <input type="text" class="form-control col-lg-8" placeholder="Search"
-            </form-->
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'statistics' %}">Statistics</a></li>
-                <li><a href="/admin/">Admin</a></li>
-                <li><a href="{% url 'user_logout' %}">Logout</a></li>
-            </ul>
-        </div>
-    {% else %}
-        <div class="navbar-collapse collapse navbar-responsive-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'user_login' %}">Login</a></li>
-            </ul>
-        </div>
-    {% endif %}
-</div>
+</nav>
