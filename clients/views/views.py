@@ -447,6 +447,7 @@ def clientView(request, client_id):
     insurance = client.insurance_set.all()
     dependents = client.dependent_set.all()
     claims = client.claim_set.all()
+    orders = client.order_set.all()
     spouse = None
     children = []
     for dependent in dependents:
@@ -470,6 +471,7 @@ def clientView(request, client_id):
     context_dict = {'client': client,
                     'client_insurance': insurance,
                     'client_claims': claims,
+                    'client_orders': orders,
                     'spouse': spouse,
                     'children': children,
                     'dependent_class': Dependent}
