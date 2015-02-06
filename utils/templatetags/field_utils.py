@@ -23,6 +23,11 @@ def is_datetimepicker(type):
 
 
 @register.filter
+def is_date(type):
+    return type in ["DateInput"]
+
+
+@register.filter
 def get_model_field_type(field):
     return field.__class__.__name__
 
@@ -30,3 +35,8 @@ def get_model_field_type(field):
 @register.filter
 def is_image(type):
     return type in ["ImageField"]
+
+
+@register.filter
+def is_foreignkey(type):
+    return type in ["ForeignKey"]
