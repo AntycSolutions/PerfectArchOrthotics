@@ -54,7 +54,7 @@
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Previous</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}{% if df %}&df={{ df }}{% endif %}{% if dt %}&dt={{ dt }}{% endif %}" class="btn btn-default">Previous</a>
             {% endif %}
             {% if page_obj.number %}
                 <span class="current">
@@ -62,7 +62,7 @@
                 </span>
             {% endif %}
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}" class="btn btn-default">Next</a>
+                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% for name, select in selects.items %}&{{ name }}={% for option in select.options %}{% if option.selected %}{{ option.value }}{% endif %}{% endfor %}{% endfor %}{% if df %}&df={{ df }}{% endif %}{% if dt %}&dt={{ dt }}{% endif %}" class="btn btn-default">Next</a>
             {% endif %}
         </span>
     </div>
@@ -78,6 +78,12 @@
             {% endif %}
         {% endfor %}
     {% endfor %}
+    {% if df %}
+        <input type="hidden" name="df" value="{{ df }}">
+    {% endif %}
+    {% if dt %}
+        <input type="hidden" name="dt" value="{{ dt }}">
+    {% endif %}
     Rows per Page: <input type="number" id="rows_per_page" name="rows_per_page" value="{{ rows_per_page }}">
     <input type="submit" class="btn" value="Paginate">
 </form>
