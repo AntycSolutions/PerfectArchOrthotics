@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.db import models
 from django.core.urlresolvers import reverse
 
+from clients import models as client_models
 from utils import model_utils
 
 
@@ -55,7 +56,7 @@ class Shoe(models.Model, model_utils.FieldList):
         return reverse('shoe_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
-        return "Shoe (%s) - %s" % (self.pk, self.name)
+        return self.name
 
     def __str__(self):
         return self.__unicode__()
@@ -87,10 +88,57 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         return self.shoe.get_absolute_url()
 
     def __unicode__(self):
-        return "Shoe Attributes (%s) - %s" % (self.pk, self.shoe)
+        return "Size: %s Quantity: %s - %s" % (self.pk, self.shoe)
 
     def __str__(self):
         return self.__unicode__()
+
+
+class Order(models.Model, model_utils.FieldList):
+    SHOES = "s"
+    ORDER_TYPES = client_models.Coverage.COVERAGE_TYPES + ((SHOES, "Shoes"),)
+
+    claimant = models.ForeignKey(
+        client_models.Person, verbose_name="Claimant")
+
+    order_type = models.CharField(
+        "Order Type", max_length=4, choices=ORDER_TYPES)
+
+    description = models.TextField(
+        "Description",
+        blank=True)
+    ordered_date = models.DateField(
+        "Ordered Date",
+        blank=True, null=True)
+    arrived_date = models.DateField(
+        "Arrived Date",
+        blank=True, null=True)
+    dispensed_date = models.DateField(
+        "Dispensed Date",
+        blank=True, null=True)
+
+    # order_type not Shoe
+    where = models.CharField(
+        "Where", max_length=32,
+        blank=True)
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+
+    # order_type Shoe
+    shoe = models.ForeignKey(
+        Shoe, verbose_name="Shoe",
+        blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('order_detail', kwargs={'pk': self.pk})
+
+    def __unicode__(self):
+        return "%s - %s" % (
+            self.get_order_type_display(), self.claimant)
+
+    def __str__(self):
+        return self.__unicode__()
+
 
 """
 Reports:
