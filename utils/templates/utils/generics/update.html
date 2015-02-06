@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load field_utils %}
+
 {% block title %} - Update {{ model_name|title }}{% endblock %}
 
 {% block extrahead %}
@@ -49,7 +51,19 @@
             <div class="form-group">
                 {{ field.errors }}
                 <div class="col-lg-10">
-                    {{ field.label_tag }} {{ field }}
+                    {% if field|get_form_field_type|is_date %}
+                        {{ field.label_tag }} {{ field }}
+                        <script>
+                            $(function() {
+                                $("#id_" + "{{ field.name }}").datepicker(
+                                    {changeMonth: true,
+                                     changeYear: true,
+                                     yearRange: "1900:2015"});
+                            });
+                        </script>
+                    {% else %}
+                        {{ field.label_tag }} {{ field }}
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
