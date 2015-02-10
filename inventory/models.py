@@ -118,6 +118,8 @@ class Order(models.Model, model_utils.FieldList):
         blank=True, null=True)
 
     # order_type not Shoe
+    credit_value = models.IntegerField(
+        "Credit Value", default=0)
     where = models.CharField(
         "Where", max_length=32,
         blank=True)
