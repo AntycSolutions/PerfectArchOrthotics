@@ -23,6 +23,9 @@ order_patterns = patterns(
     url(r'^create/$',
         login_required(order.CreateOrderView.as_view()),
         name='order_create'),
+    url(r'^create/(?P<person_pk>\d+)/$',
+        login_required(order.CreateOrderView.as_view()),
+        name='order_person_create'),
 )
 
 
