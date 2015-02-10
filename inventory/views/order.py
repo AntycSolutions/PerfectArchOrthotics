@@ -22,13 +22,12 @@ class CreateOrderView(CreateView):
         if "person_pk" in self.kwargs:
             person_pk = self.kwargs["person_pk"]
             order_form.fields['claimant'].initial = person_pk
-        else:
-            queryset = order_form.fields['claimant'].queryset
-            queryset = queryset.extra(
-                select={
-                    'lower_first_name': 'lower(first_name)'
-                    }).order_by('lower_first_name')
-            order_form.fields['claimant'].queryset = queryset
+        queryset = order_form.fields['claimant'].queryset
+        queryset = queryset.extra(
+            select={
+                'lower_first_name': 'lower(first_name)'
+                }).order_by('lower_first_name')
+        order_form.fields['claimant'].queryset = queryset
         return order_form
 
     def form_valid(self, form):
