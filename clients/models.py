@@ -120,6 +120,11 @@ class Client(Person):
 
     def credit(self):
         total = 0
+        claimed_credit = 0
+        for order in self.order_set.all():
+            claimed_credit += order.credit_value
+            if order.shoe:
+                claimed_credit += order.shoe.credit_value
         for dependent in self.dependent_set.all():
             for claim in dependent.claim_set.all():
                 if not claim.insurance_paid_date:
@@ -127,13 +132,17 @@ class Client(Person):
                 total += claim.total_expected_back()
                 # for invoice in claim.invoice_set.all():
                     # total += (invoice.payment_made + invoice.deposit)
+            for order in dependent.order_set.all():
+                claimed_credit += order.credit_value
+                if order.shoe:
+                    claimed_credit += order.shoe.credit_value
         for claim in self.claim_set.all():
             if not claim.insurance_paid_date:
                 continue
             total += claim.total_expected_back()
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
-        credit = total / 150
+        credit = (total / 150) - claimed_credit
         return round(credit)
 
     def get_absolute_url(self):
