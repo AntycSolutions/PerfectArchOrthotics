@@ -19,19 +19,33 @@ class CreateOrderView(CreateView):
         if form_class is None:
             form_class = self.get_form_class()
         order_form = form_class(**self.get_form_kwargs())
-        queryset = order_form.fields['claimant'].queryset
-        queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
-        order_form.fields['claimant'].queryset = queryset
+        if "person_pk" in self.kwargs:
+            person_pk = self.kwargs["person_pk"]
+            order_form.fields['claimant'].initial = person_pk
+        else:
+            queryset = order_form.fields['claimant'].queryset
+            queryset = queryset.extra(
+                select={
+                    'lower_first_name': 'lower(first_name)'
+                    }).order_by('lower_first_name')
+            order_form.fields['claimant'].queryset = queryset
         return order_form
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
+
+        client_credit = self.object.claimant.get_client().credit()
+        non_shoe_credit_value = self.object.credit_value
+
         if self.object.shoe:
-            client_credit = self.object.claimant.get_client().credit()
             shoe_credit_value = self.object.shoe.credit_value
+            if shoe_credit_value and non_shoe_credit_value:
+                messages.add_message(
+                    self.request, messages.ERROR,
+                    "Either Credit Value is entered for non-Shoe Order, or "
+                    "Shoe is selected for Shoe Order. Please do not enter/"
+                    "select both.")
+                return self.form_invalid(form)
             if shoe_credit_value > client_credit:
                 messages.add_message(
                     self.request, messages.ERROR,
@@ -39,6 +53,15 @@ class CreateOrderView(CreateView):
                     "Client's Credit (%s)." % (shoe_credit_value,
                                                client_credit))
                 return self.form_invalid(form)
+
+        if non_shoe_credit_value > client_credit:
+            messages.add_message(
+                self.request, messages.ERROR,
+                "Credit Value (%s) is greater than "
+                "Client's Credit (%s)." % (non_shoe_credit_value,
+                                           client_credit))
+            return self.form_invalid(form)
+
         self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())
