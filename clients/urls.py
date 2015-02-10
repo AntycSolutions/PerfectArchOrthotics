@@ -100,7 +100,7 @@ claim_patterns = patterns(
         name='proof_of_manufacturing_create'),
 )
 
-#TODO: make this not gross
+# TODO: make this not gross
 urlpatterns = patterns(
     '',  # Tells django to view the rest as str
     url(r'^$', views.clients, name='clients'),
