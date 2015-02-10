@@ -447,7 +447,10 @@ def clientView(request, client_id):
     insurance = client.insurance_set.all()
     dependents = client.dependent_set.all()
     claims = client.claim_set.all()
-    orders = client.order_set.all()
+
+    orders = {}
+    if client.order_set.all():
+        orders[client.full_name()] = client.order_set.all()
     spouse = None
     children = []
     for dependent in dependents:
@@ -457,6 +460,8 @@ def clientView(request, client_id):
         else:
             children.append(dependent)
         claims = claims | dependent.claim_set.all()
+        if dependent.order_set.all():
+            orders[dependent.full_name()] = dependent.order_set.all()
 
     # Paginate Claims
     page = request.GET.get('page')
@@ -471,7 +476,7 @@ def clientView(request, client_id):
     context_dict = {'client': client,
                     'client_insurance': insurance,
                     'client_claims': claims,
-                    'client_orders': orders,
+                    'orders': orders,
                     'spouse': spouse,
                     'children': children,
                     'dependent_class': Dependent}
