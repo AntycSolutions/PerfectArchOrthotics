@@ -45,9 +45,13 @@
         <p>Total Max Quantity: {{ totals.total_max_quantity }}</p>
     {% endwith %}
     {% endcomment %}
-    <h5>Insurance</h5>
-    <p>{% verbose_field_name claim.insurance "benefits" %}:
-        {{ claim.insurance.get_benefits_display }}</p>
+    {% if claim.insurance.benefits %}
+        <h5>Insurance</h5>
+        <p>
+            {% verbose_field_name claim.insurance "benefits" %}:
+            {{ claim.insurance.get_benefits_display }}
+        </p>
+    {% endif %}
     <h5>Invoice</h5>
     <fieldset>
         {{ form.non_field_errors }}
