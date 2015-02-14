@@ -34,17 +34,24 @@
 <form id="update_invoice_form" class="form-horizontal" method="post">
     {% csrf_token %}
     <h5>Claim</h5>
-    {% with claim.amount_quantity_claimed_total as totals %}
-        {% with amount_claimed_total=totals.0 quantity_claimed_total=totals.1 %}
-            <p>Amount Claimed Total: {{ amount_claimed_total }}</p>
-            <p>Quantity Claimed Total: {{ quantity_claimed_total }}</p>
-        {% endwith %}
+    {% with totals=invoice.claim.total_amount_quantity_claimed %}
+        <p>Total Amount Claimed: {{ totals.total_amount_claimed }}</p>
+        <p>Total Quantity Claimed: {{ totals.total_quantity_claimed }}</p>
     {% endwith %}
-    <p>Expected Back Total: {{ invoice.claim.expected_back_total }}</p>
-    <p>Max Expected Back Total: {{ invoice.claim.max_expected_back_total }}</p>
-    <h5>Insurance</h5>
-    <p>{% verbose_field_name invoice.claim.insurance "benefits" %}:
-        {{ invoice.claim.insurance.get_benefits_display }}</p>
+    <p>Total Expected Back: {{ invoice.claim.total_expected_back }}</p>
+    {% comment %}
+    {% with totals=invoice.claim.total_max_expected_back_quantity %}
+        <p>Total Max Expected Back: {{ totals.total_max_expected_back }}</p>
+        <p>Total Max Quantity: {{ totals.total_max_quantity }}</p>
+    {% endwith %}
+    {% endcomment %}
+    {% if invoice.claim.insurance.benefits %}
+        <h5>Insurance</h5>
+        <p>
+            {% verbose_field_name invoice.claim.insurance "benefits" %}:
+            {{ invoice.claim.insurance.get_benefits_display }}
+        </p>
+    {% endif %}
     <h5>Invoice</h5>
     <fieldset>
         {{ form.non_field_errors }}
