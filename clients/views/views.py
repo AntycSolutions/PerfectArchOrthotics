@@ -1,6 +1,7 @@
 # Python
 import os
 import io
+import collections
 from cgi import escape
 
 # Django
@@ -448,9 +449,9 @@ def clientView(request, client_id):
     dependents = client.dependent_set.all()
     claims = client.claim_set.all()
 
-    orders = {}
+    orders = []
     if client.order_set.all():
-        orders[client.full_name()] = client.order_set.all()
+        orders.append(_order_info(client, request))
     spouse = None
     children = []
     for dependent in dependents:
@@ -461,10 +462,10 @@ def clientView(request, client_id):
             children.append(dependent)
         claims = claims | dependent.claim_set.all()
         if dependent.order_set.all():
-            orders[dependent.full_name()] = dependent.order_set.all()
+            orders.append(_order_info(dependent, request))
 
     # Paginate Claims
-    page = request.GET.get('page')
+    page = request.GET.get('claims_page')
     paginator = Paginator(claims.order_by('-submitted_datetime'), 5)
     try:
         claims = paginator.page(page)
@@ -481,6 +482,45 @@ def clientView(request, client_id):
                     'children': children,
                     'dependent_class': Dependent}
     return render_to_response('clients/client.html', context_dict, context)
+
+
+def _get_paginate_by(request, rows_per_page):
+    paginate_by = 5
+    if request.session.get(rows_per_page, False):
+        paginate_by = request.session[rows_per_page]
+    if (rows_per_page in request.GET
+            and request.GET[rows_per_page].strip()):
+        paginate_by = request.GET[rows_per_page]
+        request.session[rows_per_page] = paginate_by
+    return paginate_by
+
+
+def _order_info(person, request):
+    OrderInfo = collections.namedtuple(
+        'OrderInfo', ['person_pk', 'name', 'order_set', 'rows_per_page']
+    )
+
+    rows_per_page = _get_paginate_by(request, '%s_rows_per_page' % person.pk)
+    page = request.GET.get('%s_page' % person.pk)
+
+    return OrderInfo(
+        person.pk,
+        person.full_name(),
+        _paginate(person.order_set.all(), page, rows_per_page),
+        rows_per_page
+    )
+
+
+def _paginate(queryset, page, rows_per_page):
+    paginator = Paginator(queryset, rows_per_page)
+    try:
+        queryset = paginator.page(page)
+    except PageNotAnInteger:
+        queryset = paginator.page(1)
+    except EmptyPage:
+        queryset = paginator.page(paginator.num_pages)
+
+    return queryset
 
 
 @login_required

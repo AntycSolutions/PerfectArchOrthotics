@@ -203,7 +203,7 @@
             <span class="step-links">
                 {% if client_claims.has_previous %}
                     <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
-                    <a href="?page={{ client_claims.previous_page_number }}" class="btn btn-default">Previous</a>
+                    <a href="?claims_page={{ client_claims.previous_page_number }}" class="btn btn-default">Previous</a>
                 {% endif %}
 
                 {% if client_claims.number %}
@@ -214,7 +214,7 @@
 
                 {% if client_claims.has_next %}
                     <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
-                    <a href="?page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
+                    <a href="?claims_page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
                 {% endif %}
             </span>
         </div>
@@ -226,11 +226,33 @@
 <div class="well">
     <h3>Orders</h3>
     {% if orders %}
-        {% for name, order_set in orders.items %}
-            <h5>{{ name }}</h5>
-            {% with object_list=order_set model_name="order" %}
+        {% for order_info in orders %}
+            <h5>{{ order_info.name }}</h5>
+            {% with object_list=order_info.order_set model_name="order" %}
                 {% include 'utils/generics/list_table.html' %}
             {% endwith %}
+            <!-- Pagination stuff -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if order_info.order_set.has_previous %}
+                        <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.previous_page_number }}" class="btn btn-default">Previous</a>
+                    {% endif %}
+
+                    {% if order_info.order_set.number %}
+                        <span class="current">
+                            Page {{ order_info.order_set.number }} of {{ order_info.order_set.paginator.num_pages }}.
+                        </span>
+                    {% endif %}
+
+                    {% if order_info.order_set.has_next %}
+                        <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.next_page_number }}" class="btn btn-default">Next</a>
+                    {% endif %}
+                </span>
+            </div>
+            <form method="GET" style="display: inline-block;">
+                Rows per Page: <input type="number" id="{{ order_info.person_pk }}_rows_per_page" name="{{ order_info.person_pk }}_rows_per_page" value="{{ order_info.rows_per_page }}">
+                <input type="submit" class="btn" value="Paginate">
+            </form>
         {% endfor %}
     {% else %}
         <p>There are no Orders for this Client or their dependents currently.</p>
