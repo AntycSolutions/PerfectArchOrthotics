@@ -36,8 +36,8 @@ class CreateOrderView(CreateView):
         client_credit = self.object.claimant.get_client().credit()
         non_shoe_credit_value = self.object.credit_value
 
-        if self.object.shoe:
-            shoe_credit_value = self.object.shoe.credit_value
+        if self.object.shoe_attributes:
+            shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
             if shoe_credit_value and non_shoe_credit_value:
                 messages.add_message(
                     self.request, messages.ERROR,
