@@ -81,14 +81,41 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
     quantity = models.IntegerField(
         "Quantity", default=0)
 
+    def dispensed(self):
+        return self.order_set.filter(
+            dispensed_date__isnull=False
+        ).count()
+
+    def in_stock(self):
+        return self.quantity - self.dispensed()
+
     class Meta:
         unique_together = (('shoe', 'size'),)
+
+    def get_all_fields(self):
+        fields = super(ShoeAttributes, self).get_all_fields()
+
+        class PseudoField():
+
+            def __init__(self, verbose_name):
+                self.verbose_name = verbose_name
+
+        fields.update(
+            {"dispensed": model_utils.FieldList.Field(PseudoField("Dispensed"),
+                                                      self.dispensed())}
+        )
+        fields.update(
+            {"in_stock": model_utils.FieldList.Field(PseudoField("In Stock"),
+                                                     self.in_stock())}
+        )
+
+        return fields
 
     def get_absolute_url(self):
         return self.shoe.get_absolute_url()
 
     def __unicode__(self):
-        return "Size: %s Quantity: %s - %s" % (self.pk, self.shoe)
+        return "Size: %s - %s" % (self.size, self.shoe)
 
     def __str__(self):
         return self.__unicode__()
@@ -104,6 +131,20 @@ class Order(models.Model, model_utils.FieldList):
     order_type = models.CharField(
         "Order Type", max_length=4, choices=ORDER_TYPES)
 
+    # order_type Shoe
+    shoe_attributes = models.ForeignKey(
+        ShoeAttributes, verbose_name="Shoe",
+        blank=True, null=True)
+
+    # order_type not Shoe
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+    credit_value = models.IntegerField(
+        "Credit Value", default=0)
+    vendor = models.CharField(
+        "Vendor", max_length=32,
+        blank=True)
+
     description = models.TextField(
         "Description",
         blank=True)
@@ -115,20 +156,6 @@ class Order(models.Model, model_utils.FieldList):
         blank=True, null=True)
     dispensed_date = models.DateField(
         "Dispensed Date",
-        blank=True, null=True)
-
-    # order_type not Shoe
-    credit_value = models.IntegerField(
-        "Credit Value", default=0)
-    where = models.CharField(
-        "Where", max_length=32,
-        blank=True)
-    quantity = models.IntegerField(
-        "Quantity", default=0)
-
-    # order_type Shoe
-    shoe = models.ForeignKey(
-        Shoe, verbose_name="Shoe",
         blank=True, null=True)
 
     def get_absolute_url(self):
