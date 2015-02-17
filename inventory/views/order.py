@@ -215,9 +215,12 @@ class UpdateOrderView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.object.shoe:
+        if self.object.shoe_attributes:
             client_credit = self.object.claimant.get_client().credit()
-            shoe_credit_value = self.object.shoe.credit_value
+            shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
+            old_shoe_attributes = self.get_object().shoe_attributes
+            if old_shoe_attributes:
+                client_credit += old_shoe_attributes.shoe.credit_value
             if shoe_credit_value > client_credit:
                 messages.add_message(
                     self.request, messages.ERROR,
