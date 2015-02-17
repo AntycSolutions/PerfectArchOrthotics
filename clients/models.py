@@ -118,13 +118,20 @@ class Client(Person):
             return date.today().year - self.birth_date.year
         return None
 
+    def _claimed_credit(self, person):
+        claimed_credit = 0
+        for order in person.order_set.all():
+            claimed_credit += order.credit_value
+            if order.shoe_attributes and order.dispensed_date:
+                claimed_credit += order.shoe_attributes.shoe.credit_value
+            if order.credit_value:
+                claimed_credit += order.credit_value
+        return claimed_credit
+
     def credit(self):
         total = 0
         claimed_credit = 0
-        for order in self.order_set.all():
-            claimed_credit += order.credit_value
-            if order.shoe:
-                claimed_credit += order.shoe.credit_value
+        claimed_credit += self._claimed_credit(self)
         for dependent in self.dependent_set.all():
             for claim in dependent.claim_set.all():
                 if not claim.insurance_paid_date:
@@ -132,10 +139,7 @@ class Client(Person):
                 total += claim.total_expected_back()
                 # for invoice in claim.invoice_set.all():
                     # total += (invoice.payment_made + invoice.deposit)
-            for order in dependent.order_set.all():
-                claimed_credit += order.credit_value
-                if order.shoe:
-                    claimed_credit += order.shoe.credit_value
+            claimed_credit += self._claimed_credit(dependent)
         for claim in self.claim_set.all():
             if not claim.insurance_paid_date:
                 continue
@@ -472,6 +476,7 @@ class ClaimCoverage(models.Model):
                 claim_item_dict.pop(max_unit_price)
             max_quantity += 1
 
+        # Should be min'd against coverage remaining
         return Maxes(max_expected_back, max_quantity)
 
     def __unicode__(self):
