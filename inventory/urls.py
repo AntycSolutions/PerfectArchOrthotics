@@ -6,26 +6,62 @@ from inventory.views import shoe
 from inventory.views import order
 
 
+shoe_order_patterns = patterns(
+    '',
+    url(r'^create/$',
+        login_required(order.ShoeCreateOrderView.as_view()),
+        name='shoe_order_create'),
+    url(r'^create/(?P<person_pk>\d+)/$',
+        login_required(order.ShoeCreateOrderView.as_view()),
+        name='shoe_order_person_create'),
+    url(r'^(?P<pk>\d+)/$',
+        login_required(order.ShoeDetailOrderView.as_view()),
+        name='shoe_order_detail'),
+    url(r'^update/(?P<pk>\d+)/$',
+        login_required(order.ShoeUpdateOrderView.as_view()),
+        name='shoe_order_update'),
+    url(r'^delete/(?P<pk>\d+)/$',
+        login_required(order.ShoeDeleteOrderView.as_view()),
+        name='shoe_order_delete'),
+)
+
+
+coverage_order_patterns = patterns(
+    '',
+    url(r'^create/$',
+        login_required(order.CoverageCreateOrderView.as_view()),
+        name='coverage_order_create'),
+    url(r'^create/(?P<person_pk>\d+)/$',
+        login_required(order.CoverageCreateOrderView.as_view()),
+        name='coverage_order_person_create'),
+    url(r'^(?P<pk>\d+)/$',
+        login_required(order.CoverageDetailOrderView.as_view()),
+        name='coverage_order_detail'),
+    url(r'^update/(?P<pk>\d+)/$',
+        login_required(order.CoverageUpdateOrderView.as_view()),
+        name='coverage_order_update'),
+    url(r'^delete/(?P<pk>\d+)/$',
+        login_required(order.CoverageDeleteOrderView.as_view()),
+        name='coverage_order_delete'),
+)
+
+
 order_patterns = patterns(
     '',
     url(r'^$',
         login_required(order.ListOrderView.as_view()),
         name='order_list'),
     url(r'^(?P<pk>\d+)/$',
-        login_required(order.DetailOrderView.as_view()),
+        views.order_detail,
         name='order_detail'),
     url(r'^update/(?P<pk>\d+)/$',
-        login_required(order.UpdateOrderView.as_view()),
+        views.order_update,
         name='order_update'),
     url(r'^delete/(?P<pk>\d+)/$',
-        login_required(order.DeleteOrderView.as_view()),
+        views.order_delete,
         name='order_delete'),
-    url(r'^create/$',
-        login_required(order.CreateOrderView.as_view()),
-        name='order_create'),
-    url(r'^create/(?P<person_pk>\d+)/$',
-        login_required(order.CreateOrderView.as_view()),
-        name='order_person_create'),
+    url(r'^shoe/', include(shoe_order_patterns)),
+    url(r'^coverage/', include(coverage_order_patterns)),
 )
 
 

@@ -11,7 +11,8 @@
 <h1>{{ client.full_name }}</h1>
 <div>
     <a href="{% url 'claim_create' client.id %}" class="btn btn-primary">Create Claim</a>
-    <a href="{% url 'order_person_create' client.pk %}" class="btn btn-primary">Create Order</a>
+    <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary">Create Shoe Order</a>
+    <a href="{% url 'coverage_order_person_create' client.pk %}" class="btn btn-primary">Create Coverage Order</a>
 </div>
 <br />
 <div class="pull-right">
@@ -113,13 +114,14 @@
                     <div class="pull-right">
                         <style>
                             .spouse-crud {
-                                width: 125px;
+                                width: 165px;
                             }
                             .spouse-crud-margin {
                                 margin-bottom: 5px;
                             }
                         </style>
-                        <a href="{% url 'order_person_create' spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Order</a><br />
+                        <a href="{% url 'shoe_order_person_create' spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Shoe Order</a><br />
+                        <a href="{% url 'coverage_order_person_create' spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Coverage Order</a><br />
                         <a href="{% url 'insurance_create_spouse' client.id spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Insurance</a><br />
                         <a href="{% url 'dependent_edit' client.id spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Edit</a><br />
                         <a href="{% url 'dependent_delete' client.id spouse.id %}" class="btn btn-default spouse-crud">Delete</a>
@@ -152,13 +154,14 @@
                         <div class="pull-right">
                             <style>
                                 .child-crud {
-                                    width: 100px;
+                                    width: 165px;
                                 }
                                 .child-crud-margin {
                                     margin-bottom: 5px;
                                 }
                             </style>
-                            <a href="{% url 'order_person_create' child.id %}" class="btn btn-default child-crud child-crud-margin">Add Order</a><br />
+                            <a href="{% url 'shoe_order_person_create' child.id %}" class="btn btn-default child-crud child-crud-margin">Add Shoe Order</a><br />
+                            <a href="{% url 'coverage_order_person_create' child.id %}" class="btn btn-default child-crud child-crud-margin">Add Coverage Order</a><br />
                             <a href="{% url 'dependent_edit' client.id child.id %}" class="btn btn-default child-crud child-crud-margin">Edit</a><br />
                             <a href="{% url 'dependent_delete' client.id child.id %}" class="btn btn-default child-crud">Delete</a>
                         </div>

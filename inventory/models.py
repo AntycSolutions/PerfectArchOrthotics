@@ -82,12 +82,9 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         "Quantity", default=0)
 
     def dispensed(self):
-        return self.order_set.filter(
+        return self.shoeorder_set.filter(
             dispensed_date__isnull=False
         ).count()
-
-    def in_stock(self):
-        return self.quantity - self.dispensed()
 
     class Meta:
         unique_together = (('shoe', 'size'),)
@@ -95,18 +92,21 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
     def get_all_fields(self):
         fields = super(ShoeAttributes, self).get_all_fields()
 
-        class PseudoField():
-
-            def __init__(self, verbose_name):
-                self.verbose_name = verbose_name
-
-        fields.update(
-            {"dispensed": model_utils.FieldList.Field(PseudoField("Dispensed"),
-                                                      self.dispensed())}
+        dispensed = self.dispensed()
+        dispensed_field = model_utils.FieldList.Field(
+            model_utils.FieldList.PseudoField("Dispensed"),
+            dispensed
         )
         fields.update(
-            {"in_stock": model_utils.FieldList.Field(PseudoField("In Stock"),
-                                                     self.in_stock())}
+            {"dispensed": dispensed_field}
+        )
+
+        quantity = model_utils.FieldList.Field(
+            fields['quantity'].field,
+            self.quantity - dispensed
+        )
+        fields.update(
+            {"quantity": quantity}
         )
 
         return fields
@@ -122,28 +122,15 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
 
 
 class Order(models.Model, model_utils.FieldList):
-    SHOES = "s"
-    ORDER_TYPES = client_models.Coverage.COVERAGE_TYPES + ((SHOES, "Shoes"),)
-
-    claimant = models.ForeignKey(
-        client_models.Person, verbose_name="Claimant")
+    SHOE = "s"
+    COVERAGE_TYPES = client_models.Coverage.COVERAGE_TYPES
+    ORDER_TYPES = COVERAGE_TYPES + ((SHOE, "Shoe"),)
 
     order_type = models.CharField(
         "Order Type", max_length=4, choices=ORDER_TYPES)
 
-    # order_type Shoe
-    shoe_attributes = models.ForeignKey(
-        ShoeAttributes, verbose_name="Shoe",
-        blank=True, null=True)
-
-    # order_type not Shoe
-    quantity = models.IntegerField(
-        "Quantity", default=0)
-    credit_value = models.IntegerField(
-        "Credit Value", default=0)
-    vendor = models.CharField(
-        "Vendor", max_length=32,
-        blank=True)
+    claimant = models.ForeignKey(
+        client_models.Person, verbose_name="Claimant")
 
     description = models.TextField(
         "Description",
@@ -158,8 +145,74 @@ class Order(models.Model, model_utils.FieldList):
         "Dispensed Date",
         blank=True, null=True)
 
+    def get_credit_value(self):
+        try:
+            order = ShoeOrder.objects.get(pk=self.pk)
+            return order.shoe_attributes.shoe.credit_value
+        except:
+            pass
+        try:
+            order = CoverageOrder.objects.get(pk=self.pk)
+            return order.credit_value
+        except:
+            pass
+        return 0
+
     def get_absolute_url(self):
-        return reverse('order_detail', kwargs={'pk': self.pk})
+        try:
+            order = ShoeOrder.objects.get(pk=self.pk)
+        except:
+            pass
+        try:
+            order = CoverageOrder.objects.get(pk=self.pk)
+        except:
+            pass
+        return order.get_absolute_url()
+
+    def __unicode__(self):
+        return "%s - %s" % (
+            self.get_order_type_display(), self.claimant)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class ShoeOrder(Order):
+    shoe_attributes = models.ForeignKey(
+        ShoeAttributes, verbose_name="Shoe")
+
+    def get_all_fields(self):
+        fields = super(ShoeOrder, self).get_all_fields()
+
+        fields.pop('order_ptr')
+
+        return fields
+
+    def save(self):
+        self.order_type = Order.SHOE
+        super(ShoeOrder, self).save()
+
+    def get_absolute_url(self):
+        return reverse('shoe_order_detail', kwargs={'pk': self.pk})
+
+    def __unicode__(self):
+        return "%s - %s" % (
+            self.get_order_type_display(), self.claimant)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class CoverageOrder(Order):
+    quantity = models.IntegerField(
+        "Quantity", default=0)
+    credit_value = models.IntegerField(
+        "Credit Value", default=0)
+    vendor = models.CharField(
+        "Vendor", max_length=32)
+
+    def get_absolute_url(self):
+        return reverse('coverage_order_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
         return "%s - %s" % (

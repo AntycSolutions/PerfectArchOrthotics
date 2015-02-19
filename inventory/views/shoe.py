@@ -232,6 +232,12 @@ class UpdateShoeView(UpdateView):
             instance=self.object
         )
 
+        # do not display the actual quantity to user
+        for form in shoe_attributes_formset:
+            shoe_attributes = form.instance
+            form.initial['quantity'] = (shoe_attributes.quantity
+                                        - shoe_attributes.dispensed())
+
         return self.render_to_response(
             self.get_context_data(
                 form=shoe_form,
@@ -274,7 +280,14 @@ class UpdateShoeView(UpdateView):
                    ):
         self.object = form.save()
         try:
-            shoe_attributes_formset.save()
+            # add back the dispensed amount
+            shoe_attributes_dict = {}
+            for shoe_attributes in shoe_attributes_formset.queryset:
+                shoe_attributes_dict[shoe_attributes.id] = shoe_attributes
+            object_list = shoe_attributes_formset.save(commit=False)
+            for obj in object_list:
+                obj.quantity += shoe_attributes_dict[obj.id].dispensed()
+                obj.save()
         except IntegrityError as e:
             if "UNIQUE" in str(e) or "unique" in str(e):
                 self.object.delete()

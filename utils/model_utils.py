@@ -30,6 +30,11 @@ class FieldList():
 
         return fields
 
+    class PseudoField():
+
+        def __init__(self, verbose_name):
+            self.verbose_name = verbose_name
+
 
 class ImageField(models.ImageField):
 

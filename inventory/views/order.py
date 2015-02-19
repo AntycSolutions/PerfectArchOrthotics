@@ -7,79 +7,13 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 
 from utils.search import get_query, get_date_query
-from inventory.models import Order
-
-
-class CreateOrderView(CreateView):
-    template_name = 'utils/generics/create.html'
-    model = Order
-    fields = '__all__'
-
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        order_form = form_class(**self.get_form_kwargs())
-        if "person_pk" in self.kwargs:
-            person_pk = self.kwargs["person_pk"]
-            order_form.fields['claimant'].initial = person_pk
-        queryset = order_form.fields['claimant'].queryset
-        queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
-        order_form.fields['claimant'].queryset = queryset
-        return order_form
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-
-        client_credit = self.object.claimant.get_client().credit()
-        non_shoe_credit_value = self.object.credit_value
-
-        if self.object.shoe_attributes:
-            shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
-            if shoe_credit_value and non_shoe_credit_value:
-                messages.add_message(
-                    self.request, messages.ERROR,
-                    "Either Credit Value is entered for non-Shoe Order, or "
-                    "Shoe is selected for Shoe Order. Please do not enter/"
-                    "select both.")
-                return self.form_invalid(form)
-            if shoe_credit_value > client_credit:
-                messages.add_message(
-                    self.request, messages.ERROR,
-                    "Shoe's Credit Value (%s) is greater than "
-                    "Client's Credit (%s)." % (shoe_credit_value,
-                                               client_credit))
-                return self.form_invalid(form)
-
-        if non_shoe_credit_value > client_credit:
-            messages.add_message(
-                self.request, messages.ERROR,
-                "Credit Value (%s) is greater than "
-                "Client's Credit (%s)." % (non_shoe_credit_value,
-                                           client_credit))
-            return self.form_invalid(form)
-
-        self.object.save()
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super(CreateOrderView, self).get_context_data(**kwargs)
-        context['model_name_plural'] = self.model._meta.verbose_name_plural
-        context['model_name'] = self.model._meta.verbose_name
-        context['indefinite_article'] = 'an'
-        return context
-
-    def get_success_url(self):
-        self.success_url = self.object.get_absolute_url()
-        return self.success_url
+from inventory import models
+from inventory.forms import forms
 
 
 class ListOrderView(ListView):
     template_name = "utils/generics/list.html"
-    model = Order
+    model = models.Order
     paginate_by = 20
 
     def get_paginate_by(self, queryset):
@@ -93,6 +27,13 @@ class ListOrderView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListOrderView, self).get_context_data(**kwargs)
+        Create = collections.namedtuple(
+            'Create', ['model_name', 'indefinite_article']
+        )
+        context['create_list'] = [
+            Create(models.ShoeOrder._meta.verbose_name, 'a'),
+            Create(models.CoverageOrder._meta.verbose_name, 'a'),
+        ]
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -115,7 +56,7 @@ class ListOrderView(ListView):
                                                    'selected'])
         Select = collections.namedtuple('Select', ['label', 'options'])
         order_types = []
-        for order_type in Order.ORDER_TYPES:
+        for order_type in models.Order.ORDER_TYPES:
             if ("order_type" in self.request.GET
                     and self.request.GET["order_type"].strip()
                     and self.request.GET["order_type"] == order_type[0]):
@@ -134,13 +75,13 @@ class ListOrderView(ListView):
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             fields = ['claimant__first_name', 'claimant__last_name',
-                      'description', 'where', 'shoe__name']
+                      'description', 'coverageorder__vendor']
             query_string = self.request.GET['q']
             order_query = get_query(query_string, fields)
             if queryset:
                 queryset = queryset.filter(order_query)
             else:
-                queryset = Order.objects.filter(order_query)
+                queryset = models.Order.objects.filter(order_query)
 
         if ('order_type' in self.request.GET
                 and self.request.GET['order_type'].strip()):
@@ -150,7 +91,7 @@ class ListOrderView(ListView):
             if queryset:
                 queryset = queryset.filter(order_query)
             else:
-                queryset = Order.objects.filter(order_query)
+                queryset = models.Order.objects.filter(order_query)
 
         if (('df' in self.request.GET) and self.request.GET['df'].strip()
                 and ('dt' in self.request.GET)
@@ -163,7 +104,7 @@ class ListOrderView(ListView):
             if queryset:
                 queryset = queryset.filter(order_query)
             else:
-                queryset = Order.objects.filter(order_query)
+                queryset = models.Order.objects.filter(order_query)
         elif ('df' in self.request.GET) and self.request.GET['df'].strip():
             date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
             query_date_from_string = self.request.GET['df']
@@ -172,7 +113,7 @@ class ListOrderView(ListView):
             if queryset:
                 queryset = queryset.filter(order_query)
             else:
-                queryset = Order.objects.filter(order_query)
+                queryset = models.Order.objects.filter(order_query)
         elif ('dt' in self.request.GET) and self.request.GET['dt'].strip():
             date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
             query_date_to_string = self.request.GET['dt']
@@ -181,37 +122,129 @@ class ListOrderView(ListView):
             if queryset:
                 queryset = queryset.filter(order_query)
             else:
-                queryset = Order.objects.filter(order_query)
+                queryset = models.Order.objects.filter(order_query)
 
         return queryset.distinct()
 
 
-class DetailOrderView(DetailView):
-    template_name = "utils/generics/detail.html"
-    model = Order
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailOrderView, self).get_context_data(**kwargs)
-        context['model_name'] = self.model._meta.verbose_name
-        return context
-
-
-class UpdateOrderView(UpdateView):
-    template_name = 'utils/generics/update.html'
-    model = Order
-    fields = '__all__'
+class ShoeCreateOrderView(CreateView):
+    template_name = 'utils/generics/create.html'
+    model = models.ShoeOrder
+    form_class = forms.ShoeOrderForm
 
     def get_form(self, form_class=None):
         if form_class is None:
             form_class = self.get_form_class()
         order_form = form_class(**self.get_form_kwargs())
-        queryset = order_form.fields['claimant'].queryset
-        queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
-        order_form.fields['claimant'].queryset = queryset
+        if "person_pk" in self.kwargs:
+            person_pk = self.kwargs["person_pk"]
+            order_form.fields['claimant'].initial = person_pk
         return order_form
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+
+        client_credit = self.object.claimant.get_client().credit()
+        shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
+
+        if shoe_credit_value > client_credit:
+            messages.add_message(
+                self.request, messages.ERROR,
+                "Shoe's Credit Value (%s) is greater than "
+                "Client's Credit (%s)." % (shoe_credit_value,
+                                           client_credit))
+            return self.form_invalid(form)
+
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super(ShoeCreateOrderView, self).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'an'
+        return context
+
+    def get_success_url(self):
+        self.success_url = self.object.get_absolute_url()
+        return self.success_url
+
+
+class CoverageCreateOrderView(CreateView):
+    template_name = 'utils/generics/create.html'
+    model = models.CoverageOrder
+    form_class = forms.CoverageOrderForm
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        order_form = form_class(**self.get_form_kwargs())
+        if "person_pk" in self.kwargs:
+            person_pk = self.kwargs["person_pk"]
+            order_form.fields['claimant'].initial = person_pk
+        return order_form
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+
+        client_credit = self.object.claimant.get_client().credit()
+        credit_value = self.object.credit_value
+
+        if credit_value > client_credit:
+            messages.add_message(
+                self.request, messages.ERROR,
+                "Credit Value (%s) is greater than "
+                "Client's Credit (%s)." % (credit_value,
+                                           client_credit))
+            return self.form_invalid(form)
+
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            CoverageCreateOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'an'
+        return context
+
+    def get_success_url(self):
+        self.success_url = self.object.get_absolute_url()
+        return self.success_url
+
+
+class ShoeDetailOrderView(DetailView):
+    template_name = "utils/generics/detail.html"
+    model = models.ShoeOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(ShoeDetailOrderView, self).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.verbose_name
+        return context
+
+
+class CoverageDetailOrderView(DetailView):
+    template_name = "utils/generics/detail.html"
+    model = models.CoverageOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            CoverageDetailOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.verbose_name
+        return context
+
+
+class ShoeUpdateOrderView(UpdateView):
+    template_name = 'utils/generics/update.html'
+    model = models.ShoeOrder
+    form_class = forms.ShoeOrderForm
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -233,7 +266,7 @@ class UpdateOrderView(UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        context = super(UpdateOrderView, self).get_context_data(**kwargs)
+        context = super(ShoeUpdateOrderView, self).get_context_data(**kwargs)
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -244,12 +277,68 @@ class UpdateOrderView(UpdateView):
         return self.success_url
 
 
-class DeleteOrderView(DeleteView):
-    template_name = 'utils/generics/delete.html'
-    model = Order
+class CoverageUpdateOrderView(UpdateView):
+    template_name = 'utils/generics/update.html'
+    model = models.CoverageOrder
+    form_class = forms.CoverageOrderForm
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        if self.object.shoe_attributes:
+            client_credit = self.object.claimant.get_client().credit()
+            shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
+            old_shoe_attributes = self.get_object().shoe_attributes
+            if old_shoe_attributes:
+                client_credit += old_shoe_attributes.shoe.credit_value
+            if shoe_credit_value > client_credit:
+                messages.add_message(
+                    self.request, messages.ERROR,
+                    "Shoe's Credit Value (%s) is greater than "
+                    "Client's Credit (%s)." % (shoe_credit_value,
+                                               client_credit))
+                return self.form_invalid(form)
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        context = super(DeleteOrderView, self).get_context_data(**kwargs)
+        context = super(
+            CoverageUpdateOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'an'
+        return context
+
+    def get_success_url(self):
+        self.success_url = self.object.get_absolute_url()
+        return self.success_url
+
+
+class ShoeDeleteOrderView(DeleteView):
+    template_name = 'utils/generics/delete.html'
+    model = models.ShoeOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(ShoeDeleteOrderView, self).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.verbose_name
+        return context
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('order_list')
+        return self.success_url
+
+
+class CoverageDeleteOrderView(DeleteView):
+    template_name = 'utils/generics/delete.html'
+    model = models.CoverageOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            CoverageDeleteOrderView,
+            self
+        ).get_context_data(**kwargs)
         context['model_name'] = self.model._meta.verbose_name
         return context
 

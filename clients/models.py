@@ -121,11 +121,8 @@ class Client(Person):
     def _claimed_credit(self, person):
         claimed_credit = 0
         for order in person.order_set.all():
-            claimed_credit += order.credit_value
-            if order.shoe_attributes and order.dispensed_date:
-                claimed_credit += order.shoe_attributes.shoe.credit_value
-            if order.credit_value:
-                claimed_credit += order.credit_value
+            # if order.dispensed_date:
+            claimed_credit += order.get_credit_value()
         return claimed_credit
 
     def credit(self):

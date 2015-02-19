@@ -36,8 +36,8 @@
                         }
                     </style>
                     <td>
-                        <a href="{% url model_name|add:'_update' field_value.value %}" class="btn btn-default crud crud-margin">Update</a><br />
-                        <a href="{% url model_name|add:'_delete' field_value.value %}" class="btn btn-default crud">Delete</a>
+                        <a href="{% url model_name.split|join:'_'|add:'_update' field_value.value %}" class="btn btn-default crud crud-margin">Update</a><br />
+                        <a href="{% url model_name.split|join:'_'|add:'_delete' field_value.value %}" class="btn btn-default crud">Delete</a>
                     </td>
                 {% elif field_value.field|get_model_field_type|is_image %}
                     <td>
