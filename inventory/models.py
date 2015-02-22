@@ -82,8 +82,11 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         "Quantity", default=0)
 
     def dispensed(self):
+        # dispensed date with ordered date does not count as it implies
+        # +1 for ordered and -1 for dispensed
         return self.shoeorder_set.filter(
-            dispensed_date__isnull=False
+            dispensed_date__isnull=False,  # with
+            ordered_date__isnull=True  # without
         ).count()
 
     class Meta:
@@ -93,13 +96,13 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         fields = super(ShoeAttributes, self).get_all_fields()
 
         dispensed = self.dispensed()
-        dispensed_field = model_utils.FieldList.Field(
-            model_utils.FieldList.PseudoField("Dispensed"),
-            dispensed
-        )
-        fields.update(
-            {"dispensed": dispensed_field}
-        )
+        # dispensed_field = model_utils.FieldList.Field(
+        #     model_utils.FieldList.PseudoField("Dispensed"),
+        #     dispensed
+        # )
+        # fields.update(
+        #     {"dispensed": dispensed_field}
+        # )
 
         quantity = model_utils.FieldList.Field(
             fields['quantity'].field,
@@ -210,6 +213,13 @@ class CoverageOrder(Order):
         "Credit Value", default=0)
     vendor = models.CharField(
         "Vendor", max_length=32)
+
+    def get_all_fields(self):
+        fields = super(CoverageOrder, self).get_all_fields()
+
+        fields.pop('order_ptr')
+
+        return fields
 
     def get_absolute_url(self):
         return reverse('coverage_order_detail', kwargs={'pk': self.pk})

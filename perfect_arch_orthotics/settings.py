@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'clients',
     'inventory',
     'bootstrap3_datetime',
+    'ajax_select',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -79,6 +80,10 @@ LOGIN_URL = '/login/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
+
+AJAX_LOOKUP_CHANNELS = {
+    'shoe': ('inventory.lookups', 'ShoeLookup'),
+}
 
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *

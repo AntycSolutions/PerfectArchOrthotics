@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% load field_utils %}
 
 {% block title %} - Update {{ model_name|title }}{% endblock %}
@@ -29,6 +30,11 @@
         });
     });
 </script>
+
+{% if autocomplete %}
+    <script src="{% static 'ajax_select/js/ajax_select.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'ajax_select/css/ajax_select.css' %}">
+{% endif %}
 
 {% endblock %}
 
@@ -94,13 +100,12 @@
                 {% endfor %}
                 <br />
             {% endfor %}
-            <a href="javascript:void(0)" id="add_form" class="btn btn-default" style="margin-top: 20px;">
+            <a href="javascript:void(0)" id="add_form" class="btn btn-default" style="margin-top: 15px; margin-bottom: 15px;">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 Add another {{ inline_model_name|title }}
             </a>
         </fieldset>
     {% endif %}
-    <br />
     <input type="submit" value="Update" />
 </form>
 <br />

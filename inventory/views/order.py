@@ -164,6 +164,7 @@ class ShoeCreateOrderView(CreateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['autocomplete'] = True
         return context
 
     def get_success_url(self):
@@ -270,6 +271,7 @@ class ShoeUpdateOrderView(UpdateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['autocomplete'] = True
         return context
 
     def get_success_url(self):

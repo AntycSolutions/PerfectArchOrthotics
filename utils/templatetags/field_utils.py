@@ -28,6 +28,11 @@ def is_date(type):
 
 
 @register.filter
+def is_autocomplete(type):
+    return type in ["AutoCompleteSelectWidget"]
+
+
+@register.filter
 def get_model_field_type(field):
     return field.__class__.__name__
 
