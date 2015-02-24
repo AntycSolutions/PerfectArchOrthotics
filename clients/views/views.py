@@ -506,7 +506,12 @@ def _order_info(person, request):
     return OrderInfo(
         person.pk,
         person.full_name(),
-        _paginate(person.order_set.all(), page, rows_per_page),
+        _paginate(
+            person.order_set.all().order_by(
+                '-dispensed_date', '-ordered_date'
+            ),
+            page,
+            rows_per_page),
         rows_per_page
     )
 

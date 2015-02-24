@@ -124,7 +124,7 @@ class ListOrderView(ListView):
             else:
                 queryset = models.Order.objects.filter(order_query)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by('-dispensed_date', '-ordered_date')
 
 
 class ShoeCreateOrderView(CreateView):
