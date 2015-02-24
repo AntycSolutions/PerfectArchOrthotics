@@ -53,6 +53,40 @@
                         {% endif %}
                     {% endfor %}
                 </tr>
+                {# incomplete #}
+                {% comment %}
+                {% if object.get_inline %}
+                    {% with inline=object.get_inline %}
+                        <tr>
+                            <td><ul class="pull-right"><li>{{ inline.name }}</li></ul></td>
+                            <td>
+                                <div class="pull-left">
+                                    <table class="table" style="display: inline-block;">
+                                        {% if forloop.first %}
+                                            <thead>
+                                                <tr>
+                                                    {% for name, field_value in inline.get_all_fields.items %}
+                                                        {% if name == "id" %}
+                                                            <th></th>
+                                                        {% else %}
+                                                            <th>{{ field_value.field.verbose_name }}</th>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                        {% endif %}
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endif %}
+                {% endcomment %}
         {% if forloop.last %}
             </tbody>
         {% endif %}

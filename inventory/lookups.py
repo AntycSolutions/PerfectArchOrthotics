@@ -25,7 +25,7 @@ class ShoeLookup(LookupChannel):
         result = "%s - %s - %s - %s - %s - Size: %s Quantity: %s" % (
             obj.shoe.brand, obj.shoe.style, obj.shoe.name, obj.shoe.sku,
             obj.shoe.colour,
-            obj.size, obj.quantity
+            obj.size, obj.quantity - obj.dispensed()
         )
         return escape(force_text(result))
 

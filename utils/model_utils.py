@@ -35,6 +35,11 @@ class FieldList():
         def __init__(self, verbose_name):
             self.verbose_name = verbose_name
 
+    class PseudoForeignKey():
+
+        def __init__(self, verbose_name):
+            self.verbose_name = verbose_name
+
 
 class ImageField(models.ImageField):
 

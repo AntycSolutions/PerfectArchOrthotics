@@ -1,3 +1,4 @@
+import collections
 from decimal import Decimal
 
 from django.db import models
@@ -104,7 +105,7 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         #     {"dispensed": dispensed_field}
         # )
 
-        quantity = model_utils.FieldList.Field(
+        quantity = self.Field(
             fields['quantity'].field,
             self.quantity - dispensed
         )
@@ -172,6 +173,34 @@ class Order(models.Model, model_utils.FieldList):
             pass
         return order.get_absolute_url()
 
+    def get_all_fields(self):
+        fields = super(Order, self).get_all_fields()
+
+        reordered_fields = collections.OrderedDict()
+        for k, v in fields.items():
+            reordered_fields.update(
+                {k: self.Field(v.field, v.value)}
+            )
+            if k == "claimant":
+                try:
+                    order = ShoeOrder.objects.get(pk=self.pk)
+                    value = order.shoe_attributes
+                except:
+                    value = ""
+                shoe_field = self.Field(
+                    self.PseudoForeignKey("Shoe"),
+                    value
+                )
+                reordered_fields.update(
+                    {"shoe": shoe_field}
+                )
+                # try:
+                #     order = CoverageOrder.objects.get(pk=self.pk)
+                # except:
+                #     pass
+
+        return reordered_fields
+
     def __unicode__(self):
         return "%s - %s" % (
             self.get_order_type_display(), self.claimant)
@@ -188,6 +217,9 @@ class ShoeOrder(Order):
         fields = super(ShoeOrder, self).get_all_fields()
 
         fields.pop('order_ptr')
+        # remove this PseudoForeignKey field as
+        #  it's a duplicate of shoe_attributes
+        fields.pop('shoe')
 
         return fields
 

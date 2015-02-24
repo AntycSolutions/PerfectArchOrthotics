@@ -44,4 +44,4 @@ def is_image(type):
 
 @register.filter
 def is_foreignkey(type):
-    return type in ["ForeignKey"]
+    return type in ["ForeignKey", "PseudoForeignKey"]
