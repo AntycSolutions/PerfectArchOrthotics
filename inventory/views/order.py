@@ -124,7 +124,21 @@ class ListOrderView(ListView):
             else:
                 queryset = models.Order.objects.filter(order_query)
 
-        return queryset.distinct().order_by('-dispensed_date', '-ordered_date')
+        return queryset.distinct().extra(
+            select={
+                'null_dispensed_date': 'case when'
+                                       ' inventory_order.dispensed_date'
+                                       ' is null then 0 else 1 end',
+                'null_ordered_date': 'case when'
+                                     ' inventory_order.ordered_date'
+                                     ' is null then 0 else 1 end'
+            }
+        ).order_by(
+            '-dispensed_date',
+            '-ordered_date',
+            'null_dispensed_date',
+            'null_ordered_date',
+        )
 
 
 class ShoeCreateOrderView(CreateView):

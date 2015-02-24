@@ -507,8 +507,20 @@ def _order_info(person, request):
         person.pk,
         person.full_name(),
         _paginate(
-            person.order_set.all().order_by(
-                '-dispensed_date', '-ordered_date'
+            person.order_set.all().extra(
+                select={
+                    'null_dispensed_date': 'case when'
+                                           ' inventory_order.dispensed_date'
+                                           ' is null then 0 else 1 end',
+                    'null_ordered_date': 'case when'
+                                         ' inventory_order.ordered_date'
+                                         ' is null then 0 else 1 end'
+                }
+            ).order_by(
+                '-dispensed_date',
+                '-ordered_date',
+                'null_dispensed_date',
+                'null_ordered_date',
             ),
             page,
             rows_per_page),
