@@ -286,7 +286,8 @@ class UpdateShoeView(UpdateView):
                 shoe_attributes_dict[shoe_attributes.id] = shoe_attributes
             object_list = shoe_attributes_formset.save(commit=False)
             for obj in object_list:
-                obj.quantity += shoe_attributes_dict[obj.id].dispensed()
+                if obj.id in shoe_attributes_dict:
+                    obj.quantity += shoe_attributes_dict[obj.id].dispensed()
                 obj.save()
         except IntegrityError as e:
             if "UNIQUE" in str(e) or "unique" in str(e):
