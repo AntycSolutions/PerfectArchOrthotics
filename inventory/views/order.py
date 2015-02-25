@@ -136,7 +136,7 @@ class ListOrderView(ListView):
                                      ' is null',
             }
         ).order_by(
-            'null_both',
+            '-null_both',
         ).order_by(
             'null_ordered_date',
             '-ordered_date',
