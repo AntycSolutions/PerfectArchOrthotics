@@ -126,18 +126,17 @@ class ListOrderView(ListView):
 
         return queryset.distinct().extra(
             select={
-                'null_dispensed_date': 'case when'
-                                       ' inventory_order.dispensed_date'
-                                       ' is null then 0 else 1 end',
-                'null_ordered_date': 'case when'
-                                     ' inventory_order.ordered_date'
-                                     ' is null then 0 else 1 end'
+                'null_dispensed_date': ' inventory_order.dispensed_date'
+                                       ' is null',
+                'null_ordered_date': ' inventory_order.ordered_date'
+                                     ' is null',
             }
         ).order_by(
-            '-dispensed_date',
-            '-ordered_date',
-            'null_dispensed_date',
             'null_ordered_date',
+            '-ordered_date',
+        ).order_by(
+            'null_dispensed_date',
+            '-dispensed_date',
         )
 
 
