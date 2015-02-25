@@ -75,5 +75,12 @@
         {% endif %}
     </span>
 </div>
+<form method="GET" style="display: inline-block;">
+    {% if q %}
+        <input type="hidden" name="q" value="{{ q }}">
+    {% endif %}
+    Rows per Page: <input type="number" id="clients_rows_per_page" name="clients_rows_per_page" value="{{ clients_rows_per_page }}">
+    <input type="submit" class="btn" value="Paginate">
+</form>
 
 {% endblock %}

@@ -238,16 +238,23 @@ def clients(request):
     context = RequestContext(request)
 
     client_list = Client.objects.order_by('-id')
-    paginator = Paginator(client_list, 5)
-    page = request.GET.get('page')
-    try:
-        clients = paginator.page(page)
-    except PageNotAnInteger:
-        clients = paginator.page(1)
-    except EmptyPage:
-        clients = paginator.page(paginator.num_pages)
 
-    client_dict = {'clients': clients}
+    page = request.GET.get('page')
+
+    # paginator = Paginator(client_list, 5)
+    # try:
+    #     clients = paginator.page(page)
+    # except PageNotAnInteger:
+    #     clients = paginator.page(1)
+    # except EmptyPage:
+    #     clients = paginator.page(paginator.num_pages)
+
+    clients_rows_per_page = _get_paginate_by(request, 'clients_rows_per_page')
+    clients = _paginate(client_list, page, clients_rows_per_page)
+
+    client_dict = {'clients': clients,
+                   'clients_rows_per_page': clients_rows_per_page,
+                   }
 
     return render_to_response('clients/clients.html', client_dict, context)
 
@@ -257,16 +264,23 @@ def claimsView(request):
     context = RequestContext(request)
 
     claim_list = Claim.objects.order_by('-submitted_datetime')
-    paginator = Paginator(claim_list, 5)
-    page = request.GET.get('page')
-    try:
-        claims = paginator.page(page)
-    except PageNotAnInteger:
-        claims = paginator.page(1)
-    except EmptyPage:
-        claims = paginator.page(paginator.num_pages)
 
-    context_dict = {'claims': claims}
+    page = request.GET.get('page')
+
+    # paginator = Paginator(claim_list, 5)
+    # try:
+    #     claims = paginator.page(page)
+    # except PageNotAnInteger:
+    #     claims = paginator.page(1)
+    # except EmptyPage:
+    #     claims = paginator.page(paginator.num_pages)
+    claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
+    claims = _paginate(claim_list, page, claims_rows_per_page)
+
+    context_dict = {'claims': claims,
+                    'claims_rows_per_page': claims_rows_per_page,
+                    }
+
     return render_to_response('clients/claims.html', context_dict, context)
 
 
@@ -291,16 +305,25 @@ def insuranceView(request):
     context = RequestContext(request)
 
     insurance_list = Insurance.objects.all()
-    paginator = Paginator(insurance_list, 5)
-    page = request.GET.get('page')
-    try:
-        insurances = paginator.page(page)
-    except PageNotAnInteger:
-        insurances = paginator.page(1)
-    except EmptyPage:
-        insurances = paginator.page(paginator.num_pages)
 
-    context_dict = {'insurances': insurances}
+    page = request.GET.get('page')
+
+    # paginator = Paginator(insurance_list, 5)
+    # try:
+    #     insurances = paginator.page(page)
+    # except PageNotAnInteger:
+    #     insurances = paginator.page(1)
+    # except EmptyPage:
+    #     insurances = paginator.page(paginator.num_pages)
+
+    insurances_rows_per_page = _get_paginate_by(request,
+                                                'insurances_rows_per_page')
+    insurances = _paginate(insurance_list, page, insurances_rows_per_page)
+
+    context_dict = {'insurances': insurances,
+                    'insurances_rows_per_page': insurances_rows_per_page,
+                    }
+
     return render_to_response('clients/insurances.html', context_dict, context)
 
 
@@ -315,17 +338,24 @@ def clientSearchView(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
-        context_dict['q'] = query_string
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
-        paginator = Paginator(found_clients, 5)
-        try:
-            clients = paginator.page(page)
-        except PageNotAnInteger:
-            clients = paginator.page(1)
-        except EmptyPage:
-            clients = paginator.page(paginator.num_pages)
-        context_dict['clients'] = clients
+        # paginator = Paginator(found_clients, 5)
+        # try:
+        #     clients = paginator.page(page)
+        # except PageNotAnInteger:
+        #     clients = paginator.page(1)
+        # except EmptyPage:
+        #     clients = paginator.page(paginator.num_pages)
+
+        clients_rows_per_page = _get_paginate_by(request,
+                                                 'clients_rows_per_page')
+        clients = _paginate(found_clients, page, clients_rows_per_page)
+
+        context_dict = {'q': query_string,
+                        'clients': clients,
+                        'clients_rows_per_page': clients_rows_per_page,
+                        }
 
     return render_to_response('clients/clients.html',
                               context_dict,
@@ -387,15 +417,18 @@ def claimSearchView(request):
             found_claims = Claim.objects.filter(claim_query)
 
     page = request.GET.get('page')
-    paginator = Paginator(found_claims, 5)
-    try:
-        claims = paginator.page(page)
-    except PageNotAnInteger:
-        claims = paginator.page(1)
-    except EmptyPage:
-        claims = paginator.page(paginator.num_pages)
+    # paginator = Paginator(found_claims, 5)
+    # try:
+    #     claims = paginator.page(page)
+    # except PageNotAnInteger:
+    #     claims = paginator.page(1)
+    # except EmptyPage:
+    #     claims = paginator.page(paginator.num_pages)
+    claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
+    claims = _paginate(found_claims, page, claims_rows_per_page)
 
     context_dict['claims'] = claims
+    context_dict['claims_rows_per_page'] = claims_rows_per_page
 
     return render_to_response('clients/claims.html',
                               context_dict,
@@ -414,17 +447,25 @@ def insuranceSearchView(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         page = request.GET.get('page')
         query_string = request.GET['q']
-        context_dict['q'] = query_string
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
-        paginator = Paginator(found_insurances, 5)
-        try:
-            insurances = paginator.page(page)
-        except PageNotAnInteger:
-            insurances = paginator.page(1)
-        except EmptyPage:
-            insurances = paginator.page(paginator.num_pages)
-        context_dict['insurances'] = insurances
+        # paginator = Paginator(found_insurances, 5)
+        # try:
+        #     insurances = paginator.page(page)
+        # except PageNotAnInteger:
+        #     insurances = paginator.page(1)
+        # except EmptyPage:
+        #     insurances = paginator.page(paginator.num_pages)
+
+        insurances_rows_per_page = _get_paginate_by(request,
+                                                    'insurances_rows_per_page')
+        insurances = _paginate(found_insurances, page,
+                               insurances_rows_per_page)
+
+        context_dict = {'q': query_string,
+                        'insurances': insurances,
+                        'insurances_rows_per_page': insurances_rows_per_page,
+                        }
 
     return render_to_response('clients/insurances.html',
                               context_dict,
@@ -509,18 +550,21 @@ def _order_info(person, request):
         _paginate(
             person.order_set.all().extra(
                 select={
-                    'null_dispensed_date': 'case when'
-                                           ' inventory_order.dispensed_date'
-                                           ' is null then 0 else 1 end',
-                    'null_ordered_date': 'case when'
-                                         ' inventory_order.ordered_date'
-                                         ' is null then 0 else 1 end'
+                    'null_both': ' inventory_order.dispensed_date'
+                                 ' is null'
+                                 ' and inventory_order.ordered_date'
+                                 ' is null',
+                    'null_dispensed_date': ' inventory_order.dispensed_date'
+                                           ' is null',
+                    # 'null_ordered_date': ' inventory_order.ordered_date'
+                    #                      ' is null',
                 }
             ).order_by(
+                'null_both',
+                'null_dispensed_date',
                 '-dispensed_date',
                 '-ordered_date',
-                'null_dispensed_date',
-                'null_ordered_date',
+                # '-null_ordered_date',
             ),
             page,
             rows_per_page),

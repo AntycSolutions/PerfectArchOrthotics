@@ -56,5 +56,18 @@
         {% endif %}
     </span>
 </div>
+<form method="GET" style="display: inline-block;">
+    {% if q %}
+        <input type="hidden" name="q" value="{{ q }}">
+    {% endif %}
+    {% if df %}
+        <input type="hidden" name="df" value="{{ df }}">
+    {% endif %}
+    {% if dt %}
+        <input type="hidden" name="dt" value="{{ dt }}">
+    {% endif %}
+    Rows per Page: <input type="number" id="claims_rows_per_page" name="claims_rows_per_page" value="{{ claims_rows_per_page }}">
+    <input type="submit" class="btn" value="Paginate">
+</form>
 
 {% endblock %}
