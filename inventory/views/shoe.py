@@ -278,7 +278,7 @@ class UpdateShoeView(UpdateView):
     def form_valid(self, form,
                    shoe_attributes_formset
                    ):
-        self.object = form.save()
+        self.object = form.save(commit=False)
         try:
             # add back the dispensed amount
             shoe_attributes_dict = {}
@@ -291,11 +291,12 @@ class UpdateShoeView(UpdateView):
                 obj.save()
         except IntegrityError as e:
             if "UNIQUE" in str(e) or "unique" in str(e):
-                self.object.delete()
                 messages.add_message(self.request, messages.ERROR,
                                      "That Size already exists for this Shoe.")
                 return self.form_invalid(form, shoe_attributes_formset)
             raise e
+
+        self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
