@@ -119,7 +119,11 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         return self.shoe.get_absolute_url()
 
     def __unicode__(self):
-        return "Size: %s - %s" % (self.size, self.shoe)
+        try:
+            shoe = self.shoe
+        except:
+            shoe = None
+        return "Size: %s - %s" % (self.size, shoe)
 
     def __str__(self):
         return self.__unicode__()

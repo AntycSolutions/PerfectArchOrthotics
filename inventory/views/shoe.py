@@ -8,6 +8,7 @@ from django.forms.models import inlineformset_factory
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.forms import fields as form_fields
+from django.forms.models import BaseInlineFormSet
 
 from utils.search import get_query
 from utils import model_utils
@@ -212,6 +213,40 @@ class DetailShoeView(DetailView):
         return context
 
 
+class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
+
+    def add_fields(self, form, index):
+        super(BaseShoeShoeAttributesFormSet, self).add_fields(
+            form, index
+        )
+        ordered_fields = collections.OrderedDict()
+        for k, v in form.fields.items():
+            if k == "quantity":
+                v.widget = form_fields.HiddenInput()
+            ordered_fields.update({k: v})
+            if k == "id":
+                ordered_fields.update(
+                    {'new_quantity': form_fields.IntegerField(
+                        label="Quantity", initial=(
+                            form.instance.quantity - form.instance.dispensed()
+                        )
+                     )
+                     }
+                )
+
+        form.fields = ordered_fields
+
+    def save_existing(self, form, instance, commit=True):
+        new_quantity = form.cleaned_data['new_quantity']
+
+        obj = form.save(commit=commit)
+        obj.quantity = new_quantity + obj.dispensed()
+        if commit:
+            obj.save()
+
+        return obj
+
+
 class UpdateShoeView(UpdateView):
     template_name = 'utils/generics/update.html'
     model = Shoe
@@ -225,18 +260,13 @@ class UpdateShoeView(UpdateView):
         ShoeShoeAttributesFormSet = inlineformset_factory(
             Shoe,
             ShoeAttributes,
+            formset=BaseShoeShoeAttributesFormSet,
             extra=1,
             exclude=('shoe',)
         )
         shoe_attributes_formset = ShoeShoeAttributesFormSet(
             instance=self.object
         )
-
-        # do not display the actual quantity to user
-        for form in shoe_attributes_formset:
-            shoe_attributes = form.instance
-            form.initial['quantity'] = (shoe_attributes.quantity
-                                        - shoe_attributes.dispensed())
 
         return self.render_to_response(
             self.get_context_data(
@@ -253,6 +283,7 @@ class UpdateShoeView(UpdateView):
         ShoeShoeAttributesFormSet = inlineformset_factory(
             Shoe,
             ShoeAttributes,
+            formset=BaseShoeShoeAttributesFormSet,
             extra=1,
             exclude=('shoe',)
         )
@@ -280,15 +311,7 @@ class UpdateShoeView(UpdateView):
                    ):
         self.object = form.save(commit=False)
         try:
-            # add back the dispensed amount
-            shoe_attributes_dict = {}
-            for shoe_attributes in shoe_attributes_formset.queryset:
-                shoe_attributes_dict[shoe_attributes.id] = shoe_attributes
-            object_list = shoe_attributes_formset.save(commit=False)
-            for obj in object_list:
-                if obj.id in shoe_attributes_dict:
-                    obj.quantity += shoe_attributes_dict[obj.id].dispensed()
-                obj.save()
+            shoe_attributes_formset.save()
         except IntegrityError as e:
             if "UNIQUE" in str(e) or "unique" in str(e):
                 messages.add_message(self.request, messages.ERROR,
