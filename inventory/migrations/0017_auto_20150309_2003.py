@@ -31,6 +31,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='shoeorder',
             name='shoe_attributes',
+            field=models.ForeignKey(to='inventory.ShoeAttributes', verbose_name='Shoe', null=True, blank=True, default=None),
+        ),
+        migrations.AlterField(
+            model_name='shoeorder',
+            name='shoe_attributes',
             field=models.ForeignKey(to='inventory.ShoeAttributes', verbose_name='Shoe', default=None),
             preserve_default=False,
         ),
