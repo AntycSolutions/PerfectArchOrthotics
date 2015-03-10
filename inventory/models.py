@@ -131,8 +131,10 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
 
 class Order(models.Model, model_utils.FieldList):
     SHOE = "s"
+    ADJUSTMENT = "a"
     COVERAGE_TYPES = client_models.Coverage.COVERAGE_TYPES
-    ORDER_TYPES = COVERAGE_TYPES + ((SHOE, "Shoe"),)
+    ORDER_TYPES = COVERAGE_TYPES + ((SHOE, "Shoe"),
+                                    (ADJUSTMENT, "Adjustment"))
 
     order_type = models.CharField(
         "Order Type", max_length=4, choices=ORDER_TYPES)
@@ -164,6 +166,11 @@ class Order(models.Model, model_utils.FieldList):
             return order.credit_value
         except:
             pass
+        try:
+            order = AdjustmentOrder.objects.get(pk=self.pk)
+            return order.credit_value
+        except:
+            pass
         return 0
 
     def get_absolute_url(self):
@@ -173,6 +180,10 @@ class Order(models.Model, model_utils.FieldList):
             pass
         try:
             order = CoverageOrder.objects.get(pk=self.pk)
+        except:
+            pass
+        try:
+            order = AdjustmentOrder.objects.get(pk=self.pk)
         except:
             pass
         return order.get_absolute_url()
@@ -259,6 +270,32 @@ class CoverageOrder(Order):
 
     def get_absolute_url(self):
         return reverse('coverage_order_detail', kwargs={'pk': self.pk})
+
+    def __unicode__(self):
+        return "%s - %s" % (
+            self.get_order_type_display(), self.claimant)
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class AdjustmentOrder(Order):
+    credit_value = models.DecimalField(
+        "Credit Value", max_digits=3, decimal_places=2, default=Decimal(0.00))
+
+    def get_all_fields(self):
+        fields = super(AdjustmentOrder, self).get_all_fields()
+
+        fields.pop('order_ptr')
+
+        return fields
+
+    def save(self):
+        self.order_type = Order.ADJUSTMENT
+        super(AdjustmentOrder, self).save()
+
+    def get_absolute_url(self):
+        return reverse('adjustment_order_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
         return "%s - %s" % (

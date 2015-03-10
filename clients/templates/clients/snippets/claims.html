@@ -58,6 +58,7 @@
                                         <th>Expected Back</th>
                                         <!-- <th>Max Quantity</th>
                                         <th>Max Expected Back</th> -->
+                                        <th>Actual Paid Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +76,7 @@
                                                 <td>{{ maxes.max_expected_back }}</td>
                                             {% endwith %}
                                             {% endcomment %}
+                                            <td>{{ claim_coverage.actual_paid_date }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

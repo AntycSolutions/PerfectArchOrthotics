@@ -505,6 +505,14 @@ def clientView(request, client_id):
         if dependent.order_set.all():
             orders.append(_order_info(dependent, request))
 
+    client_total_amount_claimed = 0
+    client_total_expected_back = 0
+    for claim in claims:
+        client_total_amount_claimed += (
+            claim.total_amount_quantity_claimed().total_amount_claimed
+        )
+        client_total_expected_back += claim.total_expected_back()
+
     # Paginate Claims
     page = request.GET.get('claims_page')
     paginator = Paginator(claims.order_by('-submitted_datetime'), 5)
@@ -518,6 +526,8 @@ def clientView(request, client_id):
     context_dict = {'client': client,
                     'client_insurance': insurance,
                     'client_claims': claims,
+                    'client_total_amount_claimed': client_total_amount_claimed,
+                    'client_total_expected_back': client_total_expected_back,
                     'orders': orders,
                     'spouse': spouse,
                     'children': children,

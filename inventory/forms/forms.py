@@ -76,8 +76,27 @@ class CoverageOrderForm(forms.ModelForm):
 
         choices = self.fields['order_type'].choices
         choices.remove((models.Order.SHOE, "Shoe"))
+        choices.remove((models.Order.ADJUSTMENT, "Adjustment"))
         self.fields['order_type'].choices = choices
 
     class Meta:
         model = models.CoverageOrder
         fields = '__all__'
+
+
+class AdjustmentOrderForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AdjustmentOrderForm, self).__init__(*args, **kwargs)
+
+        queryset = self.fields['claimant'].queryset
+        queryset = queryset.extra(
+            select={
+                'lower_first_name': 'lower(first_name)'
+                }).order_by('lower_first_name')
+        self.fields['claimant'].queryset = queryset
+
+    class Meta:
+        model = models.AdjustmentOrder
+        exclude = ('order_type',
+                   'ordered_date', 'arrived_date', 'dispensed_date')

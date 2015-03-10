@@ -131,19 +131,31 @@ class Client(Person):
         claimed_credit += self._claimed_credit(self)
         for dependent in self.dependent_set.all():
             for claim in dependent.claim_set.all():
-                if not claim.insurance_paid_date:
-                    continue
-                total += claim.total_expected_back()
+                # switch from insurance_paid_date to actual_paid_date
+                # if not claim.insurance_paid_date:
+                #     continue
+                # total += claim.total_expected_back()
+                for claim_coverage in claim.claimcoverage_set.all():
+                    if not claim_coverage.actual_paid_date:
+                        continue
+                    total += claim_coverage.expected_back
+                # ignore payment_made/deposit
                 # for invoice in claim.invoice_set.all():
                     # total += (invoice.payment_made + invoice.deposit)
             claimed_credit += self._claimed_credit(dependent)
         for claim in self.claim_set.all():
-            if not claim.insurance_paid_date:
-                continue
-            total += claim.total_expected_back()
+            # switch from insurance_paid_date to actual_paid_date
+            # if not claim.insurance_paid_date:
+            #     continue
+            # total += claim.total_expected_back()
+            for claim_coverage in claim.claimcoverage_set.all():
+                if not claim_coverage.actual_paid_date:
+                    continue
+                total += claim_coverage.expected_back
+            # ignore payment_made/deposit
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
-        credit = (total / 150) - claimed_credit
+        credit = (total / 150) - float(claimed_credit)
         return round(credit)
 
     def get_absolute_url(self):
@@ -414,6 +426,10 @@ class ClaimCoverage(models.Model):
 
     expected_back = models.IntegerField(
         "Expected Back", default=0)
+
+    actual_paid_date = models.DateField(
+        "Actual Paid Date",
+        blank=True, null=True)
 
     # ManyToManyField
     # Claim

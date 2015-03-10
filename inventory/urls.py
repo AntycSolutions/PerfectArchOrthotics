@@ -6,6 +6,26 @@ from inventory.views import shoe
 from inventory.views import order
 
 
+adjustment_order_patterns = patterns(
+    '',
+    url(r'^create/$',
+        login_required(order.AdjustmentCreateOrderView.as_view()),
+        name='adjustment_order_create'),
+    url(r'^create/(?P<person_pk>\d+)/$',
+        login_required(order.AdjustmentCreateOrderView.as_view()),
+        name='adjustment_order_person_create'),
+    url(r'^(?P<pk>\d+)/$',
+        login_required(order.AdjustmentDetailOrderView.as_view()),
+        name='adjustment_order_detail'),
+    url(r'^update/(?P<pk>\d+)/$',
+        login_required(order.AdjustmentUpdateOrderView.as_view()),
+        name='adjustment_order_update'),
+    url(r'^delete/(?P<pk>\d+)/$',
+        login_required(order.AdjustmentDeleteOrderView.as_view()),
+        name='adjustment_order_delete'),
+)
+
+
 shoe_order_patterns = patterns(
     '',
     url(r'^create/$',
@@ -62,6 +82,7 @@ order_patterns = patterns(
         name='order_delete'),
     url(r'^shoe/', include(shoe_order_patterns)),
     url(r'^coverage/', include(coverage_order_patterns)),
+    url(r'^adjustment/', include(adjustment_order_patterns)),
 )
 
 

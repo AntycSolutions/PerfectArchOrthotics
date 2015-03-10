@@ -221,6 +221,20 @@
                 {% endif %}
             </span>
         </div>
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Client Total Amount Claimed</th>
+                    <th>Client Total Expected Back</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ client_total_amount_claimed }}</td>
+                    <td>{{ client_total_expected_back }}</td>
+                </tr>
+            </tbody>
+        </table>
     {% else %}
         <p>There are no Claims for this Client currently.</p>
     {% endif %}

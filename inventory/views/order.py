@@ -33,6 +33,7 @@ class ListOrderView(ListView):
         context['create_list'] = [
             Create(models.ShoeOrder._meta.verbose_name, 'a'),
             Create(models.CoverageOrder._meta.verbose_name, 'a'),
+            Create(models.AdjustmentOrder._meta.verbose_name, 'an'),
         ]
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
@@ -75,7 +76,9 @@ class ListOrderView(ListView):
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             fields = ['claimant__first_name', 'claimant__last_name',
-                      'description', 'coverageorder__vendor']
+                      'description',
+                      'coverageorder__vendor',
+                      'shoeorder__shoe_attributes__shoe__brand']
             query_string = self.request.GET['q']
             order_query = get_query(query_string, fields)
             if queryset:
@@ -166,11 +169,11 @@ class ShoeCreateOrderView(CreateView):
 
         if shoe_credit_value > client_credit:
             messages.add_message(
-                self.request, messages.ERROR,
+                self.request, messages.WARNING,
                 "Shoe's Credit Value (%s) is greater than "
                 "Client's Credit (%s)." % (shoe_credit_value,
                                            client_credit))
-            return self.form_invalid(form)
+            # return self.form_invalid(form)
 
         self.object.save()
 
@@ -211,11 +214,11 @@ class CoverageCreateOrderView(CreateView):
 
         if credit_value > client_credit:
             messages.add_message(
-                self.request, messages.ERROR,
+                self.request, messages.WARNING,
                 "Credit Value (%s) is greater than "
                 "Client's Credit (%s)." % (credit_value,
                                            client_credit))
-            return self.form_invalid(form)
+            # return self.form_invalid(form)
 
         self.object.save()
 
@@ -224,6 +227,50 @@ class CoverageCreateOrderView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(
             CoverageCreateOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'an'
+        return context
+
+    def get_success_url(self):
+        self.success_url = self.object.get_absolute_url()
+        return self.success_url
+
+
+class AdjustmentCreateOrderView(CreateView):
+    template_name = 'utils/generics/create.html'
+    model = models.AdjustmentOrder
+    form_class = forms.AdjustmentOrderForm
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        order_form = form_class(**self.get_form_kwargs())
+        if "person_pk" in self.kwargs:
+            person_pk = self.kwargs["person_pk"]
+            order_form.fields['claimant'].initial = person_pk
+        return order_form
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        client_credit = self.object.claimant.get_client().credit()
+        adjustment_credit_value = self.object.credit_value
+
+        if adjustment_credit_value > client_credit:
+            messages.add_message(
+                self.request, messages.WARNING,
+                "Adjustment's Credit Value (%s) is greater than "
+                "Client's Credit (%s)." % (adjustment_credit_value,
+                                           client_credit))
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AdjustmentCreateOrderView,
             self
         ).get_context_data(**kwargs)
         context['model_name_plural'] = self.model._meta.verbose_name_plural
@@ -259,6 +306,19 @@ class CoverageDetailOrderView(DetailView):
         return context
 
 
+class AdjustmentDetailOrderView(DetailView):
+    template_name = "utils/generics/detail.html"
+    model = models.AdjustmentOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AdjustmentDetailOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.verbose_name
+        return context
+
+
 class ShoeUpdateOrderView(UpdateView):
     template_name = 'utils/generics/update.html'
     model = models.ShoeOrder
@@ -274,11 +334,11 @@ class ShoeUpdateOrderView(UpdateView):
                 client_credit += old_shoe_attributes.shoe.credit_value
             if shoe_credit_value > client_credit:
                 messages.add_message(
-                    self.request, messages.ERROR,
+                    self.request, messages.WARNING,
                     "Shoe's Credit Value (%s) is greater than "
                     "Client's Credit (%s)." % (shoe_credit_value,
                                                client_credit))
-                return self.form_invalid(form)
+                # return self.form_invalid(form)
         self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())
@@ -310,11 +370,11 @@ class CoverageUpdateOrderView(UpdateView):
             client_credit += old_credit_value
         if credit_value > client_credit:
             messages.add_message(
-                self.request, messages.ERROR,
+                self.request, messages.WARNING,
                 "Credit Value (%s) is greater than "
                 "Client's Credit (%s)." % (credit_value,
                                            client_credit))
-            return self.form_invalid(form)
+            # return self.form_invalid(form)
         self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())
@@ -322,6 +382,44 @@ class CoverageUpdateOrderView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(
             CoverageUpdateOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name_plural'] = self.model._meta.verbose_name_plural
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'an'
+        return context
+
+    def get_success_url(self):
+        self.success_url = self.object.get_absolute_url()
+        return self.success_url
+
+
+class AdjustmentUpdateOrderView(UpdateView):
+    template_name = 'utils/generics/update.html'
+    model = models.AdjustmentOrder
+    form_class = forms.AdjustmentOrderForm
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        client_credit = self.object.claimant.get_client().credit()
+        credit_value = self.object.credit_value
+        old_credit_value = self.get_object().credit_value
+        if old_credit_value:
+            client_credit += old_credit_value
+        if credit_value > client_credit:
+            messages.add_message(
+                self.request, messages.WARNING,
+                "Credit Value (%s) is greater than "
+                "Client's Credit (%s)." % (credit_value,
+                                           client_credit))
+            # return self.form_invalid(form)
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AdjustmentUpdateOrderView,
             self
         ).get_context_data(**kwargs)
         context['model_name_plural'] = self.model._meta.verbose_name_plural
@@ -355,6 +453,23 @@ class CoverageDeleteOrderView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(
             CoverageDeleteOrderView,
+            self
+        ).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.verbose_name
+        return context
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('order_list')
+        return self.success_url
+
+
+class AdjustmentDeleteOrderView(DeleteView):
+    template_name = 'utils/generics/delete.html'
+    model = models.AdjustmentOrder
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AdjustmentDeleteOrderView,
             self
         ).get_context_data(**kwargs)
         context['model_name'] = self.model._meta.verbose_name

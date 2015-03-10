@@ -70,6 +70,7 @@
             <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
             <th>Max Quantity</th>
             <th>Max Expected Back</th>
+            <th>Actual Paid Date</th>
         </tr>
         </thead>
         <tbody>
@@ -87,10 +88,11 @@
                     <td>{{ maxes.max_quantity }}</td>
                     <td>{{ maxes.max_expected_back }}</td>
                 {% endwith %}
+                <td>{{ claim_coverage.actual_paid_date }}</td>
             </tr>
             <tr>
                 <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
-                <td colspan="6">
+                <td colspan="7">
                     <div class="pull-left">
                         {% if claim_coverage.claimitem_set.all %}
                             <table class="table" style="display: inline-block;">
