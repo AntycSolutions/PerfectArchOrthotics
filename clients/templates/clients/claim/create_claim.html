@@ -296,10 +296,6 @@
              changeYear: true,
              yearRange: "1900:2015"});
     });
-    $(function() {
-        // This is the same as DateTimePicker widget
-        $("#id_submitted_datetime").datetimepicker({"language": "en-ca", "format": "YYYY-MM-DD hh:mm a"});
-    });
     {% for coverage_form in nestedformset %}
         $(function() {
             $( "#id_claimcoverage_set-{{ forloop.counter0 }}-actual_paid_date" ).datepicker(
