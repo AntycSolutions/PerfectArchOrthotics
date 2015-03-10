@@ -104,28 +104,40 @@ class ListOrderView(ListView):
             query_date_to_string = self.request.GET['dt']
             order_query = get_date_query(query_date_from_string,
                                          query_date_to_string, date_fields)
-            if queryset:
-                queryset = queryset.filter(order_query)
+            if order_query:
+                if queryset:
+                    queryset = queryset.filter(order_query)
+                else:
+                    queryset = models.Order.objects.filter(order_query)
             else:
-                queryset = models.Order.objects.filter(order_query)
+                messages.add_message(self.request, messages.WARNING,
+                                     "Invalid date. Please use MM/DD/YYYY.")
         elif ('df' in self.request.GET) and self.request.GET['df'].strip():
             date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
             query_date_from_string = self.request.GET['df']
             order_query = get_date_query(query_date_from_string,
                                          None, date_fields)
-            if queryset:
-                queryset = queryset.filter(order_query)
+            if order_query:
+                if queryset:
+                    queryset = queryset.filter(order_query)
+                else:
+                    queryset = models.Order.objects.filter(order_query)
             else:
-                queryset = models.Order.objects.filter(order_query)
+                messages.add_message(self.request, messages.WARNING,
+                                     "Invalid date. Please use MM/DD/YYYY.")
         elif ('dt' in self.request.GET) and self.request.GET['dt'].strip():
             date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
             query_date_to_string = self.request.GET['dt']
             order_query = get_date_query(None,
                                          query_date_to_string, date_fields)
-            if queryset:
-                queryset = queryset.filter(order_query)
+            if order_query:
+                if queryset:
+                    queryset = queryset.filter(order_query)
+                else:
+                    queryset = models.Order.objects.filter(order_query)
             else:
-                queryset = models.Order.objects.filter(order_query)
+                messages.add_message(self.request, messages.WARNING,
+                                     "Invalid date. Please use MM/DD/YYYY.")
 
         return queryset.distinct().extra(
             select={

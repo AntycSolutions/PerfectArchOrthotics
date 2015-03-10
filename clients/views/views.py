@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
+from django.contrib import messages
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -368,30 +369,42 @@ def claimSearchView(request):
         context_dict['dt'] = query_date_to_string
         claim_query = get_date_query(query_date_from_string,
                                      query_date_to_string, date_fields)
-        if found_claims:
-            found_claims = found_claims.filter(claim_query)
+        if claim_query:
+            if found_claims:
+                found_claims = found_claims.filter(claim_query)
+            else:
+                found_claims = Claim.objects.filter(claim_query)
         else:
-            found_claims = Claim.objects.filter(claim_query)
+            messages.add_message(request, messages.WARNING,
+                                 "Invalid date. Please use MM/DD/YYYY.")
     elif ('df' in request.GET) and request.GET['df'].strip():
         date_fields = ['submitted_datetime', 'insurance_paid_date']
         query_date_from_string = request.GET['df']
         context_dict['df'] = query_date_from_string
         claim_query = get_date_query(query_date_from_string,
                                      None, date_fields)
-        if found_claims:
-            found_claims = found_claims.filter(claim_query)
+        if claim_query:
+            if found_claims:
+                found_claims = found_claims.filter(claim_query)
+            else:
+                found_claims = Claim.objects.filter(claim_query)
         else:
-            found_claims = Claim.objects.filter(claim_query)
+            messages.add_message(request, messages.WARNING,
+                                 "Invalid date. Please use MM/DD/YYYY.")
     elif ('dt' in request.GET) and request.GET['dt'].strip():
         date_fields = ['submitted_datetime', 'insurance_paid_date']
         query_date_to_string = request.GET['dt']
         context_dict['dt'] = query_date_to_string
         claim_query = get_date_query(None,
                                      query_date_to_string, date_fields)
-        if found_claims:
-            found_claims = found_claims.filter(claim_query)
+        if claim_query:
+            if found_claims:
+                found_claims = found_claims.filter(claim_query)
+            else:
+                found_claims = Claim.objects.filter(claim_query)
         else:
-            found_claims = Claim.objects.filter(claim_query)
+            messages.add_message(request, messages.WARNING,
+                                 "Invalid date. Please use MM/DD/YYYY.")
 
     claims_total_amount_claimed = 0
     claims_total_expected_back = 0

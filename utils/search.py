@@ -57,17 +57,24 @@ def get_date_query(query_date_from_string, query_date_to_string,
 
     """
     query = None  # Query to search for every search term
-    try:
-        date_from = datetime.strptime(str(query_date_from_string), '%m/%d/%Y')
-        term_from = timezone.make_aware(date_from,
-                                        timezone.get_current_timezone())
-    except:
+    if query_date_from_string:
+        try:
+            date_from = datetime.strptime(str(query_date_from_string),
+                                          '%m/%d/%Y')
+            term_from = timezone.make_aware(date_from,
+                                            timezone.get_current_timezone())
+        except:
+            return None
+    else:
         term_from = None
-    try:
-        date_to = datetime.strptime(str(query_date_to_string), '%m/%d/%Y')
-        term_to = timezone.make_aware(date_to,
-                                      timezone.get_current_timezone())
-    except:
+    if query_date_to_string:
+        try:
+            date_to = datetime.strptime(str(query_date_to_string), '%m/%d/%Y')
+            term_to = timezone.make_aware(date_to,
+                                          timezone.get_current_timezone())
+        except:
+            return None
+    else:
         term_to = None
 
     or_query = None  # Query to search for a given term in each field
@@ -78,6 +85,8 @@ def get_date_query(query_date_from_string, query_date_to_string,
             q = Q(**{"%s__gte" % field_name: term_from})
         elif term_to:
             q = Q(**{"%s__lte" % field_name: term_to})
+        else:
+            q = None
 
         if or_query is None:
             or_query = q
