@@ -37,6 +37,5 @@ class Migration(migrations.Migration):
             model_name='shoeorder',
             name='shoe_attributes',
             field=models.ForeignKey(to='inventory.ShoeAttributes', verbose_name='Shoe', default=None),
-            preserve_default=False,
         ),
     ]
