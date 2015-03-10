@@ -240,15 +240,6 @@ def clients(request):
     client_list = Client.objects.order_by('-id')
 
     page = request.GET.get('page')
-
-    # paginator = Paginator(client_list, 5)
-    # try:
-    #     clients = paginator.page(page)
-    # except PageNotAnInteger:
-    #     clients = paginator.page(1)
-    # except EmptyPage:
-    #     clients = paginator.page(paginator.num_pages)
-
     clients_rows_per_page = _get_paginate_by(request, 'clients_rows_per_page')
     clients = _paginate(client_list, page, clients_rows_per_page)
 
@@ -265,19 +256,21 @@ def claimsView(request):
 
     claim_list = Claim.objects.order_by('-submitted_datetime')
 
-    page = request.GET.get('page')
+    claims_total_amount_claimed = 0
+    claims_total_expected_back = 0
+    for claim in claim_list:
+        claims_total_amount_claimed += (
+            claim.total_amount_quantity_claimed().total_amount_claimed
+        )
+        claims_total_expected_back += claim.total_expected_back()
 
-    # paginator = Paginator(claim_list, 5)
-    # try:
-    #     claims = paginator.page(page)
-    # except PageNotAnInteger:
-    #     claims = paginator.page(1)
-    # except EmptyPage:
-    #     claims = paginator.page(paginator.num_pages)
+    page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
     claims = _paginate(claim_list, page, claims_rows_per_page)
 
     context_dict = {'claims': claims,
+                    'claims_total_amount_claimed': claims_total_amount_claimed,
+                    'claims_total_expected_back': claims_total_expected_back,
                     'claims_rows_per_page': claims_rows_per_page,
                     }
 
@@ -307,15 +300,6 @@ def insuranceView(request):
     insurance_list = Insurance.objects.all()
 
     page = request.GET.get('page')
-
-    # paginator = Paginator(insurance_list, 5)
-    # try:
-    #     insurances = paginator.page(page)
-    # except PageNotAnInteger:
-    #     insurances = paginator.page(1)
-    # except EmptyPage:
-    #     insurances = paginator.page(paginator.num_pages)
-
     insurances_rows_per_page = _get_paginate_by(request,
                                                 'insurances_rows_per_page')
     insurances = _paginate(insurance_list, page, insurances_rows_per_page)
@@ -340,13 +324,6 @@ def clientSearchView(request):
         query_string = request.GET['q']
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
-        # paginator = Paginator(found_clients, 5)
-        # try:
-        #     clients = paginator.page(page)
-        # except PageNotAnInteger:
-        #     clients = paginator.page(1)
-        # except EmptyPage:
-        #     clients = paginator.page(paginator.num_pages)
 
         clients_rows_per_page = _get_paginate_by(request,
                                                  'clients_rows_per_page')
@@ -416,19 +393,22 @@ def claimSearchView(request):
         else:
             found_claims = Claim.objects.filter(claim_query)
 
+    claims_total_amount_claimed = 0
+    claims_total_expected_back = 0
+    for claim in found_claims:
+        claims_total_amount_claimed += (
+            claim.total_amount_quantity_claimed().total_amount_claimed
+        )
+        claims_total_expected_back += claim.total_expected_back()
+
     page = request.GET.get('page')
-    # paginator = Paginator(found_claims, 5)
-    # try:
-    #     claims = paginator.page(page)
-    # except PageNotAnInteger:
-    #     claims = paginator.page(1)
-    # except EmptyPage:
-    #     claims = paginator.page(paginator.num_pages)
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
     claims = _paginate(found_claims, page, claims_rows_per_page)
 
     context_dict['claims'] = claims
     context_dict['claims_rows_per_page'] = claims_rows_per_page
+    context_dict['claims_total_amount_claimed'] = claims_total_amount_claimed
+    context_dict['claims_total_expected_back'] = claims_total_expected_back
 
     return render_to_response('clients/claims.html',
                               context_dict,
@@ -449,13 +429,6 @@ def insuranceSearchView(request):
         query_string = request.GET['q']
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
-        # paginator = Paginator(found_insurances, 5)
-        # try:
-        #     insurances = paginator.page(page)
-        # except PageNotAnInteger:
-        #     insurances = paginator.page(1)
-        # except EmptyPage:
-        #     insurances = paginator.page(paginator.num_pages)
 
         insurances_rows_per_page = _get_paginate_by(request,
                                                     'insurances_rows_per_page')

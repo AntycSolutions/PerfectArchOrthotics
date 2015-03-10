@@ -69,5 +69,19 @@
     Rows per Page: <input type="number" id="claims_rows_per_page" name="claims_rows_per_page" value="{{ claims_rows_per_page }}">
     <input type="submit" class="btn" value="Paginate">
 </form>
+<table class="table table-striped table-cover">
+    <thead>
+        <tr>
+            <th>Claims Total Amount Claimed</th>
+            <th>Claims Total Expected Back</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ claims_total_amount_claimed }}</td>
+            <td>{{ claims_total_expected_back }}</td>
+        </tr>
+    </tbody>
+</table>
 
 {% endblock %}

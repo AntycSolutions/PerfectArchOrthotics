@@ -156,7 +156,7 @@ class Client(Person):
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
         credit = (total / 150) - float(claimed_credit)
-        return round(credit)
+        return round(credit, 2)
 
     def get_absolute_url(self):
         return reverse('client', kwargs={'client_id': self.id})
