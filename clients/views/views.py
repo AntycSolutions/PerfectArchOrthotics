@@ -14,6 +14,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib import messages
+from django.db.models import Sum
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -257,13 +258,17 @@ def claimsView(request):
 
     claim_list = Claim.objects.order_by('-submitted_datetime')
 
-    claims_total_amount_claimed = 0
-    claims_total_expected_back = 0
-    for claim in claim_list:
-        claims_total_amount_claimed += (
-            claim.total_amount_quantity_claimed().total_amount_claimed
-        )
-        claims_total_expected_back += claim.total_expected_back()
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=False
+    ).aggregate(
+        expected_back__sum=Sum('claim_coverage__expected_back'),
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum('item__unit_price',
+                                field='"clients_item"."unit_price" * quantity')
+    )
+    claims_total_expected_back = totals['expected_back__sum']
+    claims_total_amount_claimed = totals['amount_claimed__sum']
 
     page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
@@ -491,13 +496,18 @@ def clientView(request, client_id):
         if dependent.order_set.all():
             orders.append(_order_info(dependent, request))
 
-    client_total_amount_claimed = 0
-    client_total_expected_back = 0
-    for claim in claims:
-        client_total_amount_claimed += (
-            claim.total_amount_quantity_claimed().total_amount_claimed
-        )
-        client_total_expected_back += claim.total_expected_back()
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=False,
+        claim_coverage__claim__in=claims
+    ).aggregate(
+        expected_back__sum=Sum('claim_coverage__expected_back'),
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum('item__unit_price',
+                                field='"clients_item"."unit_price" * quantity')
+    )
+    client_total_expected_back = totals['expected_back__sum']
+    client_total_amount_claimed = totals['amount_claimed__sum']
 
     # Paginate Claims
     page = request.GET.get('claims_page')
