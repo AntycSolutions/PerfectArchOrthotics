@@ -44,6 +44,17 @@ class Person(models.Model):
     # ForeignKey
     # Client, Insurance, Coverage, Claim
 
+    def age(self):
+        if self.birth_date:
+            today = date.today()
+            return (
+                today.year
+                - self.birth_date.year
+                - ((today.month, today.day)
+                   < (self.birth_date.month, self.birth_date.day))
+            )
+        return None
+
     def full_name(self):
         if self.first_name or self.last_name:
             return "%s %s" % (self.first_name, self.last_name)
@@ -112,11 +123,6 @@ class Client(Person):
 
     # ForeignKey
     # Client, Dependent
-
-    def age(self):
-        if self.birth_date.year:
-            return date.today().year - self.birth_date.year
-        return None
 
     def _claimed_credit(self, person):
         claimed_credit = 0
