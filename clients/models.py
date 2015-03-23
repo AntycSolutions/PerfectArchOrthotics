@@ -212,7 +212,7 @@ class Insurance(models.Model):
         "Policy Number", max_length=128,
         blank=True)
     contract_number = models.CharField(
-        "Contract Number", max_length=128,
+        "ID Number", max_length=128,
         blank=True)
     benefits = models.CharField(
         "Benefits", max_length=4, choices=BENEFITS,
