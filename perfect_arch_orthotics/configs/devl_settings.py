@@ -41,8 +41,8 @@ BILL_TO = ()
 SHIP_TO = BILL_TO
 
 # Get from file
-# EMAIL_HOST_USER = ''
+EMAIL_HOST_USER = ''
 # Get from file
-# EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = ''
 
-# EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Devl]'
+EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Devl]'
