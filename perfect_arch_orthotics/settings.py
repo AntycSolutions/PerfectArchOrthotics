@@ -81,6 +81,16 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
+# Email
+EMAIL_USE_TLS = True
+# prod/dev
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+# dev
+# run "python -m smtpd -n -c DebuggingServer localhost:1025" first
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = 1025
+
 AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
 }
