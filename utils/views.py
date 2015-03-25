@@ -80,7 +80,10 @@ def _rescale(input_file, width, height, force=True):
         img = _update_orientation(img, orientation)
         img.save(tmp, 'JPEG', exif=exif_bytes)
     else:
-        img.save(tmp, 'JPEG')
+        if img.mode != 'RGB':
+            img.convert('RGB').save(tmp, 'JPEG')
+        else:
+            img.save(tmp, 'JPEG')
     tmp.seek(0)
     output_data = tmp.getvalue()
     img.close()
