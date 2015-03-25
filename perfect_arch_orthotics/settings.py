@@ -82,7 +82,7 @@ TEMPLATE_DIRS = (
 )
 
 # Email
-SERVER_EMAIL = 'root@perfectarch.antyc.ca'
+SERVER_EMAIL = 'Perfect Arch <root@perfectarch.antyc.ca>'
 EMAIL_USE_TLS = True
 # prod/dev
 EMAIL_HOST = 'smtp.sendgrid.net'
