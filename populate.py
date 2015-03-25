@@ -216,9 +216,9 @@ def add_shoe(name, image=None, category="", size="", availability="",
              brand="", style="", sku="", colour="", description="",
              credit_value=0, quantity=0, cost=0):
     s = Shoe.objects.get_or_create(
-        image=image, category=category, size=size, availability=availability,
+        image=image, category=category, availability=availability,
         brand=brand, style=style, name=name, sku=sku, colour=colour,
-        description=description, credit_value=credit_value, quantity=quantity,
+        description=description, credit_value=credit_value,
         cost=cost)
     return s[0]
 
