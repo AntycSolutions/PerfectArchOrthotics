@@ -129,13 +129,13 @@ def clients():
     # Add admin users
     # Have to hash passwords so get_or_create will work
     password = hashers.make_password("admin")
-    add_admin("admin", password)
-    add_admin("jay", password)
-    add_admin("dan", password)
-    add_admin("eric", password)
-    add_admin("chris", password)
+    add_admin("admin", password, "Admin")
+    add_admin("jay", password, "Jay")
+    add_admin("dan", password, "Dan")
+    add_admin("eric", password, "Eric")
+    add_admin("chris", password, "Chris")
 
-    add_admin("airith", hashers.make_password("perfectarch"))
+    add_admin("airith", hashers.make_password("perfectarch"), "Andrew")
 
 
 def inventory():
@@ -149,11 +149,12 @@ def inventory():
         s1, "1", 1)
 
 
-def add_admin(username, password):
+def add_admin(username, password, first_name):
     # Need to try and return here since django admin users are dumb
     try:
         a = User.objects.get_or_create(username=username,
                                        password=password,
+                                       first_name=first_name,
                                        is_staff=True,
                                        is_superuser=True)
         return a[0]
