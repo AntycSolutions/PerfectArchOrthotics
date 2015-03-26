@@ -338,8 +338,10 @@ class Item(models.Model, model_utils.FieldList):
     # Should be name or changed to TextField
     description = models.CharField(
         "Description", max_length=128)
+    cost = models.IntegerField(
+        "Cost", default=0)
     unit_price = models.IntegerField(
-        "Unit Price", default=0)
+        "Retail", default=0)
 
     # ManyToManyField
     # Claim

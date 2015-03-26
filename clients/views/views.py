@@ -258,27 +258,52 @@ def claimsView(request):
 
     claim_list = Claim.objects.order_by('-submitted_datetime')
 
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=False
+    ).aggregate(
+        expected_back__sum=Sum('expected_back'),
+    )
+    claims_total_expected_back = totals['expected_back__sum']
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=False
     ).aggregate(
-        expected_back__sum=Sum('claim_coverage__expected_back'),
         # first arg is a lie but needs to be item__unit_price to get the join
         # cant use item__unit_price as it needs raw sql in field kwarg
         amount_claimed__sum=Sum('item__unit_price',
                                 field='"clients_item"."unit_price" * quantity')
     )
-    claims_total_expected_back = totals['expected_back__sum']
     claims_total_amount_claimed = totals['amount_claimed__sum']
+
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=True
+    ).aggregate(
+        expected_back__sum=Sum('expected_back'),
+    )
+    pending_claims_total_expected_back = totals['expected_back__sum']
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=True
+    ).aggregate(
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum('item__unit_price',
+                                field='"clients_item"."unit_price" * quantity')
+    )
+    pending_claims_total_amount_claimed = totals['amount_claimed__sum']
 
     page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
     claims = _paginate(claim_list, page, claims_rows_per_page)
 
-    context_dict = {'claims': claims,
-                    'claims_total_amount_claimed': claims_total_amount_claimed,
-                    'claims_total_expected_back': claims_total_expected_back,
-                    'claims_rows_per_page': claims_rows_per_page,
-                    }
+    context_dict = {
+        'claims': claims,
+        'claims_total_amount_claimed': claims_total_amount_claimed,
+        'claims_total_expected_back': claims_total_expected_back,
+        'pending_claims_total_amount_claimed':
+            pending_claims_total_amount_claimed,
+        'pending_claims_total_expected_back':
+            pending_claims_total_expected_back,
+        'claims_rows_per_page': claims_rows_per_page,
+    }
 
     return render_to_response('clients/claims.html', context_dict, context)
 
@@ -411,18 +436,41 @@ def claimSearchView(request):
             messages.add_message(request, messages.WARNING,
                                  "Invalid date. Please use MM/DD/YYYY.")
 
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=False,
+        claim__in=found_claims,
+    ).aggregate(
+        expected_back__sum=Sum('expected_back'),
+    )
+    claims_total_expected_back = totals['expected_back__sum']
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=False,
         claim_coverage__claim__in=found_claims,
     ).aggregate(
-        expected_back__sum=Sum('claim_coverage__expected_back'),
         # first arg is a lie but needs to be item__unit_price to get the join
         # cant use item__unit_price as it needs raw sql in field kwarg
         amount_claimed__sum=Sum('item__unit_price',
                                 field='"clients_item"."unit_price" * quantity')
     )
-    claims_total_expected_back = totals['expected_back__sum']
     claims_total_amount_claimed = totals['amount_claimed__sum']
+
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=True,
+        claim__in=found_claims,
+    ).aggregate(
+        expected_back__sum=Sum('expected_back'),
+    )
+    pending_claims_total_expected_back = totals['expected_back__sum']
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=True,
+        claim_coverage__claim__in=found_claims,
+    ).aggregate(
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum('item__unit_price',
+                                field='"clients_item"."unit_price" * quantity')
+    )
+    pending_claims_total_amount_claimed = totals['amount_claimed__sum']
 
     page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
@@ -432,6 +480,12 @@ def claimSearchView(request):
     context_dict['claims_rows_per_page'] = claims_rows_per_page
     context_dict['claims_total_amount_claimed'] = claims_total_amount_claimed
     context_dict['claims_total_expected_back'] = claims_total_expected_back
+    context_dict[
+        'pending_claims_total_amount_claimed'
+    ] = pending_claims_total_amount_claimed
+    context_dict[
+        'pending_claims_total_expected_back'
+    ] = pending_claims_total_expected_back
 
     return render_to_response('clients/claims.html',
                               context_dict,
@@ -501,18 +555,51 @@ def clientView(request, client_id):
         if dependent.order_set.all():
             orders.append(_order_info(dependent, request))
 
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=False,
-        claim_coverage__claim__in=claims
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=False,
+        claim__in=claims,
     ).aggregate(
-        expected_back__sum=Sum('claim_coverage__expected_back'),
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum('item__unit_price',
-                                field='"clients_item"."unit_price" * quantity')
+        expected_back__sum=Sum('expected_back'),
     )
     client_total_expected_back = totals['expected_back__sum']
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=False,
+        claim_coverage__claim__in=claims,
+    ).aggregate(
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum(
+            'item__unit_price',
+            field='"clients_item"."unit_price" * quantity'
+        ),
+        cost__sum=Sum('item__cost',
+                      field='"clients_item"."cost" * quantity')
+    )
     client_total_amount_claimed = totals['amount_claimed__sum']
+    client_total_cost = totals['cost__sum']
+
+    totals = ClaimCoverage.objects.filter(
+        actual_paid_date__isnull=True,
+        claim__in=claims,
+    ).aggregate(
+        expected_back__sum=Sum('expected_back'),
+    )
+    pending_client_total_expected_back = totals['expected_back__sum']
+    totals = ClaimItem.objects.filter(
+        claim_coverage__actual_paid_date__isnull=True,
+        claim_coverage__claim__in=claims,
+    ).aggregate(
+        # first arg is a lie but needs to be item__unit_price to get the join
+        # cant use item__unit_price as it needs raw sql in field kwarg
+        amount_claimed__sum=Sum(
+            'item__unit_price',
+            field='"clients_item"."unit_price" * quantity'
+        ),
+        cost__sum=Sum('item__cost',
+                      field='"clients_item"."cost" * quantity')
+    )
+    pending_client_total_amount_claimed = totals['amount_claimed__sum']
+    pending_client_total_cost = totals['cost__sum']
 
     # Paginate Claims
     page = request.GET.get('claims_page')
@@ -524,15 +611,29 @@ def clientView(request, client_id):
     except EmptyPage:
         claims = paginator.page(paginator.num_pages)
 
-    context_dict = {'client': client,
-                    'client_insurance': insurance,
-                    'client_claims': claims,
-                    'client_total_amount_claimed': client_total_amount_claimed,
-                    'client_total_expected_back': client_total_expected_back,
-                    'orders': orders,
-                    'spouse': spouse,
-                    'children': children,
-                    'dependent_class': Dependent}
+    client_expected_back = (
+        client_total_expected_back + pending_client_total_expected_back
+    )
+    client_cost = client_total_cost + pending_client_total_cost
+
+    context_dict = {
+        'client': client,
+        'client_insurance': insurance,
+        'client_claims': claims,
+        'client_total_amount_claimed': client_total_amount_claimed,
+        'client_total_expected_back': client_total_expected_back,
+        'pending_client_total_amount_claimed':
+            pending_client_total_amount_claimed,
+        'pending_client_total_expected_back':
+            pending_client_total_expected_back,
+        'client_expected_back': client_expected_back,
+        'client_cost': client_cost,
+        'margin': client_expected_back - client_cost,
+        'orders': orders,
+        'spouse': spouse,
+        'children': children,
+        'dependent_class': Dependent
+    }
     return render_to_response('clients/client.html', context_dict, context)
 
 

@@ -75,8 +75,7 @@
         </ul>
         <h5>Other</h5>
         <ul>
-            <li>Credit: {{ client.credit }}<br />
-                (Sum of all Payment Made, Deposit, and Total Expected Back on Invoices/Claims with an Insurance Paid Date divided by 150, rounded up)
+            <li>Credit: {{ client.credit }}
             </li>
             <li>{% verbose_field_name client "referred_by" %}:
                 <a href="{{ client.referred_by.get_absolute_url }}">
@@ -229,13 +228,32 @@
             <thead>
                 <tr>
                     <th>Client Total Amount Claimed</th>
+                    <th>Pending Client Total Amount Claimed</th>
                     <th>Client Total Expected Back</th>
+                    <th>Pending Client Total Expected Back</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>{{ client_total_amount_claimed }}</td>
+                    <td>{{ pending_client_total_amount_claimed }}</td>
                     <td>{{ client_total_expected_back }}</td>
+                    <td>{{ pending_client_total_expected_back }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped table-cover">
+            <thead>
+                <tr>
+                    <th>Client Expected Back</th>
+                    <th>Client Cost</th>
+                    <th>Margin</th>
+                </tr>
+            <tbody>
+                <tr>
+                    <td>{{ client_expected_back }}</td>
+                    <td>{{ client_cost }}</td>
+                    <td>{{ margin }}</td>
                 </tr>
             </tbody>
         </table>

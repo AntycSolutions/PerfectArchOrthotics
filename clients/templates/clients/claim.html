@@ -102,6 +102,7 @@
                                 <th>{% verbose_field_name item_class "gender" %}</th>
                                 <th>{% verbose_field_name item_class "product_code" %}</th>
                                 <th>{% verbose_field_name item_class "description" %}</th>
+                                <th>{% verbose_field_name item_class "cost" %}</th>
                                 <th>{% verbose_field_name item_class "unit_price" %}</th>
                                 <th>{% verbose_field_name claim_item_class "quantity" %}</th>
                                 <th>Total</th>
@@ -114,6 +115,7 @@
                                     <td>{{ claim_item.item.get_gender_display }}</td>
                                     <td>{{ claim_item.item.product_code }}</td>
                                     <td>{{ claim_item.item.description }}</td>
+                                    <td>{{ claim_item.item.cost }}</td>
                                     <td>{{ claim_item.item.unit_price }}</td>
                                     <td>{{ claim_item.quantity }}</td>
                                     <td>{{ claim_item.amount }}</td>
