@@ -31,6 +31,12 @@ def order_update(request, pk):
                                             kwargs={'pk': order.pk}))
     except:
         pass
+    try:
+        order = models.AdjustmentOrder.objects.get(pk=pk)
+        return HttpResponseRedirect(reverse('adjustment_order_update',
+                                            kwargs={'pk': order.pk}))
+    except:
+        pass
 
 
 def order_delete(request, pk):
@@ -43,6 +49,12 @@ def order_delete(request, pk):
     try:
         order = models.CoverageOrder.objects.get(pk=pk)
         return HttpResponseRedirect(reverse('coverage_order_delete',
+                                            kwargs={'pk': order.pk}))
+    except:
+        pass
+    try:
+        order = models.AdjustmentOrder.objects.get(pk=pk)
+        return HttpResponseRedirect(reverse('adjustment_order_delete',
                                             kwargs={'pk': order.pk}))
     except:
         pass
