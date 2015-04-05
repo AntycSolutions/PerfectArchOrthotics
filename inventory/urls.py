@@ -72,13 +72,13 @@ order_patterns = patterns(
         login_required(order.ListOrderView.as_view()),
         name='order_list'),
     url(r'^(?P<pk>\d+)/$',
-        views.order_detail,
+        login_required(views.order_detail),
         name='order_detail'),
     url(r'^update/(?P<pk>\d+)/$',
-        views.order_update,
+        login_required(views.order_update),
         name='order_update'),
     url(r'^delete/(?P<pk>\d+)/$',
-        views.order_delete,
+        login_required(views.order_delete),
         name='order_delete'),
     url(r'^shoe/', include(shoe_order_patterns)),
     url(r'^coverage/', include(coverage_order_patterns)),
@@ -107,7 +107,9 @@ shoe_patterns = patterns(
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.index, name='inventory_index'),
+    url(r'^$',
+        login_required(views.index),
+        name='inventory_index'),
     url(r'^shoe/', include(shoe_patterns)),
     url(r'^order/', include(order_patterns)),
 )

@@ -561,7 +561,7 @@ def clientView(request, client_id):
     ).aggregate(
         expected_back__sum=Sum('expected_back'),
     )
-    client_total_expected_back = totals['expected_back__sum']
+    client_total_expected_back = totals['expected_back__sum'] or 0
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=False,
         claim_coverage__claim__in=claims,
@@ -576,7 +576,7 @@ def clientView(request, client_id):
                       field='"clients_item"."cost" * quantity')
     )
     client_total_amount_claimed = totals['amount_claimed__sum']
-    client_total_cost = totals['cost__sum']
+    client_total_cost = totals['cost__sum'] or 0
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=True,
@@ -584,7 +584,7 @@ def clientView(request, client_id):
     ).aggregate(
         expected_back__sum=Sum('expected_back'),
     )
-    pending_client_total_expected_back = totals['expected_back__sum']
+    pending_client_total_expected_back = totals['expected_back__sum'] or 0
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=True,
         claim_coverage__claim__in=claims,
@@ -599,7 +599,7 @@ def clientView(request, client_id):
                       field='"clients_item"."cost" * quantity')
     )
     pending_client_total_amount_claimed = totals['amount_claimed__sum']
-    pending_client_total_cost = totals['cost__sum']
+    pending_client_total_cost = totals['cost__sum'] or 0
 
     # Paginate Claims
     page = request.GET.get('claims_page')

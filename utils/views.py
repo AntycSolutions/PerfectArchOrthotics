@@ -3,6 +3,9 @@ import urllib
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib import messages
+
+from utils.search import get_date_query
 
 
 def _get_exif(filename):
@@ -100,3 +103,59 @@ def get_thumbnail(request, width, height, url):
     path = os.path.join(media_root, partial_path)
     thumbnail = _rescale(path, width, height, force=False)
     return HttpResponse(thumbnail, 'image/jpg')
+
+
+def _date_search(request, fields, model, queryset=None):
+    if not queryset:
+        queryset = model.objects.all()
+
+    if (('df' in request.GET) and request.GET['df'].strip()
+            and ('dt' in request.GET)
+            and request.GET['dt'].strip()):
+        query_date_from_string = request.GET['df']
+        query_date_to_string = request.GET['dt']
+        date_query = get_date_query(
+            query_date_from_string, query_date_to_string, fields
+        )
+        if date_query:
+            if queryset:
+                queryset = queryset.filter(date_query)
+            else:
+                queryset = model.objects.filter(date_query)
+        else:
+            messages.add_message(
+                request, messages.WARNING,
+                "Invalid date. Please use MM/DD/YYYY."
+            )
+    elif ('df' in request.GET) and request.GET['df'].strip():
+        query_date_from_string = request.GET['df']
+        date_query = get_date_query(
+            query_date_from_string, None, fields
+        )
+        if date_query:
+            if queryset:
+                queryset = queryset.filter(date_query)
+            else:
+                queryset = model.objects.filter(date_query)
+        else:
+            messages.add_message(
+                request, messages.WARNING,
+                "Invalid date. Please use MM/DD/YYYY."
+            )
+    elif ('dt' in request.GET) and request.GET['dt'].strip():
+        query_date_to_string = request.GET['dt']
+        date_query = get_date_query(
+            None, query_date_to_string, fields
+        )
+        if date_query:
+            if queryset:
+                queryset = queryset.filter(date_query)
+            else:
+                queryset = model.objects.filter(date_query)
+        else:
+            messages.add_message(
+                request, messages.WARNING,
+                "Invalid date. Please use MM/DD/YYYY."
+            )
+
+    return queryset

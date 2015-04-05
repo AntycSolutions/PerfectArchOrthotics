@@ -31,6 +31,44 @@
                     <dt>Revenue:</dt>
                     <dd>{{ statistics.revenue }}</dd>
                 </dl>
+                <h5>Insurance Providers</h5>
+                <form method="get">
+                    <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
+                    <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+                    <script>
+                        $(function() {
+                            $("#dateFromSearchBox").datepicker(
+                                {changeMonth: true,
+                                 changeYear: true,
+                                 yearRange: "1900:2015"});
+                            $("#dateToSearchBox").datepicker(
+                                {changeMonth: true,
+                                 changeYear: true,
+                                 yearRange: "1900:2015"});
+                        });
+                    </script>
+                    <input type="submit" class="btn" value="Search">
+                </form>
+                <table class="table table-striped table-cover">
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Number of Claims</th>
+                            <th>Total Expected Back</th>
+                            <th>Total Amount Claimed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insurance in insurances %}
+                            <tr>
+                                <td>{{ insurance.provider }}</a></td>
+                                <td>{{ insurance.num_claims }}</td>
+                                <td>{{ insurance.expected_back__sum }}</td>
+                                <td>{{ insurance.amount_claimed__sum }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 <h5>Top 10 Best Sellers</h5>
                 <table class="table table-striped table-cover">
                     <thead>
