@@ -374,6 +374,11 @@ class Claim(models.Model):
         "Insurance Paid Date",
         blank=True, null=True)
 
+    claim_package = models.FileField(
+        "Claim Package",
+        upload_to='clients/claim_packages/%Y/%m/%d',
+        null=True, blank=True)
+
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage
 

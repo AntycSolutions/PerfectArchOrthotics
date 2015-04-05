@@ -32,6 +32,11 @@
         <li>{% verbose_field_name claim "insurance_paid_date" %}:
             {{ claim.insurance_paid_date }}
         </li>
+        <li>{% verbose_field_name claim "claim_package" %}:
+            {% if claim.claim_package %}
+                <a href="{{ claim.claim_package.url }}">Click Here</a>
+            {% endif %}
+        </li>
     </ul>
     <table class="table table-striped">
         <thead>

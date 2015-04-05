@@ -142,7 +142,7 @@
 <h1>Edit Claim information</h1>
 <p>Client: <a href="{{ claim.patient.get_client.get_absolute_url }}">{{ claim.patient.get_client.full_name }}</a>
 </p>
-<form id="update_claim_form" class="form-horizontal" method="post">
+<form id="update_claim_form" class="form-horizontal" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <h5>Claim</h5>
     {{ claim_form.non_field_errors }}
