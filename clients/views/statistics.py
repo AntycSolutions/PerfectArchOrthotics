@@ -17,7 +17,7 @@ class Statistics(TemplateView):
         context = super(Statistics, self).get_context_data(**kwargs)
 
         statistics = clients_models.SiteStatistics.objects.get_or_create(
-            pk=0
+            pk=1
         )[0]
         context['statistics'] = statistics
 
