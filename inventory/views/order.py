@@ -1,4 +1,5 @@
 import collections
+from decimal import Decimal
 
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
@@ -413,7 +414,7 @@ class AdjustmentUpdateOrderView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        client_credit = self.object.claimant.get_client().credit()
+        client_credit = Decimal(self.object.claimant.get_client().credit())
         credit_value = self.object.credit_value
         old_credit_value = self.get_object().credit_value
         if old_credit_value:
