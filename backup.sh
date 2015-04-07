@@ -6,10 +6,10 @@ now=$(date +"%Y_%m_%d")
 if [ -e "../devl" ]
 then
     filename="devl"
-elif [ -e "../test"]
+elif [ -e "../test" ]
 then
     filename="test"
-elif [ -e "../prod"]
+elif [ -e "../prod" ]
 then
     filename="prod"
 fi
