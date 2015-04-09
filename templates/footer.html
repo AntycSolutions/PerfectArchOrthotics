@@ -4,8 +4,8 @@
 <!-- Footer -->
 <div class="footer">
     <!-- Active users -->
-    <div style="float: right; margin-right: 1%;">
-        <p class="text-muted" style="margin-top: 20px;">
+    <div style="float: right; margin-right: 1%; width: 30%;">
+        <p class="text-muted" style="text-align: right; margin-top: 20px;">
             {% if user.is_authenticated %}
                 {% get_active_users as active_users %}
                 {% if active_users %}
@@ -18,7 +18,7 @@
         </p>
     </div>
     <!-- Copyright/year -->
-    <div style="margin: 0 auto; width: 35%;">
+    <div style="margin: 0 auto; width: 30%;">
         <p class="text-muted" style="text-align: center; margin-top: 20px;">
             © The Perfect Arch Orthotics {% now 'Y' %}.
         </p>
