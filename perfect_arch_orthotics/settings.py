@@ -41,6 +41,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.active_users.ActiveUserMiddleware',
 )
 
 ROOT_URLCONF = 'perfect_arch_orthotics.urls'
