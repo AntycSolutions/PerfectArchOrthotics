@@ -139,6 +139,7 @@
 
 {% block content %}
 
+{% include 'clients/snippets/messages.html' %}
 <h1>Edit Claim information</h1>
 <p>Client: <a href="{{ claim.patient.get_client.get_absolute_url }}">{{ claim.patient.get_client.full_name }}</a>
 </p>
