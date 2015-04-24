@@ -8,7 +8,7 @@
 
 <div class="jumbotron">
     <div style="text-align: center;">
-        <img src="{% static 'images/PerfectArchLogo.jpg' %}">
+        <img class="lazy" data-src="{% static 'images/PerfectArchLogo.jpg' %}">
     </div>
     <h1>Welcome</h1>
     <h2>The Perfect Arch Orthotics</h2>
@@ -17,4 +17,8 @@
     it will literally knock your socks off!</p>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+{% include 'utils/snippets/lazy.html' %}
 {% endblock %}
