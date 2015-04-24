@@ -2,12 +2,14 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.forms.models import inlineformset_factory
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem, Dependent
 from clients.forms.forms import ClaimForm, InvoiceForm, \
     InsuranceLetterForm, ProofOfManufacturingForm, \
-    LaboratoryInsuranceLetterFormSet, nestedformset_factory
+    LaboratoryInsuranceLetterFormSet, nestedformset_factory, \
+    MinimumNestedFormSet, MinimumInlineFormSet, minimum_nestedformset_factory
 
 
 class CreateClaimView(CreateView):
@@ -26,10 +28,15 @@ class CreateClaimView(CreateView):
         form_class = self.get_form_class()
         claim_form = self.get_form(form_class)
 
-        ClaimCoverageFormFormSet = nestedformset_factory(
-            Claim, ClaimCoverage, ClaimItem,
-            extra=1, exclude=('items',),  # formset=CoverageFormSet,
-            nested_extra=1, nested_fields='__all__')
+        ClaimCoverageFormFormSet = minimum_nestedformset_factory(
+            Claim, ClaimCoverage,
+            inlineformset_factory(
+                ClaimCoverage, ClaimItem,
+                formset=MinimumInlineFormSet, extra=1, fields='__all__',
+            ),
+            minimum_name="Coverage", minimum_name_nested="Item",
+            extra=1, exclude=('items',),
+        )
         nestedformset = ClaimCoverageFormFormSet()
 
         insurances = claim_form.client.insurance_set.all()
@@ -80,18 +87,23 @@ class CreateClaimView(CreateView):
 
         return self.render_to_response(
             self.get_context_data(claim_form=claim_form,
-                                  nestedformset=nestedformset
-                                  ))
+                                  nestedformset=nestedformset)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
         claim_form = self.get_form(form_class)
 
-        ClaimCoverageFormFormSet = nestedformset_factory(
-            Claim, ClaimCoverage, ClaimItem,
-            extra=1, exclude=('items',),  # formset=CoverageFormSet,
-            nested_extra=1, nested_fields='__all__')
+        ClaimCoverageFormFormSet = minimum_nestedformset_factory(
+            Claim, ClaimCoverage,
+            inlineformset_factory(
+                ClaimCoverage, ClaimItem,
+                formset=MinimumInlineFormSet, extra=1, fields='__all__',
+            ),
+            minimum_name="Coverage", minimum_name_nested="Item",
+            extra=1, exclude=('items',),
+        )
         nestedformset = ClaimCoverageFormFormSet(request.POST)
 
         insurances = claim_form.client.insurance_set.all()
@@ -137,39 +149,29 @@ class CreateClaimView(CreateView):
                 'item'].queryset = items.order_by('coverage_type',
                                                   'product_code', 'gender')
 
-        if (claim_form.is_valid()
-                and nestedformset.is_valid()):
-            return self.form_valid(claim_form,
-                                   nestedformset
-                                   )
+        if claim_form.is_valid() and nestedformset.is_valid():
+            return self.form_valid(claim_form, nestedformset)
         else:
-            return self.form_invalid(claim_form,
-                                     nestedformset
-                                     )
+            return self.form_invalid(claim_form, nestedformset)
 
-    def form_valid(self, claim_form,
-                   nestedformset
-                   ):
-        self.object = claim_form.save()
+    def form_valid(self, claim_form, nestedformset):
         object_tuples = nestedformset.save(commit=False)
+
+        self.object = claim_form.save()
         for claim_coverage, claim_items in object_tuples:
-            if claim_coverage:
-                claim_coverage.claim = self.object
-                claim_coverage.save()
-                if claim_items:
-                    for claim_item in claim_items:
-                        claim_item.claim_coverage = claim_coverage
-                        claim_item.save()
+            claim_coverage.claim = self.object
+            claim_coverage.save()
+            for claim_item in claim_items:
+                claim_item.claim_coverage = claim_coverage
+                claim_item.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, claim_form,
-                     nestedformset
-                     ):
+    def form_invalid(self, claim_form, nestedformset):
         return self.render_to_response(
             self.get_context_data(claim_form=claim_form,
-                                  nestedformset=nestedformset
-                                  ))
+                                  nestedformset=nestedformset)
+        )
 
     def get_success_url(self):
         self.success_url = reverse_lazy('claim',
@@ -200,10 +202,15 @@ class UpdateClaimView(UpdateView):
         form_class = self.get_form_class()
         claim_form = self.get_form(form_class)
 
-        ClaimCoverageFormFormSet = nestedformset_factory(
-            Claim, ClaimCoverage, ClaimItem,
-            extra=1, exclude=('items',),  # formset=CoverageFormSet,
-            nested_extra=1, nested_fields='__all__')
+        ClaimCoverageFormFormSet = minimum_nestedformset_factory(
+            Claim, ClaimCoverage,
+            inlineformset_factory(
+                ClaimCoverage, ClaimItem,
+                formset=MinimumInlineFormSet, extra=1, fields='__all__',
+            ),
+            minimum_name="Coverage", minimum_name_nested="Item",
+            extra=1, exclude=('items',),
+        )
         nestedformset = ClaimCoverageFormFormSet(instance=self.object)
 
         insurances = claim_form.client.insurance_set.all()
@@ -254,18 +261,23 @@ class UpdateClaimView(UpdateView):
 
         return self.render_to_response(
             self.get_context_data(claim_form=claim_form,
-                                  nestedformset=nestedformset
-                                  ))
+                                  nestedformset=nestedformset)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
         claim_form = self.get_form(form_class)
 
-        ClaimCoverageFormFormSet = nestedformset_factory(
-            Claim, ClaimCoverage, ClaimItem,
-            extra=1, exclude=('items',),  # formset=CoverageFormSet,
-            nested_extra=1, nested_fields='__all__')
+        ClaimCoverageFormFormSet = minimum_nestedformset_factory(
+            Claim, ClaimCoverage,
+            inlineformset_factory(
+                ClaimCoverage, ClaimItem,
+                formset=MinimumInlineFormSet, extra=1, fields='__all__',
+            ),
+            minimum_name="Coverage", minimum_name_nested="Item",
+            extra=1, exclude=('items',),
+        )
         nestedformset = ClaimCoverageFormFormSet(
             request.POST, instance=self.object)
 
@@ -314,38 +326,22 @@ class UpdateClaimView(UpdateView):
                 'item'].queryset = items.order_by('coverage_type',
                                                   'product_code', 'gender')
 
-        if (claim_form.is_valid()
-                and nestedformset.is_valid()):
-            return self.form_valid(claim_form,
-                                   nestedformset
-                                   )
+        if claim_form.is_valid() and nestedformset.is_valid():
+            return self.form_valid(claim_form, nestedformset)
         else:
-            return self.form_invalid(claim_form,
-                                     nestedformset
-                                     )
+            return self.form_invalid(claim_form, nestedformset)
 
-    def form_valid(self, claim_form,
-                   nestedformset
-                   ):
+    def form_valid(self, claim_form, nestedformset):
         self.object = claim_form.save()
-        object_tuples = nestedformset.save(commit=False)
-        for claim_coverage, claim_items in object_tuples:
-            if claim_coverage:
-                claim_coverage.save()
-                if claim_items:
-                    for claim_item in claim_items:
-                        claim_item.claim_coverage = claim_coverage
-                        claim_item.save()
+        nestedformset.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, claim_form,
-                     nestedformset
-                     ):
+    def form_invalid(self, claim_form, nestedformset):
         return self.render_to_response(
             self.get_context_data(claim_form=claim_form,
-                                  nestedformset=nestedformset
-                                  ))
+                                  nestedformset=nestedformset)
+        )
 
     def get_success_url(self):
         self.success_url = reverse_lazy('claim',
@@ -417,9 +413,8 @@ class UpdateInsuranceLetterView(UpdateView):
         laboratory_form = LaboratoryInsuranceLetterFormSet(
             instance=self.object)
         return self.render_to_response(
-            self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form
-                                  ))
+            self.get_context_data(form=form, laboratory_form=laboratory_form)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -427,31 +422,22 @@ class UpdateInsuranceLetterView(UpdateView):
         form = self.get_form(form_class)
         laboratory_form = LaboratoryInsuranceLetterFormSet(
             request.POST, instance=self.object)
-        if (form.is_valid()
-                and laboratory_form.is_valid()):
-            return self.form_valid(form,
-                                   laboratory_form
-                                   )
+        if form.is_valid() and laboratory_form.is_valid():
+            return self.form_valid(form, laboratory_form)
         else:
-            return self.form_invalid(form,
-                                     laboratory_form
-                                     )
+            return self.form_invalid(form, laboratory_form)
 
-    def form_valid(self, form,
-                   laboratory_form
-                   ):
+    def form_valid(self, form, laboratory_form):
         self.object = form.save()
         laboratory_form.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form,
-                     laboratory_form
-                     ):
+    def form_invalid(self, form, laboratory_form):
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form
-                                  ))
+                                  laboratory_form=laboratory_form)
+        )
 
     def get_success_url(self):
         claim_id = self.object.claim.id
@@ -471,28 +457,20 @@ class CreateInsuranceLetterView(CreateView):
         form = self.get_form(form_class)
         laboratory_form = LaboratoryInsuranceLetterFormSet()
         return self.render_to_response(
-            self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form
-                                  ))
+            self.get_context_data(form=form, laboratory_form=laboratory_form)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         laboratory_form = LaboratoryInsuranceLetterFormSet(request.POST)
-        if (form.is_valid()
-                and laboratory_form.is_valid()):
-            return self.form_valid(form,
-                                   laboratory_form
-                                   )
+        if form.is_valid() and laboratory_form.is_valid():
+            return self.form_valid(form, laboratory_form)
         else:
-            return self.form_invalid(form,
-                                     laboratory_form
-                                     )
+            return self.form_invalid(form, laboratory_form)
 
-    def form_valid(self, form,
-                   laboratory_form
-                   ):
+    def form_valid(self, form, laboratory_form):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         self.object.claim = claim
@@ -502,13 +480,10 @@ class CreateInsuranceLetterView(CreateView):
 
         return HttpResponseRedirect(self.get_success_url(claim))
 
-    def form_invalid(self, form,
-                     laboratory_form
-                     ):
+    def form_invalid(self, form, laboratory_form):
         return self.render_to_response(
-            self.get_context_data(form=form,
-                                  laboratory_form=laboratory_form
-                                  ))
+            self.get_context_data(form=form, laboratory_form=laboratory_form)
+        )
 
     def get_success_url(self, claim):
         claim_id = claim.id
