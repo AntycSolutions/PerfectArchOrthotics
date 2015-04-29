@@ -122,10 +122,9 @@ class Statistics(TemplateView):
             'provider'
         ).annotate(
             amount_claimed__sum=Sum(
-                'claim__claimcoverage__claimitem__item__unit_price',
-                field='"clients_item"."unit_price"'
-                      ' * "clients_claimitem".quantity'
-            )
+                F('claim__claimcoverage__claimitem__item__unit_price')
+                + F('claim__claimcoverage__claimitem__quantity')
+            ),
         )
         # Combine the 3 above query's results into one
         insurances_chain = chain(
@@ -145,9 +144,9 @@ class Statistics(TemplateView):
         for insurance in insurances:
             insurances_totals['num_claims'] += insurance['num_claims']
             insurances_totals['amount_claimed__sum'] += \
-                insurance['amount_claimed__sum'] or 0
+                (insurance['amount_claimed__sum'] or 0)
             insurances_totals['expected_back__sum'] += \
-                insurance['expected_back__sum'] or 0
+                (insurance['expected_back__sum'] or 0)
 
         return insurances_totals
 
