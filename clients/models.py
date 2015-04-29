@@ -4,6 +4,7 @@ import collections
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from utils import model_utils
 
@@ -419,8 +420,14 @@ class Claim(models.Model):
             insurance = self.insurance
         except:
             insurance = None
+        try:
+            submitted_datetime = timezone.localtime(self.submitted_datetime)
+            submitted_datetime = submitted_datetime.strftime(
+                "%Y-%m-%d %I:%M %p")
+        except:
+            submitted_datetime = None
         return "Submitted Datetime: %s %s - %s" % (
-            self.submitted_datetime.strftime("%Y-%m-%d %I:%M %p"),
+            submitted_datetime,
             patient,
             insurance)
 
@@ -864,28 +871,6 @@ class Laboratory(models.Model):
 
     def __unicode__(self):
         return self.get_information_display().split('\n')[0]
-
-    def __str__(self):
-        return self.__unicode__()
-
-
-class SiteStatistics(models.Model):
-
-    def outstanding_fees(self):
-        return 0
-
-    def number_of_clients_with_outstanding_fees(self):
-        return 0
-
-    def revenue(self):
-        revenue = 0
-        for invoice in Invoice.objects.all():
-            revenue += invoice.payment_made + invoice.deposit
-        return revenue
-
-    def __unicode__(self):
-        # Shouldnt be called
-        return "Site Statistics (%s)" % self.pk
 
     def __str__(self):
         return self.__unicode__()
