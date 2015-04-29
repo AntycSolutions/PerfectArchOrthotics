@@ -453,7 +453,7 @@ def claimSearchView(request):
     ).aggregate(
         expected_back__sum=Sum('expected_back'),
     )
-    claims_total_expected_back = totals['expected_back__sum']
+    claims_total_expected_back = (totals['expected_back__sum'] or 0)
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=False,
         claim_coverage__claim__in=found_claims,
@@ -463,7 +463,7 @@ def claimSearchView(request):
             * F('quantity')
         ),
     )
-    claims_total_amount_claimed = totals['amount_claimed__sum']
+    claims_total_amount_claimed = (totals['amount_claimed__sum'] or 0)
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=True,
@@ -471,7 +471,7 @@ def claimSearchView(request):
     ).aggregate(
         expected_back__sum=Sum('expected_back'),
     )
-    pending_claims_total_expected_back = totals['expected_back__sum']
+    pending_claims_total_expected_back = (totals['expected_back__sum'] or 0)
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=True,
         claim_coverage__claim__in=found_claims,
@@ -481,7 +481,7 @@ def claimSearchView(request):
             * F('quantity')
         ),
     )
-    pending_claims_total_amount_claimed = totals['amount_claimed__sum']
+    pending_claims_total_amount_claimed = (totals['amount_claimed__sum'] or 0)
 
     page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')

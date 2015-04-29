@@ -29,8 +29,14 @@
                     <dd>{{ stats.outstanding_clients }}</dd>
                     <dt>Outstanding fees:</dt>
                     <dd>{{ stats.outstanding_fees }}</dd>
-                    <dt>Revenue:</dt>
-                    <dd>{{ stats.revenue }}</dd>
+                    <br />
+                    <dt>Invoice Revenue:</dt>
+                    <dd>{{ stats.invoice_revenue }}</dd>
+                    <dt>Expected Back Revenue:</dt>
+                    <dd>{{ stats.expected_back_revenue }}</dd>
+                    <dt>Total Revenue:</dt>
+                    <dd>{{ stats.total_revenue }}</dd>
+                    <br />
                     <dt>Total:</dt>
                     <dd style="font-weight: bold;">{{ stats.total }}</dd>
                 </dl>
@@ -67,8 +73,8 @@
                                 <tr>
                                     <td>{{ insurance.provider }}</a></td>
                                     <td>{{ insurance.num_claims }}</td>
-                                    <td>{{ insurance.expected_back__sum|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.amount_claimed__sum|default_if_none:"0" }}</td>
+                                    <td>{{ insurance.expected_back__sum }}</td>
+                                    <td>{{ insurance.amount_claimed__sum }}</td>
                                 </tr>
                             {% endfor %}
                             <tr>

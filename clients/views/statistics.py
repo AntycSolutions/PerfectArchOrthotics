@@ -41,7 +41,7 @@ class Statistics(TemplateView):
 
     def _stats(self):
         revenue_claims = clients_models.Claim.objects.annotate(
-            revenue=(
+            invoice_revenue=(
                 Coalesce(F('invoice__payment_made'), 0)
                 + Coalesce(F('invoice__deposit'), 0)
             ),
@@ -56,7 +56,7 @@ class Statistics(TemplateView):
                 )
             ),
         ).annotate(
-            total_revenue=F('expected_back_revenue') + F('revenue')
+            total_revenue=F('expected_back_revenue') + F('invoice_revenue')
         )
 
         outstanding_claims = clients_models.Claim.objects.annotate(
@@ -68,7 +68,8 @@ class Statistics(TemplateView):
 
         # annotatations are done via join and not subquery, this duplicates
         #  data and makes it so that the two above queries cannot be joined
-        revenue = 0
+        invoice_revenue = 0
+        expected_back_revenue = 0
         outstanding_fees = 0
         outstanding_clients = set()
         claims = zip(revenue_claims, outstanding_claims)
@@ -79,14 +80,18 @@ class Statistics(TemplateView):
                     outstanding_claim.total_amount
                     - revenue_claim.total_revenue
                 )
-            revenue += revenue_claim.total_revenue
+            invoice_revenue += revenue_claim.invoice_revenue
+            expected_back_revenue = revenue_claim.expected_back_revenue
             outstanding_fees += amount_remaining
             outstanding_clients.add(revenue_claim.patient_id)
 
+        total_revenue = invoice_revenue + expected_back_revenue
         stats_dict = {
-            'revenue': revenue,
+            'invoice_revenue': invoice_revenue,
+            'expected_back_revenue': expected_back_revenue,
             'outstanding_fees': outstanding_fees,
-            'total': revenue + outstanding_fees,
+            'total_revenue': total_revenue,
+            'total': total_revenue + outstanding_fees,
             'outstanding_clients': len(outstanding_clients)
         }
 
