@@ -436,6 +436,17 @@ def claimSearchView(request):
             messages.add_message(request, messages.WARNING,
                                  "Invalid date. Please use MM/DD/YYYY.")
 
+    if 'apd' in request.GET:
+        context_dict['apd'] = True
+        if found_claims:
+            found_claims = found_claims.filter(
+                claimcoverage__actual_paid_date__isnull=True
+            ).distinct()
+        else:
+            found_claims = Claim.objects.filter(
+                claimcoverage__actual_paid_date__isnull=True
+            ).distinct()
+
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=False,
         claim__in=found_claims,
