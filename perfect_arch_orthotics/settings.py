@@ -52,10 +52,8 @@ WSGI_APPLICATION = 'perfect_arch_orthotics.wsgi.application'
 DATABASES = {}
 
 # Internationalization
-LANGUAGE_CODE = 'en-ca'
 TIME_ZONE = 'America/Edmonton'
-USE_I18N = True
-USE_L10N = True
+USE_I18N = False
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
