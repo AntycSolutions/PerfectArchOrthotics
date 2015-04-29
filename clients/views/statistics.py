@@ -116,7 +116,9 @@ class Statistics(TemplateView):
         insurances_expected_back = date_queryset.values(
             'provider'
         ).annotate(
-            expected_back__sum=Sum('claim__claimcoverage__expected_back')
+            expected_back__sum=Sum(
+                Coalesce('claim__claimcoverage__expected_back', 0)
+            ),
         )
         # Total amount claimed
         date_queryset = views._date_search(
@@ -127,8 +129,10 @@ class Statistics(TemplateView):
             'provider'
         ).annotate(
             amount_claimed__sum=Sum(
-                F('claim__claimcoverage__claimitem__item__unit_price')
-                * F('claim__claimcoverage__claimitem__quantity')
+                Coalesce(
+                    F('claim__claimcoverage__claimitem__item__unit_price'), 0
+                )
+                * Coalesce(F('claim__claimcoverage__claimitem__quantity'), 0)
             ),
         )
         # Combine the 3 above query's results into one
