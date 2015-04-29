@@ -8,8 +8,8 @@ from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem, Dependent
 from clients.forms.forms import ClaimForm, InvoiceForm, \
     InsuranceLetterForm, ProofOfManufacturingForm, \
-    LaboratoryInsuranceLetterFormSet, nestedformset_factory, \
-    MinimumNestedFormSet, MinimumInlineFormSet, minimum_nestedformset_factory
+    LaboratoryInsuranceLetterFormSet, \
+    MinimumInlineFormSet, minimum_nestedformset_factory
 
 
 class CreateClaimView(CreateView):
@@ -155,15 +155,10 @@ class CreateClaimView(CreateView):
             return self.form_invalid(claim_form, nestedformset)
 
     def form_valid(self, claim_form, nestedformset):
-        object_tuples = nestedformset.save(commit=False)
-
         self.object = claim_form.save()
-        for claim_coverage, claim_items in object_tuples:
-            claim_coverage.claim = self.object
-            claim_coverage.save()
-            for claim_item in claim_items:
-                claim_item.claim_coverage = claim_coverage
-                claim_item.save()
+
+        nestedformset.instance = self.object
+        nestedformset.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
