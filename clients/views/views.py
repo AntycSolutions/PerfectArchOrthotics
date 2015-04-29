@@ -14,7 +14,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import Sum, F
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -24,7 +24,7 @@ from utils.search import get_query, get_date_query
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients.forms.forms import ClientForm, DependentForm, \
-    ClaimForm, nestedformset_factory
+    ClaimForm
 
 
 #TODO: split into multiple views
@@ -267,10 +267,10 @@ def claimsView(request):
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=False
     ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum('item__unit_price',
-                                field='"clients_item"."unit_price" * quantity')
+        amount_claimed__sum=Sum(
+            F('item__unit_price')
+            * F('quantity')
+        ),
     )
     claims_total_amount_claimed = totals['amount_claimed__sum']
 
@@ -283,10 +283,10 @@ def claimsView(request):
     totals = ClaimItem.objects.filter(
         claim_coverage__actual_paid_date__isnull=True
     ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum('item__unit_price',
-                                field='"clients_item"."unit_price" * quantity')
+        amount_claimed__sum=Sum(
+            F('item__unit_price')
+            * F('quantity')
+        ),
     )
     pending_claims_total_amount_claimed = totals['amount_claimed__sum']
 
@@ -458,10 +458,10 @@ def claimSearchView(request):
         claim_coverage__actual_paid_date__isnull=False,
         claim_coverage__claim__in=found_claims,
     ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum('item__unit_price',
-                                field='"clients_item"."unit_price" * quantity')
+        amount_claimed__sum=Sum(
+            F('item__unit_price')
+            * F('quantity')
+        ),
     )
     claims_total_amount_claimed = totals['amount_claimed__sum']
 
@@ -476,10 +476,10 @@ def claimSearchView(request):
         claim_coverage__actual_paid_date__isnull=True,
         claim_coverage__claim__in=found_claims,
     ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum('item__unit_price',
-                                field='"clients_item"."unit_price" * quantity')
+        amount_claimed__sum=Sum(
+            F('item__unit_price')
+            * F('quantity')
+        ),
     )
     pending_claims_total_amount_claimed = totals['amount_claimed__sum']
 
