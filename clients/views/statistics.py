@@ -123,7 +123,7 @@ class Statistics(TemplateView):
         ).annotate(
             amount_claimed__sum=Sum(
                 F('claim__claimcoverage__claimitem__item__unit_price')
-                + F('claim__claimcoverage__claimitem__quantity')
+                * F('claim__claimcoverage__claimitem__quantity')
             ),
         )
         # Combine the 3 above query's results into one
