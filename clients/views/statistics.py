@@ -81,7 +81,7 @@ class Statistics(TemplateView):
                     - revenue_claim.total_revenue
                 )
             invoice_revenue += revenue_claim.invoice_revenue
-            expected_back_revenue = revenue_claim.expected_back_revenue
+            expected_back_revenue += revenue_claim.expected_back_revenue
             outstanding_fees += amount_remaining
             outstanding_clients.add(revenue_claim.patient_id)
 
