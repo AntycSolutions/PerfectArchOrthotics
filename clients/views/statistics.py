@@ -61,8 +61,8 @@ class Statistics(TemplateView):
 
         outstanding_claims = clients_models.Claim.objects.annotate(
             total_amount=Sum(
-                F('claimcoverage__claimitem__item__unit_price')
-                * F('claimcoverage__claimitem__quantity')
+                Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0)
+                * Coalesce(F('claimcoverage__claimitem__quantity'), 0)
             ),
         )
 
