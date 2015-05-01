@@ -131,7 +131,7 @@ class Statistics(TemplateView):
                 ),
                 default=0,
             )),
-            num_claims=Count('claim', distinct=True),
+            num_claims=Coalesce(Count('claim', distinct=True), 0),
         ).annotate(
             total_assignment_expected_back=(
                 F('assignment_expected_back')
