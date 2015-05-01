@@ -177,7 +177,7 @@ class Statistics(TemplateView):
             'amount_claimed__sum': 0
         }
         for insurance in insurances:
-            if 'num_claims' in insurances_totals:
+            if 'num_claims' in insurance:
                 insurances_totals['num_claims'] += \
                     (insurance['num_claims'] or 0)
             insurances_totals['amount_claimed__sum'] += \
