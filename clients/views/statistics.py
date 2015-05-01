@@ -131,7 +131,7 @@ class Statistics(TemplateView):
                 ),
                 default=0,
             )),
-            num_claims=Coalesce(Count('claim', distinct=True), 0),
+            num_claims=Count('claim', distinct=True),
         ).annotate(
             total_assignment_expected_back=(
                 F('assignment_expected_back')
@@ -177,8 +177,9 @@ class Statistics(TemplateView):
             'amount_claimed__sum': 0
         }
         for insurance in insurances:
-            insurances_totals['num_claims'] += \
-                (insurance['num_claims'] or 0)
+            if 'num_claims' in insurances_totals:
+                insurances_totals['num_claims'] += \
+                    (insurance['num_claims'] or 0)
             insurances_totals['amount_claimed__sum'] += \
                 (insurance['amount_claimed__sum'] or 0)
             insurances_totals['non_assignment_expected_back'] += \
