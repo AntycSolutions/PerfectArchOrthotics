@@ -22,8 +22,8 @@
                 <dl class="dl-horizontal">
                     <style>
                         /* bs3 has limits on text, embiggen them */
-                        .dl-horizontal dt { width: 345px; }
-                        .dl-horizontal dd { margin-left: 365px; }
+                        .dl-horizontal dt { width: 235px; }
+                        .dl-horizontal dd { margin-left: 255px; }
                     </style>
                     <dt>Outstanding clients:</dt>
                     <dd>{{ stats.outstanding_clients }}</dd>
@@ -64,6 +64,10 @@
                             <tr>
                                 <th>Provider</th>
                                 <th>Number of Claims</th>
+                                <th>Non-assignment Expected Back</th>
+                                <th>Assignment Expected Back</th>
+                                <th>Pending Assignment Expected Back</th>
+                                <th>Total Assignment Expected Back</th>
                                 <th>Total Expected Back</th>
                                 <th>Total Amount Claimed</th>
                             </tr>
@@ -73,15 +77,23 @@
                                 <tr>
                                     <td>{{ insurance.provider }}</a></td>
                                     <td>{{ insurance.num_claims }}</td>
+                                    <td>{{ insurance.non_assignment_expected_back }}</td>
+                                    <td>{{ insurance.assignment_expected_back }}</td>
+                                    <td>{{ insurance.pending_assignment_expected_back }}</td>
+                                    <td>{{ insurance.total_assignment_expected_back }}</td>
                                     <td>{{ insurance.expected_back__sum }}</td>
                                     <td>{{ insurance.amount_claimed__sum }}</td>
                                 </tr>
                             {% endfor %}
                             <tr>
                                 <th></th>
-                                <td style="font-weight: bold;">Total: {{ insurances_totals.num_claims }}</td>
-                                <td style="font-weight: bold;">Total: {{ insurances_totals.expected_back__sum }}</td>
-                                <td style="font-weight: bold;">Total: {{ insurances_totals.amount_claimed__sum }}</td>
+                                <td><strong>Total: {{ insurances_totals.num_claims }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.non_assignment_expected_back }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.assignment_expected_back }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.pending_assignment_expected_back }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.total_assignment_expected_back }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.expected_back__sum }}</strong></td>
+                                <td><strong>Total: {{ insurances_totals.amount_claimed__sum }}</strong></td>
                             </tr>
                         </tbody>
                     </table>

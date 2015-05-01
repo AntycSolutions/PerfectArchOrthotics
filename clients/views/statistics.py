@@ -98,27 +98,50 @@ class Statistics(TemplateView):
         return stats_dict
 
     def _insurance_company_stats(self):
-        # Number of claims
-        date_queryset = views._date_search(
-            self.request, ["claim__submitted_datetime"],
-            clients_models.Insurance
-        )
-        insurances_num_claims = date_queryset.values(
-            'provider'
-        ).annotate(
-            num_claims=Count('claim'),
-        )
-        # Total expected back
+        # Total expected back and number of claims
         date_queryset = views._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
         )
         insurances_expected_back = date_queryset.values(
-            'provider'
+            'provider',
         ).annotate(
-            expected_back__sum=Sum(
-                Coalesce('claim__claimcoverage__expected_back', 0)
+            non_assignment_expected_back=Sum(
+                Case(
+                    When(
+                        Q(benefits='na'),
+                        then='claim__claimcoverage__expected_back',
+                    ),
+                    default=0,
+                )
             ),
+            assignment_expected_back=Sum(Case(
+                When(
+                    Q(benefits='a')
+                    & Q(claim__claimcoverage__actual_paid_date__isnull=False),
+                    then='claim__claimcoverage__expected_back',
+                ),
+                default=0,
+            )),
+            pending_assignment_expected_back=Sum(Case(
+                When(
+                    Q(benefits='a')
+                    & Q(claim__claimcoverage__actual_paid_date__isnull=True),
+                    then='claim__claimcoverage__expected_back',
+                ),
+                default=0,
+            )),
+            num_claims=Count('claim', distinct=True),
+        ).annotate(
+            total_assignment_expected_back=(
+                F('assignment_expected_back')
+                + F('pending_assignment_expected_back')
+            ),
+        ).annotate(
+            expected_back__sum=(
+                F('non_assignment_expected_back')
+                + F('total_assignment_expected_back')
+            )
         )
         # Total amount claimed
         date_queryset = views._date_search(
@@ -135,9 +158,8 @@ class Statistics(TemplateView):
                 * Coalesce(F('claim__claimcoverage__claimitem__quantity'), 0)
             ),
         )
-        # Combine the 3 above query's results into one
+        # Combine the 2 above query's results into one
         insurances_chain = chain(
-            insurances_num_claims,
             insurances_expected_back,
             insurances_amount_claimed
         )
@@ -147,6 +169,10 @@ class Statistics(TemplateView):
     def _insurance_company_stats_totals(self, insurances):
         insurances_totals = {
             'num_claims': 0,
+            'non_assignment_expected_back': 0,
+            'assignment_expected_back': 0,
+            'pending_assignment_expected_back': 0,
+            'total_assignment_expected_back': 0,
             'expected_back__sum': 0,
             'amount_claimed__sum': 0
         }
@@ -154,6 +180,14 @@ class Statistics(TemplateView):
             insurances_totals['num_claims'] += insurance['num_claims']
             insurances_totals['amount_claimed__sum'] += \
                 (insurance['amount_claimed__sum'] or 0)
+            insurances_totals['non_assignment_expected_back'] += \
+                (insurance['non_assignment_expected_back'] or 0)
+            insurances_totals['assignment_expected_back'] += \
+                (insurance['assignment_expected_back'] or 0)
+            insurances_totals['pending_assignment_expected_back'] += \
+                (insurance['pending_assignment_expected_back'] or 0)
+            insurances_totals['total_assignment_expected_back'] += \
+                (insurance['total_assignment_expected_back'] or 0)
             insurances_totals['expected_back__sum'] += \
                 (insurance['expected_back__sum'] or 0)
 
