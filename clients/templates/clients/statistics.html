@@ -76,13 +76,13 @@
                             {% for insurance in insurances %}
                                 <tr>
                                     <td>{{ insurance.provider }}</a></td>
-                                    <td>{{ insurance.num_claims|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.non_assignment_expected_back|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.assignment_expected_back|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.pending_assignment_expected_back|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.total_assignment_expected_back|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.expected_back__sum|default_if_none:"0" }}</td>
-                                    <td>{{ insurance.amount_claimed__sum|default_if_none:"0" }}</td>
+                                    <td>{{ insurance.num_claims }}</td>
+                                    <td>{{ insurance.non_assignment_expected_back }}</td>
+                                    <td>{{ insurance.assignment_expected_back }}</td>
+                                    <td>{{ insurance.pending_assignment_expected_back }}</td>
+                                    <td>{{ insurance.total_assignment_expected_back }}</td>
+                                    <td>{{ insurance.expected_back__sum }}</td>
+                                    <td>{{ insurance.amount_claimed__sum }}</td>
                                 </tr>
                             {% endfor %}
                             <tr>
