@@ -180,24 +180,38 @@ class Statistics(TemplateView):
             if 'num_claims' in insurance:
                 insurances_totals['num_claims'] += \
                     (insurance['num_claims'] or 0)
+            else:
+                insurance['num_claims'] = 0
             if 'amount_claimed__sum' in insurance:
                 insurances_totals['amount_claimed__sum'] += \
                     (insurance['amount_claimed__sum'] or 0)
+            else:
+                insurance['amount_claimed__sum'] = 0
             if 'non_assignment_expected_back' in insurance:
                 insurances_totals['non_assignment_expected_back'] += \
                     (insurance['non_assignment_expected_back'] or 0)
+            else:
+                insurance['non_assignment_expected_back'] = 0
             if 'assignment_expected_back' in insurance:
                 insurances_totals['assignment_expected_back'] += \
                     (insurance['assignment_expected_back'] or 0)
+            else:
+                insurance['assignment_expected_back'] = 0
             if 'pending_assignment_expected_back' in insurance:
                 insurances_totals['pending_assignment_expected_back'] += \
                     (insurance['pending_assignment_expected_back'] or 0)
+            else:
+                insurance['pending_assignment_expected_back'] = 0
             if 'total_assignment_expected_back' in insurance:
                 insurances_totals['total_assignment_expected_back'] += \
                     (insurance['total_assignment_expected_back'] or 0)
+            else:
+                insurance['total_assignment_expected_back'] = 0
             if 'expected_back__sum' in insurance:
                 insurances_totals['expected_back__sum'] += \
                     (insurance['expected_back__sum'] or 0)
+            else:
+                insurance['expected_back__sum'] = 0
 
         return insurances_totals
 
