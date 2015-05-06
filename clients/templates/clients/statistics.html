@@ -20,7 +20,7 @@
             </div>
             <div class="page-main">
                 <h5>Claims with Revenue greater than Amount Claimed</h5>
-                {% if stats.claims_list %}
+                {% if stats.claims_greater_list %}
                     <div class="table-responsive">
                         <table class="table table-striped table-cover">
                             <thead>
@@ -29,7 +29,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for claim in stats.claims_list %}
+                                {% for claim in stats.claims_greater_list %}
+                                    <tr>
+                                        <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>There are no claims with discrepancies currenty.</p>
+                {% endif %}
+                <h5>Claims with Revenue less than Amount Claimed</h5>
+                {% if stats.claims_less_list %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-cover">
+                            <thead>
+                                <tr>
+                                    <th>Claim</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for claim in stats.claims_less_list %}
                                     <tr>
                                         <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
                                     </tr>
