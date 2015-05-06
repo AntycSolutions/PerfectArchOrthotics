@@ -77,6 +77,12 @@ class Statistics(TemplateView):
         outstanding_non_assignment_clients_set = set()
         claims = zip(revenue_claims, outstanding_claims)
         for revenue_claim, outstanding_claim in claims:
+            if revenue_claim.id != outstanding_claim.id:
+                raise Exception(
+                    "ID's do not match. %s %s" % (
+                        revenue_claim.id, outstanding_claim.id
+                    )
+                )
             amount_remaining = 0
             if outstanding_claim.total_amount > revenue_claim.total_revenue:
                 amount_remaining = (
@@ -93,8 +99,9 @@ class Statistics(TemplateView):
                     )
                 else:
                     raise Exception(
-                        'Unhandled benefit type %s' % (
-                            revenue_claim.insurance.benefits
+                        'Unhandled benefit type. %s %s' % (
+                            revenue_claim.insurance.benefits,
+                            revenue_claim.insurance.get_benefits_display()
                         )
                     )
             invoice_revenue += revenue_claim.invoice_revenue
@@ -134,6 +141,26 @@ class Statistics(TemplateView):
         insurances_expected_back = date_queryset.values(
             'provider',
         ).annotate(
+            non_assignment_invoice_revenue=Sum(Case(
+                When(
+                    benefits='na',
+                    then=(
+                        Coalesce(F('claim__invoice__payment_made'), 0)
+                        + Coalesce(F('claim__invoice__deposit'), 0)
+                    )
+                ),
+                default=0,
+            )),
+            assignment_invoice_revenue=Sum(Case(
+                When(
+                    benefits='a',
+                    then=(
+                        Coalesce(F('claim__invoice__payment_made'), 0)
+                        + Coalesce(F('claim__invoice__deposit'), 0)
+                    )
+                ),
+                default=0,
+            )),
             non_assignment_expected_back=Sum(Case(
                 When(
                     benefits='na',
@@ -163,9 +190,18 @@ class Statistics(TemplateView):
                 F('assignment_expected_back')
                 + F('pending_assignment_expected_back')
             ),
+            total_invoice_revenue=(
+                F('non_assignment_invoice_revenue')
+                + F('assignment_invoice_revenue')
+            )
         ).annotate(
             expected_back__sum=(
                 F('non_assignment_expected_back')
+                + F('total_assignment_expected_back')
+            )
+        ).annotate(
+            total_revenue=(
+                F('total_invoice_revenue')
                 + F('total_assignment_expected_back')
             )
         )
@@ -228,6 +264,10 @@ class Statistics(TemplateView):
             'pending_assignment_expected_back': 0,
             'total_assignment_expected_back': 0,
             'expected_back__sum': 0,
+            'non_assignment_invoice_revenue': 0,
+            'assignment_invoice_revenue': 0,
+            'total_invoice_revenue': 0,
+            'total_revenue': 0,
             'non_assignment_amount_claimed': 0,
             'assignment_amount_claimed': 0,
             'amount_claimed__sum': 0
@@ -278,6 +318,26 @@ class Statistics(TemplateView):
                     (insurance['expected_back__sum'] or 0)
             else:
                 insurance['expected_back__sum'] = 0
+            if 'non_assignment_invoice_revenue' in insurance:
+                insurances_totals['non_assignment_invoice_revenue'] += \
+                    (insurance['non_assignment_invoice_revenue'] or 0)
+            else:
+                insurance['non_assignment_invoice_revenue'] = 0
+            if 'assignment_invoice_revenue' in insurance:
+                insurances_totals['assignment_invoice_revenue'] += \
+                    (insurance['assignment_invoice_revenue'] or 0)
+            else:
+                insurance['assignment_invoice_revenue'] = 0
+            if 'total_invoice_revenue' in insurance:
+                insurances_totals['total_invoice_revenue'] += \
+                    (insurance['total_invoice_revenue'] or 0)
+            else:
+                insurance['total_invoice_revenue'] = 0
+            if 'total_revenue' in insurance:
+                insurances_totals['total_revenue'] += \
+                    (insurance['total_revenue'] or 0)
+            else:
+                insurance['total_revenue'] = 0
 
         return insurances_totals
 
