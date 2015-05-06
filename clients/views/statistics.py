@@ -77,6 +77,7 @@ class Statistics(TemplateView):
         outstanding_assignment_clients_set = set()
         outstanding_non_assignment_clients_set = set()
         claims = zip(revenue_claims, outstanding_claims)
+        claims_list = []
         for revenue_claim, outstanding_claim in claims:
             if revenue_claim.id != outstanding_claim.id:
                 raise Exception(
@@ -106,6 +107,9 @@ class Statistics(TemplateView):
                             revenue_claim.insurance.get_benefits_display()
                         )
                     )
+            # MOVE TO OWN AREA
+            if revenue_claim.total_revenue > outstanding_claim.total_amount:
+                claims_list.append(revenue_claim)
 
             if revenue_claim.insurance.benefits == 'na':
                 non_assignment_invoice_revenue += \
@@ -149,6 +153,7 @@ class Statistics(TemplateView):
                 outstanding_assignment_clients
                 + outstanding_non_assignment_clients
             ),
+            'claims_list': claims_list,
         }
 
         return stats_dict
