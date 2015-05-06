@@ -141,26 +141,6 @@ class Statistics(TemplateView):
         insurances_expected_back = date_queryset.values(
             'provider',
         ).annotate(
-            non_assignment_invoice_revenue=Sum(Case(
-                When(
-                    benefits='na',
-                    then=(
-                        Coalesce(F('claim__invoice__payment_made'), 0)
-                        + Coalesce(F('claim__invoice__deposit'), 0)
-                    )
-                ),
-                default=0,
-            )),
-            assignment_invoice_revenue=Sum(Case(
-                When(
-                    benefits='a',
-                    then=(
-                        Coalesce(F('claim__invoice__payment_made'), 0)
-                        + Coalesce(F('claim__invoice__deposit'), 0)
-                    )
-                ),
-                default=0,
-            )),
             non_assignment_expected_back=Sum(Case(
                 When(
                     benefits='na',
@@ -190,20 +170,46 @@ class Statistics(TemplateView):
                 F('assignment_expected_back')
                 + F('pending_assignment_expected_back')
             ),
-            total_invoice_revenue=(
-                F('non_assignment_invoice_revenue')
-                + F('assignment_invoice_revenue')
-            )
         ).annotate(
             expected_back__sum=(
                 F('non_assignment_expected_back')
                 + F('total_assignment_expected_back')
-            )
+            ),
+        )
+
+        # Total invoices
+        date_queryset = views._date_search(
+            self.request, ["claim__submitted_datetime"],
+            clients_models.Insurance
+        )
+        insurances_invoices = date_queryset.values(
+            'provider',
         ).annotate(
-            total_revenue=(
-                F('total_invoice_revenue')
-                + F('total_assignment_expected_back')
-            )
+            non_assignment_invoice_revenue=Sum(Case(
+                When(
+                    benefits='na',
+                    then=(
+                        Coalesce(F('claim__invoice__payment_made'), 0)
+                        + Coalesce(F('claim__invoice__deposit'), 0)
+                    )
+                ),
+                default=0,
+            )),
+            assignment_invoice_revenue=Sum(Case(
+                When(
+                    benefits='a',
+                    then=(
+                        Coalesce(F('claim__invoice__payment_made'), 0)
+                        + Coalesce(F('claim__invoice__deposit'), 0)
+                    )
+                ),
+                default=0,
+            )),
+        ).annotate(
+            total_invoice_revenue=(
+                F('non_assignment_invoice_revenue')
+                + F('assignment_invoice_revenue')
+            ),
         )
 
         # Total amount claimed
@@ -251,7 +257,8 @@ class Statistics(TemplateView):
         # Combine the 2 above query's results into one
         insurances_chain = chain(
             insurances_expected_back,
-            insurances_amount_claimed
+            insurances_invoices,
+            insurances_amount_claimed,
         )
 
         return self._merge_by_key(insurances_chain, 'provider')
@@ -333,11 +340,12 @@ class Statistics(TemplateView):
                     (insurance['total_invoice_revenue'] or 0)
             else:
                 insurance['total_invoice_revenue'] = 0
-            if 'total_revenue' in insurance:
-                insurances_totals['total_revenue'] += \
-                    (insurance['total_revenue'] or 0)
-            else:
-                insurance['total_revenue'] = 0
+
+            insurance['total_revenue'] = (
+                insurance['total_invoice_revenue']
+                + insurance['total_assignment_expected_back']
+            )
+            insurances_totals['total_revenue'] += insurance['total_revenue']
 
         return insurances_totals
 
