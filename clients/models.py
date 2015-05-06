@@ -216,8 +216,7 @@ class Insurance(models.Model):
         "ID Number", max_length=128,
         blank=True)
     benefits = models.CharField(
-        "Benefits", max_length=4, choices=BENEFITS,
-        blank=True)
+        "Benefits", max_length=4, choices=BENEFITS)
     three_d_laser_scan = models.BooleanField(
         "3D Laser Scan", default=False)
     insurance_card = models.BooleanField(
