@@ -83,13 +83,19 @@ class Statistics(TemplateView):
                     outstanding_claim.total_amount
                     - revenue_claim.total_revenue
                 )
-                if revenue_claim.insurance.benefits is 'na':
+                if revenue_claim.insurance.benefits == 'na':
                     outstanding_non_assignment_clients_set.add(
                         revenue_claim.patient_id
                     )
-                elif revenue_claim.insurance.benefits is 'a':
+                elif revenue_claim.insurance.benefits == 'a':
                     outstanding_assignment_clients_set.add(
                         revenue_claim.patient_id
+                    )
+                else:
+                    raise Exception(
+                        'Unhandled benefit type %s' % (
+                            revenue_claim.insurance.benefits
+                        )
                     )
             invoice_revenue += revenue_claim.invoice_revenue
             expected_back_revenue += revenue_claim.expected_back_revenue
