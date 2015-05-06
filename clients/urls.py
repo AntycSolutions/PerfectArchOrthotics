@@ -73,7 +73,7 @@ coverage_type_patterns = patterns(
 claim_patterns = patterns(
     '',
     url(r'^$',
-        login_required(views.claimsView),
+        login_required(views.claimSearchView),
         name='claims'),
     url(r'^create/(?P<client_id>\w+)/$',
         login_required(CreateClaimView.as_view()),
@@ -125,9 +125,6 @@ urlpatterns = patterns(
     url(r'^client_search/$',
         login_required(views.clientSearchView),
         name='client_search'),
-    url(r'^claim_search/$',
-        login_required(views.claimSearchView),
-        name='claim_search'),
     url(r'^insurance_search/$',
         login_required(views.insuranceSearchView),
         name='insurance_search'),
