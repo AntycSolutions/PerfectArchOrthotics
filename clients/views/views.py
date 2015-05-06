@@ -14,7 +14,8 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib import messages
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Case, When, Q
+from django.db.models.functions import Coalesce
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -253,62 +254,6 @@ def clients(request):
 
 
 @login_required
-def claimsView(request):
-    context = RequestContext(request)
-
-    claim_list = Claim.objects.order_by('-submitted_datetime')
-
-    totals = ClaimCoverage.objects.filter(
-        actual_paid_date__isnull=False
-    ).aggregate(
-        expected_back__sum=Sum('expected_back'),
-    )
-    claims_total_expected_back = totals['expected_back__sum']
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=False
-    ).aggregate(
-        amount_claimed__sum=Sum(
-            F('item__unit_price')
-            * F('quantity')
-        ),
-    )
-    claims_total_amount_claimed = totals['amount_claimed__sum']
-
-    totals = ClaimCoverage.objects.filter(
-        actual_paid_date__isnull=True
-    ).aggregate(
-        expected_back__sum=Sum('expected_back'),
-    )
-    pending_claims_total_expected_back = totals['expected_back__sum']
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=True
-    ).aggregate(
-        amount_claimed__sum=Sum(
-            F('item__unit_price')
-            * F('quantity')
-        ),
-    )
-    pending_claims_total_amount_claimed = totals['amount_claimed__sum']
-
-    page = request.GET.get('page')
-    claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
-    claims = _paginate(claim_list, page, claims_rows_per_page)
-
-    context_dict = {
-        'claims': claims,
-        'claims_total_amount_claimed': claims_total_amount_claimed,
-        'claims_total_expected_back': claims_total_expected_back,
-        'pending_claims_total_amount_claimed':
-            pending_claims_total_amount_claimed,
-        'pending_claims_total_expected_back':
-            pending_claims_total_expected_back,
-        'claims_rows_per_page': claims_rows_per_page,
-    }
-
-    return render_to_response('clients/claims.html', context_dict, context)
-
-
-@login_required
 def claimView(request, claim_id):
     context = RequestContext(request)
 
@@ -377,7 +322,7 @@ def claimSearchView(request):
 
     claims = None
     # Start from all, drilldown to q df dt
-    found_claims = Claim.objects.all().order_by('-submitted_datetime')
+    found_claims = Claim.objects.order_by('-submitted_datetime')
 
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ['patient__first_name', 'patient__last_name',
@@ -447,56 +392,106 @@ def claimSearchView(request):
                 claimcoverage__actual_paid_date__isnull=True
             ).distinct()
 
+    # Expected Back
     totals = ClaimCoverage.objects.filter(
-        actual_paid_date__isnull=False,
         claim__in=found_claims,
     ).aggregate(
-        expected_back__sum=Sum('expected_back'),
+        non_assignment_expected_back=Sum(Case(
+            When(
+                claim__insurance__benefits='na',
+                then='expected_back',
+            ),
+            default=0,
+        )),
+        assignment_expected_back=Sum(Case(
+            When(
+                Q(claim__insurance__benefits='a')
+                & Q(actual_paid_date__isnull=False),
+                then='expected_back',
+            ),
+            default=0,
+        )),
+        pending_assignment_expected_back=Sum(Case(
+            When(
+                Q(claim__insurance__benefits='a')
+                & Q(actual_paid_date__isnull=True),
+                then='expected_back',
+            ),
+            default=0,
+        )),
     )
-    claims_total_expected_back = (totals['expected_back__sum'] or 0)
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=False,
-        claim_coverage__claim__in=found_claims,
-    ).aggregate(
-        amount_claimed__sum=Sum(
-            F('item__unit_price')
-            * F('quantity')
-        ),
+    non_assignment_expected_back = (
+        totals['non_assignment_expected_back'] or 0
     )
-    claims_total_amount_claimed = (totals['amount_claimed__sum'] or 0)
+    assignment_expected_back = (totals['assignment_expected_back'] or 0)
+    pending_assignment_expected_back = (
+        totals['pending_assignment_expected_back'] or 0
+    )
 
-    totals = ClaimCoverage.objects.filter(
-        actual_paid_date__isnull=True,
-        claim__in=found_claims,
+    # Amount Claimed
+    totals = Claim.objects.filter(
+        id__in=found_claims,
     ).aggregate(
-        expected_back__sum=Sum('expected_back'),
+        assignment_amount_claimed=Sum(Case(
+            When(
+                insurance__benefits='a',
+                then=(
+                    Coalesce(
+                        F('claimcoverage__claimitem__item__unit_price'),
+                        0
+                    )
+                    * Coalesce(
+                        F('claimcoverage__claimitem__quantity'),
+                        0
+                    )
+                )
+            ),
+            default=0,
+        )),
+        non_assignment_amount_claimed=Sum(Case(
+            When(
+                insurance__benefits='na',
+                then=(
+                    Coalesce(
+                        F('claimcoverage__claimitem__item__unit_price'),
+                        0
+                    )
+                    * Coalesce(
+                        F('claimcoverage__claimitem__quantity'),
+                        0
+                    )
+                )
+            ),
+            default=0,
+        )),
     )
-    pending_claims_total_expected_back = (totals['expected_back__sum'] or 0)
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=True,
-        claim_coverage__claim__in=found_claims,
-    ).aggregate(
-        amount_claimed__sum=Sum(
-            F('item__unit_price')
-            * F('quantity')
-        ),
+
+    assignment_amount_claimed = (totals['assignment_amount_claimed'] or 0)
+    non_assignment_amount_claimed = (
+        totals['non_assignment_amount_claimed'] or 0
     )
-    pending_claims_total_amount_claimed = (totals['amount_claimed__sum'] or 0)
 
     page = request.GET.get('page')
     claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
     claims = _paginate(found_claims, page, claims_rows_per_page)
 
+    total_assignment_expected_back = \
+        assignment_expected_back + pending_assignment_expected_back
     context_dict['claims'] = claims
     context_dict['claims_rows_per_page'] = claims_rows_per_page
-    context_dict['claims_total_amount_claimed'] = claims_total_amount_claimed
-    context_dict['claims_total_expected_back'] = claims_total_expected_back
-    context_dict[
-        'pending_claims_total_amount_claimed'
-    ] = pending_claims_total_amount_claimed
-    context_dict[
-        'pending_claims_total_expected_back'
-    ] = pending_claims_total_expected_back
+    context_dict['assignment_amount_claimed'] = assignment_amount_claimed
+    context_dict['non_assignment_amount_claimed'] = \
+        non_assignment_amount_claimed
+    context_dict['total_amount_claimed'] = \
+        assignment_amount_claimed + non_assignment_amount_claimed
+    context_dict['non_assignment_expected_back'] = non_assignment_expected_back
+    context_dict['assignment_expected_back'] = assignment_expected_back
+    context_dict['pending_assignment_expected_back'] = \
+        pending_assignment_expected_back
+    context_dict['total_assignment_expected_back'] = \
+        total_assignment_expected_back
+    context_dict['total_expected_back'] = \
+        non_assignment_expected_back + total_assignment_expected_back
 
     return render_to_response('clients/claims.html',
                               context_dict,
