@@ -19,27 +19,39 @@
                 <h1>Site Statistics:</h1>
             </div>
             <div class="page-main">
-                <dl class="dl-horizontal">
-                    <style>
-                        /* bs3 has limits on text, embiggen them */
-                        .dl-horizontal dt { width: 235px; }
-                        .dl-horizontal dd { margin-left: 255px; }
-                    </style>
-                    <dt>Outstanding clients:</dt>
-                    <dd>{{ stats.outstanding_clients }}</dd>
-                    <dt>Outstanding fees:</dt>
-                    <dd>{{ stats.outstanding_fees }}</dd>
-                    <br />
-                    <dt>Invoice Revenue:</dt>
-                    <dd>{{ stats.invoice_revenue }}</dd>
-                    <dt>Expected Back Revenue:</dt>
-                    <dd>{{ stats.expected_back_revenue }}</dd>
-                    <dt>Total Revenue:</dt>
-                    <dd>{{ stats.total_revenue }}</dd>
-                    <br />
-                    <dt>Total:</dt>
-                    <dd style="font-weight: bold;">{{ stats.total }}</dd>
-                </dl>
+                <h5>Outstanding Fees and Revenue</h5>
+                A = Assignment,
+                NA = Non-assignment,
+                EB = Expected Back,
+                AC = Amount Claimed
+                <div class="table-responsive">
+                    <table class="table table-striped table-cover">
+                        <thead>
+                            <tr>
+                                <th>NA Outstanding Clients</th>
+                                <th>A Outstanding Clients</th>
+                                <th>Total Outstanding Clients</th>
+                                <th>Outstanding Fees</th>
+                                <th>Invoice Revenue</th>
+                                <th>EB Revenue</th>
+                                <th>Total Revenue</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ stats.outstanding_non_assignment_clients }}</td>
+                                <td>{{ stats.outstanding_assignment_clients }}</td>
+                                <td>{{ stats.total_outstanding_clients }}</td>
+                                <td>{{ stats.outstanding_fees }}</td>
+                                <td>{{ stats.invoice_revenue }}</td>
+                                <td>{{ stats.expected_back_revenue }}</td>
+                                <td>{{ stats.total_revenue }}</td>
+                                <td>{{ stats.total }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <h5>Insurance Providers</h5>
                 <form method="get">
                     <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
@@ -63,13 +75,15 @@
                         <thead>
                             <tr>
                                 <th>Provider</th>
-                                <th>Number of Claims</th>
-                                <th>Non-assignment Expected Back</th>
-                                <th>Assignment Expected Back</th>
-                                <th>Pending Assignment Expected Back</th>
-                                <th>Total Assignment Expected Back</th>
-                                <th>Total Expected Back</th>
-                                <th>Total Amount Claimed</th>
+                                <th>Claims</th>
+                                <th>NA EB</th>
+                                <th>A EB</th>
+                                <th>Pending A EB</th>
+                                <th>Total A EB</th>
+                                <th>Total EB</th>
+                                <th>NA AC</th>
+                                <th>A AC</th>
+                                <th>Total AC</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,18 +96,27 @@
                                     <td>{{ insurance.pending_assignment_expected_back }}</td>
                                     <td>{{ insurance.total_assignment_expected_back }}</td>
                                     <td>{{ insurance.expected_back__sum }}</td>
+                                    <td>{{ insurance.non_assignment_amount_claimed }}</td>
+                                    <td>{{ insurance.assignment_amount_claimed }}</td>
                                     <td>{{ insurance.amount_claimed__sum }}</td>
                                 </tr>
                             {% endfor %}
+                            <style>
+                                .total {
+                                    border-top: 1px solid black !important;
+                                }
+                            </style>
                             <tr>
-                                <th></th>
-                                <td><strong>Total: {{ insurances_totals.num_claims }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.non_assignment_expected_back }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.assignment_expected_back }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.pending_assignment_expected_back }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.total_assignment_expected_back }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.expected_back__sum }}</strong></td>
-                                <td><strong>Total: {{ insurances_totals.amount_claimed__sum }}</strong></td>
+                                <th class="total">Total</th>
+                                <td class="total"><strong>{{ insurances_totals.num_claims }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.non_assignment_expected_back }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.assignment_expected_back }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.pending_assignment_expected_back }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.total_assignment_expected_back }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.expected_back__sum }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.non_assignment_amount_claimed }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.assignment_amount_claimed }}</strong></td>
+                                <td class="total"><strong>{{ insurances_totals.amount_claimed__sum }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
