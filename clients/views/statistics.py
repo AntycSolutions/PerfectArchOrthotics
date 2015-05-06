@@ -343,7 +343,7 @@ class Statistics(TemplateView):
 
             insurance['total_revenue'] = (
                 insurance['total_invoice_revenue']
-                + insurance['total_assignment_expected_back']
+                + insurance['assignment_expected_back']
             )
             insurances_totals['total_revenue'] += insurance['total_revenue']
 
