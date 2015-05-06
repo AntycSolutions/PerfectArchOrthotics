@@ -100,7 +100,8 @@ class Statistics(TemplateView):
                     )
                 else:
                     raise Exception(
-                        'Unhandled benefit type. %s %s' % (
+                        'Unhandled benefit type for %s. (%s %s)' % (
+                            revenue_claim.insurance,
                             revenue_claim.insurance.benefits,
                             revenue_claim.insurance.get_benefits_display()
                         )
@@ -114,7 +115,8 @@ class Statistics(TemplateView):
                     revenue_claim.invoice_revenue
             else:
                 raise Exception(
-                    'Unhandled benefit type. %s %s' % (
+                    'Unhandled benefit type for %s. (%s %s)' % (
+                        revenue_claim.insurance,
                         revenue_claim.insurance.benefits,
                         revenue_claim.insurance.get_benefits_display()
                     )
