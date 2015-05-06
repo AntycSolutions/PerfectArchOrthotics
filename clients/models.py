@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.db.models import Sum, Case, When
 
 from utils import model_utils
 
@@ -410,6 +411,20 @@ class Claim(models.Model):
             total_quantity_claimed += totals.total_quantity
         return Totals(total_amount_claimed, total_quantity_claimed)
 
+    def expected_back_revenue(self):
+        if self.insurance.benefits == 'a':
+            claimcoverages = self.claimcoverage_set.aggregate(
+                expected_back=Sum(Case(
+                    When(
+                        actual_paid_date__isnull=False,
+                        then='expected_back',
+                    ),
+                    default=0,
+                )),
+            )
+            return (claimcoverages['expected_back'] or 0)
+        return 0
+
     def get_absolute_url(self):
         return reverse('claim', kwargs={'claim_id': self.id})
 
@@ -594,7 +609,8 @@ class Invoice(models.Model):
         totals = self.claim.total_amount_quantity_claimed()
         return (totals.total_amount_claimed
                 - self.deposit
-                - self.payment_made)
+                - self.payment_made
+                - self.claim.expected_back_revenue())
 
     def __unicode__(self):
         return "Invoice Date: %s - %s" % (self.invoice_date, self.claim)
