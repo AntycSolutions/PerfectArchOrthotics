@@ -59,14 +59,14 @@ class Statistics(TemplateView):
             ),
         ).annotate(
             total_revenue=F('expected_back_revenue') + F('invoice_revenue')
-        )
+        ).order_by('id')
 
         outstanding_claims = clients_models.Claim.objects.annotate(
             total_amount=Sum(
                 Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0)
                 * Coalesce(F('claimcoverage__claimitem__quantity'), 0)
             ),
-        )
+        ).order_by('id')
 
         # annotatations are done via join and not subquery, this duplicates
         #  data and makes it so that the two above queries cannot be joined
