@@ -410,6 +410,9 @@ class Claim(models.Model):
             total_quantity_claimed += totals.total_quantity
         return Totals(total_amount_claimed, total_quantity_claimed)
 
+    def get_absolute_url(self):
+        return reverse('claim', kwargs={'claim_id': self.id})
+
     def __unicode__(self):
         try:
             patient = self.patient
