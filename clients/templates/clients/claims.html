@@ -25,7 +25,7 @@
 
 {% include 'clients/snippets/messages.html' %}
 <h1>Claims</h1>
-<form method="get" action="{% url 'claim_search' %}">
+<form method="GET">
     <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
     <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
     <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
@@ -71,23 +71,39 @@
     Rows per Page: <input type="number" id="claims_rows_per_page" name="claims_rows_per_page" value="{{ claims_rows_per_page }}">
     <input type="submit" class="btn" value="Paginate">
 </form>
-<table class="table table-striped table-cover">
-    <thead>
-        <tr>
-            <th>Claims Total Amount Claimed</th>
-            <th>Pending Claims Total Amount Claimed</th>
-            <th>Claims Total Expected Back</th>
-            <th>Pending Claims Total Expected Back</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ claims_total_amount_claimed }}</td>
-            <td>{{ pending_claims_total_amount_claimed }}</td>
-            <td>{{ claims_total_expected_back }}</td>
-            <td>{{ pending_claims_total_expected_back }}</td>
-        </tr>
-    </tbody>
-</table>
+<div>
+    A = Assignment,
+    NA = Non-assignment,
+    EB = Expected Back,
+    AC = Amount Claimed
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-cover">
+        <thead>
+            <tr>
+                <th>NA AC</th>
+                <th>A AC</th>
+                <th>Total AC</th>
+                <th>NA EB</th>
+                <th>A EB</th>
+                <th>Pending A EB</th>
+                <th>Total A EB</th>
+                <th>Total EB</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ non_assignment_amount_claimed }}</td>
+                <td>{{ assignment_amount_claimed }}</td>
+                <td>{{ total_amount_claimed }}</td>
+                <td>{{ non_assignment_expected_back }}</td>
+                <td>{{ assignment_expected_back }}</td>
+                <td>{{ pending_assignment_expected_back }}</td>
+                <td>{{ total_assignment_expected_back }}</td>
+                <td>{{ total_expected_back }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
