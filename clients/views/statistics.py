@@ -70,7 +70,8 @@ class Statistics(TemplateView):
 
         # annotatations are done via join and not subquery, this duplicates
         #  data and makes it so that the two above queries cannot be joined
-        invoice_revenue = 0
+        non_assignment_invoice_revenue = 0
+        assignment_invoice_revenue = 0
         expected_back_revenue = 0
         outstanding_fees = 0
         outstanding_assignment_clients_set = set()
@@ -104,10 +105,26 @@ class Statistics(TemplateView):
                             revenue_claim.insurance.get_benefits_display()
                         )
                     )
-            invoice_revenue += revenue_claim.invoice_revenue
+
+            if revenue_claim.insurance.benefits == 'na':
+                non_assignment_invoice_revenue += \
+                    revenue_claim.invoice_revenue
+            elif revenue_claim.insurance.benefits == 'a':
+                assignment_invoice_revenue += \
+                    revenue_claim.invoice_revenue
+            else:
+                raise Exception(
+                    'Unhandled benefit type. %s %s' % (
+                        revenue_claim.insurance.benefits,
+                        revenue_claim.insurance.get_benefits_display()
+                    )
+                )
             expected_back_revenue += revenue_claim.expected_back_revenue
             outstanding_fees += amount_remaining
 
+        invoice_revenue = (
+            non_assignment_invoice_revenue + assignment_invoice_revenue
+        )
         total_revenue = invoice_revenue + expected_back_revenue
         outstanding_assignment_clients = len(
             outstanding_assignment_clients_set
@@ -116,6 +133,8 @@ class Statistics(TemplateView):
             outstanding_non_assignment_clients_set
         )
         stats_dict = {
+            'non_assignment_invoice_revenue': non_assignment_invoice_revenue,
+            'assignment_invoice_revenue': assignment_invoice_revenue,
             'invoice_revenue': invoice_revenue,
             'expected_back_revenue': expected_back_revenue,
             'outstanding_fees': outstanding_fees,
@@ -254,7 +273,7 @@ class Statistics(TemplateView):
                 + F('non_assignment_amount_claimed')
             )
         )
-        # Combine the 2 above query's results into one
+        # Combine the 3 above query's results into one
         insurances_chain = chain(
             insurances_expected_back,
             insurances_invoices,
