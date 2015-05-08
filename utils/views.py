@@ -4,6 +4,7 @@ import urllib
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from utils.search import get_date_query
 
@@ -102,6 +103,7 @@ def get_thumbnail(request, width, height, url):
     partial_path = decoded_url.replace(media_url, "")
     path = os.path.join(media_root, partial_path)
     thumbnail = _rescale(path, width, height, force=False)
+
     return HttpResponse(thumbnail, 'image/jpg')
 
 
@@ -157,5 +159,30 @@ def _date_search(request, fields, model, queryset=None):
                 request, messages.WARNING,
                 "Invalid date. Please use MM/DD/YYYY."
             )
+
+    return queryset
+
+
+def _get_paginate_by(request, rows_per_page_var):
+    paginate_by = 5
+    if request.session.get(rows_per_page_var, False):
+        paginate_by = request.session[rows_per_page_var]
+    if (rows_per_page_var in request.GET
+            and request.GET[rows_per_page_var].strip()):
+        paginate_by = request.GET[rows_per_page_var]
+        request.session[rows_per_page_var] = paginate_by
+
+    return paginate_by
+
+
+def _paginate(request, queryset, page_var, rows_per_page):
+    page = request.GET.get(page_var)
+    paginator = Paginator(queryset, rows_per_page)
+    try:
+        queryset = paginator.page(page)
+    except PageNotAnInteger:
+        queryset = paginator.page(1)
+    except EmptyPage:
+        queryset = paginator.page(paginator.num_pages)
 
     return queryset
