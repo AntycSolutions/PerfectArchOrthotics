@@ -17,7 +17,31 @@ class Statistics(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Statistics, self).get_context_data(**kwargs)
 
-        context['stats'] = self._stats()
+        # Outstanding fees, revenue, Claims overpaid, Claims underpaid
+        stats = self._stats()
+        claims_greater_rows_per_page = views._get_paginate_by(
+            self.request,
+            'claims_greater_rows_per_page'
+        )
+        context['claims_greater_rows_per_page'] = claims_greater_rows_per_page
+        stats['claims_greater_list_paginated'] = views._paginate(
+            self.request,
+            stats['claims_greater_list'],
+            'claims_greater_page',
+            claims_greater_rows_per_page
+        )
+        claims_less_rows_per_page = views._get_paginate_by(
+            self.request,
+            'claims_less_rows_per_page'
+        )
+        context['claims_less_rows_per_page'] = claims_less_rows_per_page
+        stats['claims_less_list_paginated'] = views._paginate(
+            self.request,
+            stats['claims_less_list'],
+            'claims_less_page',
+            claims_less_rows_per_page
+        )
+        context['stats'] = stats
 
         # Insurance providers date filter
         if ('df' in self.request.GET) and self.request.GET['df'].strip():
