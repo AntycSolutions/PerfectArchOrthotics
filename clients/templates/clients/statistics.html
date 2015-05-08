@@ -20,7 +20,7 @@
             </div>
             <div class="page-main">
                 <h5>Claims with Revenue greater than Amount Claimed</h5>
-                {% if stats.claims_greater_list %}
+                {% if stats.claims_greater_list_paginated %}
                     <div class="table-responsive">
                         <table class="table table-striped table-cover">
                             <thead>
@@ -29,7 +29,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for claim in stats.claims_greater_list %}
+                                {% for claim in stats.claims_greater_list_paginated %}
                                     <tr>
                                         <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
                                     </tr>
@@ -37,11 +37,32 @@
                             </tbody>
                         </table>
                     </div>
+                    {% with page_obj=stats.claims_greater_list_paginated %}
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?claims_greater_page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
+                                {% endif %}
+                                {% if page_obj.number %}
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?claims_greater_page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endwith %}
+                    <form method="GET" style="display: inline-block;">
+                        Rows per Page: <input type="number" name="claims_greater_rows_per_page" value="{{ claims_greater_rows_per_page }}">
+                        <input type="submit" class="btn" value="Paginate">
+                    </form>
                 {% else %}
                     <p>There are no Claims with discrepancies currently.</p>
                 {% endif %}
                 <h5>Claims with Revenue less than Amount Claimed</h5>
-                {% if stats.claims_less_list %}
+                {% if stats.claims_less_list_paginated %}
                     <div class="table-responsive">
                         <table class="table table-striped table-cover">
                             <thead>
@@ -50,7 +71,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for claim in stats.claims_less_list %}
+                                {% for claim in stats.claims_less_list_paginated %}
                                     <tr>
                                         <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
                                     </tr>
@@ -58,6 +79,27 @@
                             </tbody>
                         </table>
                     </div>
+                    {% with page_obj=stats.claims_less_list_paginated %}
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?claims_less_page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
+                                {% endif %}
+                                {% if page_obj.number %}
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?claims_less_page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endwith %}
+                    <form method="GET" style="display: inline-block;">
+                        Rows per Page: <input type="number" name="claims_less_rows_per_page" value="{{ claims_less_rows_per_page }}">
+                        <input type="submit" class="btn" value="Paginate">
+                    </form>
                 {% else %}
                     <p>There are no Claims with discrepancies currently.</p>
                 {% endif %}
@@ -103,6 +145,10 @@
                     <p>There are no Claims currently.</p>
                 {% endif %}
                 <h5>Insurance Providers</h5>
+                A = Assignment,
+                NA = Non-assignment,
+                EB = Expected Back,
+                AC = Amount Claimed
                 {% if insurances %}
                     <form method="get">
                         <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
