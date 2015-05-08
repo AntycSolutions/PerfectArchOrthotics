@@ -19,16 +19,16 @@ class Statistics(TemplateView):
 
         context['stats'] = self._stats()
 
-        # Insurance company stats
+        # Insurance providers date filter
         if ('df' in self.request.GET) and self.request.GET['df'].strip():
             query_string = self.request.GET['df']
             context['df'] = query_string
         if ('dt' in self.request.GET) and self.request.GET['dt'].strip():
             query_string = self.request.GET['dt']
             context['dt'] = query_string
-        insurances = self._insurance_company_stats()
+        insurances = self._insurance_providers_stats()
         context['insurances'] = insurances
-        context['insurances_totals'] = self._insurance_company_stats_totals(
+        context['insurances_totals'] = self._insurance_providers_stats_totals(
             insurances
         )
 
@@ -110,7 +110,6 @@ class Statistics(TemplateView):
                             revenue_claim.insurance.get_benefits_display()
                         )
                     )
-            # MOVE TO OWN AREA
             elif outstanding_claim.total_amount < revenue_claim.total_revenue:
                 claims_greater_list.append(revenue_claim)
 
@@ -128,6 +127,7 @@ class Statistics(TemplateView):
                         revenue_claim.insurance.get_benefits_display()
                     )
                 )
+
             expected_back_revenue += revenue_claim.expected_back_revenue
             outstanding_fees += amount_remaining
 
@@ -162,8 +162,8 @@ class Statistics(TemplateView):
 
         return stats_dict
 
-    def _insurance_company_stats(self):
-        # Total expected back and number of claims
+    def _insurance_providers_stats(self):
+        # Expected back and number of claims
         date_queryset = views._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
@@ -200,14 +200,9 @@ class Statistics(TemplateView):
                 F('assignment_expected_back')
                 + F('pending_assignment_expected_back')
             ),
-        ).annotate(
-            expected_back__sum=(
-                F('non_assignment_expected_back')
-                + F('total_assignment_expected_back')
-            ),
         )
 
-        # Total invoices
+        # Invoices
         date_queryset = views._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
@@ -242,7 +237,7 @@ class Statistics(TemplateView):
             ),
         )
 
-        # Total amount claimed
+        # Aamount claimed
         date_queryset = views._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
@@ -284,6 +279,7 @@ class Statistics(TemplateView):
                 + F('non_assignment_amount_claimed')
             )
         )
+
         # Combine the 3 above query's results into one
         insurances_chain = chain(
             insurances_expected_back,
@@ -293,7 +289,7 @@ class Statistics(TemplateView):
 
         return self._merge_by_key(insurances_chain, 'provider')
 
-    def _insurance_company_stats_totals(self, insurances):
+    def _insurance_providers_stats_totals(self, insurances):
         insurances_totals = {
             'num_claims': 0,
             'non_assignment_expected_back': 0,
@@ -325,11 +321,6 @@ class Statistics(TemplateView):
                     (insurance['assignment_amount_claimed'] or 0)
             else:
                 insurance['assignment_amount_claimed'] = 0
-            if 'amount_claimed__sum' in insurance:
-                insurances_totals['amount_claimed__sum'] += \
-                    (insurance['amount_claimed__sum'] or 0)
-            else:
-                insurance['amount_claimed__sum'] = 0
             if 'non_assignment_expected_back' in insurance:
                 insurances_totals['non_assignment_expected_back'] += \
                     (insurance['non_assignment_expected_back'] or 0)
@@ -350,11 +341,6 @@ class Statistics(TemplateView):
                     (insurance['total_assignment_expected_back'] or 0)
             else:
                 insurance['total_assignment_expected_back'] = 0
-            if 'expected_back__sum' in insurance:
-                insurances_totals['expected_back__sum'] += \
-                    (insurance['expected_back__sum'] or 0)
-            else:
-                insurance['expected_back__sum'] = 0
             if 'non_assignment_invoice_revenue' in insurance:
                 insurances_totals['non_assignment_invoice_revenue'] += \
                     (insurance['non_assignment_invoice_revenue'] or 0)
@@ -365,17 +351,24 @@ class Statistics(TemplateView):
                     (insurance['assignment_invoice_revenue'] or 0)
             else:
                 insurance['assignment_invoice_revenue'] = 0
-            if 'total_invoice_revenue' in insurance:
-                insurances_totals['total_invoice_revenue'] += \
-                    (insurance['total_invoice_revenue'] or 0)
-            else:
-                insurance['total_invoice_revenue'] = 0
 
-            insurance['total_revenue'] = (
-                insurance['total_invoice_revenue']
-                + insurance['assignment_expected_back']
-            )
-            insurances_totals['total_revenue'] += insurance['total_revenue']
+        # Totals of totals
+        insurances_totals['amount_claimed__sum'] = (
+            (insurances_totals['non_assignment_amount_claimed'] or 0)
+            + (insurances_totals['assignment_amount_claimed'] or 0)
+        )
+        insurances_totals['expected_back__sum'] = (
+            (insurances_totals['non_assignment_expected_back'] or 0)
+            + (insurances_totals['total_assignment_expected_back'] or 0)
+        )
+        insurances_totals['total_invoice_revenue'] = (
+            (insurances_totals['non_assignment_invoice_revenue'] or 0)
+            + (insurances_totals['assignment_invoice_revenue'] or 0)
+        )
+        insurances_totals['total_revenue'] = (
+            (insurances_totals['total_invoice_revenue'] or 0)
+            + (insurances_totals['assignment_expected_back'] or 0)
+        )
 
         return insurances_totals
 
@@ -388,14 +381,12 @@ class Statistics(TemplateView):
         return merged.values()
 
     def _top_ten_best_sellers(self):
-        # Top 10 best sellers
         shoes = inventory_models.Shoe.objects.annotate(
             num_orders=Count('shoeattributes__shoeorder')
         ).order_by('-num_orders')[:10]
         return shoes
 
     def _old_ordered_date_orders(self):
-        # Old ordered orders
         cutoff = datetime.now() - timedelta(days=30)
         orders = inventory_models.Order.objects.filter(
             dispensed_date__isnull=True,
@@ -405,7 +396,6 @@ class Statistics(TemplateView):
         return orders
 
     def _old_arrvied_date_orders(self):
-        # Old arrived orders
         cutoff = datetime.now() - timedelta(days=30)
         orders = inventory_models.Order.objects.filter(
             dispensed_date__isnull=True,
