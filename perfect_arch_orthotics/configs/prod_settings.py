@@ -51,3 +51,11 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 
 EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics]'
+
+# Cache templates
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader',
+        ('django.template.loaders.filesystem.Loader',
+         'django.template.loaders.app_directories.Loader',)
+     ),
+)
