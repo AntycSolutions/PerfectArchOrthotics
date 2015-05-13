@@ -104,7 +104,8 @@ def get_thumbnail(request, width, height, url):
     path = os.path.join(media_root, partial_path)
     thumbnail = _rescale(path, width, height, force=False)
 
-    return HttpResponse(thumbnail, 'image/jpg')
+    response = HttpResponse(thumbnail, 'image/jpeg')
+    return response
 
 
 def _date_search(request, fields, model, queryset=None):
