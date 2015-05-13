@@ -517,6 +517,8 @@ class ClaimCoverage(models.Model):
             claim_item_dict[claim_item.item.unit_price] += claim_item.quantity
 
         while (max_quantity < (quantity_remaining + totals.total_quantity)):
+            if not claim_item_dict:
+                break
             values = list(claim_item_dict.values())
             keys = list(claim_item_dict.keys())
             max_unit_price = keys[values.index(max(values))]
