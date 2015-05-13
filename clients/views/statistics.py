@@ -311,7 +311,11 @@ class Statistics(TemplateView):
             insurances_amount_claimed,
         )
 
-        return self._merge_by_key(insurances_chain, 'provider')
+        insurances = self._merge_by_key(insurances_chain, 'provider')
+        sorted_insurances = sorted(insurances,
+                                   key=lambda insurance: insurance['provider'])
+
+        return sorted_insurances
 
     def _insurance_providers_stats_totals(self, insurances):
         insurances_totals = {
