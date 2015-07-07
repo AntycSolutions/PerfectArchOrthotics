@@ -233,6 +233,18 @@
                 {% else %}
                     <p>There are no Insurance Providers currently.</p>
                 {% endif %}
+                <h5>Total In Stock</h5>
+                {% if total_in_stock %}
+                    <p>{{ total_in_stock }}</p>
+                {% else %}
+                    <p>None</p>
+                {% endif %}
+                <h5>Total Cost of Inventory</h5>
+                {% if total_cost_of_inventory %}
+                    <p>${{ total_cost_of_inventory }}</p>
+                {% else %}
+                    <p>None</p>
+                {% endif %}
                 <h5>Top 10 Best Sellers</h5>
                 {% if shoes %}
                     <div class="table-responsive">

@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from itertools import chain
 from collections import defaultdict
+from decimal import Decimal
 
 from django.views.generic import TemplateView
-from django.db.models import Count, Sum, F, Q, Case, When
+from django.db.models import Count, Sum, F, Q, Case, When, DecimalField
 from django.db.models.functions import Coalesce
 
 from utils import views
@@ -55,6 +56,19 @@ class Statistics(TemplateView):
         context['insurances_totals'] = self._insurance_providers_stats_totals(
             insurances
         )
+
+        total = inventory_models.ShoeAttributes.objects.aggregate(
+            total_in_stock=Sum('quantity')
+        )
+        context['total_in_stock'] = total['total_in_stock']
+        total = inventory_models.ShoeAttributes.objects.aggregate(
+            total_cost_of_inventory=Sum(
+                F('quantity') * F('shoe__cost'),
+                output_field=DecimalField(max_digits=6, decimal_places=2,
+                                          default=Decimal(0.00))
+            )
+        )
+        context['total_cost_of_inventory'] = total['total_cost_of_inventory']
 
         context['shoes'] = self._top_ten_best_sellers()
 
