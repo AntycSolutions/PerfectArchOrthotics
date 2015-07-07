@@ -608,8 +608,10 @@ def clientView(request, client_id):
     pending_client_total_amount_claimed = totals['amount_claimed__sum']
     pending_client_total_cost = totals['cost__sum'] or 0
 
+    dependents_pks = list(dependents.values_list('pk', flat=True))
+    pks = dependents_pks + [client.pk]
     total = inventory_models.ShoeOrder.objects.filter(
-        claimant__pk=client.pk
+        claimant__pk__in=pks
     ).aggregate(
         shoe_order_cost=Sum('shoe_attributes__shoe__cost')
     )
