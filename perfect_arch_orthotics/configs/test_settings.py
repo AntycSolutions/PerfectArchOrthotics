@@ -50,4 +50,4 @@ EMAIL_HOST_USER = ''
 # # Get from file
 EMAIL_HOST_PASSWORD = ''
 
-EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Test]'
+EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Test] '
