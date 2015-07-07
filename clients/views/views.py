@@ -613,7 +613,7 @@ def clientView(request, client_id):
     ).aggregate(
         shoe_order_cost=Sum('shoe_attributes__shoe__cost')
     )
-    shoe_order_cost = total['shoe_order_cost']
+    shoe_order_cost = total['shoe_order_cost'] or 0
 
     # Paginate Claims
     page = request.GET.get('claims_page')
