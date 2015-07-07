@@ -24,6 +24,7 @@ import xhtml2pdf.pisa as pisa
 from utils.search import get_query, get_date_query
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
+from inventory import models as inventory_models
 from clients.forms.forms import ClientForm, DependentForm, \
     ClaimForm
 
@@ -607,6 +608,13 @@ def clientView(request, client_id):
     pending_client_total_amount_claimed = totals['amount_claimed__sum']
     pending_client_total_cost = totals['cost__sum'] or 0
 
+    total = inventory_models.ShoeOrder.objects.filter(
+        claimant__pk=client.pk
+    ).aggregate(
+        shoe_order_cost=Sum('shoe_attributes__shoe__cost')
+    )
+    shoe_order_cost = total['shoe_order_cost']
+
     # Paginate Claims
     page = request.GET.get('claims_page')
     paginator = Paginator(claims.order_by('-submitted_datetime'), 5)
@@ -620,7 +628,9 @@ def clientView(request, client_id):
     client_expected_back = (
         client_total_expected_back + pending_client_total_expected_back
     )
-    client_cost = client_total_cost + pending_client_total_cost
+    client_cost = (
+        client_total_cost + pending_client_total_cost + shoe_order_cost
+    )
 
     context_dict = {
         'client': client,
