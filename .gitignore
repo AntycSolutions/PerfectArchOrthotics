@@ -1,14 +1,18 @@
+# Sqlite databases
 db.sqlite3
+
+# Python
 __pycache__
 *.pyc
 .project
 .pydevproject
 
-# temporary files
+# Temporary files
 *~
 
 # Apple
 .DS_Store
 
+# Django
 media/*
 static/*
