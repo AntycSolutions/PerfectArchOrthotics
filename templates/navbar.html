@@ -1,3 +1,5 @@
+{% load debug %}
+
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -21,7 +23,12 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="{% url 'statistics' %}">Statistics</a></li>
-                    <li><a href="/admin/">Admin</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="/admin/">Admin</a></li>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <li><a>Queries: {{ sql_queries|length }}</a></li>
+                    {% endif %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %} <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
