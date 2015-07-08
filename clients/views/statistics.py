@@ -4,7 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from django.views.generic import TemplateView
-from django.db.models import Count, Sum, F, Q, Case, When, DecimalField
+from django.db.models import Count, Sum, F, Q, Case, When
 from django.db.models.functions import Coalesce
 
 from utils import views
@@ -57,18 +57,19 @@ class Statistics(TemplateView):
             insurances
         )
 
-        total = inventory_models.ShoeAttributes.objects.aggregate(
-            total_in_stock=Sum('quantity')
-        )
-        context['total_in_stock'] = total['total_in_stock']
-        total = inventory_models.ShoeAttributes.objects.aggregate(
-            total_cost_of_inventory=Sum(
-                F('quantity') * F('shoe__cost'),
-                output_field=DecimalField(max_digits=6, decimal_places=2,
-                                          default=Decimal(0.00))
-            )
-        )
-        context['total_cost_of_inventory'] = total['total_cost_of_inventory']
+        total_in_stock = 0
+        total_cost_of_inventory = Decimal(0.00)
+        shoe_attributes_objects = inventory_models.ShoeAttributes.objects
+        for shoe_attributes in shoe_attributes_objects.select_related('shoe'):
+            # the call to .dispensed() generates a lot of extra queries,
+            #  .prefetch_related() didn't help
+            actual_quantity = (shoe_attributes.quantity
+                               - shoe_attributes.dispensed())
+            total_in_stock += actual_quantity
+            total_cost_of_inventory = (actual_quantity
+                                       * shoe_attributes.shoe.cost)
+        context['total_in_stock'] = total_in_stock
+        context['total_cost_of_inventory'] = total_cost_of_inventory
 
         context['shoes'] = self._top_ten_best_sellers()
 
@@ -79,7 +80,7 @@ class Statistics(TemplateView):
 
     def _stats(self):
         revenue_claims = clients_models.Claim.objects.select_related(
-            'insurance',
+            'insurance', 'patient', 'insurance__main_claimant'
         ).annotate(
             invoice_revenue=(
                 Coalesce(F('invoice__payment_made'), 0)
