@@ -66,8 +66,8 @@ class Statistics(TemplateView):
             actual_quantity = (shoe_attributes.quantity
                                - shoe_attributes.dispensed())
             total_in_stock += actual_quantity
-            total_cost_of_inventory = (actual_quantity
-                                       * shoe_attributes.shoe.cost)
+            total_cost_of_inventory += (actual_quantity
+                                        * shoe_attributes.shoe.cost)
         context['total_in_stock'] = total_in_stock
         context['total_cost_of_inventory'] = total_cost_of_inventory
 
