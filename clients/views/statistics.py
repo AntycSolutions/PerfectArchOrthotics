@@ -4,7 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from django.views.generic import TemplateView
-from django.db.models import Count, Sum, F, Q, Case, When
+from django.db.models import Count, Sum, F, Q, Case, When, Prefetch
 from django.db.models.functions import Coalesce
 
 from utils import views
@@ -57,14 +57,27 @@ class Statistics(TemplateView):
             insurances
         )
 
+        # dispensed() NEEDS TO BE REDONE, reduce to just quality that is
+        #  adjusted when dispensing orders
         total_in_stock = 0
         total_cost_of_inventory = Decimal(0.00)
         shoe_attributes_objects = inventory_models.ShoeAttributes.objects
-        for shoe_attributes in shoe_attributes_objects.select_related('shoe'):
-            # the call to .dispensed() generates a lot of extra queries,
-            #  .prefetch_related() didn't help
+        shoe_attributes_list = shoe_attributes_objects.select_related(
+            'shoe'
+        ).prefetch_related(
+            Prefetch('shoeorder_set',
+                     # see dispensed() in clients_models.ShoeAttributes
+                     queryset=inventory_models.ShoeOrder.objects.filter(
+                        dispensed_date__isnull=False,  # with
+                        ordered_date__isnull=True  # without
+                     ),
+                     to_attr="dispensed_set")
+        )
+        for shoe_attributes in shoe_attributes_list:
+            # use prefetched .dispensed instead of .dispensed() which would
+            #  result in a lot of queries
             actual_quantity = (shoe_attributes.quantity
-                               - shoe_attributes.dispensed())
+                               - len(shoe_attributes.dispensed_set))
             total_in_stock += actual_quantity
             total_cost_of_inventory += (actual_quantity
                                         * shoe_attributes.shoe.cost)
