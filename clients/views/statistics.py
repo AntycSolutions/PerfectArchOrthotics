@@ -57,32 +57,9 @@ class Statistics(TemplateView):
             insurances
         )
 
-        # dispensed() NEEDS TO BE REDONE, reduce to just quality that is
-        #  adjusted when dispensing orders
-        total_in_stock = 0
-        total_cost_of_inventory = Decimal(0.00)
-        shoe_attributes_objects = inventory_models.ShoeAttributes.objects
-        shoe_attributes_list = shoe_attributes_objects.select_related(
-            'shoe'
-        ).prefetch_related(
-            Prefetch('shoeorder_set',
-                     # see dispensed() in clients_models.ShoeAttributes
-                     queryset=inventory_models.ShoeOrder.objects.filter(
-                        dispensed_date__isnull=False,  # with
-                        ordered_date__isnull=True  # without
-                     ),
-                     to_attr="dispensed_set")
-        )
-        for shoe_attributes in shoe_attributes_list:
-            # use prefetched .dispensed instead of .dispensed() which would
-            #  result in a lot of queries
-            actual_quantity = (shoe_attributes.quantity
-                               - len(shoe_attributes.dispensed_set))
-            total_in_stock += actual_quantity
-            total_cost_of_inventory += (actual_quantity
-                                        * shoe_attributes.shoe.cost)
-        context['total_in_stock'] = total_in_stock
-        context['total_cost_of_inventory'] = total_cost_of_inventory
+        totals = self._in_stock_and_cost_of_inventory()
+        context['total_in_stock'] = totals['total_in_stock']
+        context['total_cost_of_inventory'] = totals['total_cost_of_inventory']
 
         context['shoes'] = self._top_ten_best_sellers()
 
@@ -435,6 +412,33 @@ class Statistics(TemplateView):
             merged[dict_[key]].update(dict_)
 
         return merged.values()
+
+    def _in_stock_and_cost_of_inventory():
+        total_in_stock = 0
+        total_cost_of_inventory = Decimal(0.00)
+        shoe_attributes_objects = inventory_models.ShoeAttributes.objects
+        shoe_attributes_list = shoe_attributes_objects.select_related(
+            'shoe'
+        ).prefetch_related(
+            Prefetch('shoeorder_set',
+                     # see dispensed() in clients_models.ShoeAttributes
+                     queryset=inventory_models.ShoeOrder.objects.filter(
+                        dispensed_date__isnull=False,  # with
+                        ordered_date__isnull=True  # without
+                     ),
+                     to_attr="dispensed_set")
+        )
+        for shoe_attributes in shoe_attributes_list:
+            # use prefetched .dispensed_set instead of .dispensed() which
+            #  would result in a lot of queries
+            actual_quantity = (shoe_attributes.quantity
+                               - len(shoe_attributes.dispensed_set))
+            total_in_stock += actual_quantity
+            total_cost_of_inventory += (actual_quantity
+                                        * shoe_attributes.shoe.cost)
+
+        return {'total_in_stock': total_in_stock,
+                'total_cost_of_inventory': total_cost_of_inventory}
 
     def _top_ten_best_sellers(self):
         shoes = inventory_models.Shoe.objects.annotate(
