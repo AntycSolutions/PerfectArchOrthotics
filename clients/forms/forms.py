@@ -11,6 +11,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from clients.models import Client, Dependent, Insurance, Coverage, Claim, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person, Item, \
     ClaimItem, ClaimCoverage
+from utils import form_utils
 
 
 class ClientForm(forms.ModelForm):
@@ -124,7 +125,10 @@ class ClaimForm(forms.ModelForm):
     #     widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, client, *args, **kwargs):
-        super(ClaimForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.fields['claim_package'].widget = \
+            form_utils.ConfirmFileWidget(form_id="update_claim_form",
+                                         form=self)
         self.client = client
     #     fields_order = ['patient', 'insurance', 'coverage_types', 'items']
     #     if (len(fields_order) != len(self.fields)):
