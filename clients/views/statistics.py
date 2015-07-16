@@ -413,7 +413,7 @@ class Statistics(TemplateView):
 
         return merged.values()
 
-    def _in_stock_and_cost_of_inventory():
+    def _in_stock_and_cost_of_inventory(self):
         total_in_stock = 0
         total_cost_of_inventory = Decimal(0.00)
         shoe_attributes_objects = inventory_models.ShoeAttributes.objects
