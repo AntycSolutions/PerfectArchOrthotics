@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Backup database/media
 #  tar/gzip the json file and media folder
 
