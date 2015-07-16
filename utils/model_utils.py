@@ -22,7 +22,7 @@ class FieldList():
                 try:
                     value = getattr(self, fname)
                 except:
-                    print("Could not get value of field.")
+                    # print("Could not get value of field.")
                     value = None
 
             if f.editable:
