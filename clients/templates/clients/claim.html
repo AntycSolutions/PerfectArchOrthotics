@@ -37,6 +37,12 @@
                 <a href="{{ claim.claim_package.url }}">Click Here</a>
             {% endif %}
         </li>
+        <li>Claim Package2:
+            Number of Files: {{ claim.claimattachment_set.count }}<br />
+            {% for claimattachment in claim.claimattachment_set.all %}
+                {{ forloop.counter }}. <a href="{{ claimattachment.attachment.url }}">{{ claimattachment.attachment }}</a><br />
+            {% endfor %}
+        </li>
     </ul>
     <table class="table table-striped">
         <thead>

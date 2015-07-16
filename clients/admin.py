@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 
 from clients.models import Client, Insurance, Claim, Dependent, \
     Coverage, Person, Invoice, Item, InsuranceLetter, \
-    Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverage
+    Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverage, ClaimAttachment
 
 
 class DependentInline(admin.TabularInline):
@@ -37,14 +37,19 @@ class ClaimCoverageInline(admin.TabularInline):
     model = ClaimCoverage
 
 
+class ClaimAttachmentInline(admin.TabularInline):
+    model = ClaimAttachment
+
+
 class ClaimAdmin(admin.ModelAdmin):
-    inlines = (ClaimCoverageInline,)
+    inlines = (ClaimCoverageInline, ClaimAttachmentInline)
 
 
 class CoverageAdmin(admin.ModelAdmin):
     inlines = (ClaimCoverageInline,)
 
 admin.site.register(Coverage, CoverageAdmin)
+admin.site.register(ClaimAttachment)
 admin.site.register(Claim, ClaimAdmin)
 
 admin.site.register(ClaimItem)

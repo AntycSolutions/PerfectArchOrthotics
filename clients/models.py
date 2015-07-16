@@ -452,6 +452,17 @@ class Claim(models.Model):
         return self.__unicode__()
 
 
+class ClaimAttachment(models.Model):
+    claim = models.ForeignKey(Claim)
+    attachment = models.FileField(
+        "Attachment",
+        upload_to='clients/claim_packages/%Y/%m/%d'
+    )
+
+    def __str__(self):
+        return "{0} - {1}".format(self.attachment, self.claim)
+
+
 class ClaimCoverage(models.Model):
     claim = models.ForeignKey(
         Claim, verbose_name="Claim")
