@@ -94,12 +94,14 @@ if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
 elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
+
     INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
     MIDDLEWARE_CLASSES.insert(
         5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
     )
     MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
+
     def show_toolbar(request):
         if (hasattr(request, 'user') and not request.is_ajax()
                 and request.user.is_superuser):
@@ -111,6 +113,7 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     }
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
+
     INSTALLED_APPS += ('debug_toolbar',)
 else:
     raise Exception("Please create a settings decision file.")
