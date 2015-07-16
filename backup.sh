@@ -3,6 +3,8 @@
 
 filename="default"
 now=$(date +"%Y_%m_%d")
+dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+cd $dir
 
 if [ -e "../devl" ]
 then
