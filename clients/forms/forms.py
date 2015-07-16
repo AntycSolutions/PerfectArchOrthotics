@@ -124,29 +124,29 @@ class ClaimForm(forms.ModelForm):
     # coverage_types = CustomModelMultipleChoiceField(
     #     queryset=Coverage.objects.all(),
     #     widget=forms.CheckboxSelectMultiple)
-    claim_package2 = form_utils.MultiFileField(
+    claim_package = form_utils.MultiFileField(
+        label="Claim Package",
         required=False,
         max_file_size=3.0*1024*1024  # mb*kb*b,
     )
 
     def __init__(self, client, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['claim_package'].widget = \
-            form_utils.ConfirmFileWidget(form_id="update_claim_form",  # html
-                                         form=self)
+
         file_list = [
             claim_attachment.attachment
             for claim_attachment in self.instance.claimattachment_set.all()
         ]
-        claim_package2 = self.fields['claim_package2']
-        claim_package2.widget = \
+        claim_package = self.fields['claim_package']
+        claim_package.widget = \
             form_utils.ConfirmMultiFileMultiWidget(
                 form_id="update_claim_form",  # html
                 form=self,
-                field_name='claim_package2',
+                field_name='claim_package',
                 file_count=len(file_list)
             )
-        self.initial['claim_package2'] = file_list
+        self.initial['claim_package'] = file_list
+
         self.client = client
     #     fields_order = ['patient', 'insurance', 'coverage_types', 'items']
     #     if (len(fields_order) != len(self.fields)):
@@ -188,8 +188,8 @@ class ClaimForm(forms.ModelForm):
         instance = super().save(commit)
 
         LAST_INITIAL = object()
-        both = itertools.zip_longest(self.cleaned_data['claim_package2'],
-                                     self.initial['claim_package2'],
+        both = itertools.zip_longest(self.cleaned_data['claim_package'],
+                                     self.initial['claim_package'],
                                      fillvalue=LAST_INITIAL)
         for _file, initial_datum in both:
             if _file is None or _file == initial_datum:
