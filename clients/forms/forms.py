@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from itertools import zip_longest
+import itertools
 
 from django import forms
 from django.forms import models, BaseInlineFormSet
@@ -10,7 +11,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from clients.models import Client, Dependent, Insurance, Coverage, Claim, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person, Item, \
-    ClaimItem, ClaimCoverage
+    ClaimItem, ClaimCoverage, ClaimAttachment
 from utils import form_utils
 
 
@@ -123,12 +124,29 @@ class ClaimForm(forms.ModelForm):
     # coverage_types = CustomModelMultipleChoiceField(
     #     queryset=Coverage.objects.all(),
     #     widget=forms.CheckboxSelectMultiple)
+    claim_package2 = form_utils.MultiFileField(
+        required=False,
+        max_file_size=3.0*1024*1024  # mb*kb*b,
+    )
 
     def __init__(self, client, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['claim_package'].widget = \
-            form_utils.ConfirmFileWidget(form_id="update_claim_form",
+            form_utils.ConfirmFileWidget(form_id="update_claim_form",  # html
                                          form=self)
+        file_list = [
+            claim_attachment.attachment
+            for claim_attachment in self.instance.claimattachment_set.all()
+        ]
+        claim_package2 = self.fields['claim_package2']
+        claim_package2.widget = \
+            form_utils.ConfirmMultiFileMultiWidget(
+                form_id="update_claim_form",  # html
+                form=self,
+                field_name='claim_package2',
+                file_count=len(file_list)
+            )
+        self.initial['claim_package2'] = file_list
         self.client = client
     #     fields_order = ['patient', 'insurance', 'coverage_types', 'items']
     #     if (len(fields_order) != len(self.fields)):
@@ -165,6 +183,29 @@ class ClaimForm(forms.ModelForm):
                     obj.provider, obj.main_claimant.full_name())
         )
         insurance.widget.attrs['class'] = 'insurance_trigger'
+
+    def save(self, commit=True):
+        instance = super().save(commit)
+
+        LAST_INITIAL = object()
+        both = itertools.zip_longest(self.cleaned_data['claim_package2'],
+                                     self.initial['claim_package2'],
+                                     fillvalue=LAST_INITIAL)
+        for _file, initial_datum in both:
+            if _file is None or _file == initial_datum:
+                continue
+            elif _file is False:
+                ClaimAttachment.objects.get(
+                    attachment=initial_datum, claim=instance
+                ).delete()
+            elif initial_datum is LAST_INITIAL:
+                for _new_file in _file:
+                    ClaimAttachment.objects.create(attachment=_new_file,
+                                                   claim=instance)
+            else:
+                raise Exception("Unknown Exception during MultiFile save.")
+
+        return instance
 
     #     coverage_types = self.fields['coverage_types']
     #     coverage_types.queryset = Coverage.objects.filter(
