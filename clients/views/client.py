@@ -22,4 +22,4 @@ class DeleteClientView(DeleteView):
     model = Client
     slug_field = "id"
     slug_url_kwarg = "client_id"
-    success_url = reverse_lazy('clients')
+    success_url = reverse_lazy('client_list')
