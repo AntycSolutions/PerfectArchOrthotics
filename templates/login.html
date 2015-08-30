@@ -6,21 +6,32 @@
 
 {% block content %}
 
-<h1>Login to The Perfect Arch Orthotics</h1>
-<form id="login_form" method="post" action="{% url 'user_login' %}" class="form-horizontal">
+<h1>
+    Login
+</h1>
+{% include 'clients/snippets/messages.html' %}
+<form id="login_form" method="POST" action="{% url 'user_login' %}" class="form-horizontal">
     {% csrf_token %}
-    {% for field in form.visible_fields %}
-        <div class="form-group">
-            {% if field.errors %}
-                {{ field.errors }}
-            {% endif %}
-            <div class="col-lg-10">
-                {{ field.label_tag}} {{ field }}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <div class="row">
+        <fieldset class="col-lg-6">
+            {% include 'utils/generics/form.html' %}
+        </fieldset>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <div class="col-lg-9 col-lg-offset-3">
+                    <button type="submit" class="btn btn-primary">
+                        Login
+                    </button>
+                    <a href="/" class="btn btn-default">
+                        Cancel
+                    </a>
+                </div>
             </div>
         </div>
-    {% endfor %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <input type="submit" value="Login"/>
+    </div>
 </form>
 
 {% endblock %}
