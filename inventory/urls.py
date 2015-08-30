@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url, include
 from django.contrib.auth.decorators import login_required
+from django.views.generic import base
 
 from inventory.views import views
 from inventory.views import shoe
@@ -8,6 +9,9 @@ from inventory.views import order
 
 adjustment_order_patterns = patterns(
     '',
+    url(r'^$',
+        base.RedirectView.as_view(pattern_name='order_list', permanent=False),
+        name='adjustment_order_list'),
     url(r'^create/$',
         login_required(order.AdjustmentCreateOrderView.as_view()),
         name='adjustment_order_create'),
@@ -28,6 +32,9 @@ adjustment_order_patterns = patterns(
 
 shoe_order_patterns = patterns(
     '',
+    url(r'^$',
+        base.RedirectView.as_view(pattern_name='order_list', permanent=False),
+        name='shoe_order_list'),
     url(r'^create/$',
         login_required(order.ShoeCreateOrderView.as_view()),
         name='shoe_order_create'),
@@ -48,6 +55,9 @@ shoe_order_patterns = patterns(
 
 coverage_order_patterns = patterns(
     '',
+    url(r'^$',
+        base.RedirectView.as_view(pattern_name='order_list', permanent=False),
+        name='coverage_order_list'),
     url(r'^create/$',
         login_required(order.CoverageCreateOrderView.as_view()),
         name='coverage_order_create'),
