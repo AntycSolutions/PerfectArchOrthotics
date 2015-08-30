@@ -2,8 +2,11 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib.auth import views as django_views
+from django.contrib.auth.decorators import login_required
 
 from ajax_select import urls as ajax_select_urls
+
+from utils import views as utils_views
 
 import views
 
@@ -27,7 +30,9 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^clients/', include('clients.urls')),
     url(r'^inventory/', include('inventory.urls')),
-    url(r'^utils/', include('utils.urls')),
+    url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
+        login_required(utils_views.get_thumbnail),
+        name='get_thumbnail'),
 )
 
 if settings.DEBUG:
