@@ -1,12 +1,17 @@
-<!DOCTYPE html>
 {% load static %}
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Antyc Solutions">
+    <meta name="description" content="We are an Edmonton based company providing orthotics to those in need.">
+    <meta property="og:title" content="Perfect Arch">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://perfectarch.ca/">
+    <meta property="og:image" content="https://perfectarch.ca/static/images/PerfectArchLogo.jpg">
 
     <title>Perfect Arch {% block title %}{% endblock %}</title>
 
@@ -17,6 +22,9 @@
     <!-- Bootswatch Cerulean Bootstrap -->
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
     <!-- jQuery UI Smoothness -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css" />
 
@@ -24,20 +32,27 @@
 
     <!-- jQuery (required here because of django-bootstrap3-datetimepicker) -->
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
     {% block extrahead %}{% endblock %}
 </head>
 
-<body>
+<body style="margin-top: 50px;">
     {% include 'navbar.html' %}
-    <div id="main" class="container" style="margin-left:auto; margin-right:auto;">
+
+    <div class="container">
         {% block content %}{% endblock %}
     </div>
+
     {% include 'footer.html' %}
+
     <!-- Scripts load last -->
+
     <!-- jQuery UI -->
     <script type="text/javascript" src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
     <!-- Bootstrap -->
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
     {% block scripts %}{% endblock %}
 </body>
 </html>
