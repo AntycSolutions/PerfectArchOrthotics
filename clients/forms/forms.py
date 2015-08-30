@@ -9,10 +9,11 @@ from django.forms.models import inlineformset_factory
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
+from utils.forms import fields as utils_fields, widgets as utils_widgets
+
 from clients.models import Client, Dependent, Insurance, Coverage, Claim, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person, Item, \
     ClaimItem, ClaimCoverage, ClaimAttachment
-from utils import form_utils
 
 
 class ClientForm(forms.ModelForm):
@@ -124,7 +125,7 @@ class ClaimForm(forms.ModelForm):
     # coverage_types = CustomModelMultipleChoiceField(
     #     queryset=Coverage.objects.all(),
     #     widget=forms.CheckboxSelectMultiple)
-    claim_package = form_utils.MultiFileField(
+    claim_package = utils_fields.MultiFileField(
         label="Claim Package",
         required=False,
         max_file_size=3.0*1024*1024  # mb*kb*b,
@@ -139,7 +140,7 @@ class ClaimForm(forms.ModelForm):
         ]
         claim_package = self.fields['claim_package']
         claim_package.widget = \
-            form_utils.ConfirmMultiFileMultiWidget(
+            utils_widgets.ConfirmMultiFileMultiWidget(
                 form_id="update_claim_form",  # html
                 form=self,
                 field_name='claim_package',
