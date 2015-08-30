@@ -8,16 +8,26 @@
 
 {% block content %}
 
-<h1>Claim for {{ claim.patient.full_name }}</h1>
+<h1>
+    Claim for {{ claim.patient.full_name }}
+</h1>
 <div>
-    <a href="{% url 'claim' claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+    <a class="btn btn-info" href="{% url 'claim' claim.id %}">
+        View
+    </a>
 </div>
-<h1>Invoice for {{ claim.patient.full_name }}</h1>
+<h1>
+    Invoice for {{ claim.patient.full_name }}
+</h1>
 <div>
     {% if invoice %}
-        <a href="{% url 'invoice_update' invoice.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'invoice_update' invoice.id %}" class="btn btn-primary">
+            Update
+        </a>
     {% else %}
-        <a href="{% url 'invoice_create' claim.id %}" class="btn btn-primary">Create</a>
+        <a href="{% url 'invoice_create' claim.id %}" class="btn btn-primary">
+            Create
+        </a>
     {% endif %}
 </div>
 <br />

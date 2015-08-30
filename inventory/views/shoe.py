@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 from django.forms import fields as form_fields
 from django.forms.models import BaseInlineFormSet
@@ -103,6 +103,8 @@ class CreateShoeView(CreateView):
         context['indefinite_article'] = 'a'
         context['form_type'] = 'multipart/form-data'
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
+        context['cancel_url'] = reverse('shoe_list')
+
         return context
 
     def get_success_url(self):
@@ -334,12 +336,16 @@ class UpdateShoeView(UpdateView):
         )
 
     def get_context_data(self, **kwargs):
-        context = super(UpdateShoeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'a'
         context['form_type'] = 'multipart/form-data'
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
+        context['cancel_url'] = reverse('shoe_detail',
+                                        kwargs={'pk': self.object.pk})
+
         return context
 
     def get_success_url(self):

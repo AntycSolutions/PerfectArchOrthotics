@@ -2,7 +2,7 @@
 
 {% include 'navbar.html' %}
 
-{% block title %} - Edit Insurance Letter{% endblock %}
+{% block title %} - Update Insurance Letter{% endblock %}
 
 {% block extrahead %}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -23,8 +23,12 @@
 
 {% block content %}
 
-<h1>Edit insurance letter information for: {{ insurance_letter.claim.patient.full_name }}</h1>
-<h3>insurance letter information:</h3>
+<h1>
+    Update insurance letter information for: {{ insurance_letter.claim.patient.full_name }}
+</h1>
+<h3>
+    insurance letter information:
+</h3>
 <form id="update_insurance_letter_form" class="form-horizontal" method="post">
     <fieldset>
         {% csrf_token %}

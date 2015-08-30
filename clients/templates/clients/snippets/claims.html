@@ -1,3 +1,12 @@
+<style>
+    .crud:not(:last-child) {
+        width: 75px;
+        margin-bottom: 5px;
+    }
+    .crud:last-child {
+        width: 75px;
+    }
+</style>
 <table class="table table-striped table-cover">
     <thead>
         <tr>
@@ -12,14 +21,23 @@
             <th>Total Expected Back</th>
             <!-- <th>Total Max Quantity</th>
             <th>Total Max Expected Back</th> -->
-            <th></th>
         </tr>
     </thead>
     <tbody>
         {% for claim in claims %}
             <tr>
-                <td>
-                    <a href="{% url 'claim' claim.id %}"><button type="button" class="btn btn-info">View</button></a>
+                <td style="width: 91px;"><!-- from computed when width < 91 -->
+                    <a class="btn btn-info crud" href="{% url 'claim' claim.id %}">
+                        View
+                    </a>
+                    <br />
+                    <a class="btn btn-default crud" href="{% url 'claim_update' claim.id %}">
+                        Update
+                    </a>
+                    <br />
+                    <a class="btn btn-danger crud" href="{% url 'claim_delete' claim.id %">
+                        Delete
+                    </a>
                 </td>
                 <td><a href="{{ claim.patient.get_absolute_url }}">{{ claim.patient.full_name }}</a></td>
                 <td>{{ claim.insurance.provider }}</td>
@@ -37,12 +55,6 @@
                     <td>{{ totals.total_max_expected_back }}</td>
                 {% endwith %}
                 {% endcomment %}
-                <td style="width: 140px;">
-                    <div class="pull-right">
-                        <a href="{% url 'claim_update' claim.id %}" class="btn btn-default">Edit</a>
-                        <a href="{% url 'claim_delete' claim.id %}" class="btn btn-default">Delete</a>
-                    </div>
-                </td>
             </tr>
             <tr>
                 <td colspan="5"><ul class="pull-right"><li>Coverages:</li></ul></td>
@@ -86,7 +98,6 @@
                         {% endif %}
                     </div>
                 </td>
-                <td></td>
             </tr>
         {% endfor %}
     </tbody>

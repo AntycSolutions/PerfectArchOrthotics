@@ -1,9 +1,10 @@
+# TODO: qualify imports
 import collections
 
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 
 from utils.search import get_query
 from clients.models import Item
@@ -19,6 +20,8 @@ class CreateItemView(CreateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['cancel_url'] = reverse('item_list')
+
         return context
 
     def get_success_url(self):
@@ -133,6 +136,13 @@ class UpdateItemView(UpdateView):
     template_name = 'utils/generics/update.html'
     model = Item
     fields = '__all__'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        context['cancel_url'] = reverse('item_list')
+
+        return context
 
     def get_success_url(self):
         self.success_url = reverse_lazy('item_detail',

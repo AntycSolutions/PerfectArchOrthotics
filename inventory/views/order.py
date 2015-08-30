@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from utils.search import get_query, get_date_query
@@ -198,6 +198,8 @@ class ShoeCreateOrderView(CreateView):
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
         context['autocomplete'] = True
+        context['cancel_url'] = reverse('order_list')
+
         return context
 
     def get_success_url(self):
@@ -245,6 +247,8 @@ class CoverageCreateOrderView(CreateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['cancel_url'] = reverse('order_list')
+
         return context
 
     def get_success_url(self):
@@ -289,6 +293,8 @@ class AdjustmentCreateOrderView(CreateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['cancel_url'] = reverse('order_list')
+
         return context
 
     def get_success_url(self):
@@ -358,10 +364,14 @@ class ShoeUpdateOrderView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShoeUpdateOrderView, self).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
         context['autocomplete'] = True
+        context['cancel_url'] = reverse('shoe_order_detail',
+                                        kwargs={'pk': self.object.pk})
+
         return context
 
     def get_success_url(self):
@@ -392,14 +402,15 @@ class CoverageUpdateOrderView(UpdateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            CoverageUpdateOrderView,
-            self
-        ).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['cancel_url'] = reverse('coverage_order_detail',
+                                        kwargs={'pk': self.object.pk})
+
         return context
 
     def get_success_url(self):
@@ -430,14 +441,15 @@ class AdjustmentUpdateOrderView(UpdateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_context_data(self, **kwargs):
-        context = super(
-            AdjustmentUpdateOrderView,
-            self
-        ).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
+        context['cancel_url'] = reverse('adjustment_order_detail',
+                                        kwargs={'pk': self.object.pk})
+
         return context
 
     def get_success_url(self):

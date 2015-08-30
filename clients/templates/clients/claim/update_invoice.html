@@ -2,7 +2,7 @@
 
 {% load verbose_name %}
 
-{% block title %} - Edit Invoice{% endblock %}
+{% block title %} - Update Invoice{% endblock %}
 
 {% block extrahead %}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -29,7 +29,9 @@
 
 {% block content %}
 
-<h1>Edit invoice information for: {{ invoice.claim.patient.full_name }}</h1>
+<h1>
+    Update invoice information for: {{ invoice.claim.patient.full_name }}
+</h1>
 
 <form id="update_invoice_form" class="form-horizontal" method="post">
     {% csrf_token %}

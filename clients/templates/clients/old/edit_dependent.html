@@ -2,7 +2,7 @@
 
 {% include 'navbar.html' %}
 
-{% block title %} - Edit Dependents{% endblock %}
+{% block title %} - Update Dependents{% endblock %}
 
 {% block extrahead %}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -18,7 +18,10 @@
 {% endblock %}
 
 {% block content %}
-<h3>Edit dependent information for: {{ client }}</h3>
+
+<h3>
+    Update dependent information for: {{ client }}
+</h3>
     <form id="edit_dependent_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}
@@ -35,4 +38,5 @@
         </fieldset>
         <input type="submit" name="submit" value="Save" />
     </form>
+
 {% endblock %}

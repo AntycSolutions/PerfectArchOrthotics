@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Insurance{% endblock %}
+{% block title %} - Update Insurance{% endblock %}
 
 {% block extrahead %}
 
@@ -47,8 +47,12 @@
 
 {% block content %}
 
-<h1>Edit insurance information for: {{ insurance.client.full_name }}</h1>
-<h3>insurance information:</h3>
+<h1>
+    Update insurance information for: {{ insurance.client.full_name }}
+</h1>
+<h3>
+    insurance information:
+</h3>
 <form id="update_insurance_form" class="form-horizontal" method="post">
     <fieldset>
         {% csrf_token %}
