@@ -317,6 +317,30 @@ def clientSearchView(request):
                               context)
 
 
+def _actual_paid_date(request, context_dict, found_claims):
+    if 'apd' in request.GET:
+        apd = request.GET['apd']
+        context_dict['apd'] = apd
+
+        if apd == 'has_actual_paid_date':
+            actual_paid_date = False
+        elif apd == 'no_actual_paid_date':
+            actual_paid_date = True
+        elif apd == 'both_actual_paid_date':
+            return found_claims
+
+        if found_claims:
+            found_claims = found_claims.filter(
+                claimcoverage__actual_paid_date__isnull=actual_paid_date
+            ).distinct()
+        else:
+            found_claims = Claim.objects.filter(
+                claimcoverage__actual_paid_date__isnull=actual_paid_date
+            ).distinct()
+
+    return found_claims
+
+
 @login_required
 def claimSearchView(request):
     context = RequestContext(request)
@@ -326,6 +350,7 @@ def claimSearchView(request):
     # Start from all, drilldown to q df dt
     found_claims = Claim.objects.order_by('-submitted_datetime')
 
+    # Query, Date From, Date To
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ['patient__first_name', 'patient__last_name',
                   'insurance__provider', 'patient__employer']
@@ -383,16 +408,7 @@ def claimSearchView(request):
             messages.add_message(request, messages.WARNING,
                                  "Invalid date. Please use MM/DD/YYYY.")
 
-    if 'apd' in request.GET:
-        context_dict['apd'] = True
-        if found_claims:
-            found_claims = found_claims.filter(
-                claimcoverage__actual_paid_date__isnull=True
-            ).distinct()
-        else:
-            found_claims = Claim.objects.filter(
-                claimcoverage__actual_paid_date__isnull=True
-            ).distinct()
+    found_claims = _actual_paid_date(request, context_dict, found_claims)
 
     # Expected Back
     totals = ClaimCoverage.objects.filter(

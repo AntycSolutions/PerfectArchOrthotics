@@ -3,20 +3,20 @@
 {% block title %} - Claims{% endblock %}
 
 {% block extrahead %}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script>
-    $(function() {
-        $( "#dateFromSearchBox" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-        $( "#dateToSearchBox" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-</script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $( "#dateFromSearchBox" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+            $( "#dateToSearchBox" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "1900:2015"});
+        });
+    </script>
 {% endblock %}
 
 {% include 'navbar.html' %}
@@ -25,12 +25,33 @@
 
 {% include 'clients/snippets/messages.html' %}
 <h1>Claims</h1>
-<form method="GET">
-    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
-    <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
-    <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
-    <label><input type="checkbox" name="apd" {% if apd %}checked{% endif %}> Requires Actual Paid Date</label>
-    <input type="submit" class="btn" value="Search">
+<form method="GET" class="form-inline">
+    <div class="form-group">
+        <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}">
+    </div>
+    <div class="form-group">
+        <input type="text" id="dateFromSearchBox" class="form-control search-query" name="df" placeholder="Date From" value="{{ df }}">
+    </div>
+    <div class="form-group">
+        <input type="text" id="dateToSearchBox" class="form-control search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="apd" value="has_actual_paid_date" {% if apd == 'has_actual_paid_date' %}checked{% endif %}>
+            Has Actual Paid Date
+        </label>
+        <br />
+        <label>
+            <input type="radio" name="apd" value="no_actual_paid_date" {% if apd == 'no_actual_paid_date' %}checked{% endif %}>
+            No Actual Paid Date
+        </label>
+        <br />
+        <label>
+            <input type="radio" name="apd" value="both_actual_paid_date" {% if apd == 'both_actual_paid_date' %}checked{% endif %}>
+            Both
+        </label>
+    </div>
+    <button type="submit" class="btn">Search</button>
 </form>
 {% if claims %}
     {% include 'clients/snippets/claims.html' %}
@@ -44,7 +65,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if claims.has_previous %}
-            <a href="?q={{q}}&df={{df}}&dt={{dt}}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
+            <a href="?q={{q}}&df={{df}}&dt={{dt}}&apd={{apd}}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
         {% endif %}
 
         {% if claims.number %}
@@ -54,7 +75,7 @@
         {% endif %}
 
         {% if claims.has_next %}
-            <a href="?q={{q}}&df={{df}}&dt={{dt}}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
+            <a href="?q={{q}}&df={{df}}&dt={{dt}}&apd={{apd}}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
         {% endif %}
     </span>
 </div>
@@ -67,6 +88,9 @@
     {% endif %}
     {% if dt %}
         <input type="hidden" name="dt" value="{{ dt }}">
+    {% endif %}
+    {% if apd %}
+        <input type="hidden" name="apd" value="{{ apd }}">
     {% endif %}
     Rows per Page: <input type="number" id="claims_rows_per_page" name="claims_rows_per_page" value="{{ claims_rows_per_page }}">
     <input type="submit" class="btn" value="Paginate">
