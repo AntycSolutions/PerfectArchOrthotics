@@ -8,294 +8,536 @@
 
 {% block content %}
 
-<h1>{{ client.full_name }}</h1>
+<h1>
+    {{ client.full_name }}
+</h1>
 <div>
-    <a href="{% url 'claim_create' client.id %}" class="btn btn-primary">Create Claim</a>
-    <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary">Create Shoe Order</a>
-    <a href="{% url 'coverage_order_person_create' client.pk %}" class="btn btn-primary">Create Coverage Order</a>
-    <a href="{% url 'adjustment_order_person_create' client.pk %}" class="btn btn-primary">Create Adjustment Order</a>
+    <a href="{% url 'claim_create' client.id %}" class="btn btn-primary">
+        Create Claim
+    </a>
+    <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary">
+        Create Shoe Order
+    </a>
+    <a href="{% url 'coverage_order_person_create' client.pk %}" class="btn btn-primary">
+        Create Coverage Order
+    </a>
+    <a href="{% url 'adjustment_order_person_create' client.pk %}" class="btn btn-primary">
+        Create Adjustment Order
+    </a>
 </div>
 <br />
-<div class="pull-right">
-    <a href="{% url 'client_edit' client.id %}" class="btn btn-default">Edit</a>
-    <a href="{% url 'client_delete' client.id %}" class="btn btn-default">Delete</a>
-</div>
-<div class="well">
-    <h3>Information</h3>
-    <div style="width: 50%; float: left;">
-        <h5>Personal</h5>
-        <ul>
-            <li>{% verbose_field_name client "birth_date" %}:
-                {{ client.birth_date }}
-            </li>
-            <li>Age:
-                {{ client.age }}
-            </li>
-            <li>{% verbose_field_name client "gender" %}:
-                {{ client.get_gender_display }}
-            </li>
-            <li>{% verbose_field_name client "employer" %}:
-                {{ client.employer }}
-            </li>
-        </ul>
-        <h5>Location</h5>
-        <ul>
-            <li>{% verbose_field_name client "address" %}:
-                {{ client.address }}
-            </li>
-            <li>{% verbose_field_name client "city" %}:
-                {{ client.city }}
-            </li>
-            <li>{% verbose_field_name client "province" %}:
-                {{ client.province }}
-            </li>
-            <li>{% verbose_field_name client "postal_code" %}:
-                {{ client.postal_code }}
-            </li>
-        </ul>
-        <h5>Contact</h5>
-        <ul>
-            <li>{% verbose_field_name client "phone_number" %}:
-                {{ client.phone_number }}
-            </li>
-            <li>{% verbose_field_name client "cell_number" %}:
-                {{ client.cell_number }}
-            </li>
-            <li>{% verbose_field_name client "email" %}:
-                {{ client.email }}
-            </li>
-        </ul>
+<style>
+    .form-horizontal .form-group {
+        margin-bottom: 0;
+    }
+    .form-horizontal .control-label, .form-control-static {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 7.5px;">
+            <a href="#collapse_information" data-toggle="collapse" data-target="#information">
+                Information
+                <span class="caret"></span>
+            </a>
+        </div>
+        <div class="btn-group pull-right">
+            <a href="{% url 'client_edit' client.id %}" class="btn btn-default">
+                Update
+            </a>
+            <a href="{% url 'client_delete' client.id %}" class="btn btn-danger">
+                Delete
+            </a>
+        </div>
     </div>
-    <div style="width: 50%; float: right;">
-        <h5>Healthcare</h5>
-        <ul>
-            <li>{% verbose_field_name client "health_care_number" %}:
-                {{client.health_care_number }}
-            </li>
-        </ul>
-        <h5>Other</h5>
-        <ul>
-            <li>Credit: {{ client.credit }}
-            </li>
-            <li>{% verbose_field_name client "referred_by" %}:
-                <a href="{{ client.referred_by.get_absolute_url }}">
-                    {{ client.referred_by.full_name }}
-                </a>
-            </li>
-            <li>{% verbose_field_name client "notes" %}:
-                {{ client.notes }}
-            </li>
-        </ul>
+    <div id="information" class="panel-body collapse in">
+        <div class="form-horizontal" style="width: 45%; float: left;">
+            <div class="form-group">
+                <h5 class="col-lg-3" style="text-align: right;">
+                    Personal
+                </h5>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "birth_date" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.birth_date }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    Age
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.age }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "gender" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.get_gender_display }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "employer" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.employer }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <h5 class="col-lg-3" style="text-align: right;">
+                    Location
+                </h5>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "address" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.address }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "city" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.city }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "province" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.province }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "postal_code" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.postal_code }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <h5 class="col-lg-3" style="text-align: right;">
+                    Contact
+                </h5>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "phone_number" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.phone_number }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "cell_number" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.cell_number }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label">
+                    {% verbose_field_name client "email" %}
+                </label>
+                <div class="col-lg-9">
+                    <p class="form-control-static">
+                        {{ client.email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="form-horizontal" style="width: 55%; float: right;">
+            <div class="form-group">
+                <h5 class="col-lg-4" style="text-align: right;">
+                    Healthcare
+                </h5>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label">
+                    {% verbose_field_name client "health_care_number" %}
+                </label>
+                <div class="col-lg-8">
+                    <p class="form-control-static">
+                        {{ client.health_care_number }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <h5 class="col-lg-4" style="text-align: right;">
+                    Other
+                </h5>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label">
+                    Credit
+                </label>
+                <div class="col-lg-8">
+                    <p class="form-control-static">
+                        {{ client.credit }}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label">
+                    {% verbose_field_name client "referred_by" %}
+                </label>
+                <div class="col-lg-8">
+                    <p class="form-control-static">
+                        <a href="{{ client.referred_by.get_absolute_url }}">
+                            {{ client.referred_by.full_name }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label">
+                    Referred
+                </label>
+                <div class="col-lg-8">
+                    <p class="form-control-static">
+                        {% for referrer in client.person_ptr.referred_by.all %}
+                            <a href="{{ referrer.get_absolute_url }}">{{ referrer }}{% if not forloop.last %},{% endif %}</a>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label">
+                    {% verbose_field_name client "notes" %}
+                </label>
+                <div class="col-lg-8">
+                    <p class="form-control-static">
+                        {{ client.notes }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <br style="clear: both;"/>
     </div>
-    <br style="clear: both;"/>
 </div>
 
-<div class="pull-right">
-    <a href="{% url 'add_new_dependent' client.id %}" class="btn btn-default">Add Dependent</a>
-</div>
-<div class="well">
-<h3>Dependents</h3>
-{% if spouse %}
-    <h4>Spouse</h4>
-    <table class="table table-striped table-cover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>{% verbose_field_name spouse "birth_date" %}</th>
-                <th>{% verbose_field_name spouse "gender" %}</th>
-                <th>{% verbose_field_name spouse "employer" %}</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td id="{{ spouse.id }}">{{ spouse.full_name }}</td>
-                <td>{{ spouse.birth_date }}</td>
-                <td>{{ spouse.get_gender_display }}</td>
-                <td>{{ spouse.employer }}</td>
-                <td>
-                    <div class="pull-right">
-                        <style>
-                            .spouse-crud {
-                                width: 165px;
-                            }
-                            .spouse-crud-margin {
-                                margin-bottom: 5px;
-                            }
-                        </style>
-                        <a href="{% url 'shoe_order_person_create' spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Shoe Order</a><br />
-                        <a href="{% url 'coverage_order_person_create' spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Coverage Order</a><br />
-                        <a href="{% url 'insurance_create_spouse' client.id spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Add Insurance</a><br />
-                        <a href="{% url 'dependent_edit' client.id spouse.id %}" class="btn btn-default spouse-crud spouse-crud-margin">Edit</a><br />
-                        <a href="{% url 'dependent_delete' client.id spouse.id %}" class="btn btn-default spouse-crud">Delete</a>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-{% else %}
-    <p>There is no Spouse for this Client currently.</p>
-{% endif %}
-{% if children %}
-    <h4>Children</h4>
-    <table class="table table-striped table-cover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>{% verbose_field_name dependent_class "birth_date" %}</th>
-                <th>{% verbose_field_name dependent_class "gender" %}</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for child in children %}
-                <tr>
-                    <td id="{{ child.id }}">{{ child.full_name }}</td>
-                    <td>{{ child.birth_date }}</td>
-                    <td>{{ child.get_gender_display }}</td>
-                    <td>
-                        <div class="pull-right">
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 7.5px;">
+            <a href="#collapse_dependents" data-toggle="collapse" data-target="#dependents">
+                Dependents
+                <span class="caret"></span>
+            </a>
+        </div>
+        <div class="btn-group pull-right">
+            <a href="{% url 'add_new_dependent' client.id %}" class="btn btn-default">Add Dependent</a>
+        </div>
+    </div>
+    <div id="dependents" class="panel-body collapse">
+        {% if spouse %}
+            <h4>Spouse</h4>
+            <table class="table table-striped table-cover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>{% verbose_field_name spouse "birth_date" %}</th>
+                        <th>{% verbose_field_name spouse "gender" %}</th>
+                        <th>{% verbose_field_name spouse "employer" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 181px;"><!-- from computed when width < 181 -->
                             <style>
-                                .child-crud {
+                                .spouse-crud:not(:last-child) {
                                     width: 165px;
-                                }
-                                .child-crud-margin {
                                     margin-bottom: 5px;
                                 }
+                                .spouse-crud:last-child {
+                                    width: 165px;
+                                }
                             </style>
-                            <a href="{% url 'shoe_order_person_create' child.id %}" class="btn btn-default child-crud child-crud-margin">Add Shoe Order</a><br />
-                            <a href="{% url 'coverage_order_person_create' child.id %}" class="btn btn-default child-crud child-crud-margin">Add Coverage Order</a><br />
-                            <a href="{% url 'dependent_edit' client.id child.id %}" class="btn btn-default child-crud child-crud-margin">Edit</a><br />
-                            <a href="{% url 'dependent_delete' client.id child.id %}" class="btn btn-default child-crud">Delete</a>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>There are no Children for this Client currently.</p>
-{% endif %}
+                            <a href="{% url 'shoe_order_person_create' spouse.id %}" class="btn btn-default spouse-crud">
+                                Add Shoe Order
+                            </a>
+                            <br />
+                            <a href="{% url 'coverage_order_person_create' spouse.id %}" class="btn btn-default spouse-crud">
+                                Add Coverage Order
+                            </a>
+                            <br />
+                            <a href="{% url 'insurance_create_spouse' client.id spouse.id %}" class="btn btn-default spouse-crud">
+                                Add Insurance
+                            </a>
+                            <br />
+                            <a href="{% url 'dependent_edit' client.id spouse.id %}" class="btn btn-default spouse-crud">
+                                Update
+                            </a>
+                            <br />
+                            <a href="{% url 'dependent_delete' client.id spouse.id %}" class="btn btn-default spouse-crud">
+                                Delete
+                            </a>
+                        </td>
+                        <td>
+                            <a class="anchor" id="dependent_{{ spouse.id }}"></a>
+                            {{ spouse.full_name }}
+                        </td>
+                        <td>{{ spouse.birth_date }}</td>
+                        <td>{{ spouse.get_gender_display }}</td>
+                        <td>{{ spouse.employer }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>There is no Spouse for this Client currently.</p>
+        {% endif %}
+        {% if children %}
+            <h4>Children</h4>
+            <table class="table table-striped table-cover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            {% verbose_field_name dependent_class "birth_date" %}
+                        </th>
+                        <th>
+                            {% verbose_field_name dependent_class "gender" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for child in children %}
+                        <tr>
+                            <td style="width: 181px;"><!-- from computed when width < 181 -->
+                                <style>
+                                    .child-crud:not(:last-child) {
+                                        width: 165px;
+                                        margin-bottom: 5px;
+                                    }
+                                    .child-crud:last-child {
+                                        width: 165px;
+                                    }
+                                </style>
+                                <a href="{% url 'shoe_order_person_create' child.id %}" class="btn btn-default child-crud">
+                                    Add Shoe Order
+                                </a>
+                                <br />
+                                <a href="{% url 'coverage_order_person_create' child.id %}" class="btn btn-default child-crud">
+                                    Add Coverage Order
+                                </a>
+                                <br />
+                                <a href="{% url 'dependent_edit' client.id child.id %}" class="btn btn-default child-crud">
+                                    Update
+                                </a>
+                                <br />
+                                <a href="{% url 'dependent_delete' client.id child.id %}" class="btn btn-danger child-crud">
+                                    Delete
+                                </a>
+                            </td>
+                            <td>
+                                <a class="anchor" id="dependent_{{ child.id }}"></a>
+                                {{ child.full_name }}
+                            </td>
+                            <td>{{ child.birth_date }}</td>
+                            <td>{{ child.get_gender_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>There are no Children for this Client currently.</p>
+        {% endif %}
+    </div>
 </div>
 
-<div class="pull-right">
-    <a href="{% url 'insurance_create' client.id %}" class="btn btn-default">Add Insurance</a>
-</div>
-<div class="well">
-    <h3>Client Insurance</h3>
-    {% if client_insurance %}
-        {% with insurances=client_insurance %}
-            {% include 'clients/snippets/insurances.html' %}
-        {% endwith %}
-    {% else %}
-        <p>There are no Insurances for this Client currently.</p>
-    {% endif %}
-</div>
-
-<div class="well">
-    <h3>Claims</h3>
-    {% if client_claims %}
-        <!-- <form method="get" action="{% url 'claims' %}">
-            <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
-            <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
-            <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
-            <input type="submit" class="btn" value="Search">
-        </form> -->
-        {% with claims=client_claims %}
-            {% include 'clients/snippets/claims.html' %}
-        {% endwith %}
-        <!-- Pagination stuff -->
-        <div class="pagination">
-            <span class="step-links">
-                {% if client_claims.has_previous %}
-                    <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
-                    <a href="?claims_page={{ client_claims.previous_page_number }}" class="btn btn-default">Previous</a>
-                {% endif %}
-
-                {% if client_claims.number %}
-                    <span class="current">
-                        Page {{ client_claims.number }} of {{ client_claims.paginator.num_pages }}.
-                    </span>
-                {% endif %}
-
-                {% if client_claims.has_next %}
-                    <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
-                    <a href="?claims_page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
-                {% endif %}
-            </span>
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 7.5px;">
+            <a href="#collapse_insurances" data-toggle="collapse" data-target="#insurances">
+                Client Insurance
+                <span class="caret"></span>
+            </a>
         </div>
-        <table class="table table-striped table-cover">
-            <thead>
-                <tr>
-                    <th>Client Total Amount Claimed</th>
-                    <th>Pending Client Total Amount Claimed</th>
-                    <th>Client Total Expected Back</th>
-                    <th>Pending Client Total Expected Back</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ client_total_amount_claimed }}</td>
-                    <td>{{ pending_client_total_amount_claimed }}</td>
-                    <td>{{ client_total_expected_back }}</td>
-                    <td>{{ pending_client_total_expected_back }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="table table-striped table-cover">
-            <thead>
-                <tr>
-                    <th>Client Expected Back</th>
-                    <th>Client Cost</th>
-                    <th>Margin</th>
-                </tr>
-            <tbody>
-                <tr>
-                    <td>{{ client_expected_back }}</td>
-                    <td>{{ client_cost }}</td>
-                    <td>{{ margin }}</td>
-                </tr>
-            </tbody>
-        </table>
-    {% else %}
-        <p>There are no Claims for this Client currently.</p>
-    {% endif %}
+        <div class="btn-group pull-right">
+            <a href="{% url 'insurance_create' client.id %}" class="btn btn-default">Add Insurance</a>
+        </div>
+    </div>
+    <div id="insurances" class="panel-body collapse">
+        {% if client_insurance %}
+            {% include 'clients/snippets/insurances.html' with insurances=client_insurance disable_view=True %}
+        {% else %}
+            <p>There are no Insurances for this Client currently.</p>
+        {% endif %}
+    </div>
 </div>
 
-<div class="well">
-    <h3>Orders</h3>
-    {% if orders %}
-        {% for order_info in orders %}
-            <h5>{{ order_info.name }}</h5>
-            {% with object_list=order_info.order_set model_name="order" %}
-                {% include 'utils/generics/list_table.html' %}
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 7.5px;">
+            <a href="#collapse_claims" data-toggle="collapse" data-target="#claims">
+                Claims
+                <span class="caret"></span>
+            </a>
+        </div>
+        <div class="btn-group pull-right">
+
+        </div>
+    </div>
+    <div id="claims" class="panel-body collapse">
+        {% if client_claims %}
+            <!-- <form method="get" action="{% url 'claims' %}">
+                <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Claim Search" value="{{ q }}">
+                <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
+                <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+                <input type="submit" class="btn" value="Search">
+            </form> -->
+            {% with claims=client_claims %}
+                {% include 'clients/snippets/claims.html' %}
             {% endwith %}
             <!-- Pagination stuff -->
             <div class="pagination">
                 <span class="step-links">
-                    {% if order_info.order_set.has_previous %}
-                        <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.previous_page_number }}" class="btn btn-default">Previous</a>
+                    {% if client_claims.has_previous %}
+                        <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
+                        <a href="?claims_page={{ client_claims.previous_page_number }}" class="btn btn-default">Previous</a>
                     {% endif %}
 
-                    {% if order_info.order_set.number %}
+                    {% if client_claims.number %}
                         <span class="current">
-                            Page {{ order_info.order_set.number }} of {{ order_info.order_set.paginator.num_pages }}.
+                            Page {{ client_claims.number }} of {{ client_claims.paginator.num_pages }}.
                         </span>
                     {% endif %}
 
-                    {% if order_info.order_set.has_next %}
-                        <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.next_page_number }}" class="btn btn-default">Next</a>
+                    {% if client_claims.has_next %}
+                        <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
+                        <a href="?claims_page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
                     {% endif %}
                 </span>
             </div>
-            <form method="GET" style="display: inline-block;">
-                Rows per Page: <input type="number" id="{{ order_info.person_pk }}_rows_per_page" name="{{ order_info.person_pk }}_rows_per_page" value="{{ order_info.rows_per_page }}">
-                <input type="submit" class="btn" value="Paginate">
-            </form>
-        {% endfor %}
-    {% else %}
-        <p>There are no Orders for this Client or their dependents currently.</p>
-    {% endif %}
+            <table class="table table-striped table-cover">
+                <thead>
+                    <tr>
+                        <th>Client Total Amount Claimed</th>
+                        <th>Pending Client Total Amount Claimed</th>
+                        <th>Client Total Expected Back</th>
+                        <th>Pending Client Total Expected Back</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ client_total_amount_claimed }}</td>
+                        <td>{{ pending_client_total_amount_claimed }}</td>
+                        <td>{{ client_total_expected_back }}</td>
+                        <td>{{ pending_client_total_expected_back }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped table-cover">
+                <thead>
+                    <tr>
+                        <th>Client Expected Back</th>
+                        <th>Client Cost</th>
+                        <th>Margin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ client_expected_back }}</td>
+                        <td>{{ client_cost }}</td>
+                        <td>{{ margin }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>There are no Claims for this Client currently.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 7.5px;">
+            <a href="#collapse_orders" data-toggle="collapse" data-target="#orders">
+                Orders
+                <span class="caret"></span>
+            </a>
+        </div>
+        <div class="btn-group pull-right">
+
+        </div>
+    </div>
+    <div id="orders" class="panel-body collapse">
+        {% if orders %}
+            {% for order_info in orders %}
+                <h5>{{ order_info.name }}</h5>
+                {% with object_list=order_info.order_set model_name="order" %}
+                    {% include 'utils/generics/list_table.html' %}
+                {% endwith %}
+                <!-- Pagination stuff -->
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if order_info.order_set.has_previous %}
+                            <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.previous_page_number }}" class="btn btn-default">Previous</a>
+                        {% endif %}
+
+                        {% if order_info.order_set.number %}
+                            <span class="current">
+                                Page {{ order_info.order_set.number }} of {{ order_info.order_set.paginator.num_pages }}.
+                            </span>
+                        {% endif %}
+
+                        {% if order_info.order_set.has_next %}
+                            <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.next_page_number }}" class="btn btn-default">Next</a>
+                        {% endif %}
+                    </span>
+                </div>
+                <form method="GET" style="display: inline-block;">
+                    Rows per Page: <input type="number" id="{{ order_info.person_pk }}_rows_per_page" name="{{ order_info.person_pk }}_rows_per_page" value="{{ order_info.rows_per_page }}">
+                    <input type="submit" class="btn" value="Paginate">
+                </form>
+            {% endfor %}
+        {% else %}
+            <p>There are no Orders for this Client or their dependents currently.</p>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}
