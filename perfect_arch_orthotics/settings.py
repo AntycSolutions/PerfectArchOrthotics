@@ -104,7 +104,7 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
 
     def show_toolbar(request):
         if (hasattr(request, 'user') and not request.is_ajax()
-                and request.user.is_superuser):
+                and request.user.is_staff):
             return True
         return False
     DEBUG_TOOLBAR_CONFIG = {
