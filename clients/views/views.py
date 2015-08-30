@@ -16,6 +16,7 @@ from django.template import Context
 from django.contrib import messages
 from django.db.models import Sum, F, Case, When, Q
 from django.db.models.functions import Coalesce
+from django.core import urlresolvers
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -741,8 +742,16 @@ def add_client(request):
                 "%s" % (obj.full_name())
         )
 
-    return render_to_response('clients/add_client.html',
-                              {'form': form}, context)
+    cancel_url = urlresolvers.reverse('client_list')
+
+    return render_to_response(
+        'utils/generics/create.html',
+        {'form': form,
+         'model_name_plural': Client._meta.verbose_name_plural,
+         'model_name': Client._meta.verbose_name,
+         'indefinite_article': 'a',
+         'cancel_url': cancel_url},
+        context)
 
 
 @login_required
@@ -769,10 +778,17 @@ def editClientView(request, client_id):
                 "%s" % (obj.full_name())
         )
 
-    return render_to_response('clients/edit_client.html',
-                              {'client': client,
-                               'client_form': client_form},
-                              context)
+    cancel_url = urlresolvers.reverse('client',
+                                      kwargs={'client_id': client.pk})
+
+    return render_to_response(
+        'utils/generics/update.html',
+        {'form': client_form,
+         'model_name_plural': Client._meta.verbose_name_plural,
+         'model_name': Client._meta.verbose_name,
+         'indefinite_article': 'a',
+         'cancel_url': cancel_url},
+        context)
 
 
 # @login_required
@@ -839,10 +855,17 @@ def editDependentsView(request, client_id, dependent_id):
     else:
         dependent_form = DependentForm(instance=dependent)
 
-    return render_to_response('clients/dependent/edit_dependent.html',
-                              {'client': client,
-                               'dependent_form': dependent_form},
-                              context)
+    cancel_url = urlresolvers.reverse('client',
+                                      kwargs={'client_id': client.pk})
+
+    return render_to_response(
+        'utils/generics/create.html',
+        {'form': dependent_form,
+         'model_name_plural': Dependent._meta.verbose_name_plural,
+         'model_name': Dependent._meta.verbose_name,
+         'indefinite_article': 'a',
+         'cancel_url': cancel_url},
+        context)
 
 
 @login_required
@@ -863,10 +886,17 @@ def add_new_dependent(request, client_id):
     else:
         form = DependentForm()
 
-    return render_to_response('clients/dependent/add_new_dependent.html',
-                              {'form': form,
-                               'client': client},
-                              context)
+    cancel_url = urlresolvers.reverse('client',
+                                      kwargs={'client_id': client.pk})
+
+    return render_to_response(
+        'utils/generics/create.html',
+        {'form': form,
+         'model_name_plural': Dependent._meta.verbose_name_plural,
+         'model_name': Dependent._meta.verbose_name,
+         'indefinite_article': 'a',
+         'cancel_url': cancel_url},
+        context)
 
 
 @login_required
