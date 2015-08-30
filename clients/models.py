@@ -58,9 +58,11 @@ class Person(models.Model):
         return None
 
     def full_name(self):
-        if self.first_name or self.last_name:
-            return "%s %s" % (self.first_name, self.last_name)
-        return None
+        full_name = self.first_name
+        if self.last_name:
+            full_name += " {0}".format(self.last_name)
+
+        return full_name
 
     def get_absolute_url(self):
         try:
@@ -189,9 +191,11 @@ class Dependent(Person):
         blank=True)
 
     def get_absolute_url(self):
-        return "%s#%s" % (reverse('client',
-                                  kwargs={'client_id': self.client.id}),
-                          self.id)
+        return "{0}#dependent_{1}".format(
+            reverse('client',
+                    kwargs={'client_id': self.client.id}),
+            self.id
+        )
 
     def __unicode__(self):
         return self.full_name()
@@ -229,6 +233,13 @@ class Insurance(models.Model):
 
     # ForeignKey
     # Coverage
+
+    def get_absolute_url(self):
+        return "{0}#insurance_{1}".format(
+            reverse('client',
+                    kwargs={'client_id': self.main_claimant.get_client().id}),
+            self.id
+        )
 
     def __unicode__(self):
         try:
