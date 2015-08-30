@@ -3,44 +3,41 @@
 {% block title %} - Update Insurance{% endblock %}
 
 {% block extrahead %}
+    {% now 'Y' as current_year %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var coverage_prefix = "{{ coverage_formset.get_default_prefix }}";
 
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        var coverage_prefix = "{{ coverage_formset.get_default_prefix }}";
+            // Original html value does not match
+            var coverage_total_forms = $(
+                '#id_' + coverage_prefix + '-TOTAL_FORMS');
+            coverage_total_forms.val({{ nestedformset.total_form_count }});
 
-        // Original html value does not match
-        var coverage_total_forms = $(
-            '#id_' + coverage_prefix + '-TOTAL_FORMS');
-        coverage_total_forms.val({{ nestedformset.total_form_count }});
-
-        $('#add_form').click(function() {
-            var form_count = $('#id_coverage_set-TOTAL_FORMS').val();
-            var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
-            form = form
-                .replace(/__prefix__/g, form_count)
-                .replace(/<p>/g,
-                         '<div class="form-group"><div class="col-lg-10">')
-                .replace(/<\/p>/g, '</div></div>');
-            $(form).insertBefore('#add_form');
-            $('#id_coverage_set-' + form_count + '-period_date').datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "1900:2015"});
-            $('#id_coverage_set-TOTAL_FORMS').val(parseInt(form_count) + 1);
+            $('#add_form').click(function() {
+                var form_count = $('#id_coverage_set-TOTAL_FORMS').val();
+                var form = '{{ coverage_formset.empty_form.as_p|escapejs }}';
+                form = form
+                    .replace(/__prefix__/g, form_count)
+                    .replace(/<p>/g,
+                             '<div class="form-group"><div class="col-lg-10">')
+                    .replace(/<\/p>/g, '</div></div>');
+                $(form).insertBefore('#add_form');
+                $('#id_coverage_set-' + form_count + '-period_date').datepicker(
+                    {changeMonth: true,
+                     changeYear: true,
+                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                $('#id_coverage_set-TOTAL_FORMS').val(parseInt(form_count) + 1);
+            });
         });
-    });
-    {% for form in coverage_formset %}
-        $(function() {
-            $( "#id_coverage_set-{{ forloop.counter0 }}-period_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "1900:2015"});
-        });
-    {% endfor %}
-</script>
-
+        {% for form in coverage_formset %}
+            $(function() {
+                $( "#id_coverage_set-{{ forloop.counter0 }}-period_date" ).datepicker(
+                    {changeMonth: true,
+                     changeYear: true,
+                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            });
+        {% endfor %}
+    </script>
 {% endblock %}
 
 {% include 'navbar.html' %}

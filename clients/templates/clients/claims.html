@@ -3,18 +3,17 @@
 {% block title %} - Claims{% endblock %}
 
 {% block extrahead %}
-    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    {% now 'Y' as current_year %}
     <script>
         $(function() {
-            $( "#dateFromSearchBox" ).datepicker(
+            $("#dateFromSearchBox").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "1900:2015"});
-            $( "#dateToSearchBox" ).datepicker(
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            $("#dateToSearchBox").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "1900:2015"});
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
         });
     </script>
 {% endblock %}

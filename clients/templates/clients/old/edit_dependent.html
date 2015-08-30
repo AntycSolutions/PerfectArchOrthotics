@@ -5,16 +5,15 @@
 {% block title %} - Update Dependents{% endblock %}
 
 {% block extrahead %}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script>
-    $(function() {
-        $( "#id_birth_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-</script>
+    {% now 'Y' as current_year %}
+    <script>
+        $(function() {
+            $( "#id_birth_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+        });
+    </script>
 {% endblock %}
 
 {% block content %}

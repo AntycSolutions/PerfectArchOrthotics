@@ -5,24 +5,23 @@
 {% block title %} - Add Invoice{% endblock %}
 
 {% block extrahead %}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<script>
-    $(function() {
-        $( "#id_payment_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-        $( "#id_deposit_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-        $( "#id_invoice_date" ).datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-</script>
+    {% now 'Y' as current_year %}
+    <script>
+        $(function() {
+            $( "#id_payment_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            $( "#id_deposit_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            $( "#id_invoice_date" ).datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+        });
+    </script>
 {% endblock %}
 
 {% include 'navbar.html' %}

@@ -6,9 +6,7 @@
 {% block title %} - Update Claim{% endblock %}
 
 {% block extrahead %}
-
-<link href="{% static 'css/div_table.css' %}" rel="stylesheet">
-
+    <link href="{% static 'css/div_table.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% include 'navbar.html' %}
@@ -305,124 +303,123 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ claim_form.media }}
 
-{{ claim_form.media }}
+    <script src="{% static 'js/claim.js' %}"></script>
 
-<script src="{% static 'js/claim.js' %}"></script>
-
-<script type="text/javascript">
-    $(function() {
-        $("#id_insurance_paid_date").datepicker(
-            {changeMonth: true,
-             changeYear: true,
-             yearRange: "1900:2015"});
-    });
-    {% for coverage_form in nestedformset %}
+    {% now 'Y' as current_year %}
+    <script type="text/javascript">
         $(function() {
-            $( "#id_claimcoverage_set-{{ forloop.counter0 }}-actual_paid_date" ).datepicker(
+            $("#id_insurance_paid_date").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "1900:2015"});
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
         });
-    {% endfor %}
-    $(document).ready(function() {
-        var coverage_prefix = "{{ nestedformset.get_default_prefix }}";
-        var item_prefix = "{{ nestedformset.nested_formset_class.get_default_prefix }}";
-
-        // Original html value does not match
-        var coverage_total_forms = $(
-            '#id_' + coverage_prefix + '-TOTAL_FORMS');
-        coverage_total_forms.val({{ nestedformset.total_form_count }});
-        // Assume we can set this because original html value does not match
-        var item_total_forms = $(
-            '#id_' + coverage_prefix + '-0-' + item_prefix + '-TOTAL_FORMS');
-        item_total_forms.val({{ nestedformset.forms.0.nested.total_form_count }});
-
-        // Management
-        var empty_item_form_mngmt = $('#empty_item_form_mngmt').html();
-        var re = new RegExp(coverage_prefix + '-0-' + item_prefix, "g");
-        empty_item_form_mngmt = empty_item_form_mngmt
-            .replace(re, coverage_prefix + '-__coverageprefix__-' + item_prefix);
-        $(empty_item_form_mngmt).insertBefore(
-            '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        // Set to default
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-TOTAL_FORMS').val(1);
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-INITIAL_FORMS').val(0);
-        // Item
-        // Assume we can grab this
-        var item_form = $('#empty_item_form-0').html();
-        item_form = item_form
-            .replace(/__prefix__/g, 0)
-            .replace(/{{ nestedformset.get_default_prefix }}-0/g,
-                     coverage_prefix + '-__coverageprefix__');
-        item_form = '<div id="item_form-' + coverage_prefix + '-__coverageprefix__">' + item_form + '</div>';
-        $(item_form).insertBefore(
-            '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-0-claim_coverage').val('');
-        // Empty Item
-        var empty_item_form = $('#empty_item_form-0').html();
-        empty_item_form = empty_item_form
-            .replace(/__prefix__/g, '__itemprefix__')
-            .replace(/{{ nestedformset.get_default_prefix }}-0/g,
-                     coverage_prefix + '-__coverageprefix__')
-            .replace(/<input/g, '<input disabled="disabled"')
-            .replace(/<select/g, '<select disabled="disabled"');
-        empty_item_form = '<div id="empty_item_form-' + coverage_prefix + '-__coverageprefix__" style="display: none;">' + empty_item_form + '</div>';
-        $(empty_item_form).insertBefore(
-            '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
-        $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-__itemprefix__-claim_coverage').val('');
-
-        // Don't post the empty/hidden, must be after empty item form is added
-        var empty_coverage_form = $('#empty_coverage_form input, #empty_coverage_form select');
-        empty_coverage_form.attr('disabled', 'disabled');
-
-        $('#add_coverage_form').click(function() {
-            var coverage_form_idx = coverage_total_forms.val();
-            var coverage_form = $('#empty_coverage_form').html();
-            coverage_form = coverage_form
-                .replace(/__coverageprefix__/g, coverage_form_idx)
-                .replace(/__prefix__/g, coverage_form_idx)
-                .replace(/ disabled="disabled"/g, '');
-            $(coverage_form).insertBefore('#add_coverage_form');
-            $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' input, #empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' select').attr('disabled', 'disabled');
-            $('#id_claimcoverage_set-' + coverage_form_idx + '-actual_paid_date')
-                .datepicker(
+        {% for coverage_form in nestedformset %}
+            $(function() {
+                $( "#id_claimcoverage_set-{{ forloop.counter0 }}-actual_paid_date" ).datepicker(
                     {changeMonth: true,
                      changeYear: true,
-                     yearRange: "1900:2015"});
-
-            $('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx)
-                .click(function() {
-                    var item_total_forms = $(
-                        '#id_' + coverage_prefix + '-' + coverage_form_idx + '-' + item_prefix + '-TOTAL_FORMS');
-                    var item_form_idx = item_total_forms.val();
-                    var form = $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx).html();
-                    form = form
-                        .replace(/__itemprefix__/g, item_form_idx)
-                        .replace(/ disabled="disabled"/g, '');
-                    $(form).insertBefore('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx);
-                    item_total_forms.val(parseInt(item_form_idx) + 1);
-                });
-
-            coverage_total_forms.val(parseInt(coverage_form_idx) + 1);
-        });
-
-        {% for coverage_form in nestedformset %}
-            var empty_item_form = $('#empty_item_form-{{ forloop.counter0 }} input, #empty_item_form-{{ forloop.counter0 }} select');
-            empty_item_form.attr('disabled', 'disabled');
-            $('#add_item_form-{{ forloop.counter0 }}').click(function() {
-                var item_total_forms = $(
-                    '#id_' + coverage_prefix + '-{{ forloop.counter0 }}-{{ coverage_form.nested.get_default_prefix }}-TOTAL_FORMS');
-                var item_form_idx = item_total_forms.val();
-                var form = $('#empty_item_form-{{ forloop.counter0 }}').html();
-                form = form
-                    .replace(/__prefix__/g, item_form_idx)
-                    .replace(/ disabled="disabled"/g, '');
-                $(form).insertBefore('#add_item_form-{{ forloop.counter0 }}');
-                item_total_forms.val(parseInt(item_form_idx) + 1);
+                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
             });
         {% endfor %}
-    });
-</script>
+        $(document).ready(function() {
+            var coverage_prefix = "{{ nestedformset.get_default_prefix }}";
+            var item_prefix = "{{ nestedformset.nested_formset_class.get_default_prefix }}";
 
+            // Original html value does not match
+            var coverage_total_forms = $(
+                '#id_' + coverage_prefix + '-TOTAL_FORMS');
+            coverage_total_forms.val({{ nestedformset.total_form_count }});
+            // Assume we can set this because original html value does not match
+            var item_total_forms = $(
+                '#id_' + coverage_prefix + '-0-' + item_prefix + '-TOTAL_FORMS');
+            item_total_forms.val({{ nestedformset.forms.0.nested.total_form_count }});
+
+            // Management
+            var empty_item_form_mngmt = $('#empty_item_form_mngmt').html();
+            var re = new RegExp(coverage_prefix + '-0-' + item_prefix, "g");
+            empty_item_form_mngmt = empty_item_form_mngmt
+                .replace(re, coverage_prefix + '-__coverageprefix__-' + item_prefix);
+            $(empty_item_form_mngmt).insertBefore(
+                '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
+            // Set to default
+            $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-TOTAL_FORMS').val(1);
+            $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-INITIAL_FORMS').val(0);
+            // Item
+            // Assume we can grab this
+            var item_form = $('#empty_item_form-0').html();
+            item_form = item_form
+                .replace(/__prefix__/g, 0)
+                .replace(/{{ nestedformset.get_default_prefix }}-0/g,
+                         coverage_prefix + '-__coverageprefix__');
+            item_form = '<div id="item_form-' + coverage_prefix + '-__coverageprefix__">' + item_form + '</div>';
+            $(item_form).insertBefore(
+                '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
+            $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-0-claim_coverage').val('');
+            // Empty Item
+            var empty_item_form = $('#empty_item_form-0').html();
+            empty_item_form = empty_item_form
+                .replace(/__prefix__/g, '__itemprefix__')
+                .replace(/{{ nestedformset.get_default_prefix }}-0/g,
+                         coverage_prefix + '-__coverageprefix__')
+                .replace(/<input/g, '<input disabled="disabled"')
+                .replace(/<select/g, '<select disabled="disabled"');
+            empty_item_form = '<div id="empty_item_form-' + coverage_prefix + '-__coverageprefix__" style="display: none;">' + empty_item_form + '</div>';
+            $(empty_item_form).insertBefore(
+                '#add_item_form-' + coverage_prefix + '-__coverageprefix__');
+            $('#id_' + coverage_prefix + '-__coverageprefix__-' + item_prefix + '-__itemprefix__-claim_coverage').val('');
+
+            // Don't post the empty/hidden, must be after empty item form is added
+            var empty_coverage_form = $('#empty_coverage_form input, #empty_coverage_form select');
+            empty_coverage_form.attr('disabled', 'disabled');
+
+            $('#add_coverage_form').click(function() {
+                var coverage_form_idx = coverage_total_forms.val();
+                var coverage_form = $('#empty_coverage_form').html();
+                coverage_form = coverage_form
+                    .replace(/__coverageprefix__/g, coverage_form_idx)
+                    .replace(/__prefix__/g, coverage_form_idx)
+                    .replace(/ disabled="disabled"/g, '');
+                $(coverage_form).insertBefore('#add_coverage_form');
+                $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' input, #empty_item_form-' + coverage_prefix + '-' + coverage_form_idx + ' select').attr('disabled', 'disabled');
+                $('#id_claimcoverage_set-' + coverage_form_idx + '-actual_paid_date')
+                    .datepicker(
+                        {changeMonth: true,
+                         changeYear: true,
+                         yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+
+                $('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx)
+                    .click(function() {
+                        var item_total_forms = $(
+                            '#id_' + coverage_prefix + '-' + coverage_form_idx + '-' + item_prefix + '-TOTAL_FORMS');
+                        var item_form_idx = item_total_forms.val();
+                        var form = $('#empty_item_form-' + coverage_prefix + '-' + coverage_form_idx).html();
+                        form = form
+                            .replace(/__itemprefix__/g, item_form_idx)
+                            .replace(/ disabled="disabled"/g, '');
+                        $(form).insertBefore('#add_item_form-' + coverage_prefix + '-' + coverage_form_idx);
+                        item_total_forms.val(parseInt(item_form_idx) + 1);
+                    });
+
+                coverage_total_forms.val(parseInt(coverage_form_idx) + 1);
+            });
+
+            {% for coverage_form in nestedformset %}
+                var empty_item_form = $('#empty_item_form-{{ forloop.counter0 }} input, #empty_item_form-{{ forloop.counter0 }} select');
+                empty_item_form.attr('disabled', 'disabled');
+                $('#add_item_form-{{ forloop.counter0 }}').click(function() {
+                    var item_total_forms = $(
+                        '#id_' + coverage_prefix + '-{{ forloop.counter0 }}-{{ coverage_form.nested.get_default_prefix }}-TOTAL_FORMS');
+                    var item_form_idx = item_total_forms.val();
+                    var form = $('#empty_item_form-{{ forloop.counter0 }}').html();
+                    form = form
+                        .replace(/__prefix__/g, item_form_idx)
+                        .replace(/ disabled="disabled"/g, '');
+                    $(form).insertBefore('#add_item_form-{{ forloop.counter0 }}');
+                    item_total_forms.val(parseInt(item_form_idx) + 1);
+                });
+            {% endfor %}
+        });
+    </script>
 {% endblock %}
