@@ -109,7 +109,7 @@ urlpatterns = patterns(
     '',  # Tells django to view the rest as str
     url(r'^$',
         login_required(views.clients),
-        name='clients'),
+        name='client_list'),
     # url(r'^add_insurance/(?P<client_id>\w+)/$',
     #     login_required(views.add_insurance),
     #     name='add_insurance'),
