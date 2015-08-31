@@ -308,9 +308,7 @@ class UpdateShoeView(UpdateView):
                 shoe_attributes_formset
             )
 
-    def form_valid(self, form,
-                   shoe_attributes_formset
-                   ):
+    def form_valid(self, form, shoe_attributes_formset):
         self.object = form.save(commit=False)
         try:
             shoe_attributes_formset.save()
@@ -325,9 +323,7 @@ class UpdateShoeView(UpdateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form,
-                     shoe_attributes_formset
-                     ):
+    def form_invalid(self, form, shoe_attributes_formset):
         return self.render_to_response(
             self.get_context_data(
                 form=form,
@@ -343,8 +339,9 @@ class UpdateShoeView(UpdateView):
         context['indefinite_article'] = 'a'
         context['form_type'] = 'multipart/form-data'
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
-        context['cancel_url'] = reverse('shoe_detail',
-                                        kwargs={'pk': self.object.pk})
+        context['inline_model_name_plural'] = \
+            ShoeAttributes._meta.verbose_name_plural
+        context['cancel_url'] = self.object.get_absolute_url()
 
         return context
 

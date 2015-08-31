@@ -117,9 +117,6 @@ shoe_patterns = patterns(
 
 urlpatterns = patterns(
     '',
-    url(r'^$',
-        login_required(views.index),
-        name='inventory_index'),
     url(r'^shoe/', include(shoe_patterns)),
     url(r'^order/', include(order_patterns)),
 )

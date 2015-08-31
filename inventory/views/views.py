@@ -1,15 +1,7 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
 from inventory import models
-
-
-def index(request):
-    context = RequestContext(request)
-
-    return render_to_response('inventory/index.html', {}, context)
 
 
 def order_detail(request, pk):
