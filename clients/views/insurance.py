@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
+from django.core import urlresolvers
 
 from clients.models import Insurance, Person, Client, Dependent, Coverage
 from clients.forms.forms import InsuranceForm
@@ -137,9 +138,23 @@ class DeleteInsuranceView(DeleteView):
 
 
 class CreateInsuranceView(CreateView):
-    template_name = 'clients/insurance/create_insurance.html'
+    template_name = 'utils/generics/create.html'
     model = Insurance
     form_class = InsuranceForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['indefinite_article'] = 'a'
+        context['inline_model_name'] = Coverage._meta.verbose_name
+        context['inline_model_name_plural'] = \
+            Coverage._meta.verbose_name_plural
+        context['cancel_url'] = urlresolvers.reverse(
+            'client', kwargs={'client_id': self.kwargs['client_id']}
+        )
+
+        return context
 
     def get(self, request, *args, **kwargs):
         self.object = None
@@ -175,8 +190,8 @@ class CreateInsuranceView(CreateView):
 
         return self.render_to_response(
             self.get_context_data(form=insurance_form,
-                                  coverage_formset=coverage_formset
-                                  ))
+                                  formset=coverage_formset)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = None
@@ -212,17 +227,11 @@ class CreateInsuranceView(CreateView):
 
         if (insurance_form.is_valid()
                 and coverage_formset.is_valid()):
-            return self.form_valid(insurance_form,
-                                   coverage_formset
-                                   )
+            return self.form_valid(insurance_form, coverage_formset)
         else:
-            return self.form_invalid(insurance_form,
-                                     coverage_formset
-                                     )
+            return self.form_invalid(insurance_form, coverage_formset)
 
-    def form_valid(self, form,
-                   coverage_formset
-                   ):
+    def form_valid(self, form, coverage_formset):
         self.object = form.save(commit=False)
         if 'spouse_id' in self.kwargs:
             main_claimant = Dependent.objects.get(id=self.kwargs['spouse_id'])
@@ -235,14 +244,13 @@ class CreateInsuranceView(CreateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form,
-                     coverage_formset
-                     ):
+    def form_invalid(self, form, coverage_formset):
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  coverage_formset=coverage_formset
-                                  ))
+                                  formset=coverage_formset)
+        )
 
     def get_success_url(self):
-        self.success_url = self.object.main_claimant.get_absolute_url()
+        self.success_url = self.object.get_absolute_url()
+
         return self.success_url
