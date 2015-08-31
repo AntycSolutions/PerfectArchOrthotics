@@ -957,5 +957,20 @@ def add_dependent(request, client_id):
         # TODO need to create a formset here isntead of a form
         form = DependentForm()
 
-    return render_to_response('clients/dependent/add_dependent.html',
-                              {'form': form}, context)
+    cancel_url = urlresolvers.reverse('client',
+                                      kwargs={'client_id': client_id})
+
+    # return render_to_response('clients/dependent/add_dependent.html',
+    #                           {'form': form}, context)
+    return render_to_response(
+        'utils/generics/create.html',
+        {'form': form,
+         'model_name_plural': Dependent._meta.verbose_name_plural,
+         'model_name': Dependent._meta.verbose_name,
+         'indefinite_article': 'a',
+         'cancel_url': cancel_url,
+         'multistep_btns':
+            '<input class="btn btn-default" type="submit" name="submit" value="Create and proceed" />'
+            ' '
+            '<input class="btn btn-default" type="submit" name="submit" value="Skip step" />'},
+        context)
