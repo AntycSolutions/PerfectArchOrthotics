@@ -126,10 +126,18 @@ class UpdateInsuranceView(UpdateView):
 
 
 class DeleteInsuranceView(DeleteView):
-    template_name = 'clients/insurance/delete_insurance.html'
+    template_name = 'utils/generics/delete.html'
     model = Insurance
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
+        return context
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
