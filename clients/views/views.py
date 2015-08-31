@@ -318,15 +318,16 @@ def clientSearchView(request):
 
 
 def _actual_paid_date(request, context_dict, found_claims):
-    if 'apd' in request.GET:
-        apd = request.GET['apd']
-        context_dict['apd'] = apd
+    apd = 'apd'
+    if apd in request.GET and request.GET[apd].strip():
+        apd_value = request.GET[apd]
+        context_dict[apd] = apd_value
 
-        if apd == 'has_actual_paid_date':
+        if apd_value == 'has_actual_paid_date':
             actual_paid_date = False
-        elif apd == 'no_actual_paid_date':
+        elif apd_value == 'no_actual_paid_date':
             actual_paid_date = True
-        elif apd == 'both_actual_paid_date':
+        elif apd_value == 'both_actual_paid_date':
             return found_claims
 
         if found_claims:
@@ -337,6 +338,49 @@ def _actual_paid_date(request, context_dict, found_claims):
             found_claims = Claim.objects.filter(
                 claimcoverage__actual_paid_date__isnull=actual_paid_date
             ).distinct()
+
+    return found_claims
+
+
+def _run_query(request, claim_query, found_claims):
+    if claim_query:
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+    else:
+        messages.add_message(request, messages.WARNING,
+                             "Invalid date. Please use MM/DD/YYYY.")
+
+    return found_claims
+
+
+def _date_from_date_to(request, context_dict, found_claims, df, dt,
+                       date_field):
+    if ((df in request.GET) and request.GET[df].strip()
+            and (dt in request.GET) and request.GET[dt].strip()):
+        query_date_from_string = request.GET[df]
+        query_date_to_string = request.GET[dt]
+        context_dict[df] = query_date_from_string
+        context_dict[dt] = query_date_to_string
+        claim_query = get_date_query(query_date_from_string,
+                                     query_date_to_string, [date_field])
+
+        found_claims = _run_query(request, claim_query, found_claims)
+    elif (df in request.GET) and request.GET[df].strip():
+        query_date_from_string = request.GET[df]
+        context_dict[df] = query_date_from_string
+        claim_query = get_date_query(query_date_from_string,
+                                     None, [date_field])
+
+        found_claims = _run_query(request, claim_query, found_claims)
+    elif (dt in request.GET) and request.GET[dt].strip():
+        query_date_to_string = request.GET[dt]
+        context_dict[dt] = query_date_to_string
+        claim_query = get_date_query(None,
+                                     query_date_to_string, [date_field])
+
+        found_claims = _run_query(request, claim_query, found_claims)
 
     return found_claims
 
@@ -362,51 +406,12 @@ def claimSearchView(request):
         else:
             found_claims = Claim.objects.filter(claim_query)
 
-    if (('df' in request.GET) and request.GET['df'].strip()
-            and ('dt' in request.GET) and request.GET['dt'].strip()):
-        date_fields = ['submitted_datetime', 'insurance_paid_date']
-        query_date_from_string = request.GET['df']
-        query_date_to_string = request.GET['dt']
-        context_dict['df'] = query_date_from_string
-        context_dict['dt'] = query_date_to_string
-        claim_query = get_date_query(query_date_from_string,
-                                     query_date_to_string, date_fields)
-        if claim_query:
-            if found_claims:
-                found_claims = found_claims.filter(claim_query)
-            else:
-                found_claims = Claim.objects.filter(claim_query)
-        else:
-            messages.add_message(request, messages.WARNING,
-                                 "Invalid date. Please use MM/DD/YYYY.")
-    elif ('df' in request.GET) and request.GET['df'].strip():
-        date_fields = ['submitted_datetime', 'insurance_paid_date']
-        query_date_from_string = request.GET['df']
-        context_dict['df'] = query_date_from_string
-        claim_query = get_date_query(query_date_from_string,
-                                     None, date_fields)
-        if claim_query:
-            if found_claims:
-                found_claims = found_claims.filter(claim_query)
-            else:
-                found_claims = Claim.objects.filter(claim_query)
-        else:
-            messages.add_message(request, messages.WARNING,
-                                 "Invalid date. Please use MM/DD/YYYY.")
-    elif ('dt' in request.GET) and request.GET['dt'].strip():
-        date_fields = ['submitted_datetime', 'insurance_paid_date']
-        query_date_to_string = request.GET['dt']
-        context_dict['dt'] = query_date_to_string
-        claim_query = get_date_query(None,
-                                     query_date_to_string, date_fields)
-        if claim_query:
-            if found_claims:
-                found_claims = found_claims.filter(claim_query)
-            else:
-                found_claims = Claim.objects.filter(claim_query)
-        else:
-            messages.add_message(request, messages.WARNING,
-                                 "Invalid date. Please use MM/DD/YYYY.")
+    found_claims = _date_from_date_to(request, context_dict, found_claims,
+                                      'apdf', 'apdt',
+                                      'claimcoverage__actual_paid_date')
+
+    found_claims = _date_from_date_to(request, context_dict, found_claims,
+                                      'sdf', 'sdt', 'submitted_datetime')
 
     found_claims = _actual_paid_date(request, context_dict, found_claims)
 

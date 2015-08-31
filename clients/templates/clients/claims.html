@@ -6,11 +6,19 @@
     {% now 'Y' as current_year %}
     <script>
         $(function() {
-            $("#dateFromSearchBox").datepicker(
+            $("#actual_paid_date_from").datepicker(
                 {changeMonth: true,
                  changeYear: true,
                  yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-            $("#dateToSearchBox").datepicker(
+            $("#actual_paid_date_to").datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            $("#submitted_date_from").datepicker(
+                {changeMonth: true,
+                 changeYear: true,
+                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+            $("#submitted_date_to").datepicker(
                 {changeMonth: true,
                  changeYear: true,
                  yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
@@ -29,10 +37,16 @@
         <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}">
     </div>
     <div class="form-group">
-        <input type="text" id="dateFromSearchBox" class="form-control search-query" name="df" placeholder="Date From" value="{{ df }}">
+        <input type="text" id="actual_paid_date_from" class="form-control search-query" name="apdf" placeholder="Actual Paid Date From" value="{{ apdf }}">
     </div>
     <div class="form-group">
-        <input type="text" id="dateToSearchBox" class="form-control search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+        <input type="text" id="actual_paid_date_to" class="form-control search-query" name="apdt" placeholder="Actual Paid Date To" value="{{ apdt }}">
+    </div>
+    <div class="form-group">
+        <input type="text" id="submitted_date_from" class="form-control search-query" name="sdf" placeholder="Submitted Date From" value="{{ sdf }}">
+    </div>
+    <div class="form-group">
+        <input type="text" id="submitted_date_to" class="form-control search-query" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
     </div>
     <div class="radio">
         <label>
@@ -64,7 +78,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if claims.has_previous %}
-            <a href="?q={{q}}&df={{df}}&dt={{dt}}&apd={{apd}}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
+            <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
         {% endif %}
 
         {% if claims.number %}
@@ -74,7 +88,7 @@
         {% endif %}
 
         {% if claims.has_next %}
-            <a href="?q={{q}}&df={{df}}&dt={{dt}}&apd={{apd}}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
+            <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
         {% endif %}
     </span>
 </div>
@@ -82,11 +96,17 @@
     {% if q %}
         <input type="hidden" name="q" value="{{ q }}">
     {% endif %}
-    {% if df %}
-        <input type="hidden" name="df" value="{{ df }}">
+    {% if apdf %}
+        <input type="hidden" name="apdf" value="{{ apdf }}">
     {% endif %}
-    {% if dt %}
-        <input type="hidden" name="dt" value="{{ dt }}">
+    {% if apdt %}
+        <input type="hidden" name="apdt" value="{{ apdt }}">
+    {% endif %}
+    {% if sdf %}
+        <input type="hidden" name="sdf" value="{{ sdf }}">
+    {% endif %}
+    {% if sdt %}
+        <input type="hidden" name="sdt" value="{{ sdt }}">
     {% endif %}
     {% if apd %}
         <input type="hidden" name="apd" value="{{ apd }}">
