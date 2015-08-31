@@ -13,7 +13,7 @@ from clients.views.claim import UpdateClaimView, DeleteClaimView, \
     CreateProofOfManufacturingView, CreateClaimView
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
-from clients.views.statistics import Statistics
+from clients.views import statistics
 
 
 item_patterns = patterns(
@@ -186,7 +186,10 @@ urlpatterns = patterns(
     url(r'^add_new_dependent/(?P<client_id>\w+)/$',
         login_required(views.add_new_dependent),
         name='add_new_dependent'),
-    url(r'^statistics/$',
-        login_required(Statistics.as_view()),
-        name='statistics'),
+    url(r'^statistics/claims/$',
+        login_required(statistics.ClaimsStatistics.as_view()),
+        name='claims_statistics'),
+    url(r'^statistics/inventory_orders/$',
+        login_required(statistics.InventoryOrdersStatistics.as_view()),
+        name='inventory_orders_statistics'),
 )

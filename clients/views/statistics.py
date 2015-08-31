@@ -12,11 +12,11 @@ from clients import models as clients_models
 from inventory import models as inventory_models
 
 
-class Statistics(TemplateView):
-    template_name = "clients/statistics.html"
+class ClaimsStatistics(TemplateView):
+    template_name = "clients/statistics/claims_statistics.html"
 
     def get_context_data(self, **kwargs):
-        context = super(Statistics, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         # Outstanding fees, revenue, Claims overpaid, Claims underpaid
         stats = self._stats()
@@ -56,15 +56,6 @@ class Statistics(TemplateView):
         context['insurances_totals'] = self._insurance_providers_stats_totals(
             insurances
         )
-
-        totals = self._in_stock_and_cost_of_inventory()
-        context['total_in_stock'] = totals['total_in_stock']
-        context['total_cost_of_inventory'] = totals['total_cost_of_inventory']
-
-        context['shoes'] = self._top_ten_best_sellers()
-
-        context['old_ordered_date_orders'] = self._old_ordered_date_orders()
-        context['old_arrived_date_orders'] = self._old_arrvied_date_orders()
 
         return context
 
@@ -413,6 +404,24 @@ class Statistics(TemplateView):
 
         return merged.values()
 
+
+class InventoryOrdersStatistics(TemplateView):
+    template_name = "clients/statistics/inventory_orders_statistics.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        totals = self._in_stock_and_cost_of_inventory()
+        context['total_in_stock'] = totals['total_in_stock']
+        context['total_cost_of_inventory'] = totals['total_cost_of_inventory']
+
+        context['shoes'] = self._top_ten_best_sellers()
+
+        context['old_ordered_date_orders'] = self._old_ordered_date_orders()
+        context['old_arrived_date_orders'] = self._old_arrvied_date_orders()
+
+        return context
+
     def _in_stock_and_cost_of_inventory(self):
         total_in_stock = 0
         total_cost_of_inventory = Decimal(0.00)
@@ -444,6 +453,7 @@ class Statistics(TemplateView):
         shoes = inventory_models.Shoe.objects.annotate(
             num_orders=Count('shoeattributes__shoeorder')
         ).order_by('-num_orders')[:10]
+
         return shoes
 
     def _old_ordered_date_orders(self):
@@ -453,6 +463,7 @@ class Statistics(TemplateView):
             arrived_date__isnull=True,
             ordered_date__lte=cutoff,
         )
+
         return orders
 
     def _old_arrvied_date_orders(self):
@@ -461,4 +472,5 @@ class Statistics(TemplateView):
             dispensed_date__isnull=True,
             arrived_date__lte=cutoff,
         )
+
         return orders
