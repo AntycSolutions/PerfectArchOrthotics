@@ -462,8 +462,11 @@ class ShoeDeleteOrderView(DeleteView):
     model = models.ShoeOrder
 
     def get_context_data(self, **kwargs):
-        context = super(ShoeDeleteOrderView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
         return context
 
     def get_success_url(self):
@@ -476,11 +479,11 @@ class CoverageDeleteOrderView(DeleteView):
     model = models.CoverageOrder
 
     def get_context_data(self, **kwargs):
-        context = super(
-            CoverageDeleteOrderView,
-            self
-        ).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
         return context
 
     def get_success_url(self):
@@ -493,11 +496,11 @@ class AdjustmentDeleteOrderView(DeleteView):
     model = models.AdjustmentOrder
 
     def get_context_data(self, **kwargs):
-        context = super(
-            AdjustmentDeleteOrderView,
-            self
-        ).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
         return context
 
     def get_success_url(self):

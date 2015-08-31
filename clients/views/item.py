@@ -128,7 +128,9 @@ class DetailItemView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailItemView, self).get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+
         return context
 
 
@@ -147,6 +149,7 @@ class UpdateItemView(UpdateView):
     def get_success_url(self):
         self.success_url = reverse_lazy('item_detail',
                                         kwargs={'pk': self.object.pk})
+
         return self.success_url
 
 
@@ -155,10 +158,14 @@ class DeleteItemView(DeleteView):
     model = Item
 
     def get_context_data(self, **kwargs):
-        context = super(DeleteItemView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
         return context
 
     def get_success_url(self):
         self.success_url = reverse_lazy('item_list')
+
         return self.success_url
