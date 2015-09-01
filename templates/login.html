@@ -6,32 +6,32 @@
 
 {% block content %}
 
-<h1>
-    Login
-</h1>
-{% include 'clients/snippets/messages.html' %}
-<form id="login_form" method="POST" action="{% url 'user_login' %}" class="form-horizontal">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <div class="row">
-        <fieldset class="col-lg-6">
-            {% include 'utils/generics/form.html' %}
-        </fieldset>
-    </div>
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="form-group">
-                <div class="col-lg-9 col-lg-offset-3">
-                    <button type="submit" class="btn btn-primary">
-                        Login
-                    </button>
-                    <a href="/" class="btn btn-default">
-                        Cancel
-                    </a>
+    <h1>
+        Login
+    </h1>
+    {% include 'clients/snippets/messages.html' %}
+    <form id="login_form" method="POST" action="{% url 'user_login' %}" class="form-horizontal">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        <div class="row">
+            <fieldset class="col-lg-6">
+                {% include 'utils/generics/form.html' %}
+            </fieldset>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary">
+                            Login
+                        </button>
+                        <a href="/" class="btn btn-default">
+                            Cancel
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
 {% endblock %}

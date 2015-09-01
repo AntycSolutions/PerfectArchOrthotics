@@ -6,28 +6,28 @@
 
 {% block content %}
 
-<h1>
-    Update proof of manufacturing information for: {{ proof_of_manufacturing.claim.patient.full_name }}
-</h1>
-<h3>
-    proof of manufacturing information:
-</h3>
-<form id="update_proof_of_manufacturing_form" class="form-horizontal" method="post">
-    <fieldset>
-        {% csrf_token %}
-        {% for field in form.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
+    <h1>
+        Update proof of manufacturing information for: {{ proof_of_manufacturing.claim.patient.full_name }}
+    </h1>
+    <h3>
+        proof of manufacturing information:
+    </h3>
+    <form id="update_proof_of_manufacturing_form" class="form-horizontal" method="post">
+        <fieldset>
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    </fieldset>
-    <input type="submit" name="submit" value="Save" />
-</form>
-<br />
+            {% endfor %}
+        </fieldset>
+        <input type="submit" name="submit" value="Save" />
+    </form>
+    <br />
 
 {% endblock %}

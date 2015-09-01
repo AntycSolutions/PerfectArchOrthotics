@@ -6,26 +6,26 @@
 
 {% block content %}
 
-<h3>Add Client Information</h3>
+    <h3>Add Client Information</h3>
 
-<form id="create_client_form" class="form-horizontal" method="post">
-    <fieldset>
-        {% csrf_token %}
-        <h5>Client</h5>
-        {% for field in form.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
+    <form id="create_client_form" class="form-horizontal" method="post">
+        <fieldset>
+            {% csrf_token %}
+            <h5>Client</h5>
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    </fieldset>
-    <fieldset>
-    <input type="submit" name="submit" value="Add Client" />
-</form>
-<br /><br />
+            {% endfor %}
+        </fieldset>
+        <fieldset>
+        <input type="submit" name="submit" value="Add Client" />
+    </form>
+    <br /><br />
 
 {% endblock %}

@@ -9,73 +9,73 @@
 
 {% block content %}
 
-<h1>
-    Claim for {{ claim.patient.full_name }}
-</h1>
-<div>
-    <a class="btn btn-info" href="{% url 'claim' claim.id %}">
-        View
-    </a>
-</div>
-<h1>
-    Proof of Manufacturing for {{ claim.patient.full_name }}
-</h1>
-<div>
+    <h1>
+        Claim for {{ claim.patient.full_name }}
+    </h1>
+    <div>
+        <a class="btn btn-info" href="{% url 'claim' claim.id %}">
+            View
+        </a>
+    </div>
+    <h1>
+        Proof of Manufacturing for {{ claim.patient.full_name }}
+    </h1>
+    <div>
+        {% if proof_of_manufacturing %}
+            <a href="{% url 'proof_of_manufacturing_update' proof_of_manufacturing.id %}" class="btn btn-primary">
+                Update
+            </a>
+        {% else %}
+            <a href="{% url 'proof_of_manufacturing_create' claim.id %}" class="btn btn-primary">
+                Create
+            </a>
+        {% endif %}
+    </div>
+    <br />
     {% if proof_of_manufacturing %}
-        <a href="{% url 'proof_of_manufacturing_update' proof_of_manufacturing.id %}" class="btn btn-primary">
-            Update
-        </a>
-    {% else %}
-        <a href="{% url 'proof_of_manufacturing_create' claim.id %}" class="btn btn-primary">
-            Create
-        </a>
-    {% endif %}
-</div>
-<br />
-{% if proof_of_manufacturing %}
-    <div class="well">
-        <h3>Information</h3>
-        <ul>
-            <li>Invoice #:
-                {{ invoice_number }}
-            </li>
-            <li>{{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
-                {{ proof_of_manufacturing.proof_of_manufacturing_date }}
-            </li>
-            <li>Bill/Ship To:<br />
-                {{ proof_of_manufacturing.bill_to|safe }}
-            </li>
-            <li>{% verbose_field_name proof_of_manufacturing.claim "patient" %}:
-                {{ proof_of_manufacturing.claim.patient.full_name }}
-            </li>
-            <li>Items:
-            <ul>{% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
-                    {% for claim_item in claim_coverage.claimitem_set.all %}
-                        {% if claim_item.item.coverage_type == "o" %}
-                            <li>{# Orthotics dont have gender #}
-                                {{ claim_item.item.product_code }} -
-                                {{ claim_item.item.description }} -
-                                {% verbose_field_name claim_item "quantity" %}:
-                                {{ claim_item.quantity }}
+        <div class="well">
+            <h3>Information</h3>
+            <ul>
+                <li>Invoice #:
+                    {{ invoice_number }}
+                </li>
+                <li>{{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
+                    {{ proof_of_manufacturing.proof_of_manufacturing_date }}
+                </li>
+                <li>Bill/Ship To:<br />
+                    {{ proof_of_manufacturing.bill_to|safe }}
+                </li>
+                <li>{% verbose_field_name proof_of_manufacturing.claim "patient" %}:
+                    {{ proof_of_manufacturing.claim.patient.full_name }}
+                </li>
+                <li>Items:
+                <ul>{% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
+                        {% for claim_item in claim_coverage.claimitem_set.all %}
+                            {% if claim_item.item.coverage_type == "o" %}
+                                <li>{# Orthotics dont have gender #}
+                                    {{ claim_item.item.product_code }} -
+                                    {{ claim_item.item.description }} -
+                                    {% verbose_field_name claim_item "quantity" %}:
+                                    {{ claim_item.quantity }}
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                            <li>There are no items for this claim.
                             </li>
-                        {% endif %}
-                    {% empty %}
-                        <li>There are no items for this claim.
-                        </li>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </ul>
-        </li>
-            <li>Laboratory:
-                <ul>
-                    <li>{{ proof_of_manufacturing.laboratory }}
-                    </li>
                 </ul>
             </li>
-        </ul>
-    </div>
-    <a href="{% url 'proof' claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
-{% endif %}
-<br /><br />
+                <li>Laboratory:
+                    <ul>
+                        <li>{{ proof_of_manufacturing.laboratory }}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <a href="{% url 'proof' claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
+    {% endif %}
+    <br /><br />
 
 {% endblock %}

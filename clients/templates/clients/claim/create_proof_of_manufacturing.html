@@ -6,25 +6,25 @@
 
 {% block content %}
 
-<h3>Add claim proof of manufacturing information</h3>
+    <h3>Add claim proof of manufacturing information</h3>
 
-<form id="create_proof_of_manufacturing_form" class="form-horizontal" method="post">
-    <fieldset>
-        {% csrf_token %}
-        <h5>Proof of Manufacturing</h5>
-        {% for field in form.visible_fields %}
-            <div class="form-group">
-                {% if field.errors %}
-                    {{ field.errors }}
-                {% endif %}
-                <div class="col-lg-10">
-                    {{ field.label_tag}} {{ field }}
+    <form id="create_proof_of_manufacturing_form" class="form-horizontal" method="post">
+        <fieldset>
+            {% csrf_token %}
+            <h5>Proof of Manufacturing</h5>
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+                    <div class="col-lg-10">
+                        {{ field.label_tag}} {{ field }}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
-    </fieldset>
-    <input type="submit" name="submit" value="Add Proof of Manufacturing" />
-</form>
-<br>
+            {% endfor %}
+        </fieldset>
+        <input type="submit" name="submit" value="Add Proof of Manufacturing" />
+    </form>
+    <br />
 
 {% endblock %}

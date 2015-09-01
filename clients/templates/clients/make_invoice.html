@@ -8,96 +8,96 @@
 
 {% block content %}
 
-<h1>
-    Claim for {{ claim.patient.full_name }}
-</h1>
-<div>
-    <a class="btn btn-info" href="{% url 'claim' claim.id %}">
-        View
-    </a>
-</div>
-<h1>
-    Invoice for {{ claim.patient.full_name }}
-</h1>
-<div>
-    {% if invoice %}
-        <a href="{% url 'invoice_update' invoice.id %}" class="btn btn-primary">
-            Update
+    <h1>
+        Claim for {{ claim.patient.full_name }}
+    </h1>
+    <div>
+        <a class="btn btn-info" href="{% url 'claim' claim.id %}">
+            View
         </a>
-    {% else %}
-        <a href="{% url 'invoice_create' claim.id %}" class="btn btn-primary">
-            Create
-        </a>
-    {% endif %}
-</div>
-<br />
-{% if invoice %}
-    <div class="well">
-        <h3>Information</h3>
-        <ul>
-            <li>Invoice #:
-                {{ invoice_number }}
-            </li>
-            <li>Invoice Date:
-                {{ invoice.invoice_date }}
-            <li>{% verbose_field_name invoice "dispensed_by" %}:
-                {{ invoice.get_dispensed_by_display }}
-            </li>
-            <li>{% verbose_field_name insurance_class "benefits" %}:
-                {{ claim.insurance.get_benefits_display }}
-            </li>
-            <li>{% verbose_field_name invoice "payment_terms" %}:
-                {{ invoice.get_payment_terms_display }}
-            </li>
-            <li>Items:</li>
-            <ul>
-                {% for claim_coverage in invoice.claim.claimcoverage_set.all %}
-                    {% for claim_item in claim_coverage.claimitem_set.all %}
-                        <li>{% verbose_field_name claim_item.item "coverage_type" %}:
-                            {{ claim_item.item.get_coverage_type_display }}
-                            {% if claim_item.item.gender %}
-                                {% verbose_field_name claim_item.item "gender" %}:
-                                {{ claim_item.item.get_gender_display }}
-                            {% endif %}
-                            {% verbose_field_name claim_item.item "product_code" %}:
-                            {{ claim_item.item.product_code }}
-                            {% verbose_field_name claim_item.item "description" %}:
-                            {{ claim_item.item.description }}
-                            {% verbose_field_name claim_item.item "cost" %}:
-                            {{ claim_item.item.cost }}
-                            {% verbose_field_name claim_item.item "unit_price" %}:
-                            {{ claim_item.item.unit_price }}
-                            {% verbose_field_name claim_item "quantity" %}:
-                            {{ claim_item.quantity }}
-                            Amount:
-                            {{ claim_item.amount }}
-                        </li>
-                    {% endfor %}
-                {% endfor %}
-            </ul>
-            <li>Total:
-                {{ invoice.claim.total_amount_quantity_claimed.total_amount_claimed }}</li>
-            <li>{% verbose_field_name invoice "deposit_date" %}:
-                {{ invoice.deposit_date }}
-            </li>
-            <li>{% verbose_field_name invoice "deposit" %}:
-                {{ invoice.deposit }}
-            </li>
-            <li>{% verbose_field_name invoice "payment_date" %}:
-                {{ invoice.payment_date }}
-            </li>
-            <li>{% verbose_field_name invoice "payment_type" %}:
-                {{ invoice.get_payment_type_display }}
-            </li>
-            <li>{% verbose_field_name invoice "payment_made" %}:
-                {{ invoice.payment_made }}</li>
-            <li>Balance:
-                {{ invoice.balance }}</li>
-        </ul>
     </div>
-    <strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
-    <a href="{% url 'invoice' claim.id %}" class="btn btn-default">View Invoice</a>
-{% endif %}
-<br /><br />
+    <h1>
+        Invoice for {{ claim.patient.full_name }}
+    </h1>
+    <div>
+        {% if invoice %}
+            <a href="{% url 'invoice_update' invoice.id %}" class="btn btn-primary">
+                Update
+            </a>
+        {% else %}
+            <a href="{% url 'invoice_create' claim.id %}" class="btn btn-primary">
+                Create
+            </a>
+        {% endif %}
+    </div>
+    <br />
+    {% if invoice %}
+        <div class="well">
+            <h3>Information</h3>
+            <ul>
+                <li>Invoice #:
+                    {{ invoice_number }}
+                </li>
+                <li>Invoice Date:
+                    {{ invoice.invoice_date }}
+                <li>{% verbose_field_name invoice "dispensed_by" %}:
+                    {{ invoice.get_dispensed_by_display }}
+                </li>
+                <li>{% verbose_field_name insurance_class "benefits" %}:
+                    {{ claim.insurance.get_benefits_display }}
+                </li>
+                <li>{% verbose_field_name invoice "payment_terms" %}:
+                    {{ invoice.get_payment_terms_display }}
+                </li>
+                <li>Items:</li>
+                <ul>
+                    {% for claim_coverage in invoice.claim.claimcoverage_set.all %}
+                        {% for claim_item in claim_coverage.claimitem_set.all %}
+                            <li>{% verbose_field_name claim_item.item "coverage_type" %}:
+                                {{ claim_item.item.get_coverage_type_display }}
+                                {% if claim_item.item.gender %}
+                                    {% verbose_field_name claim_item.item "gender" %}:
+                                    {{ claim_item.item.get_gender_display }}
+                                {% endif %}
+                                {% verbose_field_name claim_item.item "product_code" %}:
+                                {{ claim_item.item.product_code }}
+                                {% verbose_field_name claim_item.item "description" %}:
+                                {{ claim_item.item.description }}
+                                {% verbose_field_name claim_item.item "cost" %}:
+                                {{ claim_item.item.cost }}
+                                {% verbose_field_name claim_item.item "unit_price" %}:
+                                {{ claim_item.item.unit_price }}
+                                {% verbose_field_name claim_item "quantity" %}:
+                                {{ claim_item.quantity }}
+                                Amount:
+                                {{ claim_item.amount }}
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+                <li>Total:
+                    {{ invoice.claim.total_amount_quantity_claimed.total_amount_claimed }}</li>
+                <li>{% verbose_field_name invoice "deposit_date" %}:
+                    {{ invoice.deposit_date }}
+                </li>
+                <li>{% verbose_field_name invoice "deposit" %}:
+                    {{ invoice.deposit }}
+                </li>
+                <li>{% verbose_field_name invoice "payment_date" %}:
+                    {{ invoice.payment_date }}
+                </li>
+                <li>{% verbose_field_name invoice "payment_type" %}:
+                    {{ invoice.get_payment_type_display }}
+                </li>
+                <li>{% verbose_field_name invoice "payment_made" %}:
+                    {{ invoice.payment_made }}</li>
+                <li>Balance:
+                    {{ invoice.balance }}</li>
+            </ul>
+        </div>
+        <strong>{{ invoice.estimate|yesno:"ESTIMATE:," }}</strong>
+        <a href="{% url 'invoice' claim.id %}" class="btn btn-default">View Invoice</a>
+    {% endif %}
+    <br /><br />
 
 {% endblock %}

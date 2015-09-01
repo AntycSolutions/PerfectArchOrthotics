@@ -8,223 +8,227 @@
 
 {% block content %}
 
-<h1>
-    Claim for {{ claim.patient.full_name }}
-</h1>
-<style>
-    .form-horizontal .form-group {
-        margin-bottom: 0;
-    }
-    .form-horizontal .control-label, .form-control-static {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-</style>
-<div class="panel panel-default">
-    <div class="panel-heading clearfix">
-        <div class="panel-title pull-left" style="padding-top: 7.5px;">
-            Information
-        </div>
-        <div class="btn-group pull-right">
-            <a href="{% url 'claim_update' claim.id %}" class="btn btn-default">
-                Update
-            </a>
-            <a href="{% url 'claim_delete' claim.id %}" class="btn btn-danger">
-                Delete
-            </a>
-        </div>
-    </div>
-    <div class="panel-body">
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    {% verbose_field_name claim "patient" %}
-                </label>
-                <div class="col-lg-10">
-                    <p class="form-control-static">
-                        <a href="{{ claim.patient.get_absolute_url }}">
-                            {{ claim.patient.full_name }}
-                        </a>
-                    </p>
-                </div>
+    <h1>
+        Claim for {{ claim.patient.full_name }}
+    </h1>
+    <style>
+        .form-horizontal .form-group {
+            margin-bottom: 0;
+        }
+        .form-horizontal .control-label, .form-control-static {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    </style>
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left" style="padding-top: 7.5px;">
+                Information
             </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    {% verbose_field_name claim "insurance" %} {% verbose_field_name claim.insurance "provider" %}
-                </label>
-                <div class="col-lg-10">
-                    <p class="form-control-static">
-                        {{ claim.insurance.provider }}
-                    </p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    {% verbose_field_name claim.patient "employer" %}
-                </label>
-                <div class="col-lg-10">
-                    <p class="form-control-static">
-                        {{ claim.patient.employer }}
-                    </p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    {% verbose_field_name claim "submitted_datetime" %}
-                </label>
-                <div class="col-lg-10">
-                    <p class="form-control-static">
-                        {{ claim.submitted_datetime }}
-                    </p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    {% verbose_field_name claim "insurance_paid_date" %}
-                </label>
-                <div class="col-lg-10">
-                    <p class="form-control-static">
-                        {{ claim.insurance_paid_date }}
-                    </p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    Claim Packages
-                </label>
-                <div class="col-lg-10">
-                    <ol class="form-control-static">
-                        {% for claimattachment in claim.claimattachment_set.all %}
-                            <li>
-                                <a href="{{ claimattachment.attachment.url }}">
-                                    {{ claimattachment.attachment }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ol>
-                </div>
-            </div>
-        </div>
-        <br />
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Total Amount Claimed</th>
-                <th>Total Quantity Claimed</th>
-                <th>Total Expected Back</th>
-                <th>Total Max Quantity</th>
-                <th>Total Max Expected Back</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                {% with totals=claim.total_amount_quantity_claimed %}
-                    <td>{{ totals.total_amount_claimed }}</td>
-                    <td>{{ totals.total_quantity_claimed }}</td>
-                {% endwith %}
-                <td>{{ claim.total_expected_back }}</td>
-                {% with totals=claim.total_max_expected_back_quantity %}
-                    <td>{{ totals.total_max_quantity }}</td>
-                    <td>{{ totals.total_max_expected_back }}</td>
-                {% endwith %}
-            </tr>
-            </tbody>
-        </table>
-        <ul><li>{% verbose_field_name claim "coverages" %}:</li></ul>
-        {% if claim.claimcoverage_set.all %}
-            <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>{% verbose_field_name coverage_class "coverage_type" %}</th>
-                <th>Claim Amount Remaining</th>
-                <th>Quantity Remaining</th>
-                <th>Total Amount</th>
-                <th>Total Quantity</th>
-                <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
-                <th>Max Quantity</th>
-                <th>Max Expected Back</th>
-                <th>Actual Paid Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for claim_coverage in claim.claimcoverage_set.all %}
-                <tr>
-                    <td>{{ claim_coverage.coverage.get_coverage_type_display }}</td>
-                    <td>{{ claim_coverage.coverage.claim_amount_remaining }}</td>
-                    <td>{{ claim_coverage.coverage.quantity_remaining }}</td>
-                    {% with totals=claim_coverage.total_amount_quantity %}
-                        <td>{{ totals.total_amount }}</td>
-                        <td>{{ totals.total_quantity }}</td>
-                    {% endwith %}
-                    <td>{{ claim_coverage.expected_back }}</td>
-                    {% with maxes=claim_coverage.max_expected_back_quantity %}
-                        <td>{{ maxes.max_quantity }}</td>
-                        <td>{{ maxes.max_expected_back }}</td>
-                    {% endwith %}
-                    <td>{{ claim_coverage.actual_paid_date }}</td>
-                </tr>
-                <tr>
-                    <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
-                    <td colspan="7">
-                        <div class="pull-left">
-                            {% if claim_coverage.claimitem_set.all %}
-                                <table class="table" style="display: inline-block;">
-                                <thead>
-                                <tr>
-                                    <th>{% verbose_field_name item_class "coverage_type" %}</th>
-                                    <th>{% verbose_field_name item_class "gender" %}</th>
-                                    <th>{% verbose_field_name item_class "product_code" %}</th>
-                                    <th>{% verbose_field_name item_class "description" %}</th>
-                                    <th>{% verbose_field_name item_class "cost" %}</th>
-                                    <th>{% verbose_field_name item_class "unit_price" %}</th>
-                                    <th>{% verbose_field_name claim_item_class "quantity" %}</th>
-                                    <th>Total</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for claim_item in claim_coverage.claimitem_set.all %}
-                                    <tr>
-                                        <td>{{ claim_item.item.get_coverage_type_display }}</td>
-                                        <td>{{ claim_item.item.get_gender_display }}</td>
-                                        <td>{{ claim_item.item.product_code }}</td>
-                                        <td>{{ claim_item.item.description }}</td>
-                                        <td>{{ claim_item.item.cost }}</td>
-                                        <td>{{ claim_item.item.unit_price }}</td>
-                                        <td>{{ claim_item.quantity }}</td>
-                                        <td>{{ claim_item.amount }}</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                                </table>
-                            {% else %}
-                                <p>There are no Items for this Coverage.</p>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            </table>
-        {% else %}
-            <p>There are no Coverages for this Claim.</p>
-        {% endif %}
-    </div>
-    <div class="panel-footer">
-        <div class="btn-group">
-            <a href="{% url 'fillOutInvoice' claim.id %}" class="btn btn-default">
-                Generate Invoice
-            </a>
-            <a href="{% url 'fillOutInsurance' claim.id %}" class="btn btn-default">
-                Generate Insurance Letter
-            </a>
-            {% if has_orthotics %}
-                <a href="{% url 'fillOutProof' claim.id %}" class="btn btn-default">
-                    Generate Proof of Manufacturing
+            <div class="btn-group pull-right">
+                <a href="{% url 'claim_update' claim.id %}" class="btn btn-default">
+                    Update
                 </a>
+                <a href="{% url 'claim_delete' claim.id %}" class="btn btn-danger">
+                    Delete
+                </a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        {% verbose_field_name claim "patient" %}
+                    </label>
+                    <div class="col-lg-10">
+                        <p class="form-control-static">
+                            <a href="{{ claim.patient.get_absolute_url }}">
+                                {{ claim.patient.full_name }}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        {% verbose_field_name claim "insurance" %} {% verbose_field_name claim.insurance "provider" %}
+                    </label>
+                    <div class="col-lg-10">
+                        <p class="form-control-static">
+                            {{ claim.insurance.provider }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        {% verbose_field_name claim.patient "employer" %}
+                    </label>
+                    <div class="col-lg-10">
+                        <p class="form-control-static">
+                            {{ claim.patient.employer }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        {% verbose_field_name claim "submitted_datetime" %}
+                    </label>
+                    <div class="col-lg-10">
+                        <p class="form-control-static">
+                            {{ claim.submitted_datetime }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        {% verbose_field_name claim "insurance_paid_date" %}
+                    </label>
+                    <div class="col-lg-10">
+                        <p class="form-control-static">
+                            {{ claim.insurance_paid_date }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        Claim Packages
+                    </label>
+                    <div class="col-lg-10">
+                        <ol class="form-control-static">
+                            {% for claimattachment in claim.claimattachment_set.all %}
+                                <li>
+                                    <a href="{{ claimattachment.attachment.url }}">
+                                        {{ claimattachment.attachment }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Total Amount Claimed</th>
+                        <th>Total Quantity Claimed</th>
+                        <th>Total Expected Back</th>
+                        <th>Total Max Quantity</th>
+                        <th>Total Max Expected Back</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% with totals=claim.total_amount_quantity_claimed %}
+                            <td>{{ totals.total_amount_claimed }}</td>
+                            <td>{{ totals.total_quantity_claimed }}</td>
+                        {% endwith %}
+                        <td>{{ claim.total_expected_back }}</td>
+                        {% with totals=claim.total_max_expected_back_quantity %}
+                            <td>{{ totals.total_max_quantity }}</td>
+                            <td>{{ totals.total_max_expected_back }}</td>
+                        {% endwith %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <ul><li>{% verbose_field_name claim "coverages" %}:</li></ul>
+            {% if claim.claimcoverage_set.all %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% verbose_field_name coverage_class "coverage_type" %}</th>
+                                <th>Claim Amount Remaining</th>
+                                <th>Quantity Remaining</th>
+                                <th>Total Amount</th>
+                                <th>Total Quantity</th>
+                                <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
+                                <th>Max Quantity</th>
+                                <th>Max Expected Back</th>
+                                <th>Actual Paid Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for claim_coverage in claim.claimcoverage_set.all %}
+                            <tr>
+                                <td>{{ claim_coverage.coverage.get_coverage_type_display }}</td>
+                                <td>{{ claim_coverage.coverage.claim_amount_remaining }}</td>
+                                <td>{{ claim_coverage.coverage.quantity_remaining }}</td>
+                                {% with totals=claim_coverage.total_amount_quantity %}
+                                    <td>{{ totals.total_amount }}</td>
+                                    <td>{{ totals.total_quantity }}</td>
+                                {% endwith %}
+                                <td>{{ claim_coverage.expected_back }}</td>
+                                {% with maxes=claim_coverage.max_expected_back_quantity %}
+                                    <td>{{ maxes.max_quantity }}</td>
+                                    <td>{{ maxes.max_expected_back }}</td>
+                                {% endwith %}
+                                <td>{{ claim_coverage.actual_paid_date }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
+                                <td colspan="7">
+                                    <div class="pull-left">
+                                        {% if claim_coverage.claimitem_set.all %}
+                                            <table class="table" style="display: inline-block;">
+                                            <thead>
+                                            <tr>
+                                                <th>{% verbose_field_name item_class "coverage_type" %}</th>
+                                                <th>{% verbose_field_name item_class "gender" %}</th>
+                                                <th>{% verbose_field_name item_class "product_code" %}</th>
+                                                <th>{% verbose_field_name item_class "description" %}</th>
+                                                <th>{% verbose_field_name item_class "cost" %}</th>
+                                                <th>{% verbose_field_name item_class "unit_price" %}</th>
+                                                <th>{% verbose_field_name claim_item_class "quantity" %}</th>
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for claim_item in claim_coverage.claimitem_set.all %}
+                                                <tr>
+                                                    <td>{{ claim_item.item.get_coverage_type_display }}</td>
+                                                    <td>{{ claim_item.item.get_gender_display }}</td>
+                                                    <td>{{ claim_item.item.product_code }}</td>
+                                                    <td>{{ claim_item.item.description }}</td>
+                                                    <td>{{ claim_item.item.cost }}</td>
+                                                    <td>{{ claim_item.item.unit_price }}</td>
+                                                    <td>{{ claim_item.quantity }}</td>
+                                                    <td>{{ claim_item.amount }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                            </table>
+                                        {% else %}
+                                            <p>There are no Items for this Coverage.</p>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>There are no Coverages for this Claim.</p>
             {% endif %}
         </div>
+        <div class="panel-footer">
+            <div class="btn-group">
+                <a href="{% url 'fillOutInvoice' claim.id %}" class="btn btn-default">
+                    Generate Invoice
+                </a>
+                <a href="{% url 'fillOutInsurance' claim.id %}" class="btn btn-default">
+                    Generate Insurance Letter
+                </a>
+                {% if has_orthotics %}
+                    <a href="{% url 'fillOutProof' claim.id %}" class="btn btn-default">
+                        Generate Proof of Manufacturing
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-</div>
 
 {% endblock %}

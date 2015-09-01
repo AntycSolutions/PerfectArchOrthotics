@@ -89,120 +89,120 @@
 
 {% block content %}
 
-<div class="main">
-    <table style="border-bottom: 0.5pt solid #000;">
-        <tr>
-            <td colspan="7" valign="top" style="font-size: 200%;">
-                PROOF OF MANUFACTURING
-            </td>
-            <td colspan="3" class="text-right" style="font-size: 110%;">
-                {{ proof_of_manufacturing.laboratory_address|nbsp|linebreaksbr }}
-            </td>
-        </tr>
-        <tr><td></td></tr>
-    </table>
-    <br>
-    <table>
-        <tr>
-            <td colspan="5"></td>
-            <td colspan="3" style="border: 1px solid black;">
-                &nbsp;
-                {{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
-            </td>
-            <td colspan="2" style="border: 1px solid black;">
-                &nbsp;{{ proof_of_manufacturing.proof_of_manufacturing_date }}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="5"></td>
-            <td colspan="3" style="border: 1px solid black;">
-                &nbsp;Invoice #</td>
-            <td colspan="2" style="border: 1px solid black;">
-                &nbsp;{{ invoice_number }}</td>
-        </tr>
-    </table>
-    <br>
-    <table style="border: 1px solid black;">
-        <tr>
-            <td colspan="1" valign="top">
-                &nbsp;Bill To:</td>
-            <td colspan="3">
-                {{ proof_of_manufacturing.bill_to|nbsp|linebreaksbr }}
-            </td>
-            <td style="border-right: 1px solid black;"></td>
-            <td colspan="1" valign="top">
-                &nbsp;Ship To:</td>
-            <td colspan="3">
-                {{ proof_of_manufacturing.ship_to|nbsp|linebreaksbr }}
-            </td>
-            <td></td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td colspan="1">
-                {% verbose_field_name claim "patient" %}:</td>
-            <td colspan="9">
-                {{ claim.patient.full_name }}</td>
-        </tr>
-        <tr>
-            <td colspan="1" valign="top">
-                Items:
-            </td>
-            <td colspan="9">
-                {% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
-                    {% for claim_item in claim_coverage.claimitem_set.all %}
-                        {% if claim_item.item.coverage_type == "o" %}
-                            {# Orthotics dont have gender #}
-                            {{ claim_item.item.product_code }} -
-                            {{ claim_item.item.description }} -
-                            {% verbose_field_name claim_item "quantity" %}:
-                            {{ claim_item.quantity }}<br />
-                        {% endif %}
-                    {% empty %}
-                        There are no items for this claim.<br />
+    <div class="main">
+        <table style="border-bottom: 0.5pt solid #000;">
+            <tr>
+                <td colspan="7" valign="top" style="font-size: 200%;">
+                    PROOF OF MANUFACTURING
+                </td>
+                <td colspan="3" class="text-right" style="font-size: 110%;">
+                    {{ proof_of_manufacturing.laboratory_address|nbsp|linebreaksbr }}
+                </td>
+            </tr>
+            <tr><td></td></tr>
+        </table>
+        <br>
+        <table>
+            <tr>
+                <td colspan="5"></td>
+                <td colspan="3" style="border: 1px solid black;">
+                    &nbsp;
+                    {{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
+                </td>
+                <td colspan="2" style="border: 1px solid black;">
+                    &nbsp;{{ proof_of_manufacturing.proof_of_manufacturing_date }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5"></td>
+                <td colspan="3" style="border: 1px solid black;">
+                    &nbsp;Invoice #</td>
+                <td colspan="2" style="border: 1px solid black;">
+                    &nbsp;{{ invoice_number }}</td>
+            </tr>
+        </table>
+        <br>
+        <table style="border: 1px solid black;">
+            <tr>
+                <td colspan="1" valign="top">
+                    &nbsp;Bill To:</td>
+                <td colspan="3">
+                    {{ proof_of_manufacturing.bill_to|nbsp|linebreaksbr }}
+                </td>
+                <td style="border-right: 1px solid black;"></td>
+                <td colspan="1" valign="top">
+                    &nbsp;Ship To:</td>
+                <td colspan="3">
+                    {{ proof_of_manufacturing.ship_to|nbsp|linebreaksbr }}
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td colspan="1">
+                    {% verbose_field_name claim "patient" %}:</td>
+                <td colspan="9">
+                    {{ claim.patient.full_name }}</td>
+            </tr>
+            <tr>
+                <td colspan="1" valign="top">
+                    Items:
+                </td>
+                <td colspan="9">
+                    {% for claim_coverage in proof_of_manufacturing.claim.claimcoverage_set.all %}
+                        {% for claim_item in claim_coverage.claimitem_set.all %}
+                            {% if claim_item.item.coverage_type == "o" %}
+                                {# Orthotics dont have gender #}
+                                {{ claim_item.item.product_code }} -
+                                {{ claim_item.item.description }} -
+                                {% verbose_field_name claim_item "quantity" %}:
+                                {{ claim_item.quantity }}<br />
+                            {% endif %}
+                        {% empty %}
+                            There are no items for this claim.<br />
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td colspan="3">
-                <strong>Laboratory Information:</strong></td>
-            <td colspan="7">
-                {{ proof_of_manufacturing.laboratory_information }}</td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <strong>Laboratory Supervisor:</strong>
-            </td>
-            <td colspan="7">
-                {{ proof_of_manufacturing.laboratory_supervisor }}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3" valign="top">
-                <strong>Raw Materials:</strong></td>
-            <td colspan="7">
-                Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers). Includes some or all of the following: polypropylene, carbon fibre, EVA, poron, v-phoam, puff, durasole, polyplastic, ppt, plastazote, p-cell, cork.
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3" valign="top">
-                <strong>Manufacturing:</strong></td>
-            <td colspan="7">
-                The Sharp Shape 3-Dimmensional data or 3D Foam impression was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3" valign="top">
-                <strong>Casting Technique:</strong></td>
-            <td colspan="7">
-                3D Volumetric Foam Impression / Sharp Shape 3D Scanner and CAD/CAM Technology
-            </td>
-        </tr>
-    </table>
-</div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td colspan="3">
+                    <strong>Laboratory Information:</strong></td>
+                <td colspan="7">
+                    {{ proof_of_manufacturing.laboratory_information }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <strong>Laboratory Supervisor:</strong>
+                </td>
+                <td colspan="7">
+                    {{ proof_of_manufacturing.laboratory_supervisor }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" valign="top">
+                    <strong>Raw Materials:</strong></td>
+                <td colspan="7">
+                    Engineered copolymer with complete intrinsic memory and predictability postings, made from extra firm nickelplast (58-65 Durometers). Includes some or all of the following: polypropylene, carbon fibre, EVA, poron, v-phoam, puff, durasole, polyplastic, ppt, plastazote, p-cell, cork.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" valign="top">
+                    <strong>Manufacturing:</strong></td>
+                <td colspan="7">
+                    The Sharp Shape 3-Dimmensional data or 3D Foam impression was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" valign="top">
+                    <strong>Casting Technique:</strong></td>
+                <td colspan="7">
+                    3D Volumetric Foam Impression / Sharp Shape 3D Scanner and CAD/CAM Technology
+                </td>
+            </tr>
+        </table>
+    </div>
 
 {% endblock %}
