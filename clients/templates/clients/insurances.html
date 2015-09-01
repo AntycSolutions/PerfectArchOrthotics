@@ -6,47 +6,46 @@
 
 {% block content %}
 
-<h1>Insurances</h1>
-<form method="get" action="{% url 'insurance_search' %}">
-    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Insurance Search">
-    <input type="submit" class="btn" value="Search">
-</form>
-{% if insurances %}
-    {% include 'clients/snippets/insurances.html' %}
-{% else %}
-    <p>There are no insurances currently.</p>
-{% endif %}
-
-<!-- Pagination stuff -->
-<div class="pagination">
-    <span class="step-links">
-        {% if insurances.has_previous %}
-            {% if q %}
-                <a href="?q={{q}}&page={{ insurances.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% else %}
-                <a href="?page={{ insurances.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% endif %}
-        {% endif %}
-
-        <span class="current">
-            Page {{ insurances.number }} of {{ insurances.paginator.num_pages }}.
-        </span>
-
-        {% if insurances.has_next %}
-            {% if q %}
-                <a href="?q={{q}}&page={{ insurances.next_page_number }}" class="btn btn-default">Next</a>
-            {% else %}
-                <a href="?page={{ insurances.next_page_number }}" class="btn btn-default">Next</a>
-            {% endif %}
-        {% endif %}
-    </span>
-</div>
-<form method="GET" style="display: inline-block;">
-    {% if q %}
-        <input type="hidden" name="q" value="{{ q }}">
+    <h1>Insurances</h1>
+    <form method="GET" class="form-inline">
+        <div class="form-group">
+            <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Insurance Search">
+        </div>
+        <button type="submit" class="btn">Search</button>
+    </form>
+    {% if insurances %}
+        {% include 'clients/snippets/insurances.html' %}
+    {% else %}
+        <p>There are no insurances currently.</p>
     {% endif %}
-    Rows per Page: <input type="number" id="insurances_rows_per_page" name="insurances_rows_per_page" value="{{ insurances_rows_per_page }}">
-    <input type="submit" class="btn" value="Paginate">
-</form>
+
+    <!-- Pagination stuff -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if insurances.has_previous %}
+                <a href="?q={{q}}&page={{ insurances.previous_page_number }}" class="btn btn-default">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ insurances.number }} of {{ insurances.paginator.num_pages }}.
+            </span>
+
+            {% if insurances.has_next %}
+                <a href="?q={{q}}&page={{ insurances.next_page_number }}" class="btn btn-default">Next</a>
+            {% endif %}
+        </span>
+    </div>
+    <form method="GET" class="form-inline" style="display: inline-block;">
+        {% if q %}
+            <input type="hidden" name="q" value="{{ q }}">
+        {% endif %}
+        <div class="form-group">
+            Rows per Page:
+            <input type="number" id="insurances_rows_per_page" name="insurances_rows_per_page" class="form-control" value="{{ insurances_rows_per_page }}">
+        </div>
+        <button type="submit" class="btn">Paginate</button>
+    </form>
+    {% if not is_paginated %}<br />{% endif %}
+    <br />
 
 {% endblock %}
