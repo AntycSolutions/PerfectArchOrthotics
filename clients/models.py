@@ -49,13 +49,13 @@ class Person(models.Model):
     def age(self):
         if self.birth_date:
             today = date.today()
+
             return (
                 today.year
                 - self.birth_date.year
                 - ((today.month, today.day)
                    < (self.birth_date.month, self.birth_date.day))
             )
-        return None
 
     def full_name(self):
         full_name = self.first_name
@@ -73,7 +73,6 @@ class Person(models.Model):
             return Dependent.objects.get(id=self.id).get_absolute_url()
         except:
             pass
-        return None
 
     def get_client(self):
         try:
@@ -84,7 +83,6 @@ class Person(models.Model):
             return Dependent.objects.get(id=self.id).client
         except:
             pass
-        return None
 
     def __unicode__(self):
         return self.full_name()
@@ -133,6 +131,7 @@ class Client(Person):
         for order in person.order_set.all():
             # if order.dispensed_date:
             claimed_credit += order.get_credit_value()
+
         return claimed_credit
 
     def credit(self):
@@ -166,6 +165,7 @@ class Client(Person):
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
         credit = (total / 150) - float(claimed_credit)
+
         return round(credit, 2)
 
     def get_absolute_url(self):
@@ -187,8 +187,7 @@ class Dependent(Person):
     client = models.ForeignKey(
         Client, verbose_name="Client")
     relationship = models.CharField(
-        "Relationship", max_length=4, choices=RELATIONSHIPS,
-        blank=True)
+        "Relationship", max_length=4, choices=RELATIONSHIPS)
 
     def get_absolute_url(self):
         return "{0}#dependent_{1}".format(
@@ -246,6 +245,7 @@ class Insurance(models.Model):
             main_claimant = self.main_claimant
         except:
             main_claimant = None
+
         return "%s - %s" % (self.provider, main_claimant)
 
     def __str__(self):
@@ -302,6 +302,7 @@ class Coverage(models.Model):
         total_amount_claimed = 0
         for claim_coverage in self.claimcoverage_set.all():
             total_amount_claimed += claim_coverage.expected_back
+
         return total_amount_claimed
 
     def claim_amount_remaining(self):
@@ -312,6 +313,7 @@ class Coverage(models.Model):
         for claim_coverage in self.claimcoverage_set.all():
             for claim_item in claim_coverage.claimitem_set.all():
                 total_quantity_claimed += claim_item.quantity
+
         return total_quantity_claimed
 
     def quantity_remaining(self):
@@ -326,6 +328,7 @@ class Coverage(models.Model):
             claimant = self.claimant
         except:
             claimant = None
+
         return "%s %s - %s" % (
             self.get_coverage_type_display(), claimant, insurance)
 
@@ -393,6 +396,7 @@ class Claim(models.Model):
         total_expected_back = 0
         for claim_coverage in self.claimcoverage_set.all():
             total_expected_back += claim_coverage.expected_back
+
         return total_expected_back
 
     def total_max_expected_back_quantity(self):
@@ -404,6 +408,7 @@ class Claim(models.Model):
             maxes = claim_coverage.max_expected_back_quantity()
             total_max_expected_back += maxes.max_expected_back
             total_max_quantity += maxes.max_quantity
+
         return Totals(total_max_expected_back, total_max_quantity)
 
     def total_amount_quantity_claimed(self):
@@ -415,6 +420,7 @@ class Claim(models.Model):
             totals = claim_coverage.total_amount_quantity()
             total_amount_claimed += totals.total_amount
             total_quantity_claimed += totals.total_quantity
+
         return Totals(total_amount_claimed, total_quantity_claimed)
 
     def expected_back_revenue(self):
@@ -428,7 +434,9 @@ class Claim(models.Model):
                     default=0,
                 )),
             )
+
             return (claimcoverages['expected_back'] or 0)
+
         return 0
 
     def get_absolute_url(self):
@@ -449,6 +457,7 @@ class Claim(models.Model):
                 "%Y-%m-%d %I:%M %p")
         except:
             submitted_datetime = None
+
         return "Submitted Datetime: %s %s - %s" % (
             submitted_datetime,
             patient,
@@ -496,6 +505,7 @@ class ClaimCoverage(models.Model):
         for claim_item in self.claimitem_set.all():
             total_amount += claim_item.amount()
             total_quantity += claim_item.quantity
+
         return Totals(total_amount, total_quantity)
 
     def _coverage_total_amount_claimed(self):
@@ -505,6 +515,7 @@ class ClaimCoverage(models.Model):
             if (claim_coverage.claim.submitted_datetime
                     < self.claim.submitted_datetime):
                 total_amount_claimed += claim_coverage.expected_back
+
         return total_amount_claimed
 
     def _coverage_claim_amount_remaining(self):
@@ -557,6 +568,7 @@ class ClaimCoverage(models.Model):
             claim = self.claim
         except:
             claim = None
+
         return "%s - %s" % (coverage, claim)
 
     def __str__(self):
@@ -626,6 +638,7 @@ class Invoice(models.Model):
 
     def balance(self):
         totals = self.claim.total_amount_quantity_claimed()
+
         return (totals.total_amount_claimed
                 - self.deposit
                 - self.payment_made
@@ -761,7 +774,6 @@ class InsuranceLetter(models.Model):
     def dispense_date(self):
         for invoice in self.claim.invoice_set.all():
             return invoice.invoice_date
-        return None
 
     def _verbose_name(self, field):
         return InsuranceLetter._meta.get_field(field).verbose_name
@@ -861,7 +873,6 @@ class InsuranceLetter(models.Model):
         return str(diagnosis).strip("[]").replace("'", "")
 
     def __unicode__(self):
-        # Needs better choice than practitioner_name
         return "Dispense Date: %s - %s" % (self.dispense_date(), self.claim)
 
     def __str__(self):
@@ -884,11 +895,13 @@ class ProofOfManufacturing(models.Model):
 
     proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
+    class Meta:
+        verbose_name_plural = "Proofs of manufacturing"
+
     def proof_of_manufacturing_date(self):
         for invoice in self.claim.invoice_set.all():
             if invoice.invoice_date:
                 return invoice.invoice_date - timedelta(weeks=1)
-        return None
 
     def __unicode__(self):
         return "Proof of Manufacturing Date: %s - %s" % (
@@ -905,6 +918,9 @@ class Laboratory(models.Model):
     insurance_letter = models.ForeignKey(
         InsuranceLetter, verbose_name="Insurance Letter",
         null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Laboratories"
 
     def __unicode__(self):
         return self.get_information_display().split('\n')[0]
