@@ -17,6 +17,7 @@ from django.contrib import messages
 from django.db.models import Sum, F, Case, When, Q
 from django.db.models.functions import Coalesce
 from django.core import urlresolvers
+from django.utils import safestring
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -239,23 +240,6 @@ def fillOutProofOfManufacturingView(request, claim_id):
 
 
 @login_required
-def clients(request):
-    context = RequestContext(request)
-
-    client_list = Client.objects.order_by('-id')
-
-    page = request.GET.get('page')
-    clients_rows_per_page = _get_paginate_by(request, 'clients_rows_per_page')
-    clients = _paginate(client_list, page, clients_rows_per_page)
-
-    client_dict = {'clients': clients,
-                   'clients_rows_per_page': clients_rows_per_page,
-                   }
-
-    return render_to_response('clients/clients.html', client_dict, context)
-
-
-@login_required
 def claimView(request, claim_id):
     context = RequestContext(request)
 
@@ -272,49 +256,28 @@ def claimView(request, claim_id):
 
 
 @login_required
-def insuranceView(request):
-    context = RequestContext(request)
-
-    insurance_list = Insurance.objects.all()
-
-    page = request.GET.get('page')
-    insurances_rows_per_page = _get_paginate_by(request,
-                                                'insurances_rows_per_page')
-    insurances = _paginate(insurance_list, page, insurances_rows_per_page)
-
-    context_dict = {'insurances': insurances,
-                    'insurances_rows_per_page': insurances_rows_per_page,
-                    }
-
-    return render_to_response('clients/insurances.html', context_dict, context)
-
-
-@login_required
 def clientSearchView(request):
     context = RequestContext(request)
     context_dict = {}
-    query_string = request.GET['q']
-    fields = ['first_name', 'last_name', 'address', 'phone_number', 'employer',
-              'health_care_number']
-    clients = None
+
+    found_clients = Client.objects.order_by('-id')
     if ('q' in request.GET) and request.GET['q'].strip():
-        page = request.GET.get('page')
+        fields = ['first_name', 'last_name', 'address', 'phone_number',
+                  'employer', 'health_care_number']
         query_string = request.GET['q']
+        context_dict['q'] = query_string
+
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
 
-        clients_rows_per_page = _get_paginate_by(request,
-                                                 'clients_rows_per_page')
-        clients = _paginate(found_clients, page, clients_rows_per_page)
+    page = request.GET.get('page')
+    clients_rows_per_page = _get_paginate_by(request, 'clients_rows_per_page')
+    clients = _paginate(found_clients, page, clients_rows_per_page)
 
-        context_dict = {'q': query_string,
-                        'clients': clients,
-                        'clients_rows_per_page': clients_rows_per_page,
-                        }
+    context_dict['clients'] = clients
+    context_dict['clients_rows_per_page'] = clients_rows_per_page
 
-    return render_to_response('clients/clients.html',
-                              context_dict,
-                              context)
+    return render_to_response('clients/clients.html', context_dict, context)
 
 
 def _actual_paid_date(request, context_dict, found_claims):
@@ -525,30 +488,26 @@ def claimSearchView(request):
 def insuranceSearchView(request):
     context = RequestContext(request)
     context_dict = {}
-    query_string = request.GET['q']
-    fields = ["provider", "policy_number",
-              "main_claimant__first_name", "main_claimant__last_name",
-              "main_claimant__employer"]
-    insurances = None
+
+    found_insurances = Insurance.objects.all()
     if ('q' in request.GET) and request.GET['q'].strip():
-        page = request.GET.get('page')
+        fields = ["provider", "policy_number",
+                  "main_claimant__first_name", "main_claimant__last_name",
+                  "main_claimant__employer"]
         query_string = request.GET['q']
+        context_dict['q'] = query_string
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
 
-        insurances_rows_per_page = _get_paginate_by(request,
-                                                    'insurances_rows_per_page')
-        insurances = _paginate(found_insurances, page,
-                               insurances_rows_per_page)
+    page = request.GET.get('page')
+    insurances_rows_per_page = _get_paginate_by(request,
+                                                'insurances_rows_per_page')
+    insurances = _paginate(found_insurances, page, insurances_rows_per_page)
 
-        context_dict = {'q': query_string,
-                        'insurances': insurances,
-                        'insurances_rows_per_page': insurances_rows_per_page,
-                        }
+    context_dict['insurances'] = insurances
+    context_dict['insurances_rows_per_page'] = insurances_rows_per_page
 
-    return render_to_response('clients/insurances.html',
-                              context_dict,
-                              context)
+    return render_to_response('clients/insurances.html', context_dict, context)
 
 
 def getFieldsFromRequest(request, default=""):
@@ -748,8 +707,6 @@ def add_client(request):
 
             form = DependentForm()
             return redirect('add_dependent', saved.id)
-            #return render_to_response('clients/add_dependent.html',
-                                       # {'form': form}, context)
     else:
         form = ClientForm()
         queryset = form.fields['referred_by'].queryset
@@ -880,7 +837,7 @@ def editDependentsView(request, client_id, dependent_id):
                                       kwargs={'client_id': client.pk})
 
     return render_to_response(
-        'utils/generics/create.html',
+        'utils/generics/update.html',
         {'form': dependent_form,
          'model_name_plural': Dependent._meta.verbose_name_plural,
          'model_name': Dependent._meta.verbose_name,
@@ -960,8 +917,14 @@ def add_dependent(request, client_id):
     cancel_url = urlresolvers.reverse('client',
                                       kwargs={'client_id': client_id})
 
-    # return render_to_response('clients/dependent/add_dependent.html',
-    #                           {'form': form}, context)
+    create_and_proceed = ('<input class="btn btn-default" type="submit" '
+                          'name="submit" value="Create and proceed" />')
+    skip_step = ('<input class="btn btn-default" type="submit" '
+                 'name="submit" value="Skip step" />')
+    multistep_buttons = safestring.mark_safe(
+        "{0} {1}".format(create_and_proceed, skip_step)
+    )
+
     return render_to_response(
         'utils/generics/create.html',
         {'form': form,
@@ -969,8 +932,5 @@ def add_dependent(request, client_id):
          'model_name': Dependent._meta.verbose_name,
          'indefinite_article': 'a',
          'cancel_url': cancel_url,
-         'multistep_btns':
-            '<input class="btn btn-default" type="submit" name="submit" value="Create and proceed" />'
-            ' '
-            '<input class="btn btn-default" type="submit" name="submit" value="Skip step" />'},
+         'multistep_buttons': multistep_buttons},
         context)
