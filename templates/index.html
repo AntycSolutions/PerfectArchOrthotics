@@ -6,37 +6,37 @@
 
 {% block content %}
 
-<style>
-    .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-</style>
-<div class="center" style="height: 65vh;">
-    <div>
-        <img class="lazy" data-src="{% static 'images/PerfectArchLogo.jpg' %}">
-        <p class="lead" style="width: 65%; margin-left: auto; margin-right: auto;">We are an Edmonton based company providing orthotics to those in need.</p>
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+    <div class="center" style="height: 65vh;">
+        <div>
+            <img class="lazy" data-src="{% static 'images/PerfectArchLogo.jpg' %}">
+            <p class="lead" style="width: 65%; margin-left: auto; margin-right: auto;">We are an Edmonton based company providing orthotics to those in need.</p>
+        </div>
     </div>
-</div>
-<div class="center">
-    <div>
-        <p>
-            10540 - 169 St NW<br />
-            Edmonton, AB &nbsp;T5P 3X6<br />
-            Canada
-        <p>
-        <p>
-            <a href="//maps.google.com/?q=10540 169 St NW, Edmonton, Alberta T5P 3X6, Canada" class="btn btn-primary"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View in Google Maps</a>
-        </p>
-        <div><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> Phone: <a href="tel:5874004588">(587) 400-4588</a></div>
-        <div>Fax: (587) 400-4566</div>
+    <div class="center">
+        <div>
+            <p>
+                10540 - 169 St NW<br />
+                Edmonton, AB &nbsp;T5P 3X6<br />
+                Canada
+            <p>
+            <p>
+                <a href="//maps.google.com/?q=10540 169 St NW, Edmonton, Alberta T5P 3X6, Canada" class="btn btn-primary"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View in Google Maps</a>
+            </p>
+            <div><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> Phone: <a href="tel:5874004588">(587) 400-4588</a></div>
+            <div>Fax: (587) 400-4566</div>
+        </div>
     </div>
-</div>
 
 {% endblock %}
 
 {% block scripts %}
-{% include 'utils/snippets/lazy.html' %}
+    {% include 'utils/snippets/lazy.html' %}
 {% endblock %}
