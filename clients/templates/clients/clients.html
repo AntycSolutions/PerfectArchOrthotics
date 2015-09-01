@@ -6,81 +6,80 @@
 
 {% block content %}
 
-<h1>Clients</h1>
-<div>
-    <a href="{% url 'add_client' %}" class="btn btn-primary">Add a New Client</a>
-    <!-- <a href="{% url 'add_client_test' %}" class="btn btn-primary">Add a New Client</a> -->
-</div>
-<br />
-<form method="get" action="{% url 'client_search' %}">
-    <input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Client Search">
-    <input type="submit" class="btn" value="Search">
-</form>
-{% if clients %}
-    <table class="table table-striped table-cover">
-        <thead>
-            <tr>
-                <th>Client Name</th>
-                <th>Address</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Gender</th>
-                <th>Credit</th>
-                <th>Employer</th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for client in clients %}
-        <tr>
-            <td>
-                <a href="{% url 'client' client.id %}">
-                    {{ client.full_name }}
-                </a>
-            </td>
-            <td>{{client.address}}</td>
-            <td>{{client.phone_number}}</td>
-            <td>{{client.email}}</td>
-            <td>{{ client.get_gender_display }}</td>
-            <td>{{client.credit}}</td>
-            <td>{{client.employer}}</td>
-            </tr>
-    {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No results found</p>
-{% endif %}
-
-<!-- Pagination stuff -->
-<div class="pagination">
-    <span class="step-links">
-        {% if clients.has_previous %}
-            {% if q %}
-                <a href="?q={{q}}&page={{ clients.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% else %}
-                <a href="?page={{ clients.previous_page_number }}" class="btn btn-default">Previous</a>
-            {% endif %}
-        {% endif %}
-
-        <span class="current">
-            Page {{ clients.number }} of {{ clients.paginator.num_pages }}.
-        </span>
-
-        {% if clients.has_next %}
-            {% if q %}
-                <a href="?q={{q}}&page={{ clients.next_page_number }}" class="btn btn-default">Next</a>
-            {% else %}
-                <a href="?page={{ clients.next_page_number }}" class="btn btn-default">Next</a>
-            {% endif %}
-        {% endif %}
-    </span>
-</div>
-<form method="GET" style="display: inline-block;">
-    {% if q %}
-        <input type="hidden" name="q" value="{{ q }}">
+    <h1>Clients</h1>
+    <div>
+        <a href="{% url 'add_client' %}" class="btn btn-primary">Add a New Client</a>
+        <!-- <a href="{% url 'add_client_test' %}" class="btn btn-primary">Add a New Client</a> -->
+    </div>
+    <br />
+    <form class="form-inline" method="GET">
+        <div class="form-group">
+            <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Client Search" value="{{ q }}">
+        </div>
+        <button type="submit" class="btn">Search</button>
+    </form>
+    {% if clients %}
+        <div class="table-responsive">
+            <table class="table table-striped table-cover">
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Address</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Credit</th>
+                        <th>Employer</th>
+                    </tr>
+                </thead>
+                <tbody>
+            {% for client in clients %}
+                <tr>
+                    <td>
+                        <a href="{% url 'client' client.id %}">
+                            {{ client.full_name }}
+                        </a>
+                    </td>
+                    <td>{{client.address}}</td>
+                    <td>{{client.phone_number}}</td>
+                    <td>{{client.email}}</td>
+                    <td>{{ client.get_gender_display }}</td>
+                    <td>{{client.credit}}</td>
+                    <td>{{client.employer}}</td>
+                    </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No results found</p>
     {% endif %}
-    Rows per Page: <input type="number" id="clients_rows_per_page" name="clients_rows_per_page" value="{{ clients_rows_per_page }}">
-    <input type="submit" class="btn" value="Paginate">
-</form>
+
+    <!-- Pagination stuff -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if clients.has_previous %}
+                <a href="?q={{q}}&page={{ clients.previous_page_number }}" class="btn btn-default">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ clients.number }} of {{ clients.paginator.num_pages }}.
+            </span>
+
+            {% if clients.has_next %}
+                <a href="?q={{q}}&page={{ clients.next_page_number }}" class="btn btn-default">Next</a>
+            {% endif %}
+        </span>
+    </div>
+    <form method="GET" class="form-inline" style="display: inline-block;">
+        {% if q %}
+            <input type="hidden" name="q" value="{{ q }}">
+        {% endif %}
+        <div class="form-group">
+            Rows per Page:
+            <input type="number" id="clients_rows_per_page" name="clients_rows_per_page" class="form-control" value="{{ clients_rows_per_page }}">
+        </div>
+        <button type="submit" class="btn">Paginate</button>
+    </form>
 
 {% endblock %}
