@@ -31,8 +31,7 @@
     <h1>
         Update invoice information for: {{ invoice.claim.patient.full_name }}
     </h1>
-
-    <form id="update_invoice_form" class="form-horizontal" method="post">
+    <form id="update_invoice_form" class="form-horizontal" method="POST">
         {% csrf_token %}
         <h5>Claim</h5>
         {% with totals=invoice.claim.total_amount_quantity_claimed %}
@@ -53,28 +52,32 @@
                 {{ invoice.claim.insurance.get_benefits_display }}
             </p>
         {% endif %}
-        <h5>Invoice</h5>
-        <fieldset>
-            {{ form.non_field_errors }}
-            {% for hidden in form.hidden_fields %}
-                {% if hidden.errors %}
-                    {{ hidden.errors }}
-                {% endif %}
-                {{ hidden }}
-            {% endfor %}
-            {% for field in form.visible_fields %}
+        <div class="row">
+            <fieldset class="col-lg-6">
                 <div class="form-group">
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
-                    <div class="col-lg-10">
-                        {{ field.label_tag}} {{ field }}
+                    <label class="col-lg-3 control-label">
+                        <h5>
+                            {{ model_name|title }}
+                        </h5>
+                    </label>
+                </div>
+                {% include 'utils/generics/form.html' %}
+            </fieldset>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary" name="submit">
+                            Update
+                        </button>
+                        <a href="{{ cancel_url }}" class="btn btn-default">
+                            Cancel
+                        </a>
                     </div>
                 </div>
-            {% endfor %}
-        </fieldset>
-        <input type="submit" name="submit" value="Save" />
+            </div>
+        </div>
     </form>
-    <br />
 
 {% endblock %}

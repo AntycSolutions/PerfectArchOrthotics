@@ -9,7 +9,7 @@ from clients.views.coverage_type import UpdateCoverageView, \
     DeleteCoverageView, CreateCoverageView
 from clients.views.claim import UpdateClaimView, DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
-    CreateInsuranceLetterView, UpdateProofOfManufacturingView, \
+    CreateInsuranceLetterView, \
     CreateProofOfManufacturingView, CreateClaimView
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
@@ -96,9 +96,6 @@ claim_patterns = patterns(
     url(r'^insurance_letter/create/(?P<claim_id>\w+)/$',
         login_required(CreateInsuranceLetterView.as_view()),
         name='insurance_letter_create'),
-    url(r'^proof_of_manufacturing/update/(?P<proof_of_manufacturing_id>\w+)/$',
-        login_required(UpdateProofOfManufacturingView.as_view()),
-        name='proof_of_manufacturing_update'),
     url(r'^proof_of_manufacturing/create/(?P<claim_id>\w+)/$',
         login_required(CreateProofOfManufacturingView.as_view()),
         name='proof_of_manufacturing_create'),

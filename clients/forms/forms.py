@@ -334,17 +334,18 @@ class InsuranceLetterForm(forms.ModelForm):
         exclude = ('claim',)
 
 
-class ProofOfManufacturingForm(forms.ModelForm):
-
-    class Meta:
-        model = ProofOfManufacturing
-        exclude = ('claim',)
-
 LaboratoryInsuranceLetterFormSet = inlineformset_factory(
     InsuranceLetter,
     Laboratory,
     exclude=('insurance_letter',)
 )
+
+
+class ProofOfManufacturingForm(forms.ModelForm):
+
+    class Meta:
+        model = ProofOfManufacturing
+        exclude = ('claim',)
 
 
 class BaseNestedFormSet(BaseInlineFormSet):

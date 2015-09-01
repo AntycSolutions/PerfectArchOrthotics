@@ -18,7 +18,6 @@ class UpdateInsuranceView(UpdateView):
         context = super().get_context_data(**kwargs)
 
         context['model_name'] = self.model._meta.verbose_name
-        context['indefinite_article'] = 'a'
         context['inline_model_name'] = Coverage._meta.verbose_name
         context['inline_model_name_plural'] = \
             Coverage._meta.verbose_name_plural

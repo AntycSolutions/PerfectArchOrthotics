@@ -607,7 +607,7 @@ class Invoice(models.Model):
     DUE_ON_RECEIPT = 'dor'
     PAYMENT_TERMS = ((DUE_ON_RECEIPT, 'Due On Receipt'),)
 
-    claim = models.ForeignKey(
+    claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
     invoice_date = models.DateField(
@@ -644,6 +644,9 @@ class Invoice(models.Model):
                 - self.payment_made
                 - self.claim.expected_back_revenue())
 
+    def get_absolute_url(self):
+        return reverse('fillOutInvoice', kwargs={'claim_id': self.claim.id})
+
     def __unicode__(self):
         return "Invoice Date: %s - %s" % (self.invoice_date, self.claim)
 
@@ -652,7 +655,7 @@ class Invoice(models.Model):
 
 
 class InsuranceLetter(models.Model):
-    claim = models.ForeignKey(
+    claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
     practitioner_name = models.CharField(
@@ -772,8 +775,12 @@ class InsuranceLetter(models.Model):
     # Laboratory
 
     def dispense_date(self):
-        for invoice in self.claim.invoice_set.all():
-            return invoice.invoice_date
+        try:
+            invoice = self.claim.invoice
+            if invoice.invoice_date:
+                return invoice.invoice_date
+        except Claim.DoesNotExist:
+            pass
 
     def _verbose_name(self, field):
         return InsuranceLetter._meta.get_field(field).verbose_name
@@ -872,6 +879,9 @@ class InsuranceLetter(models.Model):
         # Remove list characters
         return str(diagnosis).strip("[]").replace("'", "")
 
+    def get_absolute_url(self):
+        return reverse('fillOutInsurance', kwargs={'claim_id': self.claim.id})
+
     def __unicode__(self):
         return "Dispense Date: %s - %s" % (self.dispense_date(), self.claim)
 
@@ -880,7 +890,7 @@ class InsuranceLetter(models.Model):
 
 
 class ProofOfManufacturing(models.Model):
-    claim = models.ForeignKey(
+    claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
     bill_to = settings.BILL_TO[0][1]
@@ -899,9 +909,15 @@ class ProofOfManufacturing(models.Model):
         verbose_name_plural = "Proofs of manufacturing"
 
     def proof_of_manufacturing_date(self):
-        for invoice in self.claim.invoice_set.all():
+        try:
+            invoice = self.claim.invoice
             if invoice.invoice_date:
                 return invoice.invoice_date - timedelta(weeks=1)
+        except Claim.DoesNotExist:
+            pass
+
+    def get_absolute_url(self):
+        return reverse('fillOutProof', kwargs={'claim_id': self.claim.id})
 
     def __unicode__(self):
         return "Proof of Manufacturing Date: %s - %s" % (

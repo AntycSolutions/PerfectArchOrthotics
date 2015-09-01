@@ -3,12 +3,15 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
+from django.core import urlresolvers
+from django.forms import fields as form_fields
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem, Dependent
+from clients import models as clients_models
 from clients.forms.forms import ClaimForm, InvoiceForm, \
-    InsuranceLetterForm, ProofOfManufacturingForm, \
-    LaboratoryInsuranceLetterFormSet, \
+    InsuranceLetterForm, \
+    LaboratoryInsuranceLetterFormSet, ProofOfManufacturingForm, \
     MinimumInlineFormSet, minimum_nestedformset_factory
 
 
@@ -367,6 +370,14 @@ class UpdateInvoiceView(UpdateView):
     slug_field = "id"
     slug_url_kwarg = "invoice_id"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
+        return context
+
     def get_success_url(self):
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutInvoice',
@@ -380,9 +391,15 @@ class CreateInvoiceView(CreateView):
     form_class = InvoiceForm
 
     def get_context_data(self, **kwargs):
-        context = super(CreateInvoiceView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         context['claim'] = claim
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = urlresolvers.reverse(
+            'claim', kwargs={'claim_id': self.kwargs['claim_id']}
+        )
 
         return context
 
@@ -407,6 +424,18 @@ class UpdateInsuranceLetterView(UpdateView):
     form_class = InsuranceLetterForm
     slug_field = "id"
     slug_url_kwarg = "insurance_letter_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['inline_model_name'] = \
+            clients_models.Laboratory._meta.verbose_name
+        context['inline_model_name_plural'] = \
+            clients_models.Laboratory._meta.verbose_name_plural
+        context['cancel_url'] = self.object.get_absolute_url()
+
+        return context
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -453,6 +482,20 @@ class CreateInsuranceLetterView(CreateView):
     model = InsuranceLetter
     form_class = InsuranceLetterForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['inline_model_name'] = \
+            clients_models.Laboratory._meta.verbose_name
+        context['inline_model_name_plural'] = \
+            clients_models.Laboratory._meta.verbose_name_plural
+        context['cancel_url'] = urlresolvers.reverse(
+            'claim', kwargs={'claim_id': self.kwargs['claim_id']}
+        )
+
+        return context
+
     def get(self, request, *args, **kwargs):
         self.object = None
         form_class = self.get_form_class()
@@ -494,24 +537,19 @@ class CreateInsuranceLetterView(CreateView):
         return self.success_url
 
 
-class UpdateProofOfManufacturingView(UpdateView):
-    template_name = 'clients/claim/update_proof_of_manufacturing.html'
-    model = ProofOfManufacturing
-    form_class = ProofOfManufacturingForm
-    slug_field = "id"
-    slug_url_kwarg = "proof_of_manufacturing_id"
-
-    def get_success_url(self):
-        claim_id = self.object.claim.id
-        self.success_url = reverse_lazy('fillOutProof',
-                                        kwargs={'claim_id': claim_id})
-        return self.success_url
-
-
 class CreateProofOfManufacturingView(CreateView):
     template_name = 'clients/claim/create_proof_of_manufacturing.html'
     model = ProofOfManufacturing
     form_class = ProofOfManufacturingForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['cancel_url'] = urlresolvers.reverse(
+            'claim', kwargs={'claim_id': self.kwargs['claim_id']}
+        )
+
+        return context
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -525,4 +563,5 @@ class CreateProofOfManufacturingView(CreateView):
         claim_id = self.object.claim.id
         self.success_url = reverse_lazy('fillOutProof',
                                         kwargs={'claim_id': claim_id})
+
         return self.success_url

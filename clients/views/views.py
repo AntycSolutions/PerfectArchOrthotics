@@ -26,6 +26,7 @@ import xhtml2pdf.pisa as pisa
 from utils.search import get_query, get_date_query
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
+from clients import models as clients_models
 from inventory import models as inventory_models
 from clients.forms.forms import ClientForm, DependentForm, \
     ClaimForm
@@ -112,8 +113,8 @@ def _invoice(claim_id):
     patient = claim.patient
     invoice = None
     try:
-        invoice = claim.invoice_set.all()[0]
-    except:
+        invoice = claim.invoice
+    except clients_models.Invoice.DoesNotExist:
         pass
     invoice_number = "{0:04d}".format(claim.id)
 
@@ -151,8 +152,8 @@ def _insurance_letter(claim_id):
     patient = claim.patient
     insurance_letter = None
     try:
-        insurance_letter = claim.insuranceletter_set.all()[0]
-    except:
+        insurance_letter = claim.insuranceletter
+    except clients_models.InsuranceLetter.DoesNotExist:
         pass
 
     return claim, patient, insurance_letter
@@ -174,8 +175,8 @@ def _proof_of_manufacturing(claim_id):
     claim = Claim.objects.get(id=claim_id)
     proof_of_manufacturing = None
     try:
-        proof_of_manufacturing = claim.proofofmanufacturing_set.all()[0]
-    except:
+        proof_of_manufacturing = claim.proofofmanufacturing
+    except clients_models.ProofOfManufacturing.DoesNotExist:
         pass
     invoice_number = "{0:04d}".format(claim.id + 7500)
 
