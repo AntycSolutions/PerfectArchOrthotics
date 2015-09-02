@@ -3,6 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib.auth import views as django_views
 from django.contrib.auth.decorators import login_required
+from django.views.generic import base
 
 from ajax_select import urls as ajax_select_urls
 
@@ -33,6 +34,12 @@ urlpatterns = patterns(
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
         name='get_thumbnail'),
+    url(r'^404/',
+        base.TemplateView.as_view(template_name='404.html'),
+        name='404'),
+    url(r'^500/',
+        base.TemplateView.as_view(template_name='500.html'),
+        name='500')
 )
 
 if settings.DEBUG:
