@@ -81,9 +81,8 @@ class ClaimsStatistics(TemplateView):
             total_revenue=F('expected_back_revenue') + F('invoice_revenue')
         ).order_by('id')
 
-        outstanding_claims = clients_models.Claim.objects.select_related(
-            'claimcoverage', 'claimcoverage__claimitem',
-            'claimcoverage__claimitem__item'
+        outstanding_claims = clients_models.Claim.objects.prefetch_related(
+            'coverages'
         ).annotate(
             total_amount=Sum(
                 Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0)
