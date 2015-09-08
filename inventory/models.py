@@ -93,6 +93,8 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
     class Meta:
         unique_together = (('shoe', 'size'),)
         verbose_name_plural = "Shoe attributes"
+        permissions = (('can_lookup_shoe_attributes',
+                        'Can Lookup Shoe Attributes'),)
 
     def get_all_fields(self):
         fields = super(ShoeAttributes, self).get_all_fields()

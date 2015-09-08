@@ -1,6 +1,7 @@
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
+from django.core import exceptions
 
 from inventory import models
 from utils.search import get_query as search_get_query
@@ -39,3 +40,7 @@ class ShoeLookup(LookupChannel):
         )
 
         return result
+
+    def check_auth(self, request):
+        if not request.user.has_perm('inventory.can_lookup_shoe_attributes'):
+            super().check_auth(request)
