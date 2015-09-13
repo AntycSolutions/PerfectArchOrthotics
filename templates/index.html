@@ -4,34 +4,77 @@
 
 {% block title %} - Welcome{% endblock %}
 
-{% block content %}
+{% block full_content %}
 
     <style>
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Bootstrap cover example */
+        .site-wrapper {
+            display: table;
+            width: 100%;
             text-align: center;
         }
+        .site-wrapper-inner {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .cover {
+            padding: 0 20px;
+        }
+        @media (max-width: 768px) {
+            #main {
+                height: 40vh;
+            }
+        }
+        @media (min-width: 768px) {
+            #main {
+                height: 65vh;
+            }
+        }
     </style>
-    <div class="center" style="height: 65vh;">
-        <div>
-            <img class="lazy" data-src="{% static 'images/PerfectArchLogo.jpg' %}">
-            <p class="lead" style="width: 65%; margin-left: auto; margin-right: auto;">We are an Edmonton based company providing orthotics to those in need.</p>
+
+    <div id="main" class="site-wrapper">
+        <div class="site-wrapper-inner">
+            <div class="cover">
+                <img data-src="{% static 'images/PerfectArchLogo.jpg' %}" alt="Perfect Arch" class="lazy" style="width: 100%; max-width: 600px;">
+                <div class="row">
+                    <div class="col-sm-8 col-md-6 col-lg-5" style="float: none; margin: 0 auto;">
+                        <p class="lead">
+                            We are an Edmonton based company providing orthotics to those in need.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="center">
-        <div>
-            <p>
-                10540 - 169 St NW<br />
-                Edmonton, AB &nbsp;T5P 3X6<br />
-                Canada
-            <p>
-            <p>
-                <a href="//maps.google.com/?q=10540 169 St NW, Edmonton, Alberta T5P 3X6, Canada" class="btn btn-primary"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View in Google Maps</a>
-            </p>
-            <div><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> Phone: <a href="tel:5874004588">(587) 400-4588</a></div>
-            <div>Fax: (587) 400-4566</div>
+    <div class="site-wrapper">
+        <div class="site-wrapper-inner">
+            <div class="cover">
+                <div>
+                    10540 - 169 St NW
+                </div>
+                <div>
+                    Edmonton, AB &nbsp;T5P 3X6
+                </div>
+                <div style="margin-bottom: 10px;">
+                    Canada
+                </div>
+                <p>
+                    <a href="//maps.google.com/?q=10540 169 St NW, Edmonton, Alberta T5P 3X6, Canada" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                        View in Google Maps
+                    </a>
+                </p>
+                <div>
+                    <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>
+                    Phone:
+                    <a href="tel:5874004588">
+                        (587) 400-4588
+                    </a>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    Fax: (587) 400-4566
+                </div>
+            </div>
         </div>
     </div>
 

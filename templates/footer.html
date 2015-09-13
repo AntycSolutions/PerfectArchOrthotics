@@ -3,30 +3,60 @@
 
 <!-- Footer -->
 <div class="footer">
-    <div style="float: left; margin-left: 1%;">
-        <p style="margin-top: 20px;">
+    <!-- Facebook -->
+    <div class="pull-left" style="margin-left: 1%;">
+        <p style="margin-top: 14px;">
             <a href="//www.facebook.com/pages/The-Perfect-Arch-Orthotics/1580421348860249">
                 <i class="fa fa-facebook-official fa-2x"></i>
             </a>
         </p>
     </div>
-    <!-- Active users -->
-    <div style="float: right; margin-right: 1%; width: 30%;">
-        <p class="text-muted" style="text-align: right; margin-top: 20px;">
-            {% if user.is_authenticated %}
+    {% if user.is_authenticated %}
+        <!-- Active users -->
+        <div class="pull-right hidden-xs" style="margin-right: 1%; width: 35%;">
+            <p class="text-muted" style="text-align: right;">
                 {% get_active_users as active_users %}
-                {% if active_users %}
-                    Active Users:
-                    {% for user in active_users %}
-                        {{ user }}{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endif %}
-        </p>
-    </div>
+                Active Users:
+                {% for user in active_users %}
+                    {{ user }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    None.
+                {% endfor %}
+            </p>
+        </div>
+        <div class="pull-right visible-xs" style="margin-right: 1%;">
+            <button type="button" data-toggle="modal" data-target="#active-users-modal" class="btn btn-xs text-muted" style="margin-top: 10px;">
+                Active
+                <br />
+                Users
+            </button>
+        </div>
+        <div tabindex="-1" id="active-users-modal" class="modal fade">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" data-dismiss="modal" class="close">
+                            <span>&times;</span>
+                        </button>
+                        <h4 class="modal-title">
+                            Active Users
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        {% get_active_users as active_users %}
+                        {% for user in active_users %}
+                            {{ user }}{% if not forloop.last %},{% endif %}
+                        {% empty %}
+                            None.
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <!-- Copyright/year -->
-    <div style="margin: 0 auto; width: 30%;">
-        <p class="text-muted" style="text-align: center; margin-top: 20px;">
+    <div style="margin: 0 auto; width: 212px;">
+        <p class="text-muted" style="text-align: center;">
             <span class="glyphicon glyphicon-copyright-mark"></span> Perfect Arch Orthotics {% now 'Y' %}.
         </p>
     </div>
