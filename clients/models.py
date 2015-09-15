@@ -67,22 +67,26 @@ class Person(models.Model):
     def get_absolute_url(self):
         try:
             return Client.objects.get(id=self.id).get_absolute_url()
-        except:
+        except Client.DoesNotExist:
             pass
         try:
             return Dependent.objects.get(id=self.id).get_absolute_url()
-        except:
+        except Dependent.DoesNotExist:
             pass
+
+        raise Exception('Person is not a Client nor a Dependent.')
 
     def get_client(self):
         try:
             return Client.objects.get(id=self.id)
-        except:
+        except Client.DoesNotExist:
             pass
         try:
             return Dependent.objects.get(id=self.id).client
-        except:
+        except Dependent.DoesNotExist:
             pass
+
+        raise Exception('Person is not tied to a Client.')
 
     def __unicode__(self):
         return self.full_name()
@@ -243,7 +247,7 @@ class Insurance(models.Model):
     def __unicode__(self):
         try:
             main_claimant = self.main_claimant
-        except:
+        except Person.DoesNotExist:
             main_claimant = None
 
         return "%s - %s" % (self.provider, main_claimant)
@@ -322,11 +326,11 @@ class Coverage(models.Model):
     def __unicode__(self):
         try:
             insurance = self.insurance
-        except:
+        except Insurance.DoesNotExist:
             insurance = None
         try:
             claimant = self.claimant
-        except:
+        except Person.DoesNotExist:
             claimant = None
 
         return "%s %s - %s" % (
@@ -445,17 +449,17 @@ class Claim(models.Model):
     def __unicode__(self):
         try:
             patient = self.patient
-        except:
+        except Person.DoesNotExist:
             patient = None
         try:
             insurance = self.insurance
-        except:
+        except Insurance.DoesNotExist:
             insurance = None
         try:
             submitted_datetime = timezone.localtime(self.submitted_datetime)
             submitted_datetime = submitted_datetime.strftime(
                 "%Y-%m-%d %I:%M %p")
-        except:
+        except AttributeError:
             submitted_datetime = None
 
         return "Submitted Datetime: %s %s - %s" % (
@@ -562,11 +566,11 @@ class ClaimCoverage(models.Model):
     def __unicode__(self):
         try:
             coverage = self.coverage
-        except:
+        except Coverage.DoesNotExist:
             coverage = None
         try:
             claim = self.claim
-        except:
+        except Claim.DoesNotExist:
             claim = None
 
         return "%s - %s" % (coverage, claim)

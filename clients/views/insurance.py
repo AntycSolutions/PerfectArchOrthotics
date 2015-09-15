@@ -44,7 +44,7 @@ class UpdateInsuranceView(UpdateView):
                 pk=self.object.main_claimant.pk)
             client = main_claimant.get_client()
             dependents = client.dependent_set.all()
-        except:
+        except Dependent.DoesNotExist:
             client = Client.objects.get(
                 id=self.object.main_claimant.pk)
             dependents = client.dependent_set.all()
@@ -84,7 +84,7 @@ class UpdateInsuranceView(UpdateView):
                 pk=self.object.main_claimant.pk)
             client = main_claimant.get_client()
             dependents = client.dependent_set.all()
-        except:
+        except Dependent.DoesNotExist:
             client = Client.objects.get(
                 id=self.object.main_claimant.pk)
             dependents = client.dependent_set.all()

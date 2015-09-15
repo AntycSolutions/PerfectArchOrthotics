@@ -124,8 +124,9 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
     def __unicode__(self):
         try:
             shoe = self.shoe
-        except:
+        except Shoe.DoesNotExist:
             shoe = None
+
         return "Size: %s - %s" % (self.size, shoe)
 
     def __str__(self):
@@ -161,35 +162,46 @@ class Order(models.Model, model_utils.FieldList):
     def get_credit_value(self):
         try:
             order = ShoeOrder.objects.get(pk=self.pk)
+
             return order.shoe_attributes.shoe.credit_value
-        except:
+        except ShoeOrder.DoesNotExist:
             pass
         try:
             order = CoverageOrder.objects.get(pk=self.pk)
+
             return order.credit_value
-        except:
+        except CoverageOrder.DoesNotExist:
             pass
         try:
             order = AdjustmentOrder.objects.get(pk=self.pk)
+
             return order.credit_value
-        except:
+        except AdjustmentOrder.DoesNotExist:
             pass
-        return 0
+
+        raise Exception('Order is not a Shoe Order, Coverage Order, nor'
+                        ' Adjustment Order.')
 
     def get_absolute_url(self):
+        order = None
         try:
             order = ShoeOrder.objects.get(pk=self.pk)
-        except:
+        except ShoeOrder.DoesNotExist:
             pass
         try:
             order = CoverageOrder.objects.get(pk=self.pk)
-        except:
+        except CoverageOrder.DoesNotExist:
             pass
         try:
             order = AdjustmentOrder.objects.get(pk=self.pk)
-        except:
+        except AdjustmentOrder.DoesNotExist:
             pass
-        return order.get_absolute_url()
+
+        if order:
+            return order.get_absolute_url()
+        else:
+            raise Exception('Order is not a Shoe Order, Coverage Order, nor'
+                            ' Adjustment Order.')
 
     def get_all_fields(self):
         fields = super(Order, self).get_all_fields()
@@ -199,23 +211,22 @@ class Order(models.Model, model_utils.FieldList):
             reordered_fields.update(
                 {k: self.Field(v.field, v.value)}
             )
+
             if k == "claimant":
                 try:
                     order = ShoeOrder.objects.get(pk=self.pk)
                     value = order.shoe_attributes
-                except:
+                except ShoeOrder.DoesNotExist:
                     value = ""
+
                 shoe_field = self.Field(
                     self.PseudoForeignKey("Shoe"),
                     value
                 )
+
                 reordered_fields.update(
                     {"shoe": shoe_field}
                 )
-                # try:
-                #     order = CoverageOrder.objects.get(pk=self.pk)
-                # except:
-                #     pass
 
         return reordered_fields
 
