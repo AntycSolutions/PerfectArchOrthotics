@@ -53,6 +53,8 @@ class Shoe(models.Model, model_utils.FieldList):
     cost = models.DecimalField(
         "Cost", max_digits=6, decimal_places=2, default=Decimal(0.00))
 
+    money_fields = ['cost']
+
     def get_absolute_url(self):
         return reverse('shoe_detail', kwargs={'pk': self.pk})
 
