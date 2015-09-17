@@ -297,6 +297,8 @@ class Coverage(models.Model):
         "Period Date",
         blank=True, null=True)
 
+    money_fields = ['max_claim_amount']
+
     # ManyToManyField
     # Claim
     # ForeignKey
@@ -361,6 +363,8 @@ class Item(models.Model, model_utils.FieldList):
         "Cost", default=0)
     unit_price = models.IntegerField(
         "Retail", default=0)
+
+    money_fields = ['cost', 'unit_price']
 
     # ManyToManyField
     # Claim
@@ -511,6 +515,8 @@ class ClaimCoverage(models.Model):
         "Actual Paid Date",
         blank=True, null=True)
 
+    money_fields = ['expected_back']
+
     # ManyToManyField
     # Claim
 
@@ -652,6 +658,8 @@ class Invoice(models.Model):
         blank=True, null=True)
     estimate = models.BooleanField(
         "Estimate", default=False)
+
+    money_fields = ['payment_made', 'deposit']
 
     def balance(self):
         totals = self.claim.total_amount_quantity_claimed()
