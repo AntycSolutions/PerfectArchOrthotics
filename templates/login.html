@@ -9,7 +9,7 @@
     <h1>
         Login
     </h1>
-    {% include 'clients/snippets/messages.html' %}
+    {% include 'utils/snippets/messages.html' %}
     <form id="login_form" method="POST" action="{% url 'user_login' %}" class="form-horizontal">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}" />

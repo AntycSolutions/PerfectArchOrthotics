@@ -12,7 +12,7 @@
 
 {% block content %}
 
-    {% include 'clients/snippets/messages.html' %}
+    {% include 'utils/snippets/messages.html' %}
     <h1>Make a Claim</h1>
     <p>Client: <a href="{{ claim_form.client.get_absolute_url }}">{{ claim_form.client.full_name }}</a>
     </p>
