@@ -1,7 +1,6 @@
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
-from django.core import exceptions
 
 from inventory import models
 from utils.search import get_query as search_get_query
@@ -21,22 +20,37 @@ class ShoeLookup(LookupChannel):
 
         return queryset
 
-    def get_result(self, obj):
+    def _get_shoe(self, obj):
+        result = ""
+        if obj.shoe.brand:
+            result += "Brand: %s " % (obj.shoe.brand)
+        if obj.shoe.style:
+            result += "Style: %s " % (obj.shoe.style)
+        result += "Name: %s " % (obj.shoe.name)
+        if obj.shoe.sku:
+            result += "SKU: %s " % (obj.shoe.sku)
+        if obj.shoe.colour:
+            result += "Colour: %s " % (obj.shoe.colour)
+        result += "Size: %s Quantity: %s" % (obj.size,
+                                             obj.quantity - obj.dispensed())
+
+        result = escape(force_text(result))
+
+        return result
+
+    def format_match(self, obj):
         # foreach option in dropdown
-        result = "%s - %s - %s - %s - %s - Size: %s Quantity: %s" % (
-            obj.shoe.brand, obj.shoe.style, obj.shoe.name, obj.shoe.sku,
-            obj.shoe.colour,
-            obj.size, obj.quantity - obj.dispensed()
-        )
-        return escape(force_text(result))
+        result = self._get_shoe(obj)
+
+        return result
 
     def format_item_display(self, obj):
         # item in deck
-        result = "<a href='%s'>%s Size: %s Quantity: %s</a>" % (
+        result = self._get_shoe(obj)
+
+        result = "<a href='%s'>%s</a>" % (
             reverse('shoe_detail', kwargs={'pk': obj.pk}),
-            escape(force_text(obj.shoe.name)),
-            escape(force_text(obj.size)),
-            escape(force_text(obj.quantity)),
+            result,
         )
 
         return result
