@@ -377,7 +377,7 @@ class Item(models.Model, model_utils.FieldList):
         return self.__unicode__()
 
 
-class Claim(models.Model):
+class Claim(models.Model, model_utils.FieldList):
     patient = models.ForeignKey(
         Person, verbose_name="Patient")
     insurance = models.ForeignKey(
@@ -442,6 +442,19 @@ class Claim(models.Model):
             return (claimcoverages['expected_back'] or 0)
 
         return 0
+
+    def get_all_fields(self):
+        fields = super().get_all_fields()
+
+        fileset = self.Field(
+            model_utils.FieldList.PseudoFileSet("Claim Packages"),
+            self.claimattachment_set
+        )
+        fields.update(
+            {"fileset": fileset}
+        )
+
+        return fields
 
     def get_absolute_url(self):
         return reverse('claim', kwargs={'claim_id': self.id})
