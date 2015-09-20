@@ -1,40 +1,34 @@
-"""
-Django settings for perfect_arch_orthotics project.
-"""
+# perfect_arch_orthotics settings
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# django settings
+
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ALLOWED_HOSTS = []
-
 # Application definition
-INSTALLED_APPS = (
+DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+)
+THIRD_PARTY_APPS = (
     'easy_pdf',
-    'utils',
-    'clients',
-    'inventory',
     'bootstrap3_datetime',
     'ajax_select',
 )
+LOCAL_APPS = (
+    'utils',
+    'clients',
+    'inventory',
+)
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-MIDDLEWARE_CLASSES = (
+# middleware
+DJANGO_MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -42,15 +36,15 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+LOCAL_MIDDLEWARE = (
     'middleware.active_users.ActiveUserMiddleware',
 )
+MIDDLEWARE_CLASSES = DJANGO_MIDDLEWARE + LOCAL_MIDDLEWARE
 
 ROOT_URLCONF = 'perfect_arch_orthotics.urls'
 
 WSGI_APPLICATION = 'perfect_arch_orthotics.wsgi.application'
-
-# Databases
-DATABASES = {}
 
 # Internationalization
 TIME_ZONE = 'America/Edmonton'
@@ -76,20 +70,15 @@ TEMPLATE_DIRS = (
 )
 
 # Email
-SERVER_EMAIL = 'Perfect Arch <root@perfectarch.antyc.ca>'
 EMAIL_USE_TLS = True
-# prod/dev
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-# dev
-# run "python -m smtpd -n -c DebuggingServer localhost:1025" first
-#EMAIL_HOST = 'localhost'
-#EMAIL_PORT = 1025
+
+# third party app settings
 
 AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
 }
 
+# import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
 elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
@@ -110,10 +99,14 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK':
             'perfect_arch_orthotics.settings.show_toolbar',
+        'SHOW_COLLAPSED': True,
     }
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
 
     INSTALLED_APPS += ('debug_toolbar',)
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_COLLAPSED': True,
+    }
 else:
     raise Exception("Please create a settings decision file.")

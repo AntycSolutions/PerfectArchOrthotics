@@ -1,5 +1,7 @@
 # Prod settings
 
+# django settings
+
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -27,30 +29,24 @@ DATABASES = {
 
 # Get from file
 ADMINS = ()
-
-# Get from file
-DM = ''
-DS = ''
-PRACTITIONERS = ()
-
-# Get from file
-MOLL = ''
-OOLI = ''
-AROR = ''
-LABORATORIES = ()
-
-# Get from file
-PAOI = ''
-BILL_TO = ()
-
-SHIP_TO = BILL_TO
-
-# # Get from file
-EMAIL_HOST_USER = ''
-# # Get from file
-EMAIL_HOST_PASSWORD = ''
+MANAGERS = ADMINS
 
 EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics] '
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Get from file
+SERVER_EMAIL = ''
+# Get from file
+DEFAULT_FROM_EMAIL = ''
+# For actual emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Get from file
+EMAIL_HOST_USER = ''
+# Get from file
+EMAIL_HOST_PASSWORD = ''
+# Get from file
+EMAIL_HOST = ''
+# Get from file
+EMAIL_PORT = ''
 
 # Cache templates
 TEMPLATE_LOADERS = (
@@ -72,3 +68,21 @@ SECURE_SSL_REDIRECT = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_SECONDS = 15768000
+
+# local app settings
+
+# Get from file
+DM = ''
+DS = ''
+PRACTITIONERS = ()
+
+# Get from file
+MOLL = ''
+OOLI = ''
+AROR = ''
+LABORATORIES = ()
+
+# Get from file
+PAOI = ''
+BILL_TO = ()
+SHIP_TO = BILL_TO
