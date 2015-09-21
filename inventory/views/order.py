@@ -317,11 +317,10 @@ class CoverageDetailOrderView(DetailView):
     model = models.CoverageOrder
 
     def get_context_data(self, **kwargs):
-        context = super(
-            CoverageDetailOrderView,
-            self
-        ).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+
         return context
 
 
@@ -330,11 +329,10 @@ class AdjustmentDetailOrderView(DetailView):
     model = models.AdjustmentOrder
 
     def get_context_data(self, **kwargs):
-        context = super(
-            AdjustmentDetailOrderView,
-            self
-        ).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+
         return context
 
 
