@@ -215,10 +215,13 @@ class Order(models.Model, model_utils.FieldList):
             )
 
             if k == "claimant":
-                try:
-                    order = ShoeOrder.objects.get(pk=self.pk)
-                    value = order.shoe_attributes
-                except ShoeOrder.DoesNotExist:
+                if self.order_type == self.SHOE:
+                    try:
+                        order = ShoeOrder.objects.get(pk=self.pk)
+                        value = order.shoe_attributes
+                    except ShoeOrder.DoesNotExist:
+                        value = ""
+                else:
                     value = ""
 
                 shoe_field = self.Field(
@@ -281,6 +284,7 @@ class CoverageOrder(Order):
         fields = super(CoverageOrder, self).get_all_fields()
 
         fields.pop('order_ptr')
+        fields.pop('shoe')
 
         return fields
 
@@ -303,6 +307,7 @@ class AdjustmentOrder(Order):
         fields = super(AdjustmentOrder, self).get_all_fields()
 
         fields.pop('order_ptr')
+        fields.pop('shoe')
 
         return fields
 
