@@ -19,6 +19,7 @@ THIRD_PARTY_APPS = (
     'easy_pdf',
     'bootstrap3_datetime',
     'ajax_select',
+    'crispy_forms',
 )
 LOCAL_APPS = (
     'utils',
@@ -73,6 +74,8 @@ TEMPLATE_DIRS = (
 EMAIL_USE_TLS = True
 
 # third party app settings
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
