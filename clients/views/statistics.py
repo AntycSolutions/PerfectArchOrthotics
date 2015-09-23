@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from django.db.models import Count, Sum, F, Q, Case, When, Prefetch
 from django.db.models.functions import Coalesce
 
-from utils import views
+from utils import views_utils
 from clients import models as clients_models
 from inventory import models as inventory_models
 
@@ -20,23 +20,23 @@ class ClaimsStatistics(TemplateView):
 
         # Outstanding fees, revenue, Claims overpaid, Claims underpaid
         stats = self._stats()
-        claims_greater_rows_per_page = views._get_paginate_by(
+        claims_greater_rows_per_page = views_utils._get_paginate_by(
             self.request,
             'claims_greater_rows_per_page'
         )
         context['claims_greater_rows_per_page'] = claims_greater_rows_per_page
-        stats['claims_greater_list_paginated'] = views._paginate(
+        stats['claims_greater_list_paginated'] = views_utils._paginate(
             self.request,
             stats['claims_greater_list'],
             'claims_greater_page',
             claims_greater_rows_per_page
         )
-        claims_less_rows_per_page = views._get_paginate_by(
+        claims_less_rows_per_page = views_utils._get_paginate_by(
             self.request,
             'claims_less_rows_per_page'
         )
         context['claims_less_rows_per_page'] = claims_less_rows_per_page
-        stats['claims_less_list_paginated'] = views._paginate(
+        stats['claims_less_list_paginated'] = views_utils._paginate(
             self.request,
             stats['claims_less_list'],
             'claims_less_page',
@@ -186,7 +186,7 @@ class ClaimsStatistics(TemplateView):
 
     def _insurance_providers_stats(self):
         # Expected back and number of claims
-        date_queryset = views._date_search(
+        date_queryset = views_utils._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
         )
@@ -225,7 +225,7 @@ class ClaimsStatistics(TemplateView):
         )
 
         # Invoices
-        date_queryset = views._date_search(
+        date_queryset = views_utils._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
         )
@@ -260,7 +260,7 @@ class ClaimsStatistics(TemplateView):
         )
 
         # Aamount claimed
-        date_queryset = views._date_search(
+        date_queryset = views_utils._date_search(
             self.request, ["claim__submitted_datetime"],
             clients_models.Insurance
         )
