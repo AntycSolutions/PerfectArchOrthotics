@@ -7,6 +7,7 @@ from cgi import escape
 # Django
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse
+from django import http
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -18,24 +19,27 @@ from django.db.models import Sum, F, Case, When, Q
 from django.db.models.functions import Coalesce
 from django.core import urlresolvers
 from django.utils import safestring
+from django.core import urlresolvers
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
 
 # PerfectArchOrthotics
 from utils.search import get_query, get_date_query
+from utils import views_utils
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients import models as clients_models
 from inventory import models as inventory_models
 from clients.forms.forms import ClientForm, DependentForm, \
     ClaimForm
+from clients.forms import forms as clients_forms
 
 
-#TODO: split into multiple views
+# TODO: split into multiple views
 
-# Convert HTML URIs to absolute system paths
-#  so xhtml2pdf can access those resources
+# Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+# resources
 def link_callback(uri, rel):
     # use short variable names
     sUrl = settings.STATIC_URL    # Typically /static/
@@ -73,18 +77,14 @@ def render_to_pdf(request, template_src, context_dict):
     # 'utf-8' didn't work
     # pdf = pisa.pisaDocument(io.BytesIO("Test".encode("ISO-8859-1")),
     #                         result,
-    #                         link_callback=link_callback
-    #                         )
+    #                         link_callback=link_callback)
     pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")),
                             result,
-                            link_callback=link_callback
-                            )
+                            link_callback=link_callback)
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
-    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
-    #file = open(os.join(settings.MEDIA_ROOT, 'test.pdf'), "w+b")
-    #pisaStatus = pisa.CreatePDF(html, dest=file, link_callback=link_callback)
+    return HttpResponse('We had some errors<pre>%s</pre>' % escape(html))
 
 
 def invoice_view(request, claim_id):
@@ -271,9 +271,11 @@ def clientSearchView(request):
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
 
-    page = request.GET.get('page')
-    clients_rows_per_page = _get_paginate_by(request, 'clients_rows_per_page')
-    clients = _paginate(found_clients, page, clients_rows_per_page)
+    clients_rows_per_page = views_utils._get_paginate_by(
+        request, 'clients_rows_per_page'
+    )
+    clients = views_utils._paginate(request, found_clients, 'page',
+                                    clients_rows_per_page)
 
     context_dict['clients'] = clients
     context_dict['clients_rows_per_page'] = clients_rows_per_page
@@ -458,9 +460,11 @@ def claimSearchView(request):
         totals['non_assignment_amount_claimed'] or 0
     )
 
-    page = request.GET.get('page')
-    claims_rows_per_page = _get_paginate_by(request, 'claims_rows_per_page')
-    claims = _paginate(found_claims, page, claims_rows_per_page)
+    claims_rows_per_page = views_utils._get_paginate_by(
+        request, 'claims_rows_per_page'
+    )
+    claims = views_utils._paginate(request, found_claims, 'page',
+                                   claims_rows_per_page)
 
     total_assignment_expected_back = \
         assignment_expected_back + pending_assignment_expected_back
@@ -500,10 +504,11 @@ def insuranceSearchView(request):
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
 
-    page = request.GET.get('page')
-    insurances_rows_per_page = _get_paginate_by(request,
-                                                'insurances_rows_per_page')
-    insurances = _paginate(found_insurances, page, insurances_rows_per_page)
+    insurances_rows_per_page = views_utils._get_paginate_by(
+        request, 'insurances_rows_per_page'
+    )
+    insurances = views_utils._paginate(request, found_insurances, 'page',
+                                       insurances_rows_per_page)
 
     context_dict['insurances'] = insurances
     context_dict['insurances_rows_per_page'] = insurances_rows_per_page
@@ -530,7 +535,7 @@ def clientView(request, client_id):
     claims = client.claim_set.all()
 
     orders = []
-    if client.order_set.all():
+    if client.order_set.exists():
         orders.append(_order_info(client, request))
     spouse = None
     children = []
@@ -541,7 +546,7 @@ def clientView(request, client_id):
         else:
             children.append(dependent)
         claims = claims | dependent.claim_set.all()
-        if dependent.order_set.all():
+        if dependent.order_set.exists():
             orders.append(_order_info(dependent, request))
 
     totals = ClaimCoverage.objects.filter(
@@ -616,6 +621,23 @@ def clientView(request, client_id):
         client_total_cost + pending_client_total_cost + shoe_order_cost
     )
 
+    if request.method == 'GET':
+        try:
+            referral_form = clients_forms.ReferralForm(client)
+        except clients_forms.ReferralForm.EmptyClaimsQuerySet:
+            referral_form = None
+    elif request.method == 'POST':
+        referral_form = clients_forms.ReferralForm(client, request.POST)
+        if referral_form.is_valid():
+            referral = referral_form.save(commit=False)
+            referral.client = client
+            referral.save()
+            referral_form.save_m2m()
+
+            return http.HttpResponseRedirect(
+                urlresolvers.reverse('client', args=[client_id])
+            )
+
     context_dict = {
         'client': client,
         'client_insurance': insurance,
@@ -632,20 +654,11 @@ def clientView(request, client_id):
         'orders': orders,
         'spouse': spouse,
         'children': children,
-        'dependent_class': Dependent
+        'dependent_class': Dependent,
+        'referral_form': referral_form
     }
+
     return render_to_response('clients/client.html', context_dict, context)
-
-
-def _get_paginate_by(request, rows_per_page):
-    paginate_by = 5
-    if request.session.get(rows_per_page, False):
-        paginate_by = request.session[rows_per_page]
-    if (rows_per_page in request.GET
-            and request.GET[rows_per_page].strip()):
-        paginate_by = request.GET[rows_per_page]
-        request.session[rows_per_page] = paginate_by
-    return paginate_by
 
 
 def _order_info(person, request):
@@ -653,13 +666,15 @@ def _order_info(person, request):
         'OrderInfo', ['person_pk', 'name', 'order_set', 'rows_per_page']
     )
 
-    rows_per_page = _get_paginate_by(request, '%s_rows_per_page' % person.pk)
-    page = request.GET.get('%s_page' % person.pk)
+    rows_per_page = views_utils._get_paginate_by(
+        request, '%s_rows_per_page' % person.pk
+    )
 
     return OrderInfo(
         person.pk,
         person.full_name(),
-        _paginate(
+        views_utils._paginate(
+            request,
             person.order_set.all().extra(
                 select={
                     'null_both': ' inventory_order.dispensed_date'
@@ -678,22 +693,10 @@ def _order_info(person, request):
                 '-ordered_date',
                 # '-null_ordered_date',
             ),
-            page,
+            '%s_page' % person.pk,
             rows_per_page),
         rows_per_page
     )
-
-
-def _paginate(queryset, page, rows_per_page):
-    paginator = Paginator(queryset, rows_per_page)
-    try:
-        queryset = paginator.page(page)
-    except PageNotAnInteger:
-        queryset = paginator.page(1)
-    except EmptyPage:
-        queryset = paginator.page(paginator.num_pages)
-
-    return queryset
 
 
 @login_required
@@ -876,16 +879,6 @@ def add_new_dependent(request, client_id):
          'indefinite_article': 'a',
          'cancel_url': cancel_url},
         context)
-
-
-@login_required
-def deleteDependentsView(request, client_id, dependent_id):
-    # context = RequestContext(request)
-
-    client = Client.objects.get(id=client_id)
-    dependent = client.dependent_set.get(id=dependent_id)
-    dependent.delete()
-    return redirect('client', client_id)
 
 
 @login_required
