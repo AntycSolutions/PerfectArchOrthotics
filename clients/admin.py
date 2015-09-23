@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from clients.models import Client, Insurance, Claim, Dependent, \
     Coverage, Person, Invoice, Item, InsuranceLetter, \
     Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverage, ClaimAttachment
+from clients import models as clients_models
 
 
 class DependentInline(admin.TabularInline):
@@ -83,6 +84,8 @@ admin.site.register(Laboratory)
 admin.site.register(InsuranceLetter, InsuranceLetterAdmin)
 
 admin.site.register(ProofOfManufacturing)
+
+admin.site.register(clients_models.Referral)
 
 # Unused, don't display
 admin.site.unregister(Group)

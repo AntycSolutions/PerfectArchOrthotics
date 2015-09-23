@@ -1,5 +1,6 @@
-from datetime import date, timedelta
 import collections
+import decimal
+from datetime import date, timedelta
 
 from django.db import models
 from django.conf import settings
@@ -138,6 +139,7 @@ class Client(Person):
 
         return claimed_credit
 
+    # TODO: make this a field instead of method
     def credit(self):
         total = 0
         claimed_credit = 0
@@ -168,7 +170,12 @@ class Client(Person):
             # ignore payment_made/deposit
             # for invoice in claim.invoice_set.all():
                 # total += invoice.payment_made + invoice.deposit
-        credit = (total / 150) - float(claimed_credit)
+
+        referral_credit = self.referral_set.all().aggregate(
+            models.Sum('credit_value')
+        )['credit_value__sum'] or 0
+
+        credit = (total / 150) - float(claimed_credit) + float(referral_credit)
 
         return round(credit, 2)
 
@@ -968,3 +975,31 @@ class Laboratory(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+class Referral(models.Model):
+    client = models.ForeignKey(Client)
+    claims = models.ManyToManyField(Claim)
+    credit_value = models.DecimalField(
+        "Credit Value",
+        max_digits=3,
+        decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._original_credit_value = self.credit_value
+
+    def save(self, *args, **kwargs):
+        # For when credit is it's own field
+        # if self.pk:
+        #     if self._original_credit_value != self.credit_value:
+        #         self.client.credit -= self._original_credit_value
+        #         self.client.credit += self.credit_value
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "{} {}".format(self.client, self.credit_value)
