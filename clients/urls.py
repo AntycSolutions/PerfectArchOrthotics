@@ -14,6 +14,7 @@ from clients.views.claim import UpdateClaimView, DeleteClaimView, \
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
 from clients.views import statistics
+from clients.views import dependent
 
 
 item_patterns = patterns(
@@ -156,8 +157,8 @@ urlpatterns = patterns(
     url(r'^edit_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
         login_required(views.editDependentsView),
         name='dependent_edit'),
-    url(r'^delete_dependent/(?P<client_id>\w+)/(?P<dependent_id>\w+)/$',
-        login_required(views.deleteDependentsView),
+    url(r'^delete_dependent/(?P<pk>\w+)/$',
+        login_required(dependent.DeleteDependentView.as_view()),
         name='dependent_delete'),
     url(r'^add_new_dependent/(?P<client_id>\w+)/$',
         login_required(views.add_new_dependent),
