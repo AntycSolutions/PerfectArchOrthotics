@@ -10,6 +10,7 @@ from django.db.models.functions import Coalesce
 from utils import views_utils
 from clients import models as clients_models
 from inventory import models as inventory_models
+from clients.views import views
 
 
 class ClaimsStatistics(TemplateView):
@@ -419,8 +420,11 @@ class InventoryOrdersStatistics(TemplateView):
 
         context['shoes'] = self._top_ten_best_sellers()
 
-        context['old_ordered_date_orders'] = self._old_ordered_date_orders()
-        context['old_arrived_date_orders'] = self._old_arrvied_date_orders()
+        context['old_ordered_date_orders'] = _old_ordered_date_orders()
+        context['old_arrived_date_orders'] = _old_arrvied_date_orders()
+        context['order_class'] = inventory_models.Order
+        context['ordered_hidden_fields'] = ['arrived_date', 'dispensed_date']
+        context['arrived_hidden_fields'] = ['dispensed_date']
 
         return context
 
@@ -458,21 +462,51 @@ class InventoryOrdersStatistics(TemplateView):
 
         return shoes
 
-    def _old_ordered_date_orders(self):
-        cutoff = datetime.now() - timedelta(days=30)
-        orders = inventory_models.Order.objects.filter(
-            dispensed_date__isnull=True,
-            arrived_date__isnull=True,
-            ordered_date__lte=cutoff,
-        )
 
-        return orders
+def old_ordered_date_orders_report(request):
+    return views.render_to_pdf(
+        request,
+        'clients/pdfs/old_orders.html',
+        {
+            'title': 'Old Ordered Date Orders Report',
+            'pagesize': 'A4 landscape',
+            'orders': _old_ordered_date_orders(),
+            'order_class': inventory_models.Order,
+            'hidden_fields': ['arrived_date', 'dispensed_date']
+        }
+    )
 
-    def _old_arrvied_date_orders(self):
-        cutoff = datetime.now() - timedelta(days=30)
-        orders = inventory_models.Order.objects.filter(
-            dispensed_date__isnull=True,
-            arrived_date__lte=cutoff,
-        )
 
-        return orders
+def old_arrived_date_orders_report(request):
+    return views.render_to_pdf(
+        request,
+        'clients/pdfs/old_orders.html',
+        {
+            'title': 'Old Arrived Date Orders Report',
+            'pagesize': 'A4 landscape',
+            'orders': _old_arrvied_date_orders(),
+            'order_class': inventory_models.Order,
+            'hidden_fields': ['dispensed_date']
+        }
+    )
+
+
+def _old_ordered_date_orders():
+    cutoff = datetime.now() - timedelta(days=30)
+    orders = inventory_models.Order.objects.filter(
+        dispensed_date__isnull=True,
+        arrived_date__isnull=True,
+        ordered_date__lte=cutoff,
+    )
+
+    return orders
+
+
+def _old_arrvied_date_orders():
+    cutoff = datetime.now() - timedelta(days=30)
+    orders = inventory_models.Order.objects.filter(
+        dispensed_date__isnull=True,
+        arrived_date__lte=cutoff,
+    )
+
+    return orders
