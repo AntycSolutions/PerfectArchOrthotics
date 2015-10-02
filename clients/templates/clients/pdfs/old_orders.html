@@ -1,0 +1,137 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load verbose_name %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin: 2cm;
+            margin-top: 1.5cm;
+
+            @frame header {
+                -pdf-frame-content: page-header;
+                /* for debugging */
+                /*-pdf-frame-border: 1; */
+                /* these margins just mimic the above ones */
+                margin: 2cm;
+                margin-top: 1.5cm;
+            }
+
+            @frame footer {
+                -pdf-frame-content: page-footer;
+                /* for debugging */
+                /*-pdf-frame-border: 1; */
+                bottom: 0cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_style %}
+    <style type="text/css">
+        html {
+            font-family: "Lato", "Helvetica", "sans-serif";
+            color: #333333;
+        }
+
+        table {
+            line-height: 140%;
+            margin-bottom: 20px;
+        }
+
+        table.bordered {
+            border-top: 0.1pt solid #999999;
+            border-bottom: 0.1pt solid #999999;
+        }
+
+        td, th {
+            border: none;
+        }
+
+        tr {
+            border-bottom: 0.1pt solid #999999;
+        }
+
+        th {
+            font-size: 10pt;
+            border-bottom: 0.1pt solid #999999;
+            padding: 3px 0;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        td {
+            font-size: 10pt;
+            vertical-align: top;
+            padding: 3px 0;
+        }
+
+        td:last-child {
+            padding-bottom: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div id="header_content">
+        <h1 style="font-size: 250%; text-align: center;">
+            {{ title }}
+        </h1>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div id="content">
+        <table>
+            <thead>
+                <tr style="border: 1px;">
+                    {% for name, field_value in order_class.get_all_fields.items %}
+                        {% if name == 'id' %}
+                            <!-- ID -->
+                        {% elif name in hidden_fields %}
+                            <!-- empty -->
+                        {% else %}
+                            <td colspan={% if name == "description" %}"5"{% elif name == "shoe" %}"3"{% elif name == "claimant" %}"3"{% else %}"2"{% endif %}>
+                                <strong>
+                                    {% verbose_field_name order_class name %}
+                                </strong>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        {% for name, field_value in order.get_all_fields.items %}
+                            {% if name == 'id' %}
+                                <!-- ID -->
+                            {% elif name in hidden_fields %}
+                                <!-- empty -->
+                            {% else %}
+                                <td colspan={% if name == "description" %}"5"{% elif name == "shoe" %}"3"{% elif name == "claimant" %}"3"{% else %}"2"{% endif %}>
+                                    {{ field_value.value }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block page_foot %}
+    <div id="footer_content">
+        <p style="text-align: center;">
+            Page <pdf:pagenumber>
+            of <pdf:pagecount>
+        </p>
+    </div>
+{% endblock %}
