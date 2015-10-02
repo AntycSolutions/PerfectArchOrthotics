@@ -8,105 +8,110 @@
 
 {% block content %}
 
-    <!-- Wrap -->
-    <div class="wrap container" role="document">
-        <!-- Content -->
-        <div class="content row">
-            <!-- Main -->
-            <div class="main col-sm-12" role="main">
-                {% include 'utils/snippets/messages.html' %}
-                <div class="page-header">
-                    <h1>
-                        Inventory/Orders Statistics:
-                    </h1>
-                </div>
-                <div class="page-main">
-                    <h5>Total In Stock</h5>
-                    {% if total_in_stock %}
-                        <p>{{ total_in_stock }}</p>
-                    {% else %}
-                        <p>None</p>
-                    {% endif %}
-                    <h5>Total Cost of Inventory</h5>
-                    {% if total_cost_of_inventory %}
-                        <p>${{ total_cost_of_inventory }}</p>
-                    {% else %}
-                        <p>None</p>
-                    {% endif %}
-                    <h5>Top 10 Best Sellers</h5>
-                    {% if shoes %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
+    <div class="row">
+        <div class="col-sm-12">
+            {% include 'utils/snippets/messages.html' %}
+            <div class="page-header">
+                <h1>
+                    Inventory/Orders Statistics:
+                </h1>
+            </div>
+            <div>
+                <h5>
+                    Total In Stock
+                </h5>
+                {% if total_in_stock %}
+                    <p>
+                        {{ total_in_stock }}
+                    </p>
+                {% else %}
+                    <p>
+                        None
+                    </p>
+                {% endif %}
+                <h5>
+                    Total Cost of Inventory
+                </h5>
+                {% if total_cost_of_inventory %}
+                    <p>
+                        ${{ total_cost_of_inventory }}
+                    </p>
+                {% else %}
+                    <p>
+                        None
+                    </p>
+                {% endif %}
+                <h5>
+                    Top 10 Best Sellers
+                </h5>
+                {% if shoes %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Shoe
+                                    </th>
+                                    <th>
+                                        Number of Orders
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for shoe in shoes %}
                                     <tr>
-                                        <th>Shoe</th>
-                                        <th>Number of Orders</th>
+                                        <td>
+                                            <a href="{{ shoe.get_absolute_url }}">
+                                                {{ shoe }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ shoe.num_orders }}
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for shoe in shoes %}
-                                        <tr>
-                                            <td><a href="{{ shoe.get_absolute_url }}">{{ shoe }}</a></td>
-                                            <td>{{ shoe.num_orders }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p>There are no Shoes currently.</p>
-                    {% endif %}
-                    <h5>Old Ordered Date Orders</h5>
-                    {% if old_ordered_date_orders %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Ordered Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for order in old_ordered_date_orders %}
-                                        <tr>
-                                            <td><a href="{{ order.get_absolute_url }}">{{ order }}</a></td>
-                                            <td>{{ order.ordered_date }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p>There are no old Ordered Date Orders currently.</p>
-                    {% endif %}
-                    <h5>Old Arrived Date Orders</h5>
-                    {% if old_arrived_date_orders %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Ordered Date</th>
-                                        <th>Arrived Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for order in old_arrived_date_orders %}
-                                        <tr>
-                                            <td><a href="{{ order.get_absolute_url }}">{{ order }}</a></td>
-                                            <td>{{ order.ordered_date }}</td>
-                                            <td>{{ order.arrived_date }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p>There are no old Arrived Date Orders.</p>
-                    {% endif %}
-                </div>
-            </div><!-- /.main -->
-        </div><!-- /.content -->
-    </div><!-- /.wrap -->
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>
+                        There are no Shoes currently.
+                    </p>
+                {% endif %}
+                <h5>
+                    Old Ordered Date Orders
+                </h5>
+                {% if old_ordered_date_orders %}
+                    {% include 'utils/generics/list_table.html' with object_list=old_ordered_date_orders model_name="order" hidden_fields=ordered_hidden_fields %}
+                    <p>
+                        <a href="{% url 'old_ordered_date_orders_report' %}" class="btn btn-default">
+                            Generate Old Ordered Date Orders Report
+                        </a>
+                    </p>
+                    <br />
+                {% else %}
+                    <p>
+                        There are no old Ordered Date Orders currently.
+                    </p>
+                {% endif %}
+                <h5>
+                    Old Arrived Date Orders
+                </h5>
+                {% if old_arrived_date_orders %}
+                    {% include 'utils/generics/list_table.html' with object_list=old_arrived_date_orders model_name="order" hidden_fields=arrived_hidden_fields %}
+                    <p>
+                        <a href="{% url 'old_arrived_date_orders_report' %}" class="btn btn-default">
+                            Generate Old Arrived Date Orders Report
+                        </a>
+                    </p>
+                    <br />
+                {% else %}
+                    <p>
+                        There are no old Arrived Date Orders.
+                    </p>
+                {% endif %}
+            </div>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
 
 {% endblock %}
