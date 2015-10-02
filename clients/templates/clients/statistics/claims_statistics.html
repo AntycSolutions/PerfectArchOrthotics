@@ -8,237 +8,411 @@
 
 {% block content %}
 
-    <!-- Wrap -->
-    <div class="wrap container" role="document">
-        <!-- Content -->
-        <div class="content row">
-            <!-- Main -->
-            <div class="main col-sm-12" role="main">
-                {% include 'utils/snippets/messages.html' %}
-                <div class="page-header">
-                    <h1>
-                        Claims Statistics:
-                    </h1>
-                </div>
-                <div class="page-main">
-                    <h5>Claims with Revenue greater than Amount Claimed</h5>
-                    {% if stats.claims_greater_list_paginated %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Claim</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for claim in stats.claims_greater_list_paginated %}
-                                        <tr>
-                                            <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+    <div class="row">
+        <div class="main col-sm-12">
+            {% include 'utils/snippets/messages.html' %}
+            <div class="page-header">
+                <h1>
+                    Claims Statistics:
+                </h1>
+            </div>
+            <div>
+                <h5>
+                    Overdue Claims
+                </h5>
+                {% if overdue_claims_list_paginated %}
+                    {% include 'utils/generics/list_table_simple.html' with model_name="Claim" object_list=overdue_claims_list_paginated %}
+                    {% with page_obj=overdue_claims_list_paginated %}
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?overdue_claims_page={{ page_obj.previous_page_number }}" class="btn btn-default">
+                                        Previous
+                                    </a>
+                                {% endif %}
+                                {% if page_obj.number %}
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?overdue_claims_page={{ page_obj.next_page_number }}" class="btn btn-default">
+                                        Next
+                                    </a>
+                                {% endif %}
+                            </span>
                         </div>
-                        {% with page_obj=stats.claims_greater_list_paginated %}
-                            <div class="pagination">
-                                <span class="step-links">
-                                    {% if page_obj.has_previous %}
-                                        <a href="?claims_greater_page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
-                                    {% endif %}
-                                    {% if page_obj.number %}
-                                        <span class="current">
-                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                                        </span>
-                                    {% endif %}
-                                    {% if page_obj.has_next %}
-                                        <a href="?claims_greater_page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
-                                    {% endif %}
-                                </span>
-                            </div>
-                        {% endwith %}
-                        <form method="GET" style="display: inline-block;">
-                            Rows per Page: <input type="number" name="claims_greater_rows_per_page" value="{{ claims_greater_rows_per_page }}">
-                            <input type="submit" class="btn" value="Paginate">
-                        </form>
-                    {% else %}
-                        <p>There are no Claims with discrepancies currently.</p>
-                    {% endif %}
-                    <h5>Claims with Revenue less than Amount Claimed</h5>
-                    {% if stats.claims_less_list_paginated %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Claim</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for claim in stats.claims_less_list_paginated %}
-                                        <tr>
-                                            <td><a href="{{ claim.get_absolute_url }}">{{ claim }}</a></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    {% endwith %}
+                    <form method="GET" style="display: inline-block;">
+                        Rows per Page: <input type="number" name="overdue_claims_rows_per_page" value="{{ overdue_claims_rows_per_page }}">
+                        <input type="submit" class="btn" value="Paginate">
+                    </form>
+                    <p>
+                        <a href="{% url 'overdue_claims_report' %}" class="btn btn-default">
+                            Generate Overdue Claims Report
+                        </a>
+                    </p>
+                    <br />
+                {% else %}
+                    <p>
+                        There are no overdue Claims.
+                    </p>
+                {% endif %}
+            </div>
+            <div>
+                <h5>
+                    Claims with Revenue greater than Amount Claimed
+                </h5>
+                {% if stats.claims_greater_list_paginated %}
+                    {% include 'utils/generics/list_table_simple.html' with model_name="Claim" object_list=stats.claims_greater_list_paginated %}
+                    {% with page_obj=stats.claims_greater_list_paginated %}
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?claims_greater_page={{ page_obj.previous_page_number }}" class="btn btn-default">
+                                        Previous
+                                    </a>
+                                {% endif %}
+                                {% if page_obj.number %}
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?claims_greater_page={{ page_obj.next_page_number }}" class="btn btn-default">
+                                        Next
+                                    </a>
+                                {% endif %}
+                            </span>
                         </div>
-                        {% with page_obj=stats.claims_less_list_paginated %}
-                            <div class="pagination">
-                                <span class="step-links">
-                                    {% if page_obj.has_previous %}
-                                        <a href="?claims_less_page={{ page_obj.previous_page_number }}" class="btn btn-default">Previous</a>
-                                    {% endif %}
-                                    {% if page_obj.number %}
-                                        <span class="current">
-                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                                        </span>
-                                    {% endif %}
-                                    {% if page_obj.has_next %}
-                                        <a href="?claims_less_page={{ page_obj.next_page_number }}" class="btn btn-default">Next</a>
-                                    {% endif %}
-                                </span>
-                            </div>
-                        {% endwith %}
-                        <form method="GET" style="display: inline-block;">
-                            Rows per Page: <input type="number" name="claims_less_rows_per_page" value="{{ claims_less_rows_per_page }}">
-                            <input type="submit" class="btn" value="Paginate">
-                        </form>
-                    {% else %}
-                        <p>There are no Claims with discrepancies currently.</p>
-                    {% endif %}
-                    <h5>Outstanding Fees and Revenue</h5>
-                    A = Assignment,
-                    NA = Non-assignment,
-                    EB = Expected Back,
-                    AC = Amount Claimed
-                    {% if stats %}
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>NA Outstanding Clients</th>
-                                        <th>A Outstanding Clients</th>
-                                        <th>Total Outstanding Clients</th>
-                                        <th>Outstanding Fees</th>
-                                        <th>EB Revenue</th>
-                                        <th>NA Invoice Revenue</th>
-                                        <th>A Invoice Revenue</th>
-                                        <th>Invoice Revenue</th>
-                                        <th>Total Revenue</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{{ stats.outstanding_non_assignment_clients }}</td>
-                                        <td>{{ stats.outstanding_assignment_clients }}</td>
-                                        <td>{{ stats.total_outstanding_clients }}</td>
-                                        <td>{{ stats.outstanding_fees }}</td>
-                                        <td>{{ stats.expected_back_revenue }}</td>
-                                        <td>{{ stats.non_assignment_invoice_revenue }}</td>
-                                        <td>{{ stats.assignment_invoice_revenue }}</td>
-                                        <td>{{ stats.invoice_revenue }}</td>
-                                        <td>{{ stats.total_revenue }}</td>
-                                        <td>{{ stats.total }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    {% endwith %}
+                    <form method="GET" style="display: inline-block;">
+                        Rows per Page: <input type="number" name="claims_greater_rows_per_page" value="{{ claims_greater_rows_per_page }}">
+                        <input type="submit" class="btn" value="Paginate">
+                    </form>
+                {% else %}
+                    <p>
+                        There are no Claims with discrepancies currently.
+                    </p>
+                {% endif %}
+                <h5>
+                    Claims with Revenue less than Amount Claimed
+                </h5>
+                {% if stats.claims_less_list_paginated %}
+                    {% include 'utils/generics/list_table_simple.html' with model_name="Claim" object_list=stats.claims_less_list_paginated %}
+                    {% with page_obj=stats.claims_less_list_paginated %}
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?claims_less_page={{ page_obj.previous_page_number }}" class="btn btn-default">
+                                        Previous
+                                    </a>
+                                {% endif %}
+                                {% if page_obj.number %}
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <a href="?claims_less_page={{ page_obj.next_page_number }}" class="btn btn-default">
+                                        Next
+                                    </a>
+                                {% endif %}
+                            </span>
                         </div>
-                    {% else %}
-                        <p>There are no Claims currently.</p>
-                    {% endif %}
-                    <h5>Insurance Providers</h5>
-                    A = Assignment,
-                    NA = Non-assignment,
-                    EB = Expected Back,
-                    AC = Amount Claimed
-                    {% if insurances %}
-                        <form method="get">
-                            <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
-                            <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
-                            {% now 'Y' as current_year %}
-                            <script>
-                                $(function() {
-                                    $("#dateFromSearchBox").datepicker(
-                                        {changeMonth: true,
-                                         changeYear: true,
-                                         yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-                                    $("#dateToSearchBox").datepicker(
-                                        {changeMonth: true,
-                                         changeYear: true,
-                                         yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-                                });
-                            </script>
-                            <input type="submit" class="btn" value="Search">
-                        </form>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
+                    {% endwith %}
+                    <form method="GET" style="display: inline-block;">
+                        Rows per Page: <input type="number" name="claims_less_rows_per_page" value="{{ claims_less_rows_per_page }}">
+                        <input type="submit" class="btn" value="Paginate">
+                    </form>
+                {% else %}
+                    <p>
+                        There are no Claims with discrepancies currently.
+                    </p>
+                {% endif %}
+                <h5>
+                    Outstanding Fees and Revenue
+                </h5>
+                A = Assignment,
+                NA = Non-assignment,
+                EB = Expected Back,
+                AC = Amount Claimed
+                {% if stats %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        NA Outstanding Clients
+                                    </th>
+                                    <th>
+                                        A Outstanding Clients
+                                    </th>
+                                    <th>
+                                        Total Outstanding Clients
+                                    </th>
+                                    <th>
+                                        Outstanding Fees
+                                    </th>
+                                    <th>
+                                        EB Revenue
+                                    </th>
+                                    <th>
+                                        NA Invoice Revenue
+                                    </th>
+                                    <th>
+                                        A Invoice Revenue
+                                    </th>
+                                    <th>
+                                        Invoice Revenue
+                                    </th>
+                                    <th>
+                                        Total Revenue
+                                    </th>
+                                    <th>
+                                        Total
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {{ stats.outstanding_non_assignment_clients }}
+                                    </td>
+                                    <td>
+                                        {{ stats.outstanding_assignment_clients }}
+                                    </td>
+                                    <td>
+                                        {{ stats.total_outstanding_clients }}
+                                    </td>
+                                    <td>
+                                        {{ stats.outstanding_fees }}
+                                    </td>
+                                    <td>
+                                        {{ stats.expected_back_revenue }}
+                                    </td>
+                                    <td>
+                                        {{ stats.non_assignment_invoice_revenue }}
+                                    </td>
+                                    <td>
+                                        {{ stats.assignment_invoice_revenue }}
+                                    </td>
+                                    <td>
+                                        {{ stats.invoice_revenue }}
+                                    </td>
+                                    <td>
+                                        {{ stats.total_revenue }}
+                                    </td>
+                                    <td>
+                                        {{ stats.total }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>
+                        There are no Claims currently.
+                    </p>
+                {% endif %}
+                <h5>
+                    Insurance Providers
+                </h5>
+                A = Assignment,
+                NA = Non-assignment,
+                EB = Expected Back,
+                AC = Amount Claimed
+                {% if insurances %}
+                    <form method="get">
+                        <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
+                        <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
+                        {% now 'Y' as current_year %}
+                        <script>
+                            $(function() {
+                                $("#dateFromSearchBox").datepicker(
+                                    {changeMonth: true,
+                                     changeYear: true,
+                                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                                $("#dateToSearchBox").datepicker(
+                                    {changeMonth: true,
+                                     changeYear: true,
+                                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                            });
+                        </script>
+                        <input type="submit" class="btn" value="Search">
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Provider
+                                    </th>
+                                    <th>
+                                        Claims
+                                    </th>
+                                    <th>
+                                        NA EB
+                                    </th>
+                                    <th>
+                                        A EB
+                                    </th>
+                                    <th>
+                                        Pending A EB
+                                    </th>
+                                    <th>
+                                        Total A EB
+                                    </th>
+                                    <th>
+                                        Total EB
+                                    </th>
+                                    <th>
+                                        NA Invoice Revenue
+                                    </th>
+                                    <th>
+                                        A Invoice Revenue
+                                    </th>
+                                    <th>
+                                        Total Invoice Revenue
+                                    </th>
+                                    <th>
+                                        Total Revenue
+                                    </th>
+                                    <th>
+                                        NA AC
+                                    </th>
+                                    <th>
+                                        A AC
+                                    </th>
+                                    <th>
+                                        Total AC
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for insurance in insurances %}
                                     <tr>
-                                        <th>Provider</th>
-                                        <th>Claims</th>
-                                        <th>NA EB</th>
-                                        <th>A EB</th>
-                                        <th>Pending A EB</th>
-                                        <th>Total A EB</th>
-                                        <th>Total EB</th>
-                                        <th>NA Invoice Revenue</th>
-                                        <th>A Invoice Revenue</th>
-                                        <th>Total Invoice Revenue</th>
-                                        <th>Total Revenue</th>
-                                        <th>NA AC</th>
-                                        <th>A AC</th>
-                                        <th>Total AC</th>
+                                        <td>
+                                            {{ insurance.provider }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.num_claims }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.non_assignment_expected_back }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.assignment_expected_back }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.pending_assignment_expected_back }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.total_assignment_expected_back }}
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            {{ insurance.non_assignment_invoice_revenue }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.assignment_invoice_revenue }}
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            {{ insurance.non_assignment_amount_claimed }}
+                                        </td>
+                                        <td>
+                                            {{ insurance.assignment_amount_claimed }}
+                                        </td>
+                                        <td></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for insurance in insurances %}
-                                        <tr>
-                                            <td>{{ insurance.provider }}</a></td>
-                                            <td>{{ insurance.num_claims }}</td>
-                                            <td>{{ insurance.non_assignment_expected_back }}</td>
-                                            <td>{{ insurance.assignment_expected_back }}</td>
-                                            <td>{{ insurance.pending_assignment_expected_back }}</td>
-                                            <td>{{ insurance.total_assignment_expected_back }}</td>
-                                            <td></td>
-                                            <td>{{ insurance.non_assignment_invoice_revenue }}</td>
-                                            <td>{{ insurance.assignment_invoice_revenue }}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>{{ insurance.non_assignment_amount_claimed }}</td>
-                                            <td>{{ insurance.assignment_amount_claimed }}</td>
-                                            <td></td>
-                                        </tr>
-                                    {% endfor %}
-                                    <style>
-                                        .total {
-                                            border-top: 1px solid black !important;
-                                        }
-                                    </style>
-                                    <tr>
-                                        <th class="total">Total</th>
-                                        <td class="total"><strong>{{ insurances_totals.num_claims }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.non_assignment_expected_back }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.assignment_expected_back }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.pending_assignment_expected_back }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.total_assignment_expected_back }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.expected_back__sum }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.non_assignment_invoice_revenue }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.assignment_invoice_revenue }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.total_invoice_revenue }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.total_revenue }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.non_assignment_amount_claimed }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.assignment_amount_claimed }}</strong></td>
-                                        <td class="total"><strong>{{ insurances_totals.amount_claimed__sum }}</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p>There are no Insurance Providers currently.</p>
-                    {% endif %}
-                </div>
-            </div><!-- /.main -->
-        </div><!-- /.content -->
-    </div><!-- /.wrap -->
+                                {% endfor %}
+                                <style>
+                                    .total {
+                                        border-top: 1px solid black !important;
+                                    }
+                                </style>
+                                <tr>
+                                    <th class="total">
+                                        Total
+                                    </th>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.num_claims }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.non_assignment_expected_back }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.assignment_expected_back }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.pending_assignment_expected_back }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.total_assignment_expected_back }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.expected_back__sum }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.non_assignment_invoice_revenue }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.assignment_invoice_revenue }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.total_invoice_revenue }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.total_revenue }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.non_assignment_amount_claimed }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.assignment_amount_claimed }}
+                                        </strong>
+                                    </td>
+                                    <td class="total">
+                                        <strong>
+                                            {{ insurances_totals.amount_claimed__sum }}
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>
+                        There are no Insurance Providers currently.
+                    </p>
+                {% endif %}
+            </div>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
 
 {% endblock %}
