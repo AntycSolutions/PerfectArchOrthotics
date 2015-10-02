@@ -17,6 +17,17 @@ from clients.views import statistics
 from clients.views import dependent
 
 
+report_patterns = patterns(
+    '',
+    url(r'^old_ordered_date_orders_report/$',
+        login_required(statistics.old_ordered_date_orders_report),
+        name='old_ordered_date_orders_report'),
+    url(r'^old_arrived_date_orders_report/$',
+        login_required(statistics.old_arrived_date_orders_report),
+        name='old_arrived_date_orders_report'),
+)
+
+
 item_patterns = patterns(
     '',
     url(r'^$',
@@ -169,4 +180,5 @@ urlpatterns = patterns(
     url(r'^statistics/inventory_orders/$',
         login_required(statistics.InventoryOrdersStatistics.as_view()),
         name='inventory_orders_statistics'),
+    url(r'^reports/', include(report_patterns)),
 )
