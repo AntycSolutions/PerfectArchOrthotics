@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.views.generic import TemplateView
 from django.db.models import Count, Sum, F, Q, Case, When, Prefetch
 from django.db.models.functions import Coalesce
+from django import utils
 
 from utils import views_utils
 from clients import models as clients_models
@@ -18,6 +19,20 @@ class ClaimsStatistics(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Overdue claims
+        overdue_claims = _overdue_claims()
+        overdue_claims_rows_per_page = views_utils._get_paginate_by(
+            self.request,
+            'overdue_claims_rows_per_page'
+        )
+        context['overdue_claims_rows_per_page'] = overdue_claims_rows_per_page
+        context['overdue_claims_list_paginated'] = views_utils._paginate(
+            self.request,
+            overdue_claims,
+            'overdue_claims_page',
+            overdue_claims_rows_per_page
+        )
 
         # Outstanding fees, revenue, Claims overpaid, Claims underpaid
         stats = self._stats()
@@ -463,6 +478,20 @@ class InventoryOrdersStatistics(TemplateView):
         return shoes
 
 
+def overdue_claims_report(request):
+    return views.render_to_pdf(
+        request,
+        'clients/pdfs/overdue_claims.html',
+        {
+            'title': 'Overdue Claims Report',
+            'pagesize': 'A4 landscape',
+            'overdue_claims': _overdue_claims(),
+            'claim_class': clients_models.Claim,
+            'hidden_fields': ['fileset']
+        }
+    )
+
+
 def old_ordered_date_orders_report(request):
     return views.render_to_pdf(
         request,
@@ -489,6 +518,16 @@ def old_arrived_date_orders_report(request):
             'hidden_fields': ['dispensed_date']
         }
     )
+
+
+def _overdue_claims():
+    cutoff = utils.timezone.now() - timedelta(days=30)
+    overdue_claims = clients_models.Claim.objects.filter(
+        submitted_datetime__lte=cutoff,
+        claimcoverage__actual_paid_date__isnull=True
+    ).distinct()
+
+    return overdue_claims
 
 
 def _old_ordered_date_orders():
