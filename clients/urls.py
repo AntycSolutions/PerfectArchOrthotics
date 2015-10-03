@@ -19,6 +19,9 @@ from clients.views import dependent
 
 report_patterns = patterns(
     '',
+    url(r'^insurance_stats_report/$',
+        login_required(statistics.insurance_stats_report),
+        name='insurance_stats_report'),
     url(r'^overdue_claims_report/$',
         login_required(statistics.overdue_claims_report),
         name='overdue_claims_report'),
