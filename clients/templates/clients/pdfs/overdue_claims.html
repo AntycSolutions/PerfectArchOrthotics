@@ -105,6 +105,11 @@
                     {% endfor %}
                     <td>
                         <strong>
+                            Coverage Type
+                        </strong>
+                    </td>
+                    <td>
+                        <strong>
                             Expected Back
                         </strong>
                     </td>
@@ -129,6 +134,12 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
+                        <td>
+                            {% for claimcoverage in claim.claimcoverage_set.all %}
+                                {{ claimcoverage.coverage.get_coverage_type_display }}
+                                <br />
+                            {% endfor %}
+                        </td>
                         <td>
                             {% for claimcoverage in claim.claimcoverage_set.all %}
                                 ${{ claimcoverage.expected_back }}
