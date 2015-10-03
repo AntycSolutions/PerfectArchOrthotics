@@ -1,0 +1,407 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load verbose_name %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin: 2cm;
+            margin-top: 1.5cm;
+
+            @frame header {
+                -pdf-frame-content: page-header;
+                /* for debugging */
+                /*-pdf-frame-border: 1; */
+                /* these margins just mimic the above ones */
+                margin: 2cm;
+                margin-top: 1.5cm;
+            }
+
+            @frame footer {
+                -pdf-frame-content: page-footer;
+                /* for debugging */
+                /*-pdf-frame-border: 1; */
+                bottom: 0cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_style %}
+    <style type="text/css">
+        html {
+            font-family: "Lato", "Helvetica", "sans-serif";
+            color: #333333;
+        }
+
+        table {
+            line-height: 140%;
+            margin-bottom: 20px;
+            font-size: 10pt;
+        }
+
+        tr {
+            border-bottom: 0.1pt solid #999999;
+        }
+
+        th, td {
+            padding: 3px 0;
+        }
+
+        th {
+            border-bottom: 0.1pt solid black;
+            line-height: 1;
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div id="header_content">
+        <h1 style="font-size: 250%; text-align: center;">
+            {{ title }}
+        </h1>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div id="content">
+        <h5>
+            Outstanding Fees and Revenue
+        </h5>
+        A = Assignment,
+        NA = Non-assignment,
+        EB = Expected Back,
+        AC = Amount Claimed
+        {% if stats %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                <strong>
+                                    NA Outstanding Clients
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    A Outstanding Clients
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total Outstanding Clients
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Outstanding Fees
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    EB Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    NA Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    A Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total
+                                </strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border: none;">
+                            <td>
+                                {{ stats.outstanding_non_assignment_clients }}
+                            </td>
+                            <td>
+                                {{ stats.outstanding_assignment_clients }}
+                            </td>
+                            <td>
+                                {{ stats.total_outstanding_clients }}
+                            </td>
+                            <td>
+                                {{ stats.outstanding_fees }}
+                            </td>
+                            <td>
+                                {{ stats.expected_back_revenue }}
+                            </td>
+                            <td>
+                                {{ stats.non_assignment_invoice_revenue }}
+                            </td>
+                            <td>
+                                {{ stats.assignment_invoice_revenue }}
+                            </td>
+                            <td>
+                                {{ stats.invoice_revenue }}
+                            </td>
+                            <td>
+                                {{ stats.total_revenue }}
+                            </td>
+                            <td>
+                                {{ stats.total }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>
+                There are no Claims currently.
+            </p>
+        {% endif %}
+        <h5>
+            Insurance Providers
+        </h5>
+        A = Assignment,
+        NA = Non-assignment,
+        EB = Expected Back,
+        AC = Amount Claimed
+        {% if insurances %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                <strong>
+                                    Provider
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Claims
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    NA EB
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    A EB
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Pending A EB
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total A EB
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total EB
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    NA Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    A Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total Invoice Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total Revenue
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    NA AC
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    A AC
+                                </strong>
+                            </th>
+                            <th>
+                                <strong>
+                                    Total AC
+                                </strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for insurance in insurances %}
+                            <tr{% if forloop.last %} style="border: none;"{% endif %}>
+                                <td>
+                                    {{ insurance.provider }}
+                                </td>
+                                <td>
+                                    {{ insurance.num_claims }}
+                                </td>
+                                <td>
+                                    {{ insurance.non_assignment_expected_back }}
+                                </td>
+                                <td>
+                                    {{ insurance.assignment_expected_back }}
+                                </td>
+                                <td>
+                                    {{ insurance.pending_assignment_expected_back }}
+                                </td>
+                                <td>
+                                    {{ insurance.total_assignment_expected_back }}
+                                </td>
+                                <td></td>
+                                <td>
+                                    {{ insurance.non_assignment_invoice_revenue }}
+                                </td>
+                                <td>
+                                    {{ insurance.assignment_invoice_revenue }}
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    {{ insurance.non_assignment_amount_claimed }}
+                                </td>
+                                <td>
+                                    {{ insurance.assignment_amount_claimed }}
+                                </td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
+                        <tr style="border: none;">
+                            <td>
+								<hr />
+                                <strong>
+                                    Total
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.num_claims }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.non_assignment_expected_back }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.assignment_expected_back }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.pending_assignment_expected_back }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.total_assignment_expected_back }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.expected_back__sum }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.non_assignment_invoice_revenue }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.assignment_invoice_revenue }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.total_invoice_revenue }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.total_revenue }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.non_assignment_amount_claimed }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.assignment_amount_claimed }}
+                                </strong>
+                            </td>
+                            <td>
+								<hr />
+                                <strong>
+                                    {{ insurances_totals.amount_claimed__sum }}
+                                </strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>
+                There are no Insurance Providers currently.
+            </p>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block page_foot %}
+    <div id="footer_content">
+        <p style="text-align: center;">
+            Page <pdf:pagenumber>
+            of <pdf:pagecount>
+        </p>
+    </div>
+{% endblock %}
