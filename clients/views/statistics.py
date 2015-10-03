@@ -156,7 +156,7 @@ def overdue_claims_report(request):
             'pagesize': 'A4 landscape',
             'overdue_claims': _overdue_claims(),
             'claim_class': clients_models.Claim,
-            'hidden_fields': ['fileset']
+            'hidden_fields': ['fileset', 'insurance_paid_date']
         }
     )
 
@@ -545,7 +545,7 @@ def _overdue_claims():
     overdue_claims = clients_models.Claim.objects.filter(
         submitted_datetime__lte=cutoff,
         claimcoverage__actual_paid_date__isnull=True
-    ).distinct()
+    ).order_by('submitted_datetime').distinct()
 
     return overdue_claims
 
