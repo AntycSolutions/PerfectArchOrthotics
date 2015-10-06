@@ -40,6 +40,9 @@ class Person(models.Model):
         "Employer", max_length=128,
         blank=True)
 
+    created = models.DateTimeField(
+        "Created", auto_now_add=True)
+
     # ModelInheritance
     # Client, Dependent
     # ManyToManyField

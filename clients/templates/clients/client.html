@@ -245,6 +245,16 @@
                                 </p>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label">
+                                {% verbose_field_name client "created" %}
+                            </label>
+                            <div class="col-lg-8">
+                                <p class="form-control-static">
+                                    {{ client.created }}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -421,6 +431,9 @@
                                     {% verbose_field_name spouse "health_care_number" %}
                                 </th>
                                 <th>
+                                    {% verbose_field_name spouse "created" %}
+                                </th>
+                                <th>
                                     {% verbose_field_name spouse "employer" %}
                                 </th>
                             </tr>
@@ -474,6 +487,9 @@
                                     {{ spouse.health_care_number }}
                                 </td>
                                 <td>
+                                    {{ spouse.created }}
+                                </td>
+                                <td>
                                     {{ spouse.employer }}
                                 </td>
                             </tr>
@@ -506,6 +522,9 @@
                                 </th>
                                 <th>
                                     {% verbose_field_name dependent_class "health_care_number" %}
+                                </th>
+                                <th>
+                                    {% verbose_field_name dependent_class "created" %}
                                 </th>
                                 <th></th>
                             </tr>
@@ -554,6 +573,9 @@
                                     </td>
                                     <td>
                                         {{ child.health_care_number }}
+                                    </td>
+                                    <td>
+                                        {{ child.created }}
                                     </td>
                                     <td></td>
                                 </tr>
