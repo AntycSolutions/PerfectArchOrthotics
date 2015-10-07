@@ -206,21 +206,31 @@ class DetailShoeView(DetailView):
     model = Shoe
 
     def get_context_data(self, **kwargs):
-        context = super(DetailShoeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
         context['inline_set'] = self.object.shoeattributes_set.extra(
             select={'size_int': 'cast(size as real)'}
         ).order_by('size_int')
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
+
         return context
 
 
 class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.queryset = self.queryset.extra(
+            select={'real_sizes': 'cast(size as real)'}
+        ).order_by('real_sizes')
+
     def add_fields(self, form, index):
         super(BaseShoeShoeAttributesFormSet, self).add_fields(
             form, index
         )
+
         ordered_fields = collections.OrderedDict()
         for k, v in form.fields.items():
             if k == "quantity":
@@ -232,8 +242,7 @@ class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
                         label="Quantity", initial=(
                             form.instance.quantity - form.instance.dispensed()
                         )
-                     )
-                     }
+                     )}
                 )
 
         form.fields = ordered_fields
