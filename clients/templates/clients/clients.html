@@ -36,7 +36,7 @@
             {% for client in clients %}
                 <tr>
                     <td>
-                        <a href="{% url 'client' client.id %}">
+                        <a href="{{ client.get_absolute_url }}">
                             {{ client.full_name }}
                         </a>
                     </td>
