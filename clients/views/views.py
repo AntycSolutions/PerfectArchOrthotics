@@ -2,6 +2,7 @@
 import os
 import io
 import collections
+import itertools
 from cgi import escape
 
 # Django
@@ -19,7 +20,6 @@ from django.db.models import Sum, F, Case, When, Q
 from django.db.models.functions import Coalesce
 from django.core import urlresolvers
 from django.utils import safestring
-from django.core import urlresolvers
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -262,6 +262,7 @@ def clientSearchView(request):
     context_dict = {}
 
     found_clients = Client.objects.order_by('-id')
+    found_dependents = Dependent.objects.order_by('-id')
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ['first_name', 'last_name', 'address', 'phone_number',
                   'employer', 'health_care_number']
@@ -271,11 +272,24 @@ def clientSearchView(request):
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
 
+        fields = ['first_name', 'last_name',
+                  'employer', 'health_care_number']
+        query_string = request.GET['q']
+        context_dict['q'] = query_string
+
+        client_query = get_query(query_string, fields)
+        found_dependents = Dependent.objects.filter(client_query)
+
     clients_rows_per_page = views_utils._get_paginate_by(
         request, 'clients_rows_per_page'
     )
-    clients = views_utils._paginate(request, found_clients, 'page',
-                                    clients_rows_per_page)
+
+    clients = views_utils._paginate(
+        request,
+        list(itertools.chain(found_clients, found_dependents)),
+        'page',
+        clients_rows_per_page
+    )
 
     context_dict['clients'] = clients
     context_dict['clients_rows_per_page'] = clients_rows_per_page
