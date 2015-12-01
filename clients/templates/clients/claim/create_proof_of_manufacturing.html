@@ -11,11 +11,22 @@
     </h1>
     <form class="form-horizontal" method="POST">
         {% csrf_token %}
-        {{ form }}
+        <div class="row">
+            <fieldset class="col-lg-6">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">
+                        <h5>
+                            {{ model_name|title }}
+                        </h5>
+                    </label>
+                </div>
+                {% include 'utils/generics/form.html' %}
+            </fieldset>
+        </div>
         <div class="row">
             <div class="col-lg-6">
                 <div class="form-group">
-                    <div class="col-lg-9">
+                    <div class="col-lg-9 col-lg-offset-3">
                         <button type="submit" class="btn btn-primary" name="submit">
                             Create
                         </button>

@@ -928,20 +928,50 @@ class ProofOfManufacturing(models.Model):
     claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
-    bill_to = settings.BILL_TO[0][1]
-    ship_to = settings.BILL_TO[0][1]
-
-    # MOLL
-    laboratory = settings.LABORATORIES[0][1]
-    laboratory_information = laboratory.split('\n')[0]
-    laboratory_supervisor = laboratory.split('\n')[6].replace(
-        'Laboratory Supervisor:', '')
-    laboratory_address = laboratory.replace(laboratory.split('\n')[6], '')
+    laboratory = models.CharField(max_length=4, choices=settings.LABORATORIES)
 
     proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
 
     class Meta:
         verbose_name_plural = "Proofs of manufacturing"
+
+    def bill_to(self):
+        if self.laboratory != settings.PAOI:
+            bill_to = settings.BILL_TO[0][1]
+        else:
+            bill_to = None
+
+        return bill_to
+
+    def ship_to(self):
+        if self.laboratory != settings.PAOI:
+            ship_to = settings.BILL_TO[0][1]
+        else:
+            ship_to = None
+
+        return ship_to
+
+    def laboratory_information(self):
+        laboratory_information = \
+            self.get_laboratory_display().split('\n')[0]
+
+        return laboratory_information
+
+    def laboratory_supervisor(self):
+        laboratory_supervisor = \
+            self.get_laboratory_display().split('\n')[7].replace(
+                'Laboratory Supervisor:', ''
+            )
+
+        return laboratory_supervisor
+
+    def laboratory_address(self):
+        laboratory = self.get_laboratory_display()
+        laboratory_address = laboratory.replace(
+            laboratory.split('\n')[7], ''
+        )
+
+        return laboratory_address
 
     def proof_of_manufacturing_date(self):
         try:

@@ -545,6 +545,7 @@ class CreateProofOfManufacturingView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = urlresolvers.reverse(
             'claim', kwargs={'claim_id': self.kwargs['claim_id']}
         )
