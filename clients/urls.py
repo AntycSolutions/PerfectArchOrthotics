@@ -15,6 +15,7 @@ from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
 from clients.views import statistics
 from clients.views import dependent
+from clients.views import receipt
 
 
 report_patterns = patterns(
@@ -117,6 +118,28 @@ claim_patterns = patterns(
     url(r'^proof_of_manufacturing/create/(?P<claim_id>\w+)/$',
         login_required(CreateProofOfManufacturingView.as_view()),
         name='proof_of_manufacturing_create'),
+    url(r'^receipt/create/(?P<claim_pk>\w+)/$',
+        login_required(receipt.ReceiptCreate.as_view()),
+        name='receipt_create'),
+    url(r'^receipt/detail/(?P<pk>\w+)/$',
+        login_required(receipt.ReceiptDetail.as_view()),
+        name='receipt_detail'),
+    url(r'^receipt/update/(?P<pk>\w+)/$',
+        login_required(receipt.ReceiptUpdate.as_view()),
+        name='receipt_update'),
+    url(r'^receipt/delete/(?P<pk>\w+)/$',
+        login_required(receipt.ReceiptDelete.as_view()),
+        name='receipt_delete'),
+    url(r'^receipt/list/(?P<claim_pk>\w+)/$',
+        login_required(receipt.ReceiptList.as_view()),
+        name='receipt_list'),
+)
+
+pdf_patterns = patterns(
+    '',
+    url(r'^receipt/(?P<pk>\w+)/(?P<_type>\w+)/$',
+        login_required(receipt.receipt_view),
+        name='receipt'),
 )
 
 # TODO: make this not gross
@@ -150,6 +173,7 @@ urlpatterns = patterns(
     url(r'^claim/(?P<claim_id>\w+)/proof_of_manufacturing/$',
         login_required(views.proof_of_manufacturing_view),
         name='proof'),
+    url(r'^pdf/', include(pdf_patterns)),
     url(r'^claim/(?P<claim_id>\w+)/fill_out_invoice/$',
         login_required(views.fillOutInvoiceView),
         name='fillOutInvoice'),
