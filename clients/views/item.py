@@ -17,6 +17,7 @@ class CreateItemView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CreateItemView, self).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -25,8 +26,10 @@ class CreateItemView(CreateView):
         return context
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('item_detail',
-                                        kwargs={'pk': self.object.pk})
+        self.success_url = reverse_lazy(
+            'item_detail', kwargs={'pk': self.object.pk}
+        )
+
         return self.success_url
 
 
@@ -42,6 +45,7 @@ class ListItemView(ListView):
                 and self.request.GET['rows_per_page'].strip()):
             self.paginate_by = self.request.GET['rows_per_page']
             self.request.session['rows_per_page'] = self.paginate_by
+
         return self.paginate_by
 
     def get_context_data(self, **kwargs):
@@ -52,6 +56,7 @@ class ListItemView(ListView):
         context['indefinite_article'] = 'an'
         context['rows_per_page'] = self.request.session.get(
             'rows_per_page', self.paginate_by)
+        context['search'] = True
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']

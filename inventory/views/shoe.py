@@ -124,6 +124,7 @@ class ListShoeView(ListView):
                 and self.request.GET['rows_per_page'].strip()):
             self.paginate_by = self.request.GET['rows_per_page']
             self.request.session['rows_per_page'] = self.paginate_by
+
         return self.paginate_by
 
     def get_context_data(self, **kwargs):
@@ -133,6 +134,7 @@ class ListShoeView(ListView):
         context['indefinite_article'] = 'a'
         context['rows_per_page'] = self.request.session.get(
             'rows_per_page', self.paginate_by)
+        context['search'] = True
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
