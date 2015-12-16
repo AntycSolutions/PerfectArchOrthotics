@@ -59,6 +59,7 @@ PRACTITIONERS = ()
 MOLL = ''
 OOLI = ''
 AROR = ''
+PAOI = ''
 LABORATORIES = ()
 
 # Get from file
