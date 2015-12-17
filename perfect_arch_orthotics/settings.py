@@ -38,7 +38,7 @@ DJANGO_CONTEXT_PROCESSORS = [
     "django.contrib.messages.context_processors.messages",
 ]
 LOCAL_CONTEXT_PROCESSORS = [
-    "perfect_arch_orthotics.context_processors.settings",
+    "perfect_arch_orthotics.context_processors.site",
 ]
 TEMPLATE_CONTEXT_PROCESSORS = (
     DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS
