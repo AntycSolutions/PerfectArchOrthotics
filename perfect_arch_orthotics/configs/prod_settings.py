@@ -72,6 +72,9 @@ SECURE_HSTS_SECONDS = 15768000
 # local app settings
 
 # Get from file
+GOOGLE_ANALYTICS_ID = ''
+
+# Get from file
 DM = ''
 DS = ''
 PRACTITIONERS = ()
