@@ -28,19 +28,34 @@ class ListOrderView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListOrderView, self).get_context_data(**kwargs)
+
         Create = collections.namedtuple(
-            'Create', ['model_name', 'indefinite_article']
+            'Create', ['model_name', 'indefinite_article', 'url']
         )
         context['create_list'] = [
-            Create(models.ShoeOrder._meta.verbose_name, 'a'),
-            Create(models.CoverageOrder._meta.verbose_name, 'a'),
-            Create(models.AdjustmentOrder._meta.verbose_name, 'an'),
+            Create(
+                models.ShoeOrder._meta.verbose_name,
+                'a',
+                reverse('shoe_order_create'),
+            ),
+            Create(
+                models.CoverageOrder._meta.verbose_name,
+                'a',
+                reverse('coverage_order_create'),
+            ),
+            Create(
+                models.AdjustmentOrder._meta.verbose_name,
+                'an',
+                reverse('adjustment_order_create'),
+            ),
         ]
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
         context['rows_per_page'] = self.request.session.get(
             'rows_per_page', self.paginate_by)
+        context['search'] = True
         context['datesearch'] = True
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():

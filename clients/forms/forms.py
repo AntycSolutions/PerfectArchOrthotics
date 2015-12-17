@@ -389,3 +389,37 @@ class ReferralForm(forms.ModelForm):
             raise self.EmptyClaimsQuerySet
 
         self.fields['claims'].queryset = claims_queryset
+
+
+class ReceiptForm(forms.ModelForm):
+
+    class Meta:
+        model = clients_models.Receipt
+        exclude = ['claim']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['MID'].help_text = \
+            'Ex. 8027813602'
+        self.fields['TID'].help_text = \
+            'Ex. 0089250008027813602107'
+        self.fields['REF'].help_text = \
+            'Ex. 00000001'
+        self.fields['batch'].help_text = \
+            'Ex. 138'
+        self.fields['RRN'].help_text = \
+            'Ex. 00046752128 (for DEBIT)'
+        self.fields['APPR'].help_text = \
+            'Ex. 035787'
+        self.fields['trace'].help_text = \
+            'Ex. 1'
+        self.fields['card_number'].help_text = \
+            'Ex. 1234'
+
+        self.fields['AID'].help_text = \
+            'Ex. A0000000031010 (for CHIP)'
+        self.fields['TVR'].help_text = \
+            'Ex. 00 80 00 80 00 (for CHIP)'
+        self.fields['TSI'].help_text = \
+            'Ex. F8 00 (for CHIP)'

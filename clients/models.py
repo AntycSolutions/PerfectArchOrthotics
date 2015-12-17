@@ -1036,3 +1036,69 @@ class Referral(models.Model):
 
     def __str__(self):
         return "{} {}".format(self.client, self.credit_value)
+
+
+class Receipt(models.Model, model_utils.FieldList):
+    claim = models.ForeignKey(Claim)
+
+    DEBIT = 'd'
+    CREDIT = 'c'
+    CARD_TYPE_CHOICES = (
+        (DEBIT, 'Debit'),
+        (CREDIT, 'Credit'),
+    )
+    card_type = models.CharField(
+        max_length=1, choices=CARD_TYPE_CHOICES,
+        default=CREDIT,
+    )
+
+    VISA = 'v'
+    MASTERCARD = 'm'
+    INTERAC = 'i'
+    CARD_COMPANY_CHOICES = (
+        (VISA, 'VISA'),
+        (MASTERCARD, 'MASTERCARD'),
+        (INTERAC, 'INTERAC'),
+    )
+    card_company = models.CharField(
+        max_length=1, choices=CARD_COMPANY_CHOICES,
+        default=VISA,
+    )
+
+    CHIP = 'c'
+    MANUAL = 'm'
+    CARD_METHOD_CHOICES = (
+        (CHIP, 'Chip'),
+        (MANUAL, 'Manual CP'),
+    )
+    card_method = models.CharField(
+        max_length=1, choices=CARD_METHOD_CHOICES,
+        default=CHIP,
+    )
+
+    MID = models.CharField(max_length=11)
+    TID = models.CharField(max_length=22)
+    REF = models.CharField(max_length=8)
+    batch = models.CharField(max_length=3)
+    RRN = models.CharField(max_length=12, blank=True)
+    APPR = models.CharField(max_length=6)
+    trace = models.CharField(max_length=1)
+
+    card_number = models.CharField(max_length=4)
+
+    amount = models.DecimalField(max_digits=6, decimal_places=2,
+                                 default=decimal.Decimal(0.00))
+
+    AID = models.CharField(max_length=14, blank=True)
+    TVR = models.CharField(max_length=14, blank=True)
+    TSI = models.CharField(max_length=5, blank=True)
+
+    money_fields = ['amount']
+
+    def get_absolute_url(self):
+        url = reverse('receipt_detail', kwargs={'pk': self.pk})
+
+        return url
+
+    def __str__(self):
+        return 'Receipt of ${} for {}'.format(self.amount, self.claim)

@@ -1,0 +1,171 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load static %}
+{% load nbsp %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            /* width, height (1pt = 1/72in) */
+            /* 57mm = 2.24409in */
+            /* 2.24409in * 72pt/1in = 161pt */
+            /* 165pt so we can fit pao on one line */
+            size: 165pt 475pt;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div id="content" style="font-size: 9pt; line-height: 130%;">
+        <div id="header" style="text-align: center; margin-bottom: 15px;">
+            {{ name|upper }}
+            <br />
+            {{ address|upper }}
+            <br />
+            {{ city_province|upper }}
+            <br />
+            {{ postal_code }}
+            <br />
+            {{ phone }}
+            <div style="font-size: 12pt; margin-top: 20px;">
+                <b>
+                    {% if receipt.card_type == receipt_class.CREDIT %}
+                        SALE
+                    {% elif receipt.card_type == receipt_class.DEBIT %}
+                        DEBIT SALE
+                    {% endif %}
+                </b>
+            </div>
+        </div>
+        <div id="body">
+            {% if receipt.MID %}
+                MID: {{ receipt.MID }}
+                <br />
+            {% endif %}
+            {% if receipt.TID %}
+                TID: {{ receipt.TID }}
+            {% endif %}
+            {% if receipt.REF %}
+                <div style="text-align: right;">
+                    REF#: {{ receipt.REF }}
+                </div>
+            {% endif %}
+            <table>
+                <tr>
+                    {% if receipt.batch %}
+                        <td style="width: 60%;">
+                            Batch #: {{ receipt.batch }}
+                        </td>
+                    {% endif %}
+                    {% if receipt.RRN and receipt.card_type == receipt_class.DEBIT %}
+                        <td style="text-align: right;">
+                            RRN: {{ receipt.RRN }}
+                        </td>
+                    {% endif %}
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        {% now 'y/m/d' %}
+                    </td>
+                    <td style="text-align: right;">
+                        {% now 'H:i:s' %}
+                    </td>
+                </tr>
+            </table>
+            {% if receipt.APPR %}
+                APPR CODE: {{ receipt.APPR }}
+                <br />
+            {% endif %}
+            {% if receipt.trace %}
+                Trace: {{ receipt.trace }}
+            {% endif %}
+            <table>
+                <tr>
+                    <td>
+                        {% if receipt.card_company == receipt_class.VISA or receipt.card_company == receipt_class.MASTERCARD %}
+                            {{ receipt.get_card_company_display }}
+                        {% elif receipt.card_company == receipt_class.INTERAC %}
+                            DEBIT/CHEQUING
+                        {% else %}
+                            Unsupported card company
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        {{ receipt.get_card_method_display }}
+                    </td>
+                </tr>
+            </table>
+            <table style="margin-bottom: 20px;">
+                <tr>
+                    {% if receipt.card_number %}
+                        <td>
+                            ************{{ receipt.card_number }}
+                        </td>
+                    {% endif %}
+                    {% if receipt.card_type == receipt_class.CREDIT %}
+                        <td style="text-align: right;">
+                            **/**
+                        </td>
+                    {% endif %}
+                </tr>
+            </table>
+            <table style="font-size: 12pt; margin-bottom: 15px;">
+                <tr>
+                    <td>
+                        <b>
+                            AMOUNT
+                        </b>
+                    </td>
+                    <td style="text-align: right;">
+                        <b>
+                            ${{ receipt.amount }}
+                        </b>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: center; margin-bottom: 20px;">
+                APPROVED
+                {% if receipt.card_type == receipt_class.DEBIT %}
+                    - 00
+                {% endif %}
+            </div>
+            {% if receipt.card_method == receipt_class.CHIP %}
+                <div style="text-align: center; margin-bottom: 15px;">
+                    VERIFIED BY PIN
+                </div>
+                {{ receipt.get_card_company_display }}
+                <br />
+                AID: {{ receipt.AID }}
+                <br />
+                TVR: {{ receipt.TVR }}
+                <br />
+                <div style="margin-bottom: 15px;">
+                    TSI: {{ receipt.TSI }}
+                </div>
+            {% elif receipt.card_method == receipt_class.MANUAL %}
+                X________________________
+            {% else %}
+                Unsupported card method
+            {% endif %}
+            <div style="text-align: center;">
+                <div style="font-size: 7pt; margin-bottom: 10px;">
+                    {% if receipt.card_type == receipt_class.CREDIT %}
+                        CARDHOLDER ACKNOWLEDGES RECEIPT OF GOODS AND/OR SERVICES IN THE AMOUNT OF THE TOTAL SHOWN HEREON
+                    {% elif receipt.card_type == receipt_class.DEBIT %}
+                        I AUTHORIZE THE TRANSFER OF FUNDS FOR THE AMOUNT OF THIS TRANSACTION
+                    {% else %}
+                        Unsupported card type
+                    {% endif %}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    THANK YOU / MERCI
+                </div>
+                {{ type }} COPY
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
