@@ -28,6 +28,22 @@ LOCAL_APPS = (
 )
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+DJANGO_CONTEXT_PROCESSORS = [
+    "django.contrib.auth.context_processors.auth",
+    "django.template.context_processors.debug",
+    "django.template.context_processors.i18n",
+    "django.template.context_processors.media",
+    "django.template.context_processors.static",
+    "django.template.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+]
+LOCAL_CONTEXT_PROCESSORS = [
+    "perfect_arch_orthotics.context_processors.settings",
+]
+TEMPLATE_CONTEXT_PROCESSORS = (
+    DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS
+)
+
 # middleware
 DJANGO_MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
