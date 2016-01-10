@@ -192,7 +192,8 @@ class ShoeCreateOrderView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
-        client_credit = self.object.claimant.get_client().credit()
+        # TODO: remove credit() and rename credit2 to credit
+        client_credit = self.object.claimant.get_client().credit2
         shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
 
         if shoe_credit_value > client_credit:
@@ -201,7 +202,7 @@ class ShoeCreateOrderView(CreateView):
                 "Shoe's Credit Value (%s) is greater than "
                 "Client's Credit (%s)." % (shoe_credit_value,
                                            client_credit))
-            # return self.form_invalid(form)
+            # We only need to warn user, not prevent the action
 
         self.object.save()
 
@@ -239,7 +240,8 @@ class CoverageCreateOrderView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
 
-        client_credit = self.object.claimant.get_client().credit()
+        # TODO: remove credit() and rename credit2 to credit
+        client_credit = self.object.claimant.get_client().credit2
         credit_value = self.object.credit_value
 
         if credit_value > client_credit:
@@ -288,7 +290,8 @@ class AdjustmentCreateOrderView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
 
-        client_credit = self.object.claimant.get_client().credit()
+        # TODO: remove credit() and rename credit2 to credit
+        client_credit = self.object.claimant.get_client().credit2
         adjustment_credit_value = self.object.credit_value
 
         if adjustment_credit_value > client_credit:
@@ -359,7 +362,8 @@ class ShoeUpdateOrderView(UpdateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         if self.object.shoe_attributes:
-            client_credit = self.object.claimant.get_client().credit()
+            # TODO: remove credit() and rename credit2 to credit
+            client_credit = self.object.claimant.get_client().credit2
             shoe_credit_value = self.object.shoe_attributes.shoe.credit_value
             old_shoe_attributes = self.get_object().shoe_attributes
             if old_shoe_attributes:
@@ -399,7 +403,8 @@ class CoverageUpdateOrderView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        client_credit = self.object.claimant.get_client().credit()
+        # TODO: remove credit() and rename credit2 to credit
+        client_credit = self.object.claimant.get_client().credit2
         credit_value = self.object.credit_value
         old_credit_value = self.get_object().credit_value
         if old_credit_value:
@@ -438,7 +443,8 @@ class AdjustmentUpdateOrderView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        client_credit = Decimal(self.object.claimant.get_client().credit())
+        # TODO: remove credit() and rename credit2 to credit
+        client_credit = Decimal(self.object.claimant.get_client().credit2)
         credit_value = self.object.credit_value
         old_credit_value = self.get_object().credit_value
         if old_credit_value:

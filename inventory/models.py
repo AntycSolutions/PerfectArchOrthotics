@@ -257,9 +257,9 @@ class ShoeOrder(Order):
 
         return fields
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.order_type = Order.SHOE
-        super(ShoeOrder, self).save()
+        super(ShoeOrder, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('shoe_order_detail', kwargs={'pk': self.pk})

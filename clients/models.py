@@ -131,6 +131,12 @@ class Client(Person):
         "Notes",
         blank=True)
 
+    # TODO: remove credit() and rename credit2 to credit
+    credit2 = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        default=decimal.Decimal(0)
+    )
+
     # ForeignKey
     # Client, Dependent
 
@@ -142,43 +148,33 @@ class Client(Person):
 
         return claimed_credit
 
-    # TODO: make this a field instead of method
+    # TODO: remove credit() and rename credit2 to credit
     def credit(self):
         total = 0
         claimed_credit = 0
         claimed_credit += self._claimed_credit(self)
         for dependent in self.dependent_set.all():
             for claim in dependent.claim_set.all():
-                # switch from insurance_paid_date to actual_paid_date
-                # if not claim.insurance_paid_date:
-                #     continue
-                # total += claim.total_expected_back()
                 for claim_coverage in claim.claimcoverage_set.all():
                     if not claim_coverage.actual_paid_date:
                         continue
                     total += claim_coverage.expected_back
-                # ignore payment_made/deposit
-                # for invoice in claim.invoice_set.all():
-                    # total += (invoice.payment_made + invoice.deposit)
             claimed_credit += self._claimed_credit(dependent)
         for claim in self.claim_set.all():
-            # switch from insurance_paid_date to actual_paid_date
-            # if not claim.insurance_paid_date:
-            #     continue
-            # total += claim.total_expected_back()
             for claim_coverage in claim.claimcoverage_set.all():
                 if not claim_coverage.actual_paid_date:
                     continue
                 total += claim_coverage.expected_back
-            # ignore payment_made/deposit
-            # for invoice in claim.invoice_set.all():
-                # total += invoice.payment_made + invoice.deposit
 
         referral_credit = self.referral_set.all().aggregate(
             models.Sum('credit_value')
         )['credit_value__sum'] or 0
 
-        credit = (total / 150) - float(claimed_credit) + float(referral_credit)
+        credit = (
+            (total / decimal.Decimal(150)) -
+            decimal.Decimal(claimed_credit) +
+            decimal.Decimal(referral_credit)
+        )
 
         return round(credit, 2)
 
@@ -1020,20 +1016,6 @@ class Referral(models.Model):
         default=decimal.Decimal(0.00)
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._original_credit_value = self.credit_value
-
-    def save(self, *args, **kwargs):
-        # For when credit is it's own field
-        # if self.pk:
-        #     if self._original_credit_value != self.credit_value:
-        #         self.client.credit -= self._original_credit_value
-        #         self.client.credit += self.credit_value
-
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return "{} {}".format(self.client, self.credit_value)
 
@@ -1102,3 +1084,16 @@ class Receipt(models.Model, model_utils.FieldList):
 
     def __str__(self):
         return 'Receipt of ${} for {}'.format(self.amount, self.claim)
+
+
+class CreditDivisor(models.Model):
+    value = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
+    created = models.DateTimeField()
+
+    def __str__(self):
+        return '{value} {created}'.format(
+            value=self.value, created=self.created
+        )
