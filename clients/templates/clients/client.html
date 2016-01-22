@@ -274,33 +274,10 @@
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-horizontal form-static">
-                        <div class="form-group">
-                            <label class="col-lg-3 control-label">
-                                {% verbose_field_name client "referred_by" %}
-                            </label>
-                            <div class="col-lg-9">
-                                <p class="form-control-static">
-                                    <a href="{{ client.referred_by.get_absolute_url }}">
-                                        {{ client.referred_by.full_name }}
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}" class="col-lg-3 control-label">
-                                Referred
-                            </label>
-                            <div class="col-lg-9">
-                                <p class="form-control-static">
-                                    {% for referrer in client.person_ptr.referred_by.all %}
-                                        <a href="{{ referrer.get_absolute_url }}">
-                                            {{ referrer }}
-                                        </a>
-                                        <br />
-                                    {% endfor %}
-                                </p>
-                            </div>
-                        </div>
+                        {% include 'clients/snippets/referrals.html' with object=client %}
+                        {% for dependent in client.dependent_set.all %}
+                            {% include 'clients/snippets/referrals.html' with object=dependent hide_referred_by=True %}
+                        {% endfor %}
                         <div class="form-group">
                             <label class="col-lg-3 control-label">
                                 <h5>

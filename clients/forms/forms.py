@@ -355,6 +355,18 @@ class ReferralForm(forms.ModelForm):
         exclude = ('client',)
         widgets = {'claims': forms.CheckboxSelectMultiple}
 
+    def _get_referred_claims(self, person, claims_queryset):
+        referred_set = person.referred_by.select_related(
+            'person_ptr', 'referred_by',
+        ).all()
+        for referred in referred_set:
+            claims = referred.claim_set.filter(
+                claimcoverage__actual_paid_date__isnull=False
+            )
+            claims_queryset = claims_queryset | claims
+
+        return claims_queryset
+
     def __init__(self, client, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -367,17 +379,15 @@ class ReferralForm(forms.ModelForm):
                 )
         )
 
-        claims_queryset = None
-        for referred in client.person_ptr.referred_by.select_related(
-                    'person_ptr', 'referred_by'
-                ).all():
-            claims = referred.claim_set.filter(
-                claimcoverage__actual_paid_date__isnull=False
+        claims_queryset = clients_models.Claim.objects.none()
+        claims_queryset = self._get_referred_claims(
+            client.person_ptr, claims_queryset
+        )
+
+        for dependent in client.dependent_set.all():
+            claims_queryset = self._get_referred_claims(
+                dependent.person_ptr, claims_queryset
             )
-            if claims_queryset:
-                claims_queryset = claims_queryset | claims
-            else:
-                claims_queryset = claims
 
         claims = clients_models.Referral.objects.prefetch_related(
             'claims'
