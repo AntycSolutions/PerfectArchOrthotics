@@ -147,7 +147,7 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
     def test_shoe_change_credit_value(self):
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -166,13 +166,13 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
         shoe.credit_value = 2
         shoe.save()
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 2)
+        self.assertEqual(client.credit2, -2)
 
     def test_shoeorder_shoe_delete(self):
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -191,7 +191,7 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
         shoe.delete()
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -215,7 +215,7 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
         shoeorder.delete()
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -232,7 +232,7 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
     def test_coverageorder_change_credit_value(self):
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -244,13 +244,13 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
         coverageorder.credit_value = 2
         coverageorder.save()
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 2)
+        self.assertEqual(client.credit2, -2)
 
     def test_coverageorder_delete(self):
         client = clients_models.Client.objects.get(first_name='Test Client')
@@ -263,7 +263,7 @@ class CreditTestCase(test.TestCase):
         )
         client = clients_models.Client.objects.get(first_name='Test Client')
 
-        self.assertEqual(client.credit2, 1)
+        self.assertEqual(client.credit2, -1)
 
         coverageorder.delete()
         client = clients_models.Client.objects.get(first_name='Test Client')

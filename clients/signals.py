@@ -88,7 +88,7 @@ def shoeorder_pre_save(sender, instance, **kwargs):
         sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
         update_credit(
-            instance.shoe_attributes.shoe.credit_value,
+            -instance.shoe_attributes.shoe.credit_value,
             instance.claimant.get_client()
         )
     # else:  # updated, do nothing
@@ -99,27 +99,27 @@ def coverageorder_and_adjustmentorder_pre_save(sender, instance, **kwargs):
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
         update_credit(
-            instance.credit_value,
+            -instance.credit_value,
             instance.claimant.get_client()
         )
     else:  # updated
         if obj.credit_value != instance.credit_value:
             update_credit(
-                instance.credit_value - obj.credit_value,
+                -(instance.credit_value - obj.credit_value),
                 instance.claimant.get_client()
             )
 
 
 def shoeorder_post_delete(sender, instance, **kwargs):
     update_credit(
-        -instance.shoe_attributes.shoe.credit_value,
+        instance.shoe_attributes.shoe.credit_value,
         instance.claimant.get_client()
     )
 
 
 def coverageorder_and_adjustmentorder_post_delete(sender, instance, **kwargs):
     update_credit(
-        -instance.credit_value,
+        instance.credit_value,
         instance.claimant.get_client()
     )
 
@@ -157,7 +157,7 @@ def shoe_pre_save(sender, instance, **kwargs):
             for shoeattributes in instance.shoeattributes_set.all():
                 for shoeorder in shoeattributes.shoeorder_set.all():
                     update_credit(
-                        instance.credit_value - obj.credit_value,
+                        -(instance.credit_value - obj.credit_value),
                         shoeorder.claimant.get_client()
                     )
 
