@@ -170,6 +170,7 @@ class Order(models.Model, model_utils.FieldList):
             pass
         try:
             order = CoverageOrder.objects.get(pk=self.pk)
+            # ignore quantity as credit_value is already the total
 
             return order.credit_value
         except CoverageOrder.DoesNotExist:

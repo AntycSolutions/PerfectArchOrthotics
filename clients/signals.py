@@ -95,6 +95,7 @@ def shoeorder_pre_save(sender, instance, **kwargs):
 
 
 def coverageorder_and_adjustmentorder_pre_save(sender, instance, **kwargs):
+    # ignore coverageorder quantity as credit_value is already the total
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
@@ -118,6 +119,7 @@ def shoeorder_post_delete(sender, instance, **kwargs):
 
 
 def coverageorder_and_adjustmentorder_post_delete(sender, instance, **kwargs):
+    # ignore coverageorder quantity as credit_value is already the total
     update_credit(
         instance.credit_value,
         instance.claimant.get_client()

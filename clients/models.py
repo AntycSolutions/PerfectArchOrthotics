@@ -143,7 +143,6 @@ class Client(Person):
     def _claimed_credit(self, person):
         claimed_credit = 0
         for order in person.order_set.all():
-            # if order.dispensed_date:
             claimed_credit += order.get_credit_value()
 
         return claimed_credit
