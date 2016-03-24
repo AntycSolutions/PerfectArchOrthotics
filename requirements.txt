@@ -1,0 +1,7 @@
+Django==1.8.11
+django-ajax-selects==1.4.3
+django-bootstrap3-datetimepicker==2.2.3
+django-crispy-forms==1.6.0
+django-easy-pdf==0.1.0
+piexif==1.0.3
+xhtml2pdf==0.1a1

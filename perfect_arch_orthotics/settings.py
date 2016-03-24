@@ -111,8 +111,9 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
 
     def show_toolbar(request):
-        if (hasattr(request, 'user') and not request.is_ajax()
-                and request.user.is_staff):
+        if (
+            hasattr(request, 'user') and not request.is_ajax() and
+                request.user.is_staff):
             return True
         return False
     DEBUG_TOOLBAR_CONFIG = {
