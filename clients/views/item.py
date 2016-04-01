@@ -3,8 +3,9 @@ import collections
 
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
-
 from django.core.urlresolvers import reverse_lazy, reverse
+
+from utils import views_utils
 
 from utils.search import get_query
 from clients.models import Item
@@ -159,9 +160,17 @@ class UpdateItemView(UpdateView):
         return self.success_url
 
 
-class DeleteItemView(DeleteView):
+class DeleteItemView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Item
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.delete_item',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

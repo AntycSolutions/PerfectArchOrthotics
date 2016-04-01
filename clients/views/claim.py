@@ -4,7 +4,8 @@ from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
 from django.core import urlresolvers
-from django.forms import fields as form_fields
+
+from utils import views_utils
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage, ClaimCoverage, ClaimItem, Dependent
@@ -64,6 +65,8 @@ class CreateClaimView(CreateView):
                 "%s - %s - %s - $%s" % (
                     obj.get_coverage_type_display(),
                     obj.product_code,
+                    # TODO: need to get unit_price at the time of
+                    #  submitted_datetime
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -128,6 +131,8 @@ class CreateClaimView(CreateView):
             lambda obj:
                 "%s - %s - %s - $%s" % (
                     obj.get_coverage_type_display(), obj.product_code,
+                    # TODO: need to get unit_price at the time of
+                    #  submitted_datetime
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -233,6 +238,8 @@ class UpdateClaimView(UpdateView):
                 "%s - %s - %s - $%s" % (
                     obj.get_coverage_type_display(),
                     obj.product_code,
+                    # TODO: need to get unit_price at the time of
+                    #  submitted_datetime
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -300,6 +307,8 @@ class UpdateClaimView(UpdateView):
             lambda obj:
                 "%s - %s - %s - $%s" % (
                     obj.get_coverage_type_display(), obj.product_code,
+                    # TODO: need to get unit_price at the time of
+                    #  submitted_datetime
                     obj.description, obj.unit_price)
         )
         nestedformset.form.base_fields[
@@ -347,12 +356,20 @@ class UpdateClaimView(UpdateView):
         return self.success_url
 
 
-class DeleteClaimView(DeleteView):
+class DeleteClaimView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Claim
     slug_field = "id"
     slug_url_kwarg = "claim_id"
-    success_url = reverse_lazy('claims')
+    success_url = urlresolvers.reverse_lazy('claims')
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.delete_claim',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

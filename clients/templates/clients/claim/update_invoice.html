@@ -31,6 +31,7 @@
     <h1>
         Update invoice information for: {{ invoice.claim.patient.full_name }}
     </h1>
+    {% include 'utils/snippets/messages.html' %}
     <form id="update_invoice_form" class="form-horizontal" method="POST">
         {% csrf_token %}
         <h5>Claim</h5>

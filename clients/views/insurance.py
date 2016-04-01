@@ -3,6 +3,8 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
 from django.core import urlresolvers
 
+from utils import views_utils
+
 from clients.models import Insurance, Person, Client, Dependent, Coverage
 from clients.forms.forms import InsuranceForm
 
@@ -124,11 +126,19 @@ class UpdateInsuranceView(UpdateView):
         return self.success_url
 
 
-class DeleteInsuranceView(DeleteView):
+class DeleteInsuranceView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Insurance
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.delete_insurance',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,7 +149,8 @@ class DeleteInsuranceView(DeleteView):
         return context
 
     def get_success_url(self):
-        self.success_url = self.object.get_absolute_url()
+        self.success_url = \
+            self.object.main_claimant.get_client().get_absolute_url()
 
         return self.success_url
 

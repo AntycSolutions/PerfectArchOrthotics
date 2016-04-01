@@ -12,7 +12,7 @@
         Claim for {{ claim.patient.full_name }}
     </h1>
     {% include 'utils/snippets/messages.html' %}
-    <style>
+    <style type="text/css">
         .form-horizontal .form-group {
             margin-bottom: 0;
         }
@@ -139,7 +139,12 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>{% verbose_field_name coverage_class "coverage_type" %}</th>
+                                <th>
+                                    {% verbose_field_name coverage_class "coverage_type" %}
+                                </th>
+                                <th>
+                                    Payment Type
+                                </th>
                                 <th>Claim Amount Remaining</th>
                                 <th>Quantity Remaining</th>
                                 <th>Total Amount</th>
@@ -153,7 +158,12 @@
                         <tbody>
                         {% for claim_coverage in claim.claimcoverage_set.all %}
                             <tr>
-                                <td>{{ claim_coverage.coverage.get_coverage_type_display }}</td>
+                                <td>
+                                    {{ claim_coverage.coverage.get_coverage_type_display }}
+                                </td>
+                                <td>
+                                    {{ claim_coverage.get_payment_type_display }}
+                                </td>
                                 <td>{{ claim_coverage.coverage.claim_amount_remaining }}</td>
                                 <td>{{ claim_coverage.coverage.quantity_remaining }}</td>
                                 {% with totals=claim_coverage.total_amount_quantity %}
@@ -169,7 +179,7 @@
                             </tr>
                             <tr>
                                 <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <div class="pull-left">
                                         {% if claim_coverage.claimitem_set.all %}
                                             <table class="table" style="display: inline-block;">
@@ -193,9 +203,11 @@
                                                     <td>{{ claim_item.item.product_code }}</td>
                                                     <td>{{ claim_item.item.description }}</td>
                                                     <td>{{ claim_item.item.cost }}</td>
-                                                    <td>{{ claim_item.item.unit_price }}</td>
+                                                    <td>
+                                                        {{ claim_item.get_unit_price }}
+                                                    </td>
                                                     <td>{{ claim_item.quantity }}</td>
-                                                    <td>{{ claim_item.amount }}</td>
+                                                    <td>{{ claim_item.unit_price_amount }}</td>
                                                 </tr>
                                             {% endfor %}
                                             </tbody>
@@ -225,7 +237,7 @@
                 </a>
                 {% if has_orthotics %}
                     <a href="{% url 'fillOutProof' claim.id %}" class="btn btn-default">
-                        Generate Proof of Manufacturing
+                        Generate Manufacturing Work Order
                     </a>
                 {% endif %}
                 <a href="{% url 'receipt_list' claim.pk %}" class="btn btn-default">
@@ -235,4 +247,4 @@
         </div>
     </div>
 
-{% endblock %}
+{% endblock content %}

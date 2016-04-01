@@ -88,6 +88,7 @@ admin.site.register(ProofOfManufacturing)
 admin.site.register(clients_models.Referral)
 admin.site.register(clients_models.Receipt)
 admin.site.register(clients_models.CreditDivisor)
+admin.site.register(clients_models.Note)
 
 # Unused, don't display
 admin.site.unregister(Group)

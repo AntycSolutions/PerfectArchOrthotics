@@ -3,7 +3,7 @@
 {% load verbose_name %}
 {% load nbsp %}
 
-{% block title %} - Proof of Manufacturing for {{ claim.patient.full_name }}{% endblock %}
+{% block title %} - Manufacturing Work Order {{ claim.patient.full_name }}{% endblock %}
 
 {% include 'navbar.html' %}
 
@@ -12,13 +12,14 @@
     <h1>
         Claim for {{ claim.patient.full_name }}
     </h1>
+    {% include 'utils/snippets/messages.html' %}
     <div>
         <a class="btn btn-info" href="{% url 'claim' claim.id %}">
             View
         </a>
     </div>
     <h1>
-        Proof of Manufacturing for {{ claim.patient.full_name }}
+        Manufacturing Work Order for {{ claim.patient.full_name }}
     </h1>
     <div>
         {% if not proof_of_manufacturing %}
@@ -32,7 +33,7 @@
         <div class="well">
             <h3>Information</h3>
             <ul>
-                <li>Invoice #:
+                <li>Work Order #:
                     {{ invoice_number }}
                 </li>
                 <li>{{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
@@ -70,7 +71,9 @@
                 </li>
             </ul>
         </div>
-        <a href="{% url 'proof' claim.id %}" class="btn btn-default">View Proof Of Manufacturing</a>
+        <a href="{% url 'proof' claim.id %}" class="btn btn-default">
+            View Manufacturing Work Order
+        </a>
     {% endif %}
     <br /><br />
 

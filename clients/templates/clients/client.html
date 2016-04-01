@@ -3,6 +3,7 @@
 {% load verbose_name %}
 {% load crispy_forms_tags %}
 {% load update_attrs %}
+{% load nbsp %}
 
 {% include 'navbar.html' %}
 
@@ -13,6 +14,7 @@
     <h1>
         {{ client.full_name }}
     </h1>
+    {% include 'utils/snippets/messages.html' %}
     <div>
         <a href="{% url 'claim_create' client.id %}" class="btn btn-primary">
             Create Claim
@@ -28,7 +30,7 @@
         </a>
     </div>
     <br />
-    <style>
+    <style type="text/css">
         .form-static .form-group {
             margin-bottom: 0;
         }
@@ -241,7 +243,7 @@
                             </label>
                             <div class="col-lg-8">
                                 <p class="form-control-static">
-                                    {{ client.notes }}
+                                    {{ client.notes|nbsp_double|linebreaksbr }}
                                 </p>
                             </div>
                         </div>
@@ -257,6 +259,78 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left" style="padding-top: 7.5px;">
+                <a href="#collapse_notes" data-toggle="collapse" data-target="#notes">
+                    Notes
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="notes" class="panel-body collapse in">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="form-horizontal form-static">
+                        {% if client.note_set.exists %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 200px;">
+                                                Created
+                                            </th>
+                                            <th>
+                                                Notes
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for note in client.note_set.all %}
+                                            <tr>
+                                                <td>
+                                                    <p>
+                                                        {{ note.created }}
+                                                    </p>
+                                                    <a class="btn btn-default crud" href="">
+                                                        Update
+                                                    </a>
+                                                    <br />
+                                                    <a class="btn btn-danger crud" href="">
+                                                        Delete
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ note.notes|nbsp_double|linebreaksbr }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                    <p class="form-control-static">
+                                        There are no Notes.
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>{# ./form-horizontal #}
+                </div>{# ./col-lg-7 #}
+                <div class="col-lg-5">
+                    <form method="POST">
+                        {% crispy note_form %}
+                        <button name="note_submit" type="submit" class="btn btn-primary">
+                            Add Note
+                        </button>
+                    </form>
+                </div>{# ./col-lg-5 #}
             </div>
         </div>
     </div>
@@ -348,7 +422,7 @@
                                     {{ referral_form.credit_value|as_crispy_field }}
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
+                            <button name="referral_submit" type="submit" class="btn btn-primary">
                                 Add Credit
                             </button>
                         </form>
@@ -722,10 +796,10 @@
         </div>
     </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block extra_scripts %}
-    <script>
+    <script type="text/javascript">
         if (window.location.hash) {
             var hash = window.location.hash;
             if (hash.indexOf('insurance') > -1) {
@@ -736,4 +810,4 @@
             }
         }
     </script>
-{% endblock %}
+{% endblock extra_scripts %}

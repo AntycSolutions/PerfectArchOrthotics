@@ -372,7 +372,13 @@ def claimSearchView(request):
 
     claims = None
     # Start from all, drilldown to q df dt
-    found_claims = Claim.objects.order_by('-submitted_datetime')
+    found_claims = Claim.objects.select_related(
+        'insurance'
+    ).prefetch_related(
+        'claimcoverage_set__claimitem_set__item'
+    ).order_by(
+        '-submitted_datetime'
+    )
 
     # Query, Date From, Date To
     if ('q' in request.GET) and request.GET['q'].strip():
@@ -408,16 +414,16 @@ def claimSearchView(request):
         )),
         assignment_expected_back=Sum(Case(
             When(
-                Q(claim__insurance__benefits='a')
-                & Q(actual_paid_date__isnull=False),
+                Q(claim__insurance__benefits='a') &
+                Q(actual_paid_date__isnull=False),
                 then='expected_back',
             ),
             default=0,
         )),
         pending_assignment_expected_back=Sum(Case(
             When(
-                Q(claim__insurance__benefits='a')
-                & Q(actual_paid_date__isnull=True),
+                Q(claim__insurance__benefits='a') &
+                Q(actual_paid_date__isnull=True),
                 then='expected_back',
             ),
             default=0,
@@ -432,47 +438,23 @@ def claimSearchView(request):
     )
 
     # Amount Claimed
-    totals = Claim.objects.filter(
-        id__in=found_claims,
-    ).aggregate(
-        assignment_amount_claimed=Sum(Case(
-            When(
-                insurance__benefits='a',
-                then=(
-                    Coalesce(
-                        F('claimcoverage__claimitem__item__unit_price'),
-                        0
-                    )
-                    * Coalesce(
-                        F('claimcoverage__claimitem__quantity'),
-                        0
-                    )
-                )
-            ),
-            default=0,
-        )),
-        non_assignment_amount_claimed=Sum(Case(
-            When(
-                insurance__benefits='na',
-                then=(
-                    Coalesce(
-                        F('claimcoverage__claimitem__item__unit_price'),
-                        0
-                    )
-                    * Coalesce(
-                        F('claimcoverage__claimitem__quantity'),
-                        0
-                    )
-                )
-            ),
-            default=0,
-        )),
-    )
+    assignment_amount_claimed = 0
+    non_assignment_amount_claimed = 0
+    # amount looks up the Item's historical value, so we can't do this is an
+    #  aggregate
+    for amount_claimed_claim in found_claims:
+        benefits = amount_claimed_claim.insurance.benefits
 
-    assignment_amount_claimed = (totals['assignment_amount_claimed'] or 0)
-    non_assignment_amount_claimed = (
-        totals['non_assignment_amount_claimed'] or 0
-    )
+        for claimcoverage in amount_claimed_claim.claimcoverage_set.all():
+            for claimitem in claimcoverage.claimitem_set.all():
+                if benefits == Insurance.ASSIGNMENT:
+                    assignment_amount_claimed += claimitem.unit_price_amount()
+                elif benefits == Insurance.NON_ASSIGNMENT:
+                    assignment_amount_claimed += claimitem.unit_price_amount()
+                elif not benefits:
+                    pass
+                else:
+                    raise Exception('Unknown Insurance benefits')
 
     claims_rows_per_page = views_utils._get_paginate_by(
         request, 'claims_rows_per_page'
@@ -498,9 +480,9 @@ def claimSearchView(request):
     context_dict['total_expected_back'] = \
         non_assignment_expected_back + total_assignment_expected_back
 
-    return render_to_response('clients/claims.html',
-                              context_dict,
-                              context)
+    return render_to_response(
+        'clients/claims.html', context_dict, context
+    )
 
 
 @login_required
@@ -543,7 +525,11 @@ def getFieldsFromRequest(request, default=""):
 def clientView(request, client_id):
     context = RequestContext(request)
 
-    client = Client.objects.get(id=client_id)
+    client = Client.objects.prefetch_related(
+        'insurance_set',
+        'dependent_set',
+        'claim_set__claimcoverage_set__claimitem_set__item'
+    ).get(id=client_id)
     insurance = client.insurance_set.all()
     dependents = client.dependent_set.all()
     claims = client.claim_set.all()
@@ -570,21 +556,22 @@ def clientView(request, client_id):
         expected_back__sum=Sum('expected_back'),
     )
     client_total_expected_back = totals['expected_back__sum'] or 0
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=False,
-        claim_coverage__claim__in=claims,
-    ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum(
-            'item__unit_price',
-            field='"clients_item"."unit_price" * quantity'
-        ),
-        cost__sum=Sum('item__cost',
-                      field='"clients_item"."cost" * quantity')
-    )
-    client_total_amount_claimed = totals['amount_claimed__sum']
-    client_total_cost = totals['cost__sum'] or 0
+
+    client_total_amount_claimed = 0
+    client_total_cost = 0
+    pending_client_total_amount_claimed = 0
+    pending_client_total_cost = 0
+    for claim in claims:
+        for claimcoverage in claim.claimcoverage_set.all():
+            for claimitem in claimcoverage.claimitem_set.all():
+                amounts = claimitem.get_amount()
+                if claimcoverage.actual_paid_date:
+                    client_total_amount_claimed += amounts['unit_price']
+                    client_total_cost += amounts['cost']
+                else:
+                    pending_client_total_amount_claimed += \
+                        amounts['unit_price']
+                    pending_client_total_cost += amounts['cost']
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=True,
@@ -593,21 +580,6 @@ def clientView(request, client_id):
         expected_back__sum=Sum('expected_back'),
     )
     pending_client_total_expected_back = totals['expected_back__sum'] or 0
-    totals = ClaimItem.objects.filter(
-        claim_coverage__actual_paid_date__isnull=True,
-        claim_coverage__claim__in=claims,
-    ).aggregate(
-        # first arg is a lie but needs to be item__unit_price to get the join
-        # cant use item__unit_price as it needs raw sql in field kwarg
-        amount_claimed__sum=Sum(
-            'item__unit_price',
-            field='"clients_item"."unit_price" * quantity'
-        ),
-        cost__sum=Sum('item__cost',
-                      field='"clients_item"."cost" * quantity')
-    )
-    pending_client_total_amount_claimed = totals['amount_claimed__sum']
-    pending_client_total_cost = totals['cost__sum'] or 0
 
     dependents_pks = list(dependents.values_list('pk', flat=True))
     pks = dependents_pks + [client.pk]
@@ -640,17 +612,27 @@ def clientView(request, client_id):
             referral_form = clients_forms.ReferralForm(client)
         except clients_forms.ReferralForm.EmptyClaimsQuerySet:
             referral_form = None
-    elif request.method == 'POST':
-        referral_form = clients_forms.ReferralForm(client, request.POST)
-        if referral_form.is_valid():
-            referral = referral_form.save(commit=False)
-            referral.client = client
-            referral.save()
-            referral_form.save_m2m()
 
-            return http.HttpResponseRedirect(
-                urlresolvers.reverse('client', args=[client_id])
-            )
+        note_form = clients_forms.NoteForm()
+    elif request.method == 'POST':
+        if 'referral_submit' in request.POST:
+            referral_form = clients_forms.ReferralForm(client, request.POST)
+            if referral_form.is_valid():
+                referral = referral_form.save(commit=False)
+                referral.client = client
+                referral.save()
+                referral_form.save_m2m()
+
+        if 'note_submit' in request.POST:
+            note_form = clients_forms.NoteForm(request.POST)
+            if note_form.is_valid():
+                note = note_form.save(commit=False)
+                note.client = client
+                note.save()
+
+        return http.HttpResponseRedirect(
+            urlresolvers.reverse('client', args=[client_id])
+        )
 
     context_dict = {
         'client': client,
@@ -669,7 +651,8 @@ def clientView(request, client_id):
         'spouse': spouse,
         'children': children,
         'dependent_class': Dependent,
-        'referral_form': referral_form
+        'referral_form': referral_form,
+        'note_form': note_form,
     }
 
     return render_to_response('clients/client.html', context_dict, context)

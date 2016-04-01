@@ -1,4 +1,5 @@
-<style>
+
+<style type="text/css">
     .crud:not(:last-child) {
         width: 75px;
         margin-bottom: 5px;
@@ -7,27 +8,50 @@
         width: 75px;
     }
 </style>
+
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th></th>
-                <th>Patient</th>
-                <th>Provider</th>
-                <th>Employer</th>
-                <th>Submitted Datetime</th>
-                <th>Insurance Paid Date</th>
-                <th>Total Amount Claimed</th>
-                <th>Total Quantity Claimed</th>
-                <th>Total Expected Back</th>
-                <!-- <th>Total Max Quantity</th>
-                <th>Total Max Expected Back</th> -->
+                <th>
+                    Patient
+                </th>
+                <th>
+                    Provider
+                </th>
+                <th>
+                    Employer
+                </th>
+                <th>
+                    Submitted Datetime
+                </th>
+                <th>
+                    Insurance Paid Date
+                </th>
+                <th>
+                    Total Amount Claimed
+                </th>
+                <th>
+                    Total Quantity Claimed
+                </th>
+                <th>
+                    Total Expected Back
+                </th>
+                {% comment %}
+                    <th>
+                        Total Max Quantity
+                    </th>
+                    <th>
+                        Total Max Expected Back
+                    </th>
+                {% endcomment %}
             </tr>
         </thead>
         <tbody>
             {% for claim in claims %}
                 <tr>
-                    <td style="width: 91px;"><!-- from computed when width < 91 -->
+                    <td style="width: 91px;">{# from computed when width < 91 #}
                         <a class="btn btn-info crud" href="{% url 'claim' claim.id %}">
                             View
                         </a>
@@ -40,62 +64,122 @@
                             Delete
                         </a>
                     </td>
-                    <td><a href="{{ claim.patient.get_absolute_url }}">{{ claim.patient.full_name }}</a></td>
-                    <td>{{ claim.insurance.provider }}</td>
-                    <td>{{ claim.patient.employer }}</td>
-                    <td>{{ claim.submitted_datetime }}</td>
-                    <td>{{ claim.insurance_paid_date }}</td>
+                    <td>
+                        <a href="{{ claim.patient.get_absolute_url }}">
+                            {{ claim.patient.full_name }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ claim.insurance.provider }}
+                    </td>
+                    <td>
+                        {{ claim.patient.employer }}
+                    </td>
+                    <td>
+                        {{ claim.submitted_datetime }}
+                    </td>
+                    <td{% if not claim.insurance_paid_date %} style="color: red;"{% endif %}>
+                        {{ claim.insurance_paid_date }}
+                    </td>
                     {% with totals=claim.total_amount_quantity_claimed %}
-                        <td>{{ totals.total_amount_claimed }}</td>
-                        <td>{{ totals.total_quantity_claimed }}</td>
+                        <td>
+                            {{ totals.total_amount_claimed }}
+                        </td>
+                        <td>
+                            {{ totals.total_quantity_claimed }}
+                        </td>
                     {% endwith %}
-                    <td>{{ claim.total_expected_back }}</td>
+                    <td>
+                        {{ claim.total_expected_back }}
+                    </td>
                     {% comment %}
-                    {% with totals=claim.total_max_expected_back_quantity %}
-                        <td>{{ totals.total_max_quantity }}</td>
-                        <td>{{ totals.total_max_expected_back }}</td>
-                    {% endwith %}
+                        {% with totals=claim.total_max_expected_back_quantity %}
+                            <td>
+                                {{ totals.total_max_quantity }}
+                            </td>
+                            <td>
+                                {{ totals.total_max_expected_back }}
+                            </td>
+                        {% endwith %}
                     {% endcomment %}
                 </tr>
                 <tr>
-                    <td colspan="5"><ul class="pull-right"><li>Coverages:</li></ul></td>
+                    <td colspan="5">
+                        <ul class="pull-right">
+                            <li>
+                                Coverages:
+                            </li>
+                        </ul>
+                    </td>
                     <td colspan="4">
                         <div class="pull-left">
                             {% if claim.claimcoverage_set.all %}
                                 <table class="table" style="display: inline-block;">
                                     <thead>
                                         <tr>
-                                            <th>Coverage Type</th>
-                                            <th>Total Amount</th>
-                                            <th>Total Quantity</th>
-                                            <th>Expected Back</th>
-                                            <!-- <th>Max Quantity</th>
-                                            <th>Max Expected Back</th> -->
-                                            <th>Actual Paid Date</th>
+                                            <th>
+                                                Coverage Type
+                                            </th>
+                                            <th>
+                                                Total Amount
+                                            </th>
+                                            <th>
+                                                Total Quantity
+                                            </th>
+                                            <th>
+                                                Expected Back
+                                            </th>
+                                            {% comment %}
+                                                <th>
+                                                    Max Quantity
+                                                </th>
+                                                <th>
+                                                    Max Expected Back
+                                                </th>
+                                            {% endcomment %}
+                                            <th>
+                                                Actual Paid Date
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for claim_coverage in claim.claimcoverage_set.all %}
                                             <tr>
-                                                <td>{{ claim_coverage.coverage.get_coverage_type_display }}</td>
+                                                <td>
+                                                    {{ claim_coverage.coverage.get_coverage_type_display }}
+                                                </td>
                                                 {% with totals=claim_coverage.total_amount_quantity %}
-                                                    <td>{{ totals.total_amount }}</td>
-                                                    <td>{{ totals.total_quantity }}</td>
+                                                    <td>
+                                                        {{ totals.total_amount }}
+                                                    </td>
+                                                    <td>
+                                                        {{ totals.total_quantity }}
+                                                    </td>
                                                 {% endwith %}
-                                                <td>{{ claim_coverage.expected_back }}</td>
+                                                <td>
+                                                    {{ claim_coverage.expected_back }}
+                                                </td>
                                                 {% comment %}
-                                                {% with maxes=claim_coverage.max_expected_back_quantity %}
-                                                    <td>{{ maxes.max_quantity }}</td>
-                                                    <td>{{ maxes.max_expected_back }}</td>
-                                                {% endwith %}
+                                                    {% with maxes=claim_coverage.max_expected_back_quantity %}
+                                                        <td>
+                                                            {{ maxes.max_quantity }}
+                                                        </td>
+                                                        <td>
+                                                            {{ maxes.max_expected_back }}
+                                                        </td>
+                                                    {% endwith %}
                                                 {% endcomment %}
-                                                <td>{{ claim_coverage.actual_paid_date }}</td>
+                                                <td{% if not claim_coverage.actual_paid_date %} style="color: red;"{% endif %}>
+                                                    {{ claim_coverage.actual_paid_date }}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
                             {% else %}
-                                <p>There are no Coverages for this Claim currenty.</p>
+                                <p>
+                                    There are no Coverages for this Claim currenty.
+                                </p>
                             {% endif %}
                         </div>
                     </td>

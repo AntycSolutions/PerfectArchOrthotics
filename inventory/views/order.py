@@ -7,7 +7,9 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
+from utils import views_utils
 from utils.search import get_query, get_date_query
+
 from inventory import models
 from inventory.forms import forms
 
@@ -24,6 +26,7 @@ class ListOrderView(ListView):
                 and self.request.GET['rows_per_page'].strip()):
             self.paginate_by = self.request.GET['rows_per_page']
             self.request.session['rows_per_page'] = self.paginate_by
+
         return self.paginate_by
 
     def get_context_data(self, **kwargs):
@@ -187,6 +190,7 @@ class ShoeCreateOrderView(CreateView):
         if "person_pk" in self.kwargs:
             person_pk = self.kwargs["person_pk"]
             order_form.fields['claimant'].initial = person_pk
+
         return order_form
 
     def form_valid(self, form):
@@ -210,6 +214,7 @@ class ShoeCreateOrderView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShoeCreateOrderView, self).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -220,6 +225,7 @@ class ShoeCreateOrderView(CreateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
@@ -261,6 +267,7 @@ class CoverageCreateOrderView(CreateView):
             CoverageCreateOrderView,
             self
         ).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -270,6 +277,7 @@ class CoverageCreateOrderView(CreateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
@@ -285,6 +293,7 @@ class AdjustmentCreateOrderView(CreateView):
         if "person_pk" in self.kwargs:
             person_pk = self.kwargs["person_pk"]
             order_form.fields['claimant'].initial = person_pk
+
         return order_form
 
     def form_valid(self, form):
@@ -308,6 +317,7 @@ class AdjustmentCreateOrderView(CreateView):
             AdjustmentCreateOrderView,
             self
         ).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
@@ -317,6 +327,7 @@ class AdjustmentCreateOrderView(CreateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
@@ -326,7 +337,9 @@ class ShoeDetailOrderView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ShoeDetailOrderView, self).get_context_data(**kwargs)
+
         context['model_name'] = self.model._meta.verbose_name
+
         return context
 
 
@@ -393,6 +406,7 @@ class ShoeUpdateOrderView(UpdateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
@@ -433,6 +447,7 @@ class CoverageUpdateOrderView(UpdateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
@@ -473,13 +488,22 @@ class AdjustmentUpdateOrderView(UpdateView):
 
     def get_success_url(self):
         self.success_url = self.object.get_absolute_url()
+
         return self.success_url
 
 
-class ShoeDeleteOrderView(DeleteView):
+class ShoeDeleteOrderView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = models.ShoeOrder
 
+    def get_permissions(self):
+        permissions = {
+            'permission': 'inventory.delete_shoeorder',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -490,13 +514,22 @@ class ShoeDeleteOrderView(DeleteView):
 
     def get_success_url(self):
         self.success_url = reverse_lazy('order_list')
+
         return self.success_url
 
 
-class CoverageDeleteOrderView(DeleteView):
+class CoverageDeleteOrderView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = models.CoverageOrder
 
+    def get_permissions(self):
+        permissions = {
+            'permission': 'inventory.delete_coverageorder',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -507,12 +540,21 @@ class CoverageDeleteOrderView(DeleteView):
 
     def get_success_url(self):
         self.success_url = reverse_lazy('order_list')
+
         return self.success_url
 
 
-class AdjustmentDeleteOrderView(DeleteView):
+class AdjustmentDeleteOrderView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = models.AdjustmentOrder
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'inventory.delete_adjustmentorder',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -524,4 +566,5 @@ class AdjustmentDeleteOrderView(DeleteView):
 
     def get_success_url(self):
         self.success_url = reverse_lazy('order_list')
+
         return self.success_url

@@ -6,6 +6,8 @@ from django.forms import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 from django.template import defaultfilters
 
+from crispy_forms import helper, layout, bootstrap
+
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from utils.forms import fields as utils_fields, widgets as utils_widgets
@@ -433,3 +435,15 @@ class ReceiptForm(forms.ModelForm):
             'Ex. 00 80 00 80 00 (for CHIP)'
         self.fields['TSI'].help_text = \
             'Ex. F8 00 (for CHIP)'
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = clients_models.Note
+        exclude = ['client']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = helper.FormHelper(self)
+        self.helper.form_tag = False

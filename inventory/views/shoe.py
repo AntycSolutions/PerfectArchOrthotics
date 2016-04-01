@@ -11,7 +11,8 @@ from django.forms import fields as form_fields
 from django.forms.models import BaseInlineFormSet
 
 from utils.search import get_query
-from utils import model_utils
+from utils import model_utils, views_utils
+
 from inventory.models import Shoe, ShoeAttributes
 
 
@@ -233,21 +234,27 @@ class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
             form, index
         )
 
-        ordered_fields = collections.OrderedDict()
-        for k, v in form.fields.items():
-            if k == "quantity":
-                v.widget = form_fields.HiddenInput()
-            ordered_fields.update({k: v})
-            if k == "id":
-                ordered_fields.update(
-                    {'new_quantity': form_fields.IntegerField(
-                        label="Quantity", initial=(
-                            form.instance.quantity - form.instance.dispensed()
-                        )
-                     )}
-                )
+        # this depends on value of extra, which is currently assumed to be 1
+        if index is not None and index != self.queryset.count():
+            ordered_fields = collections.OrderedDict()
+            for k, v in form.fields.items():
+                if k == "quantity":
+                    v.widget = form_fields.HiddenInput()
+                ordered_fields.update({k: v})
+                if k == "id":
+                    ordered_fields.update(
+                        {
+                            'new_quantity': form_fields.IntegerField(
+                                label="Quantity",
+                                initial=(
+                                    form.instance.quantity -
+                                    form.instance.dispensed()
+                                )
+                            )
+                        }
+                    )
 
-        form.fields = ordered_fields
+            form.fields = ordered_fields
 
     def save_existing(self, form, instance, commit=True):
         new_quantity = form.cleaned_data['new_quantity']
@@ -361,9 +368,17 @@ class UpdateShoeView(UpdateView):
         return self.success_url
 
 
-class DeleteShoeView(DeleteView):
+class DeleteShoeView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Shoe
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'inventory.delete_shoe',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -11,6 +11,7 @@
     <h1>
         Claim for {{ claim.patient.full_name }}
     </h1>
+    {% include 'utils/snippets/messages.html' %}
     <div>
         <a class="btn btn-info" href="{% url 'claim' claim.id %}">
             View
@@ -66,11 +67,11 @@
                                 {% verbose_field_name claim_item.item "cost" %}:
                                 {{ claim_item.item.cost }}
                                 {% verbose_field_name claim_item.item "unit_price" %}:
-                                {{ claim_item.item.unit_price }}
+                                {{ claim_item.get_unit_price }}
                                 {% verbose_field_name claim_item "quantity" %}:
                                 {{ claim_item.quantity }}
                                 Amount:
-                                {{ claim_item.amount }}
+                                {{ claim_item.unit_price_amount }}
                             </li>
                         {% endfor %}
                     {% endfor %}

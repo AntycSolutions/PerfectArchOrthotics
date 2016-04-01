@@ -1,5 +1,7 @@
-from django.core.urlresolvers import reverse_lazy
+from django.core import urlresolvers
 from django.views.generic.edit import CreateView, DeleteView
+
+from utils import views_utils
 
 from clients.models import Client
 from clients.forms.forms import ClientForm
@@ -12,17 +14,26 @@ class CreateClientView(CreateView):
 
     def get_success_url(self):
         client_id = self.object.id
-        self.success_url = reverse_lazy('client',
-                                        kwargs={'client_id': client_id})
+        self.success_url = urlresolvers.reverse_lazy(
+            'client', kwargs={'client_id': client_id}
+        )
         return self.success_url
 
 
-class DeleteClientView(DeleteView):
+class DeleteClientView(views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Client
     slug_field = "id"
     slug_url_kwarg = "client_id"
-    success_url = reverse_lazy('client_list')
+    success_url = urlresolvers.reverse_lazy('client_list')
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'inventory.delete_shoeorder',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

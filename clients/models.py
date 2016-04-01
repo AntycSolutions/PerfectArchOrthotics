@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core import urlresolvers
 from django.utils import timezone
 from django.db.models import Sum, Case, When
 
@@ -178,13 +178,23 @@ class Client(Person):
         return round(credit, 2)
 
     def get_absolute_url(self):
-        return reverse('client', kwargs={'client_id': self.id})
+        return urlresolvers.reverse_lazy(
+            'client', kwargs={'client_id': self.id}
+        )
 
     def __unicode__(self):
         return self.full_name()
 
     def __str__(self):
         return self.__unicode__()
+
+
+class Note(models.Model):
+    client = models.ForeignKey(Client)
+
+    notes = models.TextField()
+
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Dependent(Person):
@@ -200,8 +210,9 @@ class Dependent(Person):
 
     def get_absolute_url(self):
         return "{0}#dependent_{1}".format(
-            reverse('client',
-                    kwargs={'client_id': self.client.id}),
+            urlresolvers.reverse_lazy(
+                'client', kwargs={'client_id': self.client.id}
+            ),
             self.id
         )
 
@@ -244,8 +255,10 @@ class Insurance(models.Model):
 
     def get_absolute_url(self):
         return "{0}#insurance_{1}".format(
-            reverse('client',
-                    kwargs={'client_id': self.main_claimant.get_client().id}),
+            urlresolvers.reverse_lazy(
+                'client',
+                kwargs={'client_id': self.main_claimant.get_client().id}
+            ),
             self.id
         )
 
@@ -376,14 +389,63 @@ class Item(models.Model, model_utils.FieldList):
     # ForeignKey
     # ClaimItem
 
+    def get_values(self, datetime):
+        item_histories = ItemHistory.objects.filter(
+            item=self, created__lte=datetime
+        )
+
+        if item_histories:
+            item_history = item_histories.latest('created')
+            unit_price = item_history.unit_price
+            cost = item_history.cost
+        else:
+            unit_price = self.unit_price
+            cost = self.cost
+
+        return {'unit_price': unit_price, 'cost': cost}
+
     def get_absolute_url(self):
-        return reverse('item_detail', kwargs={'pk': self.pk})
+        return urlresolvers.reverse_lazy('item_detail', kwargs={'pk': self.pk})
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # store cost/unit_price in case it changes
+        self._initial_cost = self.cost
+        self._initial_unit_price = self.unit_price
+
+    def save(self, *args, **kwargs):
+        if (
+            (self._initial_cost and self.cost != self._initial_cost) or
+            (
+                self._initial_unit_price and
+                self.unit_price != self._initial_unit_price
+            )
+                ):
+            ItemHistory.objects.create(
+                item=self, cost=self.cost, unit_price=self.unit_price
+            )
+
+        super().save(*args, **kwargs)
+
+        self._initial_cost = self.cost
+        self._initial_unit_price = self.unit_price
 
     def __unicode__(self):
         return "%s %s" % (self.product_code, self.description)
 
     def __str__(self):
         return self.__unicode__()
+
+
+class ItemHistory(models.Model):
+    item = models.ForeignKey(Item)
+
+    cost = models.IntegerField()
+
+    unit_price = models.IntegerField()
+
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Claim(models.Model, model_utils.FieldList):
@@ -466,7 +528,7 @@ class Claim(models.Model, model_utils.FieldList):
         return fields
 
     def get_absolute_url(self):
-        return reverse('claim', kwargs={'claim_id': self.id})
+        return urlresolvers.reverse_lazy('claim', kwargs={'claim_id': self.id})
 
     def __unicode__(self):
         try:
@@ -510,6 +572,23 @@ class ClaimCoverage(models.Model):
     coverage = models.ForeignKey(
         Coverage, verbose_name="Coverage")
 
+    CASH = "cas"
+    CHEQUE = "che"
+    VISA = "vis"
+    MASTERCARD = "mas"
+    DEBIT = "deb"
+    PAYMENT_TYPES = (
+        (CASH, "Cash"),
+        (CHEQUE, "Cheque"),
+        (VISA, "VISA"),
+        (MASTERCARD, "MasterCard"),
+        (DEBIT, "Interac Debit"),
+    )
+    payment_type = models.CharField(
+        max_length=3, choices=PAYMENT_TYPES,
+        blank=True,
+    )
+
     items = models.ManyToManyField(
         Item, verbose_name="Items", through="ClaimItem")
 
@@ -531,7 +610,7 @@ class ClaimCoverage(models.Model):
         total_amount = 0
         total_quantity = 0
         for claim_item in self.claimitem_set.all():
-            total_amount += claim_item.amount()
+            total_amount += claim_item.unit_price_amount()
             total_quantity += claim_item.quantity
 
         return Totals(total_amount, total_quantity)
@@ -570,7 +649,7 @@ class ClaimCoverage(models.Model):
 
         claim_item_dict = collections.defaultdict(int)
         for claim_item in self.claimitem_set.all():
-            claim_item_dict[claim_item.item.unit_price] += claim_item.quantity
+            claim_item_dict[claim_item.get_unit_price()] += claim_item.quantity
 
         while (max_quantity < (quantity_remaining + totals.total_quantity)):
             if not claim_item_dict:
@@ -615,8 +694,32 @@ class ClaimItem(models.Model):
     # ManyToManyField
     # ClaimCoverage
 
-    def amount(self):
-        return self.item.unit_price * self.quantity
+    def get_values(self):
+        return self.item.get_values(
+            self.claim_coverage.claim.submitted_datetime
+        )
+
+    def get_unit_price(self):
+        return self.get_values()['unit_price']
+
+    def unit_price_amount(self):
+        return self.get_values()['unit_price'] * self.quantity
+
+    def get_cost(self):
+        return self.get_values()['cost']
+
+    def cost_amount(self):
+        return self.get_values()['cost'] * self.quantity
+
+    def get_amount(self):
+        values = self.get_values()
+
+        quantity = self.quantity
+
+        return {
+            'unit_price': values['unit_price'] * quantity,
+            'cost': values['cost'] * quantity,
+        }
 
     def __unicode__(self):
         return "%s - %s" % (self.item, self.claim_coverage)
@@ -675,7 +778,9 @@ class Invoice(models.Model):
                 - self.claim.expected_back_revenue())
 
     def get_absolute_url(self):
-        return reverse('fillOutInvoice', kwargs={'claim_id': self.claim.id})
+        return urlresolvers.reverse_lazy(
+            'fillOutInvoice', kwargs={'claim_id': self.claim.id}
+        )
 
     def __unicode__(self):
         return "Invoice Date: %s - %s" % (self.invoice_date, self.claim)
@@ -910,7 +1015,9 @@ class InsuranceLetter(models.Model):
         return str(diagnosis).strip("[]").replace("'", "")
 
     def get_absolute_url(self):
-        return reverse('fillOutInsurance', kwargs={'claim_id': self.claim.id})
+        return urlresolvers.reverse_lazy(
+            'fillOutInsurance', kwargs={'claim_id': self.claim.id}
+        )
 
     def __unicode__(self):
         return "Dispense Date: %s - %s" % (self.dispense_date(), self.claim)
@@ -925,7 +1032,7 @@ class ProofOfManufacturing(models.Model):
 
     laboratory = models.CharField(max_length=4, choices=settings.LABORATORIES)
 
-    proof_of_manufacturing_date_verbose_name = "Proof of Manufacturing Date"
+    proof_of_manufacturing_date_verbose_name = "Manufacturing Date"
 
     class Meta:
         verbose_name_plural = "Proofs of manufacturing"
@@ -977,7 +1084,9 @@ class ProofOfManufacturing(models.Model):
             pass
 
     def get_absolute_url(self):
-        return reverse('fillOutProof', kwargs={'claim_id': self.claim.id})
+        return urlresolvers.reverse_lazy(
+            'fillOutProof', kwargs={'claim_id': self.claim.id}
+        )
 
     def __unicode__(self):
         return "Proof of Manufacturing Date: %s - %s" % (
@@ -1077,7 +1186,9 @@ class Receipt(models.Model, model_utils.FieldList):
     money_fields = ['amount']
 
     def get_absolute_url(self):
-        url = reverse('receipt_detail', kwargs={'pk': self.pk})
+        url = urlresolvers.reverse_lazy(
+            'receipt_detail', kwargs={'pk': self.pk}
+        )
 
         return url
 

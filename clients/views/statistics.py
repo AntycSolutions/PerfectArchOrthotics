@@ -215,8 +215,9 @@ def _stats():
         'coverages'
     ).annotate(
         total_amount=Sum(
-            Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0)
-            * Coalesce(F('claimcoverage__claimitem__quantity'), 0)
+            # TODO: need to use get_unit_price
+            Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0) *
+            Coalesce(F('claimcoverage__claimitem__quantity'), 0)
         ),
     ).order_by('id')
 
@@ -402,6 +403,7 @@ def _insurance_providers_stats(request):
             When(
                 benefits='a',
                 then=Coalesce(
+                    # TODO: use get_unit_price
                     F('claim__claimcoverage__claimitem__item__unit_price'),
                     0
                 )
@@ -416,6 +418,7 @@ def _insurance_providers_stats(request):
             When(
                 benefits='na',
                 then=Coalesce(
+                    # TODO: use get_unit_price
                     F('claim__claimcoverage__claimitem__item__unit_price'),
                     0
                 )

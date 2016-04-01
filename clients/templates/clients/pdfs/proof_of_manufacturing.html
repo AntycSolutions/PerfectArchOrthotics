@@ -5,87 +5,83 @@
 {% load verbose_name %}
 
 {% block layout_style %}
-
-<style type="text/css">
-    @page {
-        size: {{ pagesize|default:"A4" }};
-        margin: 2.5cm;
-    }
-</style>
-
-{% endblock %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin: 2.5cm;
+        }
+    </style>
+{% endblock layout_style %}
 
 {% block extra_style %}
-
-<style type="text/css">
-    /*@font-face { font-family: Lato; src: url(fonts/Lato-Bol.ttf); font-weight: bold; }
-    @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }
-    @font-face { font-family: "Lato Light"; src: url(fonts/Lato-Lig.ttf); }*/
-    html {
-        font-family: "Lato", "Helvetica", "sans-serif";
-        color: #333333;
-    }
-
-    table {
-        line-height: 140%;
-        margin-bottom: 20px;
-    }
-        table.bordered {
-            border-top: 0.1pt solid #999999;
-            border-bottom: 0.1pt solid #999999;
-        }
-
-        tr, td, th { border: none; }
-
-        th {
-            font-size: 10pt;
-            border-bottom: 0.1pt solid #999999;
-            padding: 3px 0;
-            line-height: 1;
-            font-weight: bold;
-        }
-
-        td {
-            font-size: 9pt;
+    <style type="text/css">
+        /*@font-face { font-family: Lato; src: url(fonts/Lato-Bol.ttf); font-weight: bold; }
+        @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }
+        @font-face { font-family: "Lato Light"; src: url(fonts/Lato-Lig.ttf); }*/
+        html {
             font-family: "Lato", "Helvetica", "sans-serif";
-            /*vertical-align: top;*/
-            padding: 3px 0;
+            color: #333333;
         }
 
-        td:last-child { padding-bottom: 0; }
+        table {
+            line-height: 140%;
+            margin-bottom: 20px;
+        }
+            table.bordered {
+                border-top: 0.1pt solid #999999;
+                border-bottom: 0.1pt solid #999999;
+            }
 
-    .text-left { text-align: left; }
-    .text-right { text-align: right; }
-    .bottom-10 { margin-bottom: 10px; }
-    .bottom-20 { margin-bottom: 20px; }
+            tr, td, th { border: none; }
 
-    .header { color: #7f7f7f; }
-    .header p { font-size: 13px; line-height: 1.5em; }
-    .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
-    .logo { margin-bottom: 20px; margin-left: -25px; }
-    .logo img { zoom: 60%; }
+            th {
+                font-size: 10pt;
+                border-bottom: 0.1pt solid #999999;
+                padding: 3px 0;
+                line-height: 1;
+                font-weight: bold;
+            }
 
-    .recipient { margin-left: 10cm; }
-    .total { margin-left: 11cm; }
+            td {
+                font-size: 9pt;
+                font-family: "Lato", "Helvetica", "sans-serif";
+                /*vertical-align: top;*/
+                padding: 3px 0;
+            }
 
-    /*.main h1 {
-        margin: 18px 0 18px 0;
-        font-size: 250%;
-        font-weight: normal;
-        color: #4F81BD;
-    }*/
+            td:last-child { padding-bottom: 0; }
 
-    /*.main h2 {
-        margin: 18px 0 6px 0;
-        font-size: 180%;
-        font-weight: normal;
-    }*/
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .bottom-10 { margin-bottom: 10px; }
+        .bottom-20 { margin-bottom: 20px; }
 
-    .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
-    .info a { color: #4F81BD; text-decoration: none; }
-</style>
+        .header { color: #7f7f7f; }
+        .header p { font-size: 13px; line-height: 1.5em; }
+        .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
+        .logo { margin-bottom: 20px; margin-left: -25px; }
+        .logo img { zoom: 60%; }
 
-{% endblock %}
+        .recipient { margin-left: 10cm; }
+        .total { margin-left: 11cm; }
+
+        /*.main h1 {
+            margin: 18px 0 18px 0;
+            font-size: 250%;
+            font-weight: normal;
+            color: #4F81BD;
+        }*/
+
+        /*.main h2 {
+            margin: 18px 0 6px 0;
+            font-size: 180%;
+            font-weight: normal;
+        }*/
+
+        .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
+        .info a { color: #4F81BD; text-decoration: none; }
+    </style>
+{% endblock extra_style %}
 
 {% block content %}
 
@@ -93,7 +89,7 @@
         <table style="border-bottom: 0.5pt solid #000;">
             <tr>
                 <td colspan="7" valign="top" style="font-size: 200%;">
-                    PROOF OF MANUFACTURING
+                    Manufacturing Work Order
                 </td>
                 <td colspan="3" class="text-right" style="font-size: 110%;">
                     {{ proof_of_manufacturing.laboratory_address|nbsp|linebreaksbr }}
@@ -116,7 +112,7 @@
             <tr>
                 <td colspan="5"></td>
                 <td colspan="3" style="border: 1px solid black;">
-                    &nbsp;Invoice #</td>
+                    &nbsp;Work Order #</td>
                 <td colspan="2" style="border: 1px solid black;">
                     &nbsp;{{ invoice_number }}</td>
             </tr>
@@ -207,4 +203,4 @@
         </table>
     </div>
 
-{% endblock %}
+{% endblock content %}

@@ -2,7 +2,7 @@ import collections
 from decimal import Decimal
 
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.core import urlresolvers
 
 from clients import models as client_models
 from utils import model_utils
@@ -56,7 +56,7 @@ class Shoe(models.Model, model_utils.FieldList):
     money_fields = ['cost']
 
     def get_absolute_url(self):
-        return reverse('shoe_detail', kwargs={'pk': self.pk})
+        return urlresolvers.reverse_lazy('shoe_detail', kwargs={'pk': self.pk})
 
     def __unicode__(self):
         return self.name
@@ -129,7 +129,12 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         except Shoe.DoesNotExist:
             shoe = None
 
-        return "Size: %s - %s" % (self.size, shoe)
+        return "Size: {size} - {brand}: {shoe} - {colour}".format(
+            size=self.size,
+            brand=self.shoe.brand,
+            shoe=shoe,
+            colour=self.shoe.colour
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -245,6 +250,8 @@ class Order(models.Model, model_utils.FieldList):
 
 
 class ShoeOrder(Order):
+    customer_ordered_date = models.DateField(blank=True, null=True)
+
     shoe_attributes = models.ForeignKey(
         ShoeAttributes, verbose_name="Shoe")
 
@@ -263,7 +270,9 @@ class ShoeOrder(Order):
         super(ShoeOrder, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('shoe_order_detail', kwargs={'pk': self.pk})
+        return urlresolvers.reverse_lazy(
+            'shoe_order_detail', kwargs={'pk': self.pk}
+        )
 
     def __unicode__(self):
         return "%s - %s" % (
@@ -290,7 +299,9 @@ class CoverageOrder(Order):
         return fields
 
     def get_absolute_url(self):
-        return reverse('coverage_order_detail', kwargs={'pk': self.pk})
+        return urlresolvers.reverse_lazy(
+            'coverage_order_detail', kwargs={'pk': self.pk}
+        )
 
     def __unicode__(self):
         return "%s - %s" % (
@@ -317,7 +328,9 @@ class AdjustmentOrder(Order):
         super(AdjustmentOrder, self).save()
 
     def get_absolute_url(self):
-        return reverse('adjustment_order_detail', kwargs={'pk': self.pk})
+        return urlresolvers.reverse_lazy(
+            'adjustment_order_detail', kwargs={'pk': self.pk}
+        )
 
     def __unicode__(self):
         return "%s - %s" % (

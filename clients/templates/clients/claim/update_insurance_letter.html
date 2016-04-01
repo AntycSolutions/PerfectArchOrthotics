@@ -28,6 +28,7 @@
     <h1>
         Update insurance letter information for: {{ insurance_letter.claim.patient.full_name }}
     </h1>
+    {% include 'utils/snippets/messages.html' %}
     <form id="update_insurance_letter_form" class="form-horizontal" method="POST">
         <div class="row">
             <fieldset class="col-lg-6">

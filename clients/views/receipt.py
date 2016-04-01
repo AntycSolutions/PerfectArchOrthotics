@@ -5,6 +5,8 @@ from django.views import generic
 from django.conf import settings
 from django.core import urlresolvers
 
+from utils import views_utils
+
 from clients.views import views
 from clients.forms import forms
 from clients import models
@@ -77,9 +79,17 @@ class ReceiptUpdate(generic.UpdateView):
         return context
 
 
-class ReceiptDelete(generic.DeleteView):
+class ReceiptDelete(views_utils.PermissionMixin, generic.DeleteView):
     model = models.Receipt
     template_name = 'utils/generics/delete.html'
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.delete_receipt',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,6 +98,11 @@ class ReceiptDelete(generic.DeleteView):
         context['cancel_url'] = self.object.get_absolute_url()
 
         return context
+
+    def get_success_url(self):
+        return urlresolvers.reverse(
+            'receipt_list', kwargs={'claim_pk': self.object.claim.pk}
+        )
 
 
 def receipt_view(request, pk, _type):

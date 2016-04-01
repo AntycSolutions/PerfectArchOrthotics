@@ -7,7 +7,7 @@
 {% block content %}
 
     <h3>Add Client Information</h3>
-
+    {% include 'utils/snippets/messages.html' %}
     <form id="create_client_form" class="form-horizontal" method="post">
         <fieldset>
             {% csrf_token %}

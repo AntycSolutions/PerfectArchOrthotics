@@ -24,14 +24,16 @@
                  yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
         });
     </script>
-{% endblock %}
+{% endblock extra_head %}
 
 {% include 'navbar.html' %}
 
 {% block content %}
 
+    <h1>
+        Claims
+    </h1>
     {% include 'utils/snippets/messages.html' %}
-    <h1>Claims</h1>
     <form method="GET" class="form-inline">
         <div class="form-group">
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}">
@@ -64,21 +66,29 @@
                 Both
             </label>
         </div>
-        <button type="submit" class="btn">Search</button>
+        <button type="submit" class="btn">
+            Search
+        </button>
     </form>
     {% if claims %}
         {% include 'clients/snippets/claims.html' %}
     {% elif q or df or dt %}
-        <p>There are no claims for this search.</p>
+        <p>
+            There are no claims for this search.
+        </p>
     {% else %}
-        <p>There are no claims currenty.</p>
+        <p>
+            There are no claims currenty.
+        </p>
     {% endif %}
 
     <!-- Pagination stuff -->
     <div class="pagination">
         <span class="step-links">
             {% if claims.has_previous %}
-                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.previous_page_number }}" class="btn btn-default">Previous</a>
+                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.previous_page_number }}" class="btn btn-default">
+                    Previous
+                </a>
             {% endif %}
 
             <span class="current">
@@ -86,7 +96,9 @@
             </span>
 
             {% if claims.has_next %}
-                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default">Next</a>
+                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default">
+                    Next
+                </a>
             {% endif %}
         </span>
     </div>
@@ -113,7 +125,9 @@
             Rows per Page:
             <input type="number" id="claims_rows_per_page" name="claims_rows_per_page" class="form-control" value="{{ claims_rows_per_page }}">
         </div>
-        <button type="submit" class="btn">Paginate</button>
+        <button type="submit" class="btn">
+            Paginate
+        </button>
     </form>
     <div>
         A = Assignment,
@@ -125,29 +139,61 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>NA EB</th>
-                    <th>A EB</th>
-                    <th>Pending A EB</th>
-                    <th>Total A EB</th>
-                    <th>Total EB</th>
-                    <th>NA AC</th>
-                    <th>A AC</th>
-                    <th>Total AC</th>
+                    <th>
+                        NA EB
+                    </th>
+                    <th>
+                        A EB
+                    </th>
+                    <th>
+                        Pending A EB
+                    </th>
+                    <th>
+                        Total A EB
+                    </th>
+                    <th>
+                        Total EB
+                    </th>
+                    <th>
+                        NA AC
+                    </th>
+                    <th>
+                        A AC
+                    </th>
+                    <th>
+                        Total AC
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ non_assignment_expected_back }}</td>
-                    <td>{{ assignment_expected_back }}</td>
-                    <td>{{ pending_assignment_expected_back }}</td>
-                    <td>{{ total_assignment_expected_back }}</td>
-                    <td>{{ total_expected_back }}</td>
-                    <td>{{ non_assignment_amount_claimed }}</td>
-                    <td>{{ assignment_amount_claimed }}</td>
-                    <td>{{ total_amount_claimed }}</td>
+                    <td>
+                        {{ non_assignment_expected_back }}
+                    </td>
+                    <td>
+                        {{ assignment_expected_back }}
+                    </td>
+                    <td>
+                        {{ pending_assignment_expected_back }}
+                    </td>
+                    <td>
+                        {{ total_assignment_expected_back }}
+                    </td>
+                    <td>
+                        {{ total_expected_back }}
+                    </td>
+                    <td>
+                        {{ non_assignment_amount_claimed }}
+                    </td>
+                    <td>
+                        {{ assignment_amount_claimed }}
+                    </td>
+                    <td>
+                        {{ total_amount_claimed }}
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-{% endblock %}
+{% endblock content %}
