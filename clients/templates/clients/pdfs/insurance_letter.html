@@ -100,10 +100,11 @@
 
     {# 20 table colspan because real css didn't work #}
     <div class="main">
-        <p>
+        <p style="text-align: center;">
             <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='400px' />
         </p>
         <table>
+            <tr><td></td></tr>
             <tr>
                 <td colspan="10">
                     {% if claim.patient %}
