@@ -16,8 +16,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib import messages
-from django.db.models import Sum, F, Case, When, Q
-from django.db.models.functions import Coalesce
+from django.db.models import Sum, Case, When, Q
 from django.core import urlresolvers
 from django.utils import safestring
 
@@ -31,8 +30,7 @@ from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients import models as clients_models
 from inventory import models as inventory_models
-from clients.forms.forms import ClientForm, DependentForm, \
-    ClaimForm
+from clients.forms.forms import ClientForm, DependentForm
 from clients.forms import forms as clients_forms
 
 
@@ -768,53 +766,6 @@ def editClientView(request, client_id):
          'indefinite_article': 'a',
          'cancel_url': cancel_url},
         context)
-
-
-# @login_required
-# def makeClaimView(request, client_id):
-#     context = RequestContext(request)
-
-#     client = Client.objects.get(id=client_id)
-#     claim_form = ClaimForm(client)
-#     ClaimCoverageFormFormSet = nestedformset_factory(
-#         Claim, ClaimCoverage, ClaimItem,
-#         extra=1, exclude=('items',),  # formset=CoverageFormSet,
-#         nested_extra=1, nested_fields='__all__')
-
-#     nestedformset = ClaimCoverageFormFormSet()
-#     nestedformset.form.base_fields[
-#         'coverage'].queryset = Coverage.objects.filter(
-#             insurance__in=client.insurance_set.all())
-#     nestedformset.form.base_fields[
-#         'coverage'].label_from_instance = (
-#             lambda obj:
-#                 "%s - %s" % (obj.get_coverage_type_display(),
-#                              obj.claimant.full_name())
-#         )
-
-#     if request.method == 'POST':
-#         claim_form = ClaimForm(client, request.POST)
-#         nestedformset = ClaimCoverageFormFormSet(request.POST)
-#         if (claim_form.is_valid()
-#                 and nestedformset.is_valid()):
-#             claim = claim_form.save()
-#             object_tuples = nestedformset.save(commit=False)
-#             for claim_coverage, claim_items in object_tuples:
-#                 if claim_coverage:
-#                     claim_coverage.claim = claim
-#                     claim_coverage.save()
-#                     for claim_item in claim_items:
-#                         claim_item.claim_coverage = claim_coverage
-#                         claim_item.save()
-
-#             return redirect('claim', client.id, claim.id)
-
-#     return render_to_response('clients/make_claim.html',
-#                               {'client': client,
-#                                'claim_form': claim_form,
-#                                'nestedformset': nestedformset,
-#                                },
-#                               context)
 
 
 @login_required

@@ -7,15 +7,16 @@ from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
 from clients.views.client import CreateClientView, DeleteClientView
 from clients.views.coverage_type import UpdateCoverageView, \
     DeleteCoverageView, CreateCoverageView
-from clients.views.claim import UpdateClaimView, DeleteClaimView, \
+from clients.views.claim import DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
     CreateInsuranceLetterView, \
-    CreateProofOfManufacturingView, CreateClaimView
+    CreateProofOfManufacturingView
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
 from clients.views import statistics
 from clients.views import dependent
 from clients.views import receipt
+from clients.views import claim
 
 
 report_patterns = patterns(
@@ -89,17 +90,25 @@ coverage_type_patterns = patterns(
         name='coverage_type_create'),
 )
 
+create_claim_wizard = claim.CreateClaimWizard.as_view(
+    url_name='claim_create_step',
+    done_step_name='finished'
+)
+update_claim_wizard = claim.UpdateClaimWizard.as_view(
+    url_name='claim_update_step',
+    done_step_name='finished'
+)
 claim_patterns = patterns(
     '',
     url(r'^$',
         login_required(views.claimSearchView),
         name='claims'),
-    url(r'^create/(?P<client_id>\w+)/$',
-        login_required(CreateClaimView.as_view()),
-        name='claim_create'),
-    url(r'^update/(?P<claim_id>\w+)/$',
-        login_required(UpdateClaimView.as_view()),
-        name='claim_update'),
+    # url(r'^create/(?P<client_id>\w+)/$',
+    #     login_required(CreateClaimView.as_view()),
+    #     name='claim_create'),
+    # url(r'^update/(?P<claim_id>\w+)/$',
+    #     login_required(UpdateClaimView.as_view()),
+    #     name='claim_update'),
     url(r'^delete/(?P<claim_id>\w+)/$',
         login_required(DeleteClaimView.as_view()),
         name='claim_delete'),
@@ -133,6 +142,26 @@ claim_patterns = patterns(
     url(r'^receipt/list/(?P<claim_pk>\w+)/$',
         login_required(receipt.ReceiptList.as_view()),
         name='receipt_list'),
+    url(
+        r'^wizard/create/(?P<client_id>\w+)/(?P<step>.+)/$',
+        create_claim_wizard,
+        name='claim_create_step'
+    ),
+    url(
+        r'^wizard/create/(?P<client_id>\w+)/$',
+        create_claim_wizard,
+        name='claim_create'
+    ),
+    url(
+        r'^wizard/update/(?P<claim_pk>\w+)/(?P<step>.+)/$',
+        update_claim_wizard,
+        name='claim_update_step'
+    ),
+    url(
+        r'^wizard/update/(?P<claim_pk>\w+)/$',
+        update_claim_wizard,
+        name='claim_update'
+    ),
 )
 
 pdf_patterns = patterns(
