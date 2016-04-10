@@ -8,6 +8,7 @@ from django.views.generic import base
 from ajax_select import urls as ajax_select_urls
 
 from utils import views as utils_views
+from utils.forms import forms as utils_forms
 
 import views
 
@@ -22,7 +23,10 @@ urlpatterns = patterns(
         name='index'),
     url(r'^login/',
         django_views.login,
-        {'template_name': 'login.html'},
+        {
+            'template_name': 'login.html',
+            'authentication_form': utils_forms.AuthenticationForm,
+        },
         name='user_login'),
     url(r'^logout/',
         views.user_logout,
