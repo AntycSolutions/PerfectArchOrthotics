@@ -349,7 +349,7 @@ class Coverage(models.Model):
             period_date = self.period_date
 
             if not period_date:
-                return self.total_amount_claimed()
+                return None, None
 
             period_date = timezone.datetime.combine(period_date, time.min)
             period_date = timezone.make_aware(period_date)
@@ -364,7 +364,7 @@ class Coverage(models.Model):
             period_end_date = \
                 period_start_date.replace(year=period_start_date.year + 1)
         else:
-            raise Exception("unknown period total_amount_claimed_period")
+            raise Exception("unknown period _get_start_end_period_dates")
 
         return period_start_date, period_end_date
 
