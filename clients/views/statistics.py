@@ -391,7 +391,7 @@ def _insurance_providers_stats(request):
         ),
     )
 
-    # Aamount claimed
+    # Amount claimed
     date_queryset = views_utils._date_search(
         request, ["claim__submitted_datetime"],
         clients_models.Insurance

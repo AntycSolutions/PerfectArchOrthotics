@@ -116,6 +116,12 @@
                         <th>Total Expected Back</th>
                         <th>Total Max Quantity</th>
                         <th>Total Max Expected Back</th>
+                        <th>
+                            Total Max Quantity Period
+                        </th>
+                        <th>
+                            Total Max Expected Back Period
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -128,6 +134,14 @@
                         {% with totals=claim.total_max_expected_back_quantity %}
                             <td>{{ totals.total_max_quantity }}</td>
                             <td>{{ totals.total_max_expected_back }}</td>
+                        {% endwith %}
+                        {% with totals=claim.total_max_expected_back_quantity_period %}
+                            <td>
+                                {{ totals.total_max_quantity }}
+                            </td>
+                            <td>
+                                {{ totals.total_max_expected_back }}
+                            </td>
                         {% endwith %}
                     </tr>
                     </tbody>
@@ -153,6 +167,12 @@
                                 <th>Max Quantity</th>
                                 <th>Max Expected Back</th>
                                 <th>Actual Paid Date</th>
+                                <th>
+                                    Max Quantity Period
+                                </th>
+                                <th>
+                                    Max Expected Back Period
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -176,6 +196,14 @@
                                     <td>{{ maxes.max_expected_back }}</td>
                                 {% endwith %}
                                 <td>{{ claim_coverage.actual_paid_date }}</td>
+                                {% with maxes=claim_coverage.max_expected_back_quantity_period %}
+                                    <td>
+                                        {{ maxes.max_quantity }}
+                                    </td>
+                                    <td>
+                                        {{ maxes.max_expected_back }}
+                                    </td>
+                                {% endwith %}
                             </tr>
                             <tr>
                                 <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>

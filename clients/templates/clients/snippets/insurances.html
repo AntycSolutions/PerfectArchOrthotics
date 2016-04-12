@@ -65,6 +65,12 @@
                                             <th>Quantity Remaining</th>
                                             <th>Period</th>
                                             <th>Period Date</th>
+                                            <th>
+                                                Claim Amount Remaining Period
+                                            </th>
+                                            <th>
+                                                Quantity Remaining Period
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -77,6 +83,22 @@
                                                 <td>{{ coverage.quantity_remaining }}</td>
                                                 <td>{{ coverage.get_period_display }}</td>
                                                 <td>{{ coverage.period_date }}</td>
+                                                {% comment %}
+                                                <td>
+                                                    {{ coverage.total_amount_claimed_period }}
+                                                </td>
+                                                {% endcomment %}
+                                                <td>
+                                                    {{ coverage.claim_amount_remaining_period }}
+                                                </td>
+                                                {% comment %}
+                                                <td>
+                                                    {{ coverage.total_quantity_claimed_period }}
+                                                </td>
+                                                {% endcomment %}
+                                                <td>
+                                                    {{ coverage.quantity_remaining_period }}
+                                                </td>
                                                 <!-- <td>
                                                     <div class="pull-right">
                                                         <a href="{% url 'coverage_type_update' coverage.id %}" class="btn btn-default">Update</a>
