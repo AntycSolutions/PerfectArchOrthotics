@@ -363,6 +363,8 @@ class Coverage(models.Model):
                 submitted_datetime.replace(month=1, day=1, hour=0)
             period_end_date = \
                 period_start_date.replace(year=period_start_date.year + 1)
+        elif not period:
+            return None, None
         else:
             raise Exception("unknown period _get_start_end_period_dates")
 
