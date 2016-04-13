@@ -648,7 +648,7 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
             coverages = Coverage.objects.select_related(
                 'insurance', 'claimant'
             ).prefetch_related(
-                'claimcoverage_set'
+                'claimcoverage_set__claimitem_set'
             ).filter(
                 insurance_id=insurance_id
             )

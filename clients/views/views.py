@@ -242,7 +242,11 @@ def fillOutProofOfManufacturingView(request, claim_id):
 def claimView(request, claim_id):
     context = RequestContext(request)
 
-    claim = Claim.objects.get(id=claim_id)
+    claim = Claim.objects.select_related(
+        'patient', 'insurance'
+    ).prefetch_related(
+        'claimcoverage_set__claimitem_set__item__itemhistory_set'
+    ).get(id=claim_id)
     has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
     context_dict = {'claim': claim,
                     'has_orthotics': has_orthotics,
@@ -373,7 +377,7 @@ def claimSearchView(request):
     found_claims = Claim.objects.select_related(
         'insurance'
     ).prefetch_related(
-        'claimcoverage_set__claimitem_set__item'
+        'claimcoverage_set__claimitem_set__item__itemhistory_set'
     ).order_by(
         '-submitted_datetime'
     )
@@ -488,7 +492,9 @@ def insuranceSearchView(request):
     context = RequestContext(request)
     context_dict = {}
 
-    found_insurances = Insurance.objects.all()
+    found_insurances = Insurance.objects.prefetch_related(
+        'coverage_set__claimcoverage_set__claimitem_set'
+    ).all()
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ["provider", "policy_number",
                   "main_claimant__first_name", "main_claimant__last_name",
@@ -523,6 +529,7 @@ def getFieldsFromRequest(request, default=""):
 def clientView(request, client_id):
     context = RequestContext(request)
 
+    # TODO: reduce queries
     client = Client.objects.prefetch_related(
         'insurance_set',
         'dependent_set',

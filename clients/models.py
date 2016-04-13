@@ -394,8 +394,8 @@ class Coverage(models.Model):
 
     def total_quantity_claimed(self):
         total_quantity_claimed = 0
-        claim_coverages = \
-            self.claimcoverage_set.prefetch_related('claimitem_set').all()
+        claim_coverages = self.claimcoverage_set.all()
+        # self.claimcoverage_set.prefetch_related('claimitem_set').all()
         # TODO: aggregate?
         for claim_coverage in claim_coverages:
             for claim_item in claim_coverage.claimitem_set.all():
@@ -482,10 +482,13 @@ class Item(models.Model, model_utils.FieldList):
         item_histories = self.itemhistory_set.all()
 
         if item_histories:
+            if timezone.is_naive(datetime):
+                datetime = timezone.make_aware(datetime)
+
             item_histories_before = []
             item_histories_after = []
             for item_history in item_histories:
-                if item_history.created <= timezone.make_aware(datetime):
+                if item_history.created <= datetime:
                     item_histories_before.append(item_history)
                 else:
                     item_histories_after.append(item_history)
