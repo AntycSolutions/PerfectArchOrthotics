@@ -645,7 +645,13 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
             )
             insurance_id = info_data.get('info-insurance')
 
-            coverages = Coverage.objects.filter(insurance_id=insurance_id)
+            coverages = Coverage.objects.select_related(
+                'insurance', 'claimant'
+            ).prefetch_related(
+                'claimcoverage_set'
+            ).filter(
+                insurance_id=insurance_id
+            )
             label = (
                 lambda obj:
                     "%s - %s - %s"
@@ -827,7 +833,8 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
         files = claim_form.cleaned_data['claim_package']
         for _file in files:
             if _file:
-                clients_models.ClaimAttachment.objects.create(
+                # use get_or_create in case of update
+                clients_models.ClaimAttachment.objects.get_or_create(
                     attachment=_file, claim=claim
                 )
 
@@ -870,11 +877,8 @@ class UpdateClaimWizard(CreateClaimWizard):
 
     def get_form_instance(self, step):
         if not self.instance:
-            if 'claim_pk' in self.kwargs:
-                claim_pk = self.kwargs['claim_pk']
-                self.instance = Claim.objects.get(pk=claim_pk)
-            else:
-                self.instance = Claim()
+            claim_pk = self.kwargs['claim_pk']
+            self.instance = Claim.objects.get(pk=claim_pk)
 
         return self.instance
 

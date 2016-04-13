@@ -231,12 +231,28 @@ class Order(models.Model, model_utils.FieldList):
                     value = ""
 
                 shoe_field = self.Field(
-                    self.PseudoForeignKey("Shoe"),
-                    value
+                    self.PseudoForeignKey("Shoe"), value
                 )
 
                 reordered_fields.update(
                     {"shoe": shoe_field}
+                )
+            elif k == "description":
+                if self.order_type == self.SHOE:
+                    try:
+                        order = ShoeOrder.objects.get(pk=self.pk)
+                        value = order.customer_ordered_date
+                    except ShoeOrder.DoesNotExist:
+                        value = ""
+                else:
+                    value = ""
+
+                shoe_field = self.Field(
+                    self.PseudoForeignKey("Customer Ordered Date"), value
+                )
+
+                reordered_fields.update(
+                    {"customer_ordered_date": shoe_field}
                 )
 
         return reordered_fields
