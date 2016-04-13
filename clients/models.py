@@ -1,4 +1,5 @@
 import collections
+import operator
 import decimal
 from datetime import date, timedelta, time
 
@@ -476,12 +477,28 @@ class Item(models.Model, model_utils.FieldList):
     # ClaimItem
 
     def get_values(self, datetime):
-        item_histories = ItemHistory.objects.filter(
-            item=self, created__lte=datetime
-        )
+        # support prefetch_related with python level filtering instead of
+        #  db filtering (to reduce queries) as this can be called many times
+        item_histories = self.itemhistory_set.all()
 
         if item_histories:
-            item_history = item_histories.latest('created')
+            item_histories_before = []
+            item_histories_after = []
+            for item_history in item_histories:
+                if item_history.created <= timezone.make_aware(datetime):
+                    item_histories_before.append(item_history)
+                else:
+                    item_histories_after.append(item_history)
+
+            if item_histories_before:
+                item_history = max(
+                    item_histories_before, key=operator.attrgetter('created')
+                )
+            else:
+                item_history = min(
+                    item_histories_after, key=operator.attrgetter('created')
+                )
+
             unit_price = item_history.unit_price
             cost = item_history.cost
         else:
@@ -501,15 +518,14 @@ class Item(models.Model, model_utils.FieldList):
         self._initial_unit_price = self.unit_price
 
     def save(self, *args, **kwargs):
+        initial_cost = self._initial_cost
+        initial_unit_price = self._initial_unit_price
         if (
-            (self._initial_cost and self.cost != self._initial_cost) or
-            (
-                self._initial_unit_price and
-                self.unit_price != self._initial_unit_price
-            )
+            (self.cost != initial_cost) or
+            (self.unit_price != initial_unit_price)
                 ):
             ItemHistory.objects.create(
-                item=self, cost=self.cost, unit_price=self.unit_price
+                item=self, cost=initial_cost, unit_price=initial_unit_price
             )
 
         super().save(*args, **kwargs)

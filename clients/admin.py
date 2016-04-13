@@ -60,8 +60,12 @@ class ClaimItemInline(admin.TabularInline):
     model = ClaimItem
 
 
+class ItemHistoryInline(admin.TabularInline):
+    model = clients_models.ItemHistory
+
+
 class ItemAdmin(admin.ModelAdmin):
-    inlines = (ClaimItemInline,)
+    inlines = (ClaimItemInline, ItemHistoryInline)
 
 
 class ClaimCoverageAdmin(admin.ModelAdmin):

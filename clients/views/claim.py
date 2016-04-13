@@ -680,9 +680,12 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
 
             nested_base_fields = formset.nested_formset_class.form.base_fields
             nested_base_fields['item'].label_from_instance = items_label
-            items = nested_base_fields['item'].queryset
-            nested_base_fields['item'].queryset = \
-                items.order_by('coverage_type', 'product_code', 'gender')
+            items = nested_base_fields['item'].queryset.prefetch_related(
+                'itemhistory_set'
+            ).order_by(
+                'coverage_type', 'product_code', 'gender'
+            )
+            nested_base_fields['item'].queryset = items
             for nested_form in formset:
                 nested_form.fields['coverage'].queryset = coverages
                 nested_form.fields['coverage'].label_from_instance = label
@@ -690,8 +693,7 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
                 base_fields = nested_form.nested.form.base_fields
                 base_fields['item'].label_from_instance = items_label
                 items = base_fields['item'].queryset
-                base_fields['item'].queryset = \
-                    items.order_by('coverage_type', 'product_code', 'gender')
+                base_fields['item'].queryset = items
 
         return form
 
