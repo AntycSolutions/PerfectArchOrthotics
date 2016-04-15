@@ -516,15 +516,6 @@ def insuranceSearchView(request):
     return render_to_response('clients/insurances.html', context_dict, context)
 
 
-def getFieldsFromRequest(request, default=""):
-    """This is not used currently, will maybe be used in the future."""
-    if 'fields' in request.GET and request.GET['fields'].strip():
-        querydict = dict(request.GET.iterlists())
-        return querydict['fields']
-    else:
-        return [default]
-
-
 @login_required
 def clientView(request, client_id):
     context = RequestContext(request)
@@ -719,23 +710,23 @@ def add_client(request):
         queryset = queryset.extra(
             select={
                 'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
+            }
+        ).order_by('lower_first_name')
         form.fields['referred_by'].queryset = queryset
-        form.fields['referred_by'].label_from_instance = (
-            lambda obj:
-                "%s" % (obj.full_name())
-        )
 
     cancel_url = urlresolvers.reverse('client_list')
 
     return render_to_response(
         'utils/generics/create.html',
-        {'form': form,
-         'model_name_plural': Client._meta.verbose_name_plural,
-         'model_name': Client._meta.verbose_name,
-         'indefinite_article': 'a',
-         'cancel_url': cancel_url},
-        context)
+        {
+            'form': form,
+            'model_name_plural': Client._meta.verbose_name_plural,
+            'model_name': Client._meta.verbose_name,
+            'indefinite_article': 'a',
+            'cancel_url': cancel_url
+        },
+        context
+    )
 
 
 @login_required
@@ -747,32 +738,33 @@ def editClientView(request, client_id):
         client_form = ClientForm(request.POST, instance=client)
         if client_form.is_valid():
             saved = client_form.save(commit=True)
-            return redirect('client', saved.id)
 
+            return redirect('client', saved.id)
     else:
         client_form = ClientForm(instance=client)
         queryset = client_form.fields['referred_by'].queryset
         queryset = queryset.extra(
             select={
                 'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
+            }
+        ).order_by('lower_first_name')
         client_form.fields['referred_by'].queryset = queryset
-        client_form.fields['referred_by'].label_from_instance = (
-            lambda obj:
-                "%s" % (obj.full_name())
-        )
 
-    cancel_url = urlresolvers.reverse('client',
-                                      kwargs={'client_id': client.pk})
+    cancel_url = urlresolvers.reverse(
+        'client', kwargs={'client_id': client.pk}
+    )
 
     return render_to_response(
         'utils/generics/update.html',
-        {'form': client_form,
-         'model_name_plural': Client._meta.verbose_name_plural,
-         'model_name': Client._meta.verbose_name,
-         'indefinite_article': 'a',
-         'cancel_url': cancel_url},
-        context)
+        {
+            'form': client_form,
+            'model_name_plural': Client._meta.verbose_name_plural,
+            'model_name': Client._meta.verbose_name,
+            'indefinite_article': 'a',
+            'cancel_url': cancel_url
+        },
+        context
+    )
 
 
 @login_required
