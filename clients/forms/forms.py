@@ -10,10 +10,23 @@ from clients import models as clients_models
 
 
 class ClientForm(forms.ModelForm):
-
     class Meta:
         model = Client
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        def label_from_instance(obj):
+            try:
+                client = clients_models.Dependent.objects.get(pk=obj.pk).client
+                return '{obj}, Dependent of {client}'.format(
+                    obj=obj, client=client
+                )
+            except clients_models.Dependent.DoesNotExist:
+                return obj
+
+        self.fields['referred_by'].label_from_instance = label_from_instance
 
 
 class DependentForm(forms.ModelForm):
