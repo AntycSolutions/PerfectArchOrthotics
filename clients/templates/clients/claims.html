@@ -4,7 +4,7 @@
 
 {% block extra_head %}
     {% now 'Y' as current_year %}
-    <script>
+    <script type="text/javascript">
         $(function() {
             $("#actual_paid_date_from").datepicker(
                 {changeMonth: true,
@@ -36,7 +36,7 @@
     {% include 'utils/snippets/messages.html' %}
     <form method="GET" class="form-inline">
         <div class="form-group">
-            <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}">
+            <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}" autofocus />
         </div>
         <div class="form-group">
             <input type="text" id="actual_paid_date_from" class="form-control search-query" name="apdf" placeholder="Actual Paid Date From" value="{{ apdf }}">
