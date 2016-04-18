@@ -99,9 +99,7 @@ class ReferralForm(forms.ModelForm):
         widgets = {'claims': forms.CheckboxSelectMultiple}
 
     def _get_referred_claims(self, person, claims_queryset):
-        referred_set = person.referred_by.select_related(
-            'person_ptr', 'referred_by',
-        ).all()
+        referred_set = person.referred_by.all()
         for referred in referred_set:
             claims = referred.claim_set.filter(
                 claimcoverage__actual_paid_date__isnull=False

@@ -520,15 +520,17 @@ def insuranceSearchView(request):
 def clientView(request, client_id):
     context = RequestContext(request)
 
-    # TODO: reduce queries
-    client = Client.objects.prefetch_related(
-        'insurance_set',
-        'dependent_set',
-        'claim_set__claimcoverage_set__claimitem_set__item'
-    ).get(id=client_id)
-    insurance = client.insurance_set.all()
+    client = Client.objects.select_related(
+        'referred_by', 'person_ptr__referred_by'
+    ).prefetch_related(
+        'insurance_set__coverage_set',
+        'dependent_set__person_ptr',
+        'referred_by'
+    ).get(
+        id=client_id
+    )
     dependents = client.dependent_set.all()
-    claims = client.claim_set.all()
+    person_pk_list = [client.pk]
 
     orders = []
     if client.order_set.exists():
@@ -538,12 +540,28 @@ def clientView(request, client_id):
     for dependent in dependents:
         if dependent.relationship == Dependent.SPOUSE:
             spouse = dependent
-            insurance = insurance | spouse.insurance_set.all()
         else:
             children.append(dependent)
-        claims = claims | dependent.claim_set.all()
+        person_pk_list.append(dependent.pk)
         if dependent.order_set.exists():
             orders.append(_order_info(dependent, request))
+
+    insurances = Insurance.objects.select_related(
+        'main_claimant'
+    ).prefetch_related(
+        'coverage_set__claimant'
+    ).filter(
+        main_claimant_id__in=person_pk_list
+    )
+
+    claims = Claim.objects.select_related(
+        'patient', 'insurance'
+    ).prefetch_related(
+        'claimcoverage_set__claimitem_set__item__itemhistory_set',
+        'claimcoverage_set__coverage'
+    ).filter(
+        patient_id__in=person_pk_list
+    )
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=False,
@@ -603,6 +621,7 @@ def clientView(request, client_id):
         client_total_cost + pending_client_total_cost + shoe_order_cost
     )
 
+    # Forms
     if request.method == 'GET':
         try:
             referral_form = clients_forms.ReferralForm(client)
@@ -632,7 +651,7 @@ def clientView(request, client_id):
 
     context_dict = {
         'client': client,
-        'client_insurance': insurance,
+        'insurances': insurances,
         'client_claims': claims,
         'client_total_amount_claimed': client_total_amount_claimed,
         'client_total_expected_back': client_total_expected_back,

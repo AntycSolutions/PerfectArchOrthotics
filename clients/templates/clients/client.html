@@ -651,8 +651,8 @@
             </div>
         </div>
         <div id="insurances" class="panel-body collapse">
-            {% if client_insurance %}
-                {% include 'clients/snippets/insurances.html' with insurances=client_insurance disable_view=True %}
+            {% if insurances %}
+                {% include 'clients/snippets/insurances.html' with disable_view=True %}
             {% else %}
                 <p>There are no Insurances for this Client currently.</p>
             {% endif %}
