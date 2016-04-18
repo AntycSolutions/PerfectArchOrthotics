@@ -318,16 +318,16 @@ class Coverage(models.Model):
     # ForeignKey
     # ClaimCoverage
 
-    def total_amount_claimed(self):
-        total_amount_claimed = 0
-        # TODO: aggregate?
-        for claim_coverage in self.claimcoverage_set.all():
-            total_amount_claimed += claim_coverage.expected_back
+    # def total_amount_claimed(self):
+    #     total_amount_claimed = 0
+    #     # TODO: aggregate?
+    #     for claim_coverage in self.claimcoverage_set.all():
+    #         total_amount_claimed += claim_coverage.expected_back
 
-        return total_amount_claimed
+    #     return total_amount_claimed
 
-    def claim_amount_remaining(self):
-        return self.max_claim_amount - self.total_amount_claimed()
+    # def claim_amount_remaining(self):
+    #     return self.max_claim_amount - self.total_amount_claimed()
 
     def _get_start_end_period_dates(self, submitted_datetime=None):
         if not submitted_datetime:
@@ -371,11 +371,14 @@ class Coverage(models.Model):
 
         return period_start_date, period_end_date
 
+    class PeriodException(BaseException):
+        pass
+
     def total_amount_claimed_period(self):
         period_start_date, period_end_date = self._get_start_end_period_dates()
 
         if not period_start_date or not period_end_date:
-            return self.total_amount_claimed()
+            raise self.PeriodException()
 
         total_amount_claimed = 0
         claim_coverages = self.claimcoverage_set.filter(
@@ -390,27 +393,30 @@ class Coverage(models.Model):
         return total_amount_claimed
 
     def claim_amount_remaining_period(self):
-        return self.max_claim_amount - self.total_amount_claimed_period()
+        try:
+            return self.max_claim_amount - self.total_amount_claimed_period()
+        except self.PeriodException:
+            return 'Period and/or Period Date not set'
 
-    def total_quantity_claimed(self):
-        total_quantity_claimed = 0
-        claim_coverages = self.claimcoverage_set.all()
-        # self.claimcoverage_set.prefetch_related('claimitem_set').all()
-        # TODO: aggregate?
-        for claim_coverage in claim_coverages:
-            for claim_item in claim_coverage.claimitem_set.all():
-                total_quantity_claimed += claim_item.quantity
+    # def total_quantity_claimed(self):
+    #     total_quantity_claimed = 0
+    #     claim_coverages = self.claimcoverage_set.all()
+    #     # self.claimcoverage_set.prefetch_related('claimitem_set').all()
+    #     # TODO: aggregate?
+    #     for claim_coverage in claim_coverages:
+    #         for claim_item in claim_coverage.claimitem_set.all():
+    #             total_quantity_claimed += claim_item.quantity
 
-        return total_quantity_claimed
+    #     return total_quantity_claimed
 
-    def quantity_remaining(self):
-        return self.max_quantity - self.total_quantity_claimed()
+    # def quantity_remaining(self):
+    #     return self.max_quantity - self.total_quantity_claimed()
 
     def total_quantity_claimed_period(self):
         period_start_date, period_end_date = self._get_start_end_period_dates()
 
         if not period_start_date or not period_end_date:
-            return self.total_quantity_claimed()
+            raise self.PeriodException
 
         total_quantity_claimed = 0
         claim_coverages = self.claimcoverage_set.prefetch_related(
@@ -428,7 +434,10 @@ class Coverage(models.Model):
         return total_quantity_claimed
 
     def quantity_remaining_period(self):
-        return self.max_quantity - self.total_quantity_claimed_period()
+        try:
+            return self.max_quantity - self.total_quantity_claimed_period()
+        except self.PeriodException:
+            return 'Period and/or Period Date not set'
 
     def __unicode__(self):
         try:
@@ -579,17 +588,17 @@ class Claim(models.Model, model_utils.FieldList):
 
         return total_expected_back
 
-    def total_max_expected_back_quantity(self):
-        Totals = collections.namedtuple('Totals', ['total_max_expected_back',
-                                                   'total_max_quantity'])
-        total_max_expected_back = 0
-        total_max_quantity = 0
-        for claim_coverage in self.claimcoverage_set.all():
-            maxes = claim_coverage.max_expected_back_quantity()
-            total_max_expected_back += maxes.max_expected_back
-            total_max_quantity += maxes.max_quantity
+    # def total_max_expected_back_quantity(self):
+    #     Totals = collections.namedtuple('Totals', ['total_max_expected_back',
+    #                                                'total_max_quantity'])
+    #     total_max_expected_back = 0
+    #     total_max_quantity = 0
+    #     for claim_coverage in self.claimcoverage_set.all():
+    #         maxes = claim_coverage.max_expected_back_quantity()
+    #         total_max_expected_back += maxes.max_expected_back
+    #         total_max_quantity += maxes.max_quantity
 
-        return Totals(total_max_expected_back, total_max_quantity)
+    #     return Totals(total_max_expected_back, total_max_quantity)
 
     def total_max_expected_back_quantity_period(self):
         Totals = collections.namedtuple('Totals', ['total_max_expected_back',
@@ -732,21 +741,23 @@ class ClaimCoverage(models.Model):
 
         return Totals(total_amount, total_quantity)
 
-    def _coverage_total_amount_claimed(self):
-        total_amount_claimed = 0
-        claim_coverages = self.coverage.claimcoverage_set.exclude(pk=self.pk)
-        for claim_coverage in claim_coverages:
-            if (
-                claim_coverage.claim.submitted_datetime <
-                self.claim.submitted_datetime
-                    ):
-                total_amount_claimed += claim_coverage.expected_back
+    # def _coverage_total_amount_claimed(self):
+    #     total_amount_claimed = 0
+    #     claim_coverages = self.coverage.claimcoverage_set.exclude(pk=self.pk)
+    #     for claim_coverage in claim_coverages:
+    #         if (
+    #             claim_coverage.claim.submitted_datetime <
+    #             self.claim.submitted_datetime
+    #                 ):
+    #             total_amount_claimed += claim_coverage.expected_back
 
-        return total_amount_claimed
+    #     return total_amount_claimed
 
     def _coverage_total_amount_claimed_period(self):
         period_start_date, period_end_date = \
-            self._get_start_end_period_dates(self.claim.submitted_datetime)
+            self.coverage._get_start_end_period_dates(
+                self.claim.submitted_datetime
+            )
 
         if not period_start_date or not period_end_date:
             return self._coverage_total_amount_claimed()
@@ -765,11 +776,11 @@ class ClaimCoverage(models.Model):
 
         return total_amount_claimed
 
-    def _coverage_claim_amount_remaining(self):
-        return (
-            self.coverage.max_claim_amount -
-            self._coverage_total_amount_claimed()
-        )
+    # def _coverage_claim_amount_remaining(self):
+    #     return (
+    #         self.coverage.max_claim_amount -
+    #         self._coverage_total_amount_claimed()
+    #     )
 
     def _coverage_claim_amount_remaining_period(self):
         return (
@@ -777,42 +788,42 @@ class ClaimCoverage(models.Model):
             self._coverage_total_amount_claimed_period()
         )
 
-    def max_expected_back_quantity(self):
-        Maxes = collections.namedtuple('Maxes', ['max_expected_back',
-                                                 'max_quantity'])
+    # def max_expected_back_quantity(self):
+    #     Maxes = collections.namedtuple('Maxes', ['max_expected_back',
+    #                                              'max_quantity'])
 
-        totals = self.total_amount_quantity()
-        max_expected_back = min(
-            self._coverage_claim_amount_remaining(),
-            (totals.total_amount * (self.coverage.coverage_percent / 100))
-        )
-        max_quantity = totals.total_quantity
+    #     totals = self.total_amount_quantity()
+    #     max_expected_back = min(
+    #         self._coverage_claim_amount_remaining(),
+    #         (totals.total_amount * (self.coverage.coverage_percent / 100))
+    #     )
+    #     max_quantity = totals.total_quantity
 
-        quantity_remaining = self.coverage.quantity_remaining()
-        if totals.total_quantity <= quantity_remaining:
-            return Maxes(max_expected_back, max_quantity)
-        else:
-            max_expected_back = 0
-            max_quantity = 0
+    #     quantity_remaining = self.coverage.quantity_remaining()
+    #     if totals.total_quantity <= quantity_remaining:
+    #         return Maxes(max_expected_back, max_quantity)
+    #     else:
+    #         max_expected_back = 0
+    #         max_quantity = 0
 
-        claim_item_dict = collections.defaultdict(int)
-        for claim_item in self.claimitem_set.all():
-            claim_item_dict[claim_item.get_unit_price()] += claim_item.quantity
+    #     claim_item_dict = collections.defaultdict(int)
+    #     for claim_item in self.claimitem_set.all():
+    #         claim_item_dict[claim_item.get_unit_price()] += claim_item.quantity
 
-        while (max_quantity < (quantity_remaining + totals.total_quantity)):
-            if not claim_item_dict:
-                break
-            values = list(claim_item_dict.values())
-            keys = list(claim_item_dict.keys())
-            max_unit_price = keys[values.index(max(values))]
-            max_expected_back += max_unit_price
-            claim_item_dict[max_unit_price] -= 1
-            if claim_item_dict[max_unit_price] == 0:
-                claim_item_dict.pop(max_unit_price)
-            max_quantity += 1
+    #     while (max_quantity < (quantity_remaining + totals.total_quantity)):
+    #         if not claim_item_dict:
+    #             break
+    #         values = list(claim_item_dict.values())
+    #         keys = list(claim_item_dict.keys())
+    #         max_unit_price = keys[values.index(max(values))]
+    #         max_expected_back += max_unit_price
+    #         claim_item_dict[max_unit_price] -= 1
+    #         if claim_item_dict[max_unit_price] == 0:
+    #             claim_item_dict.pop(max_unit_price)
+    #         max_quantity += 1
 
-        # Should be min'd against coverage remaining
-        return Maxes(max_expected_back, max_quantity)
+    #     # Should be min'd against coverage remaining
+    #     return Maxes(max_expected_back, max_quantity)
 
     def max_expected_back_quantity_period(self):
         Maxes = collections.namedtuple('Maxes', ['max_expected_back',
@@ -820,7 +831,7 @@ class ClaimCoverage(models.Model):
 
         totals = self.total_amount_quantity()
         max_expected_back = min(
-            self._coverage_claim_amount_remaining(),
+            self._coverage_claim_amount_remaining_period(),
             (totals.total_amount * (self.coverage.coverage_percent / 100))
         )
         max_quantity = totals.total_quantity

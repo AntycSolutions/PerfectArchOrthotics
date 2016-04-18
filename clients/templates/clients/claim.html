@@ -112,8 +112,10 @@
                         <th>Total Amount Claimed</th>
                         <th>Total Quantity Claimed</th>
                         <th>Total Expected Back</th>
-                        <th>Total Max Quantity</th>
-                        <th>Total Max Expected Back</th>
+                        {% comment %}
+                            <th>Total Max Quantity</th>
+                            <th>Total Max Expected Back</th>
+                        {% endcomment %}
                         <th>
                             Total Max Quantity Period
                         </th>
@@ -129,10 +131,12 @@
                             <td>{{ totals.total_quantity_claimed }}</td>
                         {% endwith %}
                         <td>{{ claim.total_expected_back }}</td>
-                        {% with totals=claim.total_max_expected_back_quantity %}
-                            <td>{{ totals.total_max_quantity }}</td>
-                            <td>{{ totals.total_max_expected_back }}</td>
-                        {% endwith %}
+                        {% comment %}
+                            {% with totals=claim.total_max_expected_back_quantity %}
+                                <td>{{ totals.total_max_quantity }}</td>
+                                <td>{{ totals.total_max_expected_back }}</td>
+                            {% endwith %}
+                        {% endcomment %}
                         {% with totals=claim.total_max_expected_back_quantity_period %}
                             <td>
                                 {{ totals.total_max_quantity }}
@@ -162,14 +166,18 @@
                                 <th>Total Amount</th>
                                 <th>Total Quantity</th>
                                 <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
-                                <th>Max Quantity</th>
-                                <th>Max Expected Back</th>
-                                <th>Actual Paid Date</th>
+                                {% comment %}
+                                    <th>Max Quantity</th>
+                                    <th>Max Expected Back</th>
+                                {% endcomment %}
                                 <th>
                                     Max Quantity Period
                                 </th>
                                 <th>
                                     Max Expected Back Period
+                                </th>
+                                <th>
+                                    Actual Paid Date
                                 </th>
                             </tr>
                         </thead>
@@ -189,11 +197,12 @@
                                     <td>{{ totals.total_quantity }}</td>
                                 {% endwith %}
                                 <td>{{ claim_coverage.expected_back }}</td>
-                                {% with maxes=claim_coverage.max_expected_back_quantity %}
-                                    <td>{{ maxes.max_quantity }}</td>
-                                    <td>{{ maxes.max_expected_back }}</td>
-                                {% endwith %}
-                                <td>{{ claim_coverage.actual_paid_date }}</td>
+                                {% comment %}
+                                    {% with maxes=claim_coverage.max_expected_back_quantity %}
+                                        <td>{{ maxes.max_quantity }}</td>
+                                        <td>{{ maxes.max_expected_back }}</td>
+                                    {% endwith %}
+                                {% endcomment %}
                                 {% with maxes=claim_coverage.max_expected_back_quantity_period %}
                                     <td>
                                         {{ maxes.max_quantity }}
@@ -202,6 +211,7 @@
                                         {{ maxes.max_expected_back }}
                                     </td>
                                 {% endwith %}
+                                <td>{{ claim_coverage.actual_paid_date }}</td>
                             </tr>
                             <tr>
                                 <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>
