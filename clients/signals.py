@@ -32,7 +32,7 @@ def claimcoverage_pre_save(sender, instance, **kwargs):
             update_credit(
                 (
                     instance.expected_back /
-                    get_credit_divisor(instance.actual_paid_date)
+                    get_credit_divisor(instance.claim.submitted_datetime)
                 ),
                 client
             )
@@ -42,7 +42,7 @@ def claimcoverage_pre_save(sender, instance, **kwargs):
             update_credit(
                 (
                     instance.expected_back /
-                    get_credit_divisor(instance.actual_paid_date)
+                    get_credit_divisor(instance.claim.submitted_datetime)
                 ),
                 client
             )
@@ -51,7 +51,7 @@ def claimcoverage_pre_save(sender, instance, **kwargs):
             update_credit(
                 (
                     -instance.expected_back /
-                    get_credit_divisor(obj.actual_paid_date)
+                    get_credit_divisor(obj.claim.submitted_datetime)
                 ),
                 client
             )
@@ -64,7 +64,7 @@ def claimcoverage_pre_save(sender, instance, **kwargs):
                 update_credit(
                     (
                         (instance.expected_back - obj.expected_back) /
-                        get_credit_divisor(instance.actual_paid_date)
+                        get_credit_divisor(instance.claim.submitted_datetime)
                     ),
                     client
                 )
@@ -77,7 +77,7 @@ def claimcoverage_post_delete(sender, instance, **kwargs):
         update_credit(
             (
                 -instance.expected_back /
-                get_credit_divisor(instance.actual_paid_date)
+                get_credit_divisor(instance.claim.submitted_datetime)
             ),
             client
         )
