@@ -7,3 +7,4 @@ piexif==1.0.3
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
 git+https://github.com/AntycSolutions/xhtml2pdf
 git+https://github.com/AntycSolutions/utils
+git+https://github.com/AntycSolutions/django-accounts

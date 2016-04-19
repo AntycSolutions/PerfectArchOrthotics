@@ -1,4 +1,3 @@
-{% load debug %}
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -47,13 +46,27 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                            <li>
+                                <a href="{% url 'accounts:user_detail' user.pk %}">
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                    {% if not user.first_name %}
+                                        {{ user }}
+                                    {% else %}
+                                        {{ user.first_name }}
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'accounts:logout' %}">
+                                    Logout
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
             {% else %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'user_login' %}">Login</a></li>
+                    <li><a href="{% url 'accounts:login' %}">Login</a></li>
                 </ul>
             {% endif %}
         </div>
