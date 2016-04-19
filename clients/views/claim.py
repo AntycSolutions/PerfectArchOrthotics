@@ -661,8 +661,8 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
                         obj.get_coverage_type_display(),
                         obj.claimant.full_name(),
                         obj.coverage_percent,
-                        obj.claim_amount_remaining(),
-                        obj.quantity_remaining())
+                        obj.claim_amount_remaining_period(),
+                        obj.quantity_remaining_period())
             )
             items_label = (
                 lambda obj:
