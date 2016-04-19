@@ -9,6 +9,11 @@
         @page {
             size: {{ pagesize|default:"A4" }};
             margin: 1.5cm;
+
+            @frame footer_frame { {# static Frame #}
+                -pdf-frame-content: footer_content;
+                top: 795pt;
+            }
         }
     </style>
 {% endblock layout_style %}
@@ -866,6 +871,9 @@
                 <td colspan="4"></td>
             </tr>
         </table>
+    </div>
+    <div id="footer_content" style="text-align: center;">
+        {{ address|nbsp }}
     </div>
 
 {% endblock content %}

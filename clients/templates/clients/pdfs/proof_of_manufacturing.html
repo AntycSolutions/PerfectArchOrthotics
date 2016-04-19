@@ -9,6 +9,11 @@
         @page {
             size: {{ pagesize|default:"A4" }};
             margin: 2.5cm;
+
+            @frame footer_frame { {# static Frame #}
+                -pdf-frame-content: footer_content;
+                top: 795pt;
+            }
         }
     </style>
 {% endblock layout_style %}
@@ -91,8 +96,8 @@
                 <td colspan="7" valign="top" style="font-size: 200%;">
                     Manufacturing Work Order
                 </td>
-                <td colspan="3" class="text-right" style="font-size: 110%;">
-                    {{ proof_of_manufacturing.laboratory_address|nbsp|linebreaksbr }}
+                <td colspan="3" class="text-right">
+                    <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='400px' />
                 </td>
             </tr>
             <tr><td></td></tr>
@@ -201,6 +206,9 @@
                 </td>
             </tr>
         </table>
+    </div>
+    <div id="footer_content" style="text-align: center;">
+        {{ proof_of_manufacturing.laboratory_address|nbsp }}
     </div>
 
 {% endblock content %}

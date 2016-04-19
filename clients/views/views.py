@@ -135,14 +135,19 @@ def insurance_letter_view(request, claim_id):
         ' line-height: 5px;'
     )
 
-    return render_to_pdf(request,
-                         'clients/pdfs/insurance_letter.html',
-                         {'pagesize': 'A4',
-                          'claim': claim,
-                          'patient': patient,
-                          'insurance_letter': insurance_letter,
-                          'underline': underline,
-                          'notunderline': notunderline})
+    return render_to_pdf(
+        request,
+        'clients/pdfs/insurance_letter.html',
+        {
+            'pagesize': 'A4',
+            'claim': claim,
+            'patient': patient,
+            'insurance_letter': insurance_letter,
+            'underline': underline,
+            'notunderline': notunderline,
+            'address': settings.BILL_TO[0][1],
+        }
+    )
 
 
 def _insurance_letter(claim_id):
@@ -159,14 +164,19 @@ def _insurance_letter(claim_id):
 
 def proof_of_manufacturing_view(request, claim_id):
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
-        claim_id)
+        claim_id
+    )
 
-    return render_to_pdf(request,
-                         'clients/pdfs/proof_of_manufacturing.html',
-                         {'pagesize': 'A4',
-                          'claim': claim,
-                          'proof_of_manufacturing': proof_of_manufacturing,
-                          'invoice_number': invoice_number})
+    return render_to_pdf(
+        request,
+        'clients/pdfs/proof_of_manufacturing.html',
+        {
+            'pagesize': 'A4',
+            'claim': claim,
+            'proof_of_manufacturing': proof_of_manufacturing,
+            'invoice_number': invoice_number,
+        }
+    )
 
 
 def _proof_of_manufacturing(claim_id):
