@@ -66,11 +66,11 @@ class Person(models.Model):
 
     def get_absolute_url(self):
         try:
-            return Client.objects.get(id=self.id).get_absolute_url()
+            return self.client.get_absolute_url()
         except Client.DoesNotExist:
             pass
         try:
-            return Dependent.objects.get(id=self.id).get_absolute_url()
+            return self.dependent.get_absolute_url()
         except Dependent.DoesNotExist:
             pass
 
@@ -78,11 +78,11 @@ class Person(models.Model):
 
     def get_client(self):
         try:
-            return Client.objects.get(id=self.id)
+            return self.client
         except Client.DoesNotExist:
             pass
         try:
-            return Dependent.objects.get(id=self.id).client
+            return self.dependent.client
         except Dependent.DoesNotExist:
             pass
 

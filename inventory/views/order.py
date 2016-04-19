@@ -91,7 +91,12 @@ class ListOrderView(ListView):
 
     def get_queryset(self):
         # Start from all, drilldown to q
-        queryset = super(ListOrderView, self).get_queryset()
+        queryset = super(ListOrderView, self).get_queryset().select_related(
+            'claimant',
+            'shoeorder__shoe_attributes__shoe',
+            'coverageorder',
+            'adjustmentorder'
+        )
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             fields = ['claimant__first_name', 'claimant__last_name',

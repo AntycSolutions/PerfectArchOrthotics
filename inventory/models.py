@@ -168,20 +168,20 @@ class Order(models.Model, model_utils.FieldList):
 
     def get_credit_value(self):
         try:
-            order = ShoeOrder.objects.get(pk=self.pk)
+            order = self.shoeorder
 
             return order.shoe_attributes.shoe.credit_value
         except ShoeOrder.DoesNotExist:
             pass
         try:
-            order = CoverageOrder.objects.get(pk=self.pk)
+            order = self.coverageorder
             # ignore quantity as credit_value is already the total
 
             return order.credit_value
         except CoverageOrder.DoesNotExist:
             pass
         try:
-            order = AdjustmentOrder.objects.get(pk=self.pk)
+            order = self.adjustmentorder
 
             return order.credit_value
         except AdjustmentOrder.DoesNotExist:
@@ -193,15 +193,15 @@ class Order(models.Model, model_utils.FieldList):
     def get_absolute_url(self):
         order = None
         try:
-            order = ShoeOrder.objects.get(pk=self.pk)
+            order = self.shoeorder
         except ShoeOrder.DoesNotExist:
             pass
         try:
-            order = CoverageOrder.objects.get(pk=self.pk)
+            order = self.coverageorder
         except CoverageOrder.DoesNotExist:
             pass
         try:
-            order = AdjustmentOrder.objects.get(pk=self.pk)
+            order = self.adjustmentorder
         except AdjustmentOrder.DoesNotExist:
             pass
 
@@ -223,7 +223,7 @@ class Order(models.Model, model_utils.FieldList):
             if k == "claimant":
                 if self.order_type == self.SHOE:
                     try:
-                        order = ShoeOrder.objects.get(pk=self.pk)
+                        order = self.shoeorder
                         value = order.shoe_attributes
                     except ShoeOrder.DoesNotExist:
                         value = ""
@@ -240,7 +240,7 @@ class Order(models.Model, model_utils.FieldList):
             elif k == "description":
                 if self.order_type == self.SHOE:
                     try:
-                        order = ShoeOrder.objects.get(pk=self.pk)
+                        order = self.shoeorder
                         value = order.customer_ordered_date
                     except ShoeOrder.DoesNotExist:
                         value = ""
