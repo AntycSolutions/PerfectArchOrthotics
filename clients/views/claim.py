@@ -599,9 +599,11 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
     file_storage = storage.FileSystemStorage(
         path.join(settings.MEDIA_ROOT, 'temp')
     )
+    INFO = 'info'
+    COVERAGES = 'coverages'
     form_list = (
-        ('info', claim_forms.ClaimForm),
-        ('coverages', claim_forms.ClaimCoverageFormFormSet),
+        (INFO, claim_forms.ClaimForm),
+        (COVERAGES, claim_forms.ClaimCoverageFormFormSet),
     )
     template_name = 'utils/generics/wizard.html'
     storage_name = 'utils.wizard.storage.MultiFileSessionStorage'
@@ -626,7 +628,7 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
         return context
 
     def get_form_kwargs(self, step=None):
-        if step == 'info' and 'client_id' in self.kwargs:
+        if step == self.INFO and 'client_id' in self.kwargs:
             return {'client_id': self.kwargs['client_id']}
         else:
             return super().get_form_kwargs(step)
@@ -637,20 +639,21 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
 
         form = super().get_form(step, data, files)
 
-        if step == 'coverages':
-            info_data = self.storage.get_step_data('info')
+        if step == self.COVERAGES:
+            info_data = self.storage.get_step_data(self.INFO)
             submitted_datetime_str = info_data.get('info-submitted_datetime')
             submitted_datetime = datetime.strptime(
                 submitted_datetime_str, '%Y-%m-%d %I:%M %p'
             )
             insurance_id = info_data.get('info-insurance')
+            patient_id = info_data.get('info-patient_id')
 
             coverages = Coverage.objects.select_related(
                 'insurance', 'claimant'
             ).prefetch_related(
                 'claimcoverage_set__claimitem_set'
             ).filter(
-                insurance_id=insurance_id
+                insurance_id=insurance_id, claimant_id=patient_id
             )
             label = (
                 lambda obj:
@@ -814,20 +817,22 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
                 # proceed to the next step
                 return self.render_next_step(form)
         else:
-            form.fields['claim_package'].widget = \
-                utils_widgets.ConfirmMultiFileMultiWidget(
-                    form_id="update_claim_form",  # html
-                    form=self,
-                    field_name='claim_package',
-                    file_count=0
-                )
-            form.initial['claim_package'] = {}
+            if self.steps.current == self.INFO:
+                # form wasn't saved, files were lost
+                form.fields['claim_package'].widget = \
+                    utils_widgets.ConfirmMultiFileMultiWidget(
+                        form_id="update_claim_form",  # html
+                        form=self,
+                        field_name='claim_package',
+                        file_count=0
+                    )
+                form.initial['claim_package'] = {}
 
         return self.render(form)
 
     def done(self, form_list, form_dict, **kwargs):
-        claim_form = form_dict['info']
-        claim_coverage_claim_item_form = form_dict['coverages']
+        claim_form = form_dict[self.INFO]
+        claim_coverage_claim_item_form = form_dict[self.COVERAGES]
 
         claim = claim_form.save()
 
