@@ -14,7 +14,7 @@
     </h1>
     {% include 'utils/snippets/messages.html' %}
     <div>
-        <a href="{% url 'claim_create' client.id %}" class="btn btn-primary">
+        <a href="{% url 'claim_create' client.id %}?reset" class="btn btn-primary">
             Create Claim
         </a>
         <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary">
