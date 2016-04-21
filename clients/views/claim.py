@@ -646,7 +646,7 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
                 submitted_datetime_str, '%Y-%m-%d %I:%M %p'
             )
             insurance_id = info_data.get('info-insurance')
-            patient_id = info_data.get('info-patient_id')
+            patient_id = info_data.get('info-patient')
 
             coverages = Coverage.objects.select_related(
                 'insurance', 'claimant'

@@ -5,23 +5,24 @@
 {% block extra_head %}
     {% now 'Y' as current_year %}
     <script type="text/javascript">
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
         $(function() {
             $("#actual_paid_date_from").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                 yearRange: year_range});
             $("#actual_paid_date_to").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                 yearRange: year_range});
             $("#submitted_date_from").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                 yearRange: year_range});
             $("#submitted_date_to").datepicker(
                 {changeMonth: true,
                  changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+                 yearRange: year_range});
         });
     </script>
 {% endblock extra_head %}
@@ -48,6 +49,21 @@
         <div class="form-group">
             <input type="text" id="submitted_date_to" class="form-control search-query" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
         </div>
+        {% for name, select in selects.items %}
+            <div class="form-group">
+                <label for="payment_type" class="control-label">
+                    {{ select.label }}:
+                </label>
+                <select id="payment_type" name="payment_type" class="form-control">
+                    <option value="">---------</option>
+                    {% for option in select.options %}
+                        <option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>
+                            {{ option.value_display }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endfor %}
         <div class="radio">
             <label>
                 <input type="radio" name="apd" value="has_actual_paid_date" {% if apd == 'has_actual_paid_date' %}checked{% endif %}>

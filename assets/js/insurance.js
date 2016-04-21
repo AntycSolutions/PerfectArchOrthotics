@@ -4,6 +4,7 @@ function display_period_date(period_value, form, form_count) {
         '#id_coverage_set-' + form_count + '-period_date'
     );
 
+    // console.log(period_value, form, form_count, period_date);
     if (period_value == '1') {
         // parent is col parent is form-group
         period_date.parent().parent().show();

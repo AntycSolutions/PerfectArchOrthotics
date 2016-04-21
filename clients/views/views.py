@@ -377,6 +377,45 @@ def _date_from_date_to(request, context_dict, found_claims, df, dt,
     return found_claims
 
 
+def _payment_type(request, context_dict, found_claims):
+    # payment type dropdown search
+    Option = collections.namedtuple('Option', ['value',
+                                               'value_display',
+                                               'selected'])
+    Select = collections.namedtuple('Select', ['label', 'options'])
+    payment_types = []
+    for payment_type in ClaimCoverage.PAYMENT_TYPES:
+        if (
+            "payment_type" in request.GET and
+            request.GET["payment_type"].strip() and
+            request.GET["payment_type"] == payment_type[0]
+                ):
+            payment_types.append(
+                Option(payment_type[0], payment_type[1], True)
+            )
+        else:
+            payment_types.append(
+                Option(payment_type[0], payment_type[1], False)
+            )
+    selects = collections.OrderedDict()
+    selects.update({"payment_type": Select("Payment Type", payment_types)})
+    context_dict['selects'] = selects
+
+    if (
+        'payment_type' in request.GET and
+        request.GET['payment_type'].strip()
+            ):
+        fields = ['claimcoverage__payment_type']
+        query_string = request.GET['payment_type']
+        claim_query = get_query(query_string, fields)
+        if found_claims:
+            found_claims = found_claims.filter(claim_query)
+        else:
+            found_claims = Claim.objects.filter(claim_query)
+
+    return found_claims
+
+
 @login_required
 def claimSearchView(request):
     context = RequestContext(request)
@@ -410,6 +449,8 @@ def claimSearchView(request):
 
     found_claims = _date_from_date_to(request, context_dict, found_claims,
                                       'sdf', 'sdt', 'submitted_datetime')
+
+    found_claims = _payment_type(request, context_dict, found_claims)
 
     found_claims = _actual_paid_date(request, context_dict, found_claims)
 

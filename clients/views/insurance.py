@@ -1,4 +1,3 @@
-from django import forms
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
@@ -26,6 +25,8 @@ class UpdateInsuranceView(UpdateView):
         context['inline_model_name_plural'] = \
             Coverage._meta.verbose_name_plural
         context['cancel_url'] = self.object.get_absolute_url()
+        context['js_url'] = staticfiles.static('js/insurance.js')
+        context['css_url'] = staticfiles.static('css/insurance.css')
 
         return context
 
@@ -60,9 +61,8 @@ class UpdateInsuranceView(UpdateView):
             'claimant'].queryset = claimants
         coverage_formset.form.base_fields[
             'claimant'].label_from_instance = label
-        for coverage_form in coverage_formset:
-            coverage_form.fields['claimant'].queryset = claimants
-            coverage_form.fields['claimant'].label_from_instance = label
+        coverage_formset.form.base_fields['period_date'].help_text = \
+            'Only the month and day is important'
 
         return self.render_to_response(
             self.get_context_data(form=insurance_form,
@@ -174,6 +174,7 @@ class CreateInsuranceView(CreateView):
             'client', kwargs={'client_id': self.kwargs['client_id']}
         )
         context['js_url'] = staticfiles.static('js/insurance.js')
+        context['css_url'] = staticfiles.static('css/insurance.css')
 
         return context
 
@@ -205,9 +206,8 @@ class CreateInsuranceView(CreateView):
             'claimant'].queryset = claimants
         coverage_formset.form.base_fields[
             'claimant'].label_from_instance = label
-        for coverage_form in coverage_formset:
-            coverage_form.fields['claimant'].queryset = claimants
-            coverage_form.fields['claimant'].label_from_instance = label
+        coverage_formset.form.base_fields['period_date'].help_text = \
+            'Only the month and day is important'
 
         return self.render_to_response(
             self.get_context_data(form=insurance_form,

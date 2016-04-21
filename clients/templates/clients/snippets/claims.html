@@ -138,6 +138,9 @@
                                                 </th>
                                             {% endcomment %}
                                             <th>
+                                                Payment Type
+                                            </th>
+                                            <th>
                                                 Actual Paid Date
                                             </th>
                                         </tr>
@@ -169,6 +172,9 @@
                                                         </td>
                                                     {% endwith %}
                                                 {% endcomment %}
+                                                <td>
+                                                    {{ claim_coverage.get_payment_type_display }}
+                                                </td>
                                                 <td{% if not claim_coverage.actual_paid_date %} style="color: red;"{% endif %}>
                                                     {{ claim_coverage.actual_paid_date }}
                                                 </td>
