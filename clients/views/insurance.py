@@ -1,6 +1,8 @@
+from django import forms
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.forms.models import inlineformset_factory
+from django.contrib.staticfiles.templatetags import staticfiles
 from django.core import urlresolvers
 
 from utils import views_utils
@@ -171,6 +173,7 @@ class CreateInsuranceView(CreateView):
         context['cancel_url'] = urlresolvers.reverse(
             'client', kwargs={'client_id': self.kwargs['client_id']}
         )
+        context['js_url'] = staticfiles.static('js/insurance.js')
 
         return context
 
