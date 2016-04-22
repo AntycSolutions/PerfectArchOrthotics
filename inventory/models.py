@@ -59,11 +59,8 @@ class Shoe(models.Model, model_utils.FieldList):
     def get_absolute_url(self):
         return urlresolvers.reverse_lazy('shoe_detail', kwargs={'pk': self.pk})
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
-        return self.__unicode__()
+        return self.name
 
 
 class ShoeAttributes(models.Model, model_utils.FieldList):
@@ -124,13 +121,22 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
     def get_absolute_url(self):
         return self.shoe.get_absolute_url()
 
-    def __unicode__(self):
-        return "Size: {} - Quantity: {} - Shoe ID: {}".format(
-            self.size, self.quantity, self.shoe_id
+    def get_str(self):
+        try:
+            shoe = self.shoe
+            brand = shoe.brand
+            colour = shoe.colour
+        except Shoe.DoesNotExist:
+            shoe = None
+
+        return "Size: {} - {}: {} - {}".format(
+            self.size, brand, shoe, colour
         )
 
     def __str__(self):
-        return self.__unicode__()
+        return "Size: {} - Quantity: {} - Shoe ID: {}".format(
+            self.size, self.quantity, self.shoe_id
+        )
 
 
 class Order(models.Model, model_utils.FieldList):
@@ -250,13 +256,10 @@ class Order(models.Model, model_utils.FieldList):
 
         return reordered_fields
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Person ID: {}".format(
             self.get_order_type_display(), self.claimant_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class ShoeOrder(Order):
@@ -284,15 +287,12 @@ class ShoeOrder(Order):
             'shoe_order_detail', kwargs={'pk': self.pk}
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Shoe Attributes ID: {} - Person ID: {}".format(
             self.get_order_type_display(),
             self.shoe_attributes_id,
             self.claimant_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class CoverageOrder(Order):
@@ -316,13 +316,10 @@ class CoverageOrder(Order):
             'coverage_order_detail', kwargs={'pk': self.pk}
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Person ID: {}".format(
             self.get_order_type_display(), self.claimant_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class AdjustmentOrder(Order):
@@ -346,13 +343,10 @@ class AdjustmentOrder(Order):
             'adjustment_order_detail', kwargs={'pk': self.pk}
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Person ID: {}".format(
             self.get_order_type_display(), self.claimant_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 """

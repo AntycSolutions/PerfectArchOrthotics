@@ -91,11 +91,8 @@ class Person(models.Model):
 
         raise Exception('Person is not tied to a Client.')
 
-    def __unicode__(self):
-        return self.full_name()
-
     def __str__(self):
-        return self.__unicode__()
+        return self.full_name()
 
 
 class Client(Person):
@@ -181,11 +178,8 @@ class Client(Person):
             'client', kwargs={'client_id': self.id}
         )
 
-    def __unicode__(self):
-        return self.full_name()
-
     def __str__(self):
-        return self.__unicode__()
+        return self.full_name()
 
 
 class Note(models.Model):
@@ -220,11 +214,8 @@ class Dependent(Person):
             self.id
         )
 
-    def __unicode__(self):
-        return self.full_name()
-
     def __str__(self):
-        return self.__unicode__()
+        return self.full_name()
 
 
 class Insurance(models.Model):
@@ -444,15 +435,12 @@ class Coverage(models.Model):
         except self.PeriodException:
             return 'Period and/or Period Date not set'
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Insurance ID: {} - Person ID: {}".format(
             self.get_coverage_type_display(),
             self.insurance_id,
             self.claimant_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class Item(models.Model, model_utils.FieldList):
@@ -543,11 +531,8 @@ class Item(models.Model, model_utils.FieldList):
         self._initial_cost = self.cost
         self._initial_unit_price = self.unit_price
 
-    def __unicode__(self):
-        return "{} - {}".format(self.product_code, self.description)
-
     def __str__(self):
-        return self.__unicode__()
+        return "{} - {}".format(self.product_code, self.description)
 
 
 class ItemHistory(models.Model):
@@ -659,7 +644,7 @@ class Claim(models.Model, model_utils.FieldList):
     def get_absolute_url(self):
         return urlresolvers.reverse_lazy('claim', kwargs={'claim_id': self.id})
 
-    def __unicode__(self):
+    def __str__(self):
         try:
             submitted_datetime = timezone.localtime(self.submitted_datetime)
             submitted_datetime = submitted_datetime.strftime(
@@ -670,9 +655,6 @@ class Claim(models.Model, model_utils.FieldList):
         return "{} - Person ID: {} - Insurance ID: {}".format(
             submitted_datetime, self.patient_id, self.insurance_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class ClaimAttachment(models.Model):
@@ -862,13 +844,10 @@ class ClaimCoverage(models.Model):
         # Should be min'd against coverage remaining
         return Maxes(max_expected_back, max_quantity)
 
-    def __unicode__(self):
+    def __str__(self):
         return "Expected Back: ${} - Claim ID: {} Coverage ID: {}".format(
             self.expected_back, self.claim_id, self.coverage_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class ClaimItem(models.Model):
@@ -910,13 +889,10 @@ class ClaimItem(models.Model):
             'cost': values['cost'] * quantity,
         }
 
-    def __unicode__(self):
+    def __str__(self):
         return "Quantity: {} - Claim Coverage ID: {} - Item ID: {}".format(
             self.quantity, self.claim_coverage_id, self.item_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class Invoice(models.Model):
@@ -973,11 +949,8 @@ class Invoice(models.Model):
             'fillOutInvoice', kwargs={'claim_id': self.claim.id}
         )
 
-    def __unicode__(self):
-        return "{} - Claim ID: {}".format(self.invoice_date, self.claim_id)
-
     def __str__(self):
-        return self.__unicode__()
+        return "{} - Claim ID: {}".format(self.invoice_date, self.claim_id)
 
 
 class InsuranceLetter(models.Model):
@@ -1210,11 +1183,8 @@ class InsuranceLetter(models.Model):
             'fillOutInsurance', kwargs={'claim_id': self.claim.id}
         )
 
-    def __unicode__(self):
-        return "{} - Claim ID: {}".format(self.dispense_date(), self.claim_id)
-
     def __str__(self):
-        return self.__unicode__()
+        return "{} - Claim ID: {}".format(self.dispense_date(), self.claim_id)
 
 
 class ProofOfManufacturing(models.Model):
@@ -1279,13 +1249,10 @@ class ProofOfManufacturing(models.Model):
             'fillOutProof', kwargs={'claim_id': self.claim.id}
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} - Claim ID: {}".format(
             self.proof_of_manufacturing_date(), self.claim_id
         )
-
-    def __str__(self):
-        return self.__unicode__()
 
 
 class Laboratory(models.Model):
@@ -1299,11 +1266,8 @@ class Laboratory(models.Model):
     class Meta:
         verbose_name_plural = "Laboratories"
 
-    def __unicode__(self):
-        return self.get_information_display().split('\n')[0]
-
     def __str__(self):
-        return self.__unicode__()
+        return self.get_information_display().split('\n')[0]
 
 
 class Referral(models.Model):
