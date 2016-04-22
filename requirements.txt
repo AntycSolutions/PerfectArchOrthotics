@@ -3,6 +3,7 @@ django-ajax-selects==1.4.3
 django-crispy-forms==1.6.0
 django-easy-pdf==0.1.0
 django-formtools==1.0
+django-auditlog==0.3.3
 piexif==1.0.3
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
 git+https://github.com/AntycSolutions/xhtml2pdf
