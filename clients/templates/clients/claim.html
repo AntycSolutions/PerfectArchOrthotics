@@ -73,7 +73,8 @@
                     </label>
                     <div class="col-lg-10">
                         <p class="form-control-static">
-                            {{ claim.submitted_datetime }}
+                            {{ claim.submitted_datetime }}<br />
+                            {{ claim.submitted_datetime|timesince:now }} ago
                         </p>
                     </div>
                 </div>

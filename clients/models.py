@@ -1078,7 +1078,7 @@ class InsuranceLetter(models.Model):
             invoice = self.claim.invoice
             if invoice.invoice_date:
                 return invoice.invoice_date
-        except Claim.DoesNotExist:
+        except (Claim.DoesNotExist, Invoice.DoesNotExist):
             pass
 
     def _verbose_name(self, field):

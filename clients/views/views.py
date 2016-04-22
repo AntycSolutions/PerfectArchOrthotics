@@ -18,7 +18,7 @@ from django.template import Context
 from django.contrib import messages
 from django.db.models import Sum, Case, When, Q
 from django.core import urlresolvers
-from django.utils import safestring
+from django.utils import safestring, timezone
 
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
@@ -57,7 +57,7 @@ def link_callback(uri, rel):
 
     # make sure that file exists
     if os.path.isfile(path):
-        return path
+        return os.path.normpath(path)
     elif os.path.isfile(path2):
         return os.path.normpath(path2)
     else:
@@ -258,13 +258,16 @@ def claimView(request, claim_id):
         'claimcoverage_set__claimitem_set__item__itemhistory_set'
     ).get(id=claim_id)
     has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
-    context_dict = {'claim': claim,
-                    'has_orthotics': has_orthotics,
-                    'claim_coverage_class': ClaimCoverage,
-                    'coverage_class': Coverage,
-                    'claim_item_class': ClaimItem,
-                    'item_class': Item
-                    }
+    context_dict = {
+        'claim': claim,
+        'has_orthotics': has_orthotics,
+        'claim_coverage_class': ClaimCoverage,
+        'coverage_class': Coverage,
+        'claim_item_class': ClaimItem,
+        'item_class': Item,
+        'now': timezone.now(),
+    }
+
     return render_to_response('clients/claim.html', context_dict, context)
 
 
@@ -532,6 +535,7 @@ def claimSearchView(request):
         total_assignment_expected_back
     context_dict['total_expected_back'] = \
         non_assignment_expected_back + total_assignment_expected_back
+    context['now'] = timezone.now()
 
     return render_to_response(
         'clients/claims.html', context_dict, context
@@ -719,6 +723,7 @@ def clientView(request, client_id):
         'dependent_class': Dependent,
         'referral_form': referral_form,
         'note_form': note_form,
+        'now': timezone.now(),
     }
 
     return render_to_response('clients/client.html', context_dict, context)

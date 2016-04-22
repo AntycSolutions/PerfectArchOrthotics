@@ -76,7 +76,8 @@
                         {{ claim.patient.employer }}
                     </td>
                     <td>
-                        {{ claim.submitted_datetime }}
+                        {{ claim.submitted_datetime }}<br />
+                        {{ claim.submitted_datetime|timesince:now }} ago
                     </td>
                     <td{% if not claim.insurance_paid_date %} style="color: red;"{% endif %}>
                         {{ claim.insurance_paid_date }}
