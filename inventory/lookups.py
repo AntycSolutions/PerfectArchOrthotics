@@ -49,7 +49,7 @@ class ShoeLookup(LookupChannel):
         result = self._get_shoe(obj)
 
         result = "<a href='%s'>%s</a>" % (
-            reverse('shoe_detail', kwargs={'pk': obj.pk}),
+            reverse('shoe_detail', kwargs={'pk': obj.shoe.pk}),
             result,
         )
 
