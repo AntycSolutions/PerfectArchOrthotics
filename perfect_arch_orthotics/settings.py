@@ -20,10 +20,11 @@ THIRD_PARTY_APPS = (
     'bootstrap3_datetime',
     'ajax_select',
     'crispy_forms',
-)
-LOCAL_APPS = (
+    'auditlog',
     'utils',
     'accounts',
+)
+LOCAL_APPS = (
     'clients',
     'inventory',
 )
@@ -55,10 +56,15 @@ DJANGO_MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+THIRD_PARTY_MIDDLEWARE = (
+    'auditlog.middleware.AuditlogMiddleware',
+)
 LOCAL_MIDDLEWARE = (
     'middleware.active_users.ActiveUserMiddleware',
 )
-MIDDLEWARE_CLASSES = DJANGO_MIDDLEWARE + LOCAL_MIDDLEWARE
+MIDDLEWARE_CLASSES = (
+    DJANGO_MIDDLEWARE + THIRD_PARTY_MIDDLEWARE + LOCAL_MIDDLEWARE
+)
 
 ROOT_URLCONF = 'perfect_arch_orthotics.urls'
 

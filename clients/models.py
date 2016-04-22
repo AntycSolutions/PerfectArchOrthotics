@@ -1,6 +1,7 @@
 import collections
 import operator
 import decimal
+from os import path
 from datetime import date, timedelta, time
 
 from django.db import models
@@ -8,7 +9,9 @@ from django.conf import settings
 from django.core import urlresolvers
 from django.utils import timezone
 from django.db.models import Sum, Case, When
+from django.template import defaultfilters
 
+from auditlog.registry import auditlog
 from utils import model_utils
 
 
@@ -192,6 +195,11 @@ class Note(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return '{} - {} - Client ID: {}'.format(
+            self.notes, self.created, self.client_id
+        )
+
 
 class Dependent(Person):
     SPOUSE = 's'
@@ -259,12 +267,9 @@ class Insurance(models.Model):
         )
 
     def __unicode__(self):
-        try:
-            main_claimant = self.main_claimant
-        except Person.DoesNotExist:
-            main_claimant = None
-
-        return "%s - %s" % (self.provider, main_claimant)
+        return "{} - Person ID: {}".format(
+            self.provider, self.main_claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -440,17 +445,11 @@ class Coverage(models.Model):
             return 'Period and/or Period Date not set'
 
     def __unicode__(self):
-        try:
-            insurance = self.insurance
-        except Insurance.DoesNotExist:
-            insurance = None
-        try:
-            claimant = self.claimant
-        except Person.DoesNotExist:
-            claimant = None
-
-        return "%s %s - %s" % (
-            self.get_coverage_type_display(), claimant, insurance)
+        return "{} - Insurance ID: {} - Person ID: {}".format(
+            self.get_coverage_type_display(),
+            self.insurance_id,
+            self.claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -532,10 +531,9 @@ class Item(models.Model, model_utils.FieldList):
     def save(self, *args, **kwargs):
         initial_cost = self._initial_cost
         initial_unit_price = self._initial_unit_price
-        if (
-            (self.cost != initial_cost) or
-            (self.unit_price != initial_unit_price)
-                ):
+        new_cost = self.cost != initial_cost
+        new_unit_price = self.unit_price != initial_unit_price
+        if new_cost or new_unit_price:
             ItemHistory.objects.create(
                 item=self, cost=initial_cost, unit_price=initial_unit_price
             )
@@ -546,7 +544,7 @@ class Item(models.Model, model_utils.FieldList):
         self._initial_unit_price = self.unit_price
 
     def __unicode__(self):
-        return "%s %s" % (self.product_code, self.description)
+        return "{} - {}".format(self.product_code, self.description)
 
     def __str__(self):
         return self.__unicode__()
@@ -560,6 +558,11 @@ class ItemHistory(models.Model):
     unit_price = models.IntegerField()
 
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Cost: ${} - Unit Price: ${} - {} - Item ID: {}'.format(
+            self.cost, self.unit_price, self.created, self.item_id
+        )
 
 
 class Claim(models.Model, model_utils.FieldList):
@@ -658,24 +661,15 @@ class Claim(models.Model, model_utils.FieldList):
 
     def __unicode__(self):
         try:
-            patient = self.patient
-        except Person.DoesNotExist:
-            patient = None
-        try:
-            insurance = self.insurance
-        except Insurance.DoesNotExist:
-            insurance = None
-        try:
             submitted_datetime = timezone.localtime(self.submitted_datetime)
             submitted_datetime = submitted_datetime.strftime(
                 "%Y-%m-%d %I:%M %p")
         except AttributeError:
             submitted_datetime = None
 
-        return "Submitted Datetime: %s %s - %s" % (
-            submitted_datetime,
-            patient,
-            insurance)
+        return "{} - Person ID: {} - Insurance ID: {}".format(
+            submitted_datetime, self.patient_id, self.insurance_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -688,8 +682,14 @@ class ClaimAttachment(models.Model):
         upload_to='clients/claim_packages/%Y/%m/%d'
     )
 
+    def attachment_filename(self):
+        if self.attachment:
+            return path.basename(self.attachment.name)
+
     def __str__(self):
-        return "{0} - {1}".format(self.attachment, self.claim)
+        return "{} - Claim ID: {}".format(
+            self.attachment_filename(), self.claim_id
+        )
 
 
 class ClaimCoverage(models.Model):
@@ -863,16 +863,9 @@ class ClaimCoverage(models.Model):
         return Maxes(max_expected_back, max_quantity)
 
     def __unicode__(self):
-        try:
-            coverage = self.coverage
-        except Coverage.DoesNotExist:
-            coverage = None
-        try:
-            claim = self.claim
-        except Claim.DoesNotExist:
-            claim = None
-
-        return "%s - %s" % (coverage, claim)
+        return "Expected Back: ${} - Claim ID: {} Coverage ID: {}".format(
+            self.expected_back, self.claim_id, self.coverage_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -918,7 +911,9 @@ class ClaimItem(models.Model):
         }
 
     def __unicode__(self):
-        return "%s - %s" % (self.item, self.claim_coverage)
+        return "Quantity: {} - Claim Coverage ID: {} - Item ID: {}".format(
+            self.quantity, self.claim_coverage_id, self.item_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -979,7 +974,7 @@ class Invoice(models.Model):
         )
 
     def __unicode__(self):
-        return "Invoice Date: %s - %s" % (self.invoice_date, self.claim)
+        return "{} - Claim ID: {}".format(self.invoice_date, self.claim_id)
 
     def __str__(self):
         return self.__unicode__()
@@ -1216,7 +1211,7 @@ class InsuranceLetter(models.Model):
         )
 
     def __unicode__(self):
-        return "Dispense Date: %s - %s" % (self.dispense_date(), self.claim)
+        return "{} - Claim ID: {}".format(self.dispense_date(), self.claim_id)
 
     def __str__(self):
         return self.__unicode__()
@@ -1285,8 +1280,9 @@ class ProofOfManufacturing(models.Model):
         )
 
     def __unicode__(self):
-        return "Proof of Manufacturing Date: %s - %s" % (
-            self.proof_of_manufacturing_date(), self.claim)
+        return "{} - Claim ID: {}".format(
+            self.proof_of_manufacturing_date(), self.claim_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -1321,7 +1317,9 @@ class Referral(models.Model):
     )
 
     def __str__(self):
-        return "{} {}".format(self.client, self.credit_value)
+        return "Credit Value: {} - Client ID: {}".format(
+            self.credit_value, self.client_id
+        )
 
 
 class Receipt(models.Model, model_utils.FieldList):
@@ -1389,7 +1387,7 @@ class Receipt(models.Model, model_utils.FieldList):
         return url
 
     def __str__(self):
-        return 'Receipt of ${} for {}'.format(self.amount, self.claim)
+        return 'Amount ${} - Claim ID: {}'.format(self.amount, self.claim_id)
 
 
 class CreditDivisor(models.Model):
@@ -1400,6 +1398,27 @@ class CreditDivisor(models.Model):
     created = models.DateTimeField()
 
     def __str__(self):
-        return '{value} {created}'.format(
-            value=self.value, created=self.created
-        )
+        created = defaultfilters.date(self.created, "N j, Y, P")
+
+        return 'Value: {} - {}'.format(self.value, created)
+
+
+auditlog.register(Person)
+auditlog.register(Client)
+auditlog.register(Note)
+auditlog.register(Dependent)
+auditlog.register(Insurance)
+auditlog.register(Coverage)
+auditlog.register(Item)
+auditlog.register(ItemHistory)
+auditlog.register(Claim)
+auditlog.register(ClaimAttachment)
+auditlog.register(ClaimCoverage)
+auditlog.register(ClaimItem)
+auditlog.register(Invoice)
+auditlog.register(InsuranceLetter)
+auditlog.register(ProofOfManufacturing)
+auditlog.register(Laboratory)
+auditlog.register(Referral)
+auditlog.register(Receipt)
+auditlog.register(CreditDivisor)

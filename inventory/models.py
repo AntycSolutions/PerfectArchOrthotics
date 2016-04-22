@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.db import models
 from django.core import urlresolvers
 
+from auditlog.registry import auditlog
 from clients import models as client_models
 from utils import model_utils
 
@@ -124,16 +125,8 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         return self.shoe.get_absolute_url()
 
     def __unicode__(self):
-        try:
-            shoe = self.shoe
-        except Shoe.DoesNotExist:
-            shoe = None
-
-        return "Size: {size} - {brand}: {shoe} - {colour}".format(
-            size=self.size,
-            brand=self.shoe.brand,
-            shoe=shoe,
-            colour=self.shoe.colour
+        return "Size: {} - Quantity: {} - Shoe ID: {}".format(
+            self.size, self.quantity, self.shoe_id
         )
 
     def __str__(self):
@@ -258,8 +251,9 @@ class Order(models.Model, model_utils.FieldList):
         return reordered_fields
 
     def __unicode__(self):
-        return "%s - %s" % (
-            self.get_order_type_display(), self.claimant)
+        return "{} - Person ID: {}".format(
+            self.get_order_type_display(), self.claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -291,8 +285,11 @@ class ShoeOrder(Order):
         )
 
     def __unicode__(self):
-        return "%s - %s" % (
-            self.get_order_type_display(), self.claimant)
+        return "{} - Shoe Attributes ID: {} - Person ID: {}".format(
+            self.get_order_type_display(),
+            self.shoe_attributes_id,
+            self.claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -320,8 +317,9 @@ class CoverageOrder(Order):
         )
 
     def __unicode__(self):
-        return "%s - %s" % (
-            self.get_order_type_display(), self.claimant)
+        return "{} - Person ID: {}".format(
+            self.get_order_type_display(), self.claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -349,8 +347,9 @@ class AdjustmentOrder(Order):
         )
 
     def __unicode__(self):
-        return "%s - %s" % (
-            self.get_order_type_display(), self.claimant)
+        return "{} - Person ID: {}".format(
+            self.get_order_type_display(), self.claimant_id
+        )
 
     def __str__(self):
         return self.__unicode__()
@@ -368,3 +367,10 @@ Reports:
 6) low inventory notifications
 - sent by notification can be sent by email
 """
+
+auditlog.register(Shoe)
+auditlog.register(ShoeAttributes)
+auditlog.register(Order)
+auditlog.register(ShoeOrder)
+auditlog.register(CoverageOrder)
+auditlog.register(AdjustmentOrder)
