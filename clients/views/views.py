@@ -627,20 +627,16 @@ def clientView(request, client_id):
     client_total_expected_back = totals['expected_back__sum'] or 0
 
     client_total_amount_claimed = 0
-    client_total_cost = 0
     pending_client_total_amount_claimed = 0
-    pending_client_total_cost = 0
     for claim in claims:
         for claimcoverage in claim.claimcoverage_set.all():
             for claimitem in claimcoverage.claimitem_set.all():
                 amounts = claimitem.get_amount()
                 if claimcoverage.actual_paid_date:
                     client_total_amount_claimed += amounts['unit_price']
-                    client_total_cost += amounts['cost']
                 else:
                     pending_client_total_amount_claimed += \
                         amounts['unit_price']
-                    pending_client_total_cost += amounts['cost']
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=True,
@@ -650,14 +646,18 @@ def clientView(request, client_id):
     )
     pending_client_total_expected_back = totals['expected_back__sum'] or 0
 
-    dependents_pks = list(dependents.values_list('pk', flat=True))
-    pks = dependents_pks + [client.pk]
     total = inventory_models.ShoeOrder.objects.filter(
-        claimant__pk__in=pks
+        claimant_id__in=person_pk_list
     ).aggregate(
         shoe_order_cost=Sum('shoe_attributes__shoe__cost')
     )
     shoe_order_cost = total['shoe_order_cost'] or 0
+    total = inventory_models.CoverageOrder.objects.filter(
+        claimant_id__in=person_pk_list
+    ).aggregate(
+        coverage_order_cost=Sum('credit_value')
+    )
+    coverage_order_cost = total['coverage_order_cost'] or 0
 
     # Paginate Claims
     page = request.GET.get('claims_page')
@@ -673,7 +673,7 @@ def clientView(request, client_id):
         client_total_expected_back + pending_client_total_expected_back
     )
     client_cost = (
-        client_total_cost + pending_client_total_cost + shoe_order_cost
+        shoe_order_cost + coverage_order_cost
     )
 
     # Forms
