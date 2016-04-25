@@ -819,13 +819,14 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
         else:
             if self.steps.current == self.INFO:
                 # form wasn't saved, files were lost
-                form.fields['claim_package'].widget = \
-                    utils_widgets.ConfirmMultiFileMultiWidget(
-                        form_id="update_claim_form",  # html
-                        form=self,
-                        field_name='claim_package',
-                        file_count=0
-                    )
+                new_widget = utils_widgets.ConfirmMultiFileMultiWidget(
+                    form_id="update_claim_form",  # html
+                    form=self,
+                    field_name='claim_package',
+                    file_count=0
+                )
+                form.fields['claim_package'].widget = new_widget
+
                 form.initial['claim_package'] = {}
 
         return self.render(form)

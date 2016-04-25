@@ -26,7 +26,7 @@ class ClaimForm(forms.ModelForm):
     claim_package = utils_fields.MultiFileField(
         label="Claim Package",
         required=False,
-        max_file_size=3.0*1024*1024  # mb*kb*b,
+        max_file_size=3.0 * 1024 * 1024  # mb*kb*b,
     )
 
     class Meta:
@@ -45,30 +45,29 @@ class ClaimForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
+        file_list = []
         if self.instance.claimattachment_set.exists():
             file_list = [
                 claim_attachment.attachment
                 for claim_attachment in self.instance.claimattachment_set.all()
             ]
-        else:
-            file_list = []
-            files = kwargs.get('files', None)
-            if files:
-                # files require attr url to be displayed
-                for key in files:
-                    if 'claim_package' in key:
-                        if hasattr(files, 'getlist'):
-                            _file_value = files.getlist(key)
-                        else:
-                            _file_value = files.get(key)
-                        if isinstance(_file_value, list):
-                            for _file in _file_value:
-                                _file.url = 'media/temp/' + _file.name
-                                file_list.append(_file)
-                        else:
-                            _file = _file_value
+        files = kwargs.get('files', None)
+        if files:
+            # files require attr url to be displayed
+            for key in files:
+                if 'claim_package' in key:
+                    if hasattr(files, 'getlist'):
+                        _file_value = files.getlist(key)
+                    else:
+                        _file_value = files.get(key)
+                    if isinstance(_file_value, list):
+                        for _file in _file_value:
                             _file.url = 'media/temp/' + _file.name
                             file_list.append(_file)
+                    else:
+                        _file = _file_value
+                        _file.url = 'media/temp/' + _file.name
+                        file_list.append(_file)
         claim_package = self.fields['claim_package']
         claim_package.widget = \
             utils_widgets.ConfirmMultiFileMultiWidget(
