@@ -4,7 +4,7 @@ from django.template import defaultfilters
 
 from crispy_forms import helper, layout, bootstrap
 
-from clients.models import Client, Dependent, Insurance, Coverage, \
+from clients.models import Client, Dependent, Coverage, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person
 from clients import models as clients_models
 
@@ -34,13 +34,6 @@ class DependentForm(forms.ModelForm):
     class Meta:
         model = Dependent
         exclude = ('client',)
-
-
-class InsuranceForm(forms.ModelForm):
-
-    class Meta:
-        model = Insurance
-        exclude = ('main_claimant', 'claimants')
 
 
 class CoverageForm(forms.ModelForm):
