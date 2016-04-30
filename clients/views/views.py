@@ -61,8 +61,9 @@ def link_callback(uri, rel):
     elif os.path.isfile(path2):
         return os.path.normpath(path2)
     else:
-        raise Exception('media URI must start with %s or %s' %
-                        (sUrl, mUrl))
+        raise Exception(
+            'media URI must start with {} or {}'.format(sUrl, mUrl)
+        )
 
 
 @login_required
@@ -72,13 +73,18 @@ def render_to_pdf(request, template_src, context_dict):
     html = template.render(context)
     result = io.BytesIO()
 
-    # 'utf-8' didn't work
-    # pdf = pisa.pisaDocument(io.BytesIO("Test".encode("ISO-8859-1")),
-    #                         result,
-    #                         link_callback=link_callback)
-    pdf = pisa.pisaDocument(io.BytesIO(html.encode("ISO-8859-1")),
-                            result,
-                            link_callback=link_callback)
+    # UTF-8 or ISO-8859-1
+    # pdf = pisa.pisaDocument(
+    #     io.BytesIO("Test".encode("UTF-8")),
+    #     result,
+    #     link_callback=link_callback
+    # )
+    pdf = pisa.pisaDocument(
+        io.BytesIO(html.encode("UTF-8")),
+        result,
+        link_callback=link_callback,
+        encoding="UTF-8"
+    )
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
 

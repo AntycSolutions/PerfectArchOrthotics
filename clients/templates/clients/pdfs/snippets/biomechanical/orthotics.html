@@ -1,0 +1,830 @@
+{% load static %}
+
+<table style="padding: 0;">
+    <thead>
+        <tr>
+            <th>
+                ORTHOTICS
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td style="border-bottom: 1px black solid;">
+                <table>
+                    <tbody>
+                        <tr class="thin_row" style="padding-right: 0; text-align: center;">
+                            <td class="inline_th" style="font-weight: bold; width: 20px; text-align: left; padding-left: 2px;">
+                                Casual
+                            </td>
+                            <td class="very_small_font">
+                               2mm
+                            </td>
+                            <td class="very_small_font">
+                               3mm
+                            </td>
+                            <td class="very_small_font">
+                               3.5mm
+                            </td>
+                            <td class="very_small_font" style="width: 60px;"></td>
+                            <td class="very_small_font">
+                               3/4
+                            </td>
+                            <td class="very_small_font">
+                               sulcus
+                            </td>
+                            <td class="very_small_font">
+                               full length
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Functional
+                            </th>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_34 %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_functional_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_kids_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_kids_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_kids_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Kids
+                            </th>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_kids_34 %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_kids_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td colspan="4"></td>
+                            <td colspan="4" class="very_small_font">
+                                *Children less than 60lbs or younger then 6 years old.
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_accommodative_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td colspan="2" class="very_small_font" style="text-align: center;">
+                                1mm only
+                            </td>
+                            <th class="inline_th">
+                                Accommodative
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_accommodative_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.casual_accommodative_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td style="border-bottom: 1px black solid;">
+                <table>
+                    <thead>
+                        <tr class="thin_row" style="padding-right: 0; text-align: center;">
+                            <td class="inline_th" style="font-weight: bold; width: 20px; text-align: left; padding-left: 2px;">
+                                Dress
+                            </td>
+                            <th class="plain_th">
+                               2mm
+                            </th>
+                            <th class="plain_th">
+                               3mm
+                            </th>
+                            <th class="plain_th">
+                               3.5mm
+                            </th>
+                            <th class="plain_th" style="width: 60px;"></th>
+                            <th class="plain_th">
+                               3/4
+                            </th>
+                            <th class="plain_th">
+                               sulcus
+                            </th>
+                            <th class="plain_th">
+                               full length
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Dress
+                            </th>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_34 %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_dress_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_fashion_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_fashion_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_fashion_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Fashion
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.dress_fashion_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td>
+                <table>
+                    <thead>
+                        <tr class="thin_row" style="padding-right: 0; text-align: center;">
+                            <td class="inline_th" style="font-weight: bold; width: 20px; text-align: left; padding-left: 2px;">
+                                Sport
+                            </th>
+                            <th class="plain_th">
+                               2mm
+                            </th>
+                            <th class="plain_th">
+                               3mm
+                            </th>
+                            <th class="plain_th">
+                               3.5mm
+                            </th>
+                            <th class="plain_th" style="width: 60px;"></th>
+                            <th class="plain_th">
+                               3/4
+                            </th>
+                            <th class="plain_th">
+                               sulcus
+                            </th>
+                            <th class="plain_th">
+                               full length
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Sport
+                            </th>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_34 %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_sport_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_run_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_run_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_run_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Run
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_run_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_run_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Eagle
+                            </th>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_34 %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_eagle_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_ski_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_ski_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_ski_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Ski<sup>T</sup>
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_ski_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_ski_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_skate_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_skate_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_skate_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Skate<sup>T</sup>
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_skate_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_skate_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_court_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_court_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_court_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Court<sup>T</sup>
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_court_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_court_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_soccer_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_soccer_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_soccer_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Soccer<sup>T</sup>
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_soccer_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_soccer_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_safety_2mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_safety_3mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_safety_35mm %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <th class="inline_th">
+                                Safety<sup>T</sup>
+                            </th>
+                            <td class="very_small_font" style="text-align: center;">
+                                N/A
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_safety_sulcus %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    {% if biomechanical.sport_safety_full_length %}
+                                        <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                                    {% else %}
+                                        <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                                    {% endif %}
+                               </div>
+                            </td>
+                        </tr>
+                        <tr class="thin_row">
+                            <td></td>
+                            <td colspan="7" class="very_small_font">
+                                <sup>T</sup>Please send photocopy or tracing of insole
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,3 +1,4 @@
+from django.conf import urls
 from django.conf.urls import patterns, url, include
 from django.contrib.auth.decorators import login_required
 
@@ -13,10 +14,7 @@ from clients.views.claim import DeleteClaimView, \
     CreateProofOfManufacturingView
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
-from clients.views import statistics
-from clients.views import dependent
-from clients.views import receipt
-from clients.views import claim
+from clients.views import statistics, dependent, receipt, claim, biomechanical
 
 
 report_patterns = patterns(
@@ -90,6 +88,34 @@ coverage_type_patterns = patterns(
         name='coverage_type_create'),
 )
 
+biomechanical_patterns = [
+    urls.url(
+        r'^create/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalCreate.as_view()),
+        name='biomechanical_create'
+    ),
+    urls.url(
+        r'^update/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalUpdate.as_view()),
+        name='biomechanical_update'
+    ),
+    urls.url(
+        r'^delete/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalDelete.as_view()),
+        name='biomechanical_delete'
+    ),
+    urls.url(
+        r'^fill_out/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.biomechanical_fill_out),
+        name='biomechanical_fill_out'
+    ),
+    urls.url(
+        r'^pdf/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.biomechanical_pdf),
+        name='biomechanical_pdf'
+    ),
+]
+
 create_claim_wizard = claim.CreateClaimWizard.as_view(
     url_name='claim_create_step',
     done_step_name='finished'
@@ -142,6 +168,7 @@ claim_patterns = patterns(
     url(r'^receipt/list/(?P<claim_pk>\w+)/$',
         login_required(receipt.ReceiptList.as_view()),
         name='receipt_list'),
+    url(r'^biomechanical/', include(biomechanical_patterns)),
     url(
         r'^wizard/create/(?P<client_id>\w+)/(?P<step>.+)/$',
         create_claim_wizard,
@@ -164,12 +191,11 @@ claim_patterns = patterns(
     ),
 )
 
-pdf_patterns = patterns(
-    '',
+pdf_patterns = [
     url(r'^receipt/(?P<pk>\w+)/(?P<_type>\w+)/$',
         login_required(receipt.receipt_view),
         name='receipt'),
-)
+]
 
 # TODO: make this not gross
 urlpatterns = patterns(

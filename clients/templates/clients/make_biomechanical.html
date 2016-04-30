@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% load verbose_name %}
+{% load nbsp %}
+{% load field_utils %}
+
+{% block title %} - Biomechanical Examination for {{ claim.patient.full_name }}{% endblock %}
+
+{% block content %}
+
+    <h1>
+        Claim for {{ claim.patient.full_name }}
+    </h1>
+    {% include 'utils/snippets/messages.html' %}
+    <div>
+        <a class="btn btn-info" href="{% url 'claim' claim.id %}">
+            View
+        </a>
+    </div>
+    <h1>
+        Biomechanical Examination for {{ claim.patient.full_name }}
+    </h1>
+    <div>
+        {% if biomechanical %}
+            <a href="{% url 'biomechanical_update' biomechanical.pk %}" class="btn btn-primary">
+                Update
+            </a>
+        {% else %}
+            <a href="{% url 'biomechanical_create' claim.pk %}" class="btn btn-primary">
+                Create
+            </a>
+        {% endif %}
+    </div>
+    <br />
+    {% if biomechanical %}
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <div class="panel-title">
+                    Information
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+                    {% for name, field_value in biomechanical.get_all_fields.items %}
+                        {% if name == 'id' %}
+                            {# Skip ID #}
+                        {% elif field_value.field|is_image %}
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">
+                                    {% verbose_field_name biomechanical name %}
+                                </label>
+                                <div class="col-lg-8">
+                                    <p class="form-control-static">
+                                        {% if field_value.value %}
+                                            <a href="{{ field_value.value.url }}">
+                                                <img class="lazy img-responsive" width="256px" data-src="{% url 'get_thumbnail' 256 256 field_value.value.url|urlencode:"" %}" />
+                                            </a>
+                                        {% else %}
+                                            {# No Image #}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        {% elif field_value.field|is_foreignkey %}
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">
+                                    {% verbose_field_name biomechanical name %}
+                                </label>
+                                <div class="col-lg-8">
+                                    <p class="form-control-static">
+                                        {% with url=field_value.value.get_absolute_url value=field_value.value.get_str %}
+                                            {% if url %}
+                                                <a href="{{ url }}">
+                                                    {% firstof value field_value.value %}
+                                                </a>
+                                            {% else %}
+                                                {% firstof value field_value.value %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    </p>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">
+                                    {% verbose_field_name biomechanical name %}
+                                </label>
+                                <div class="col-lg-8">
+                                    <p class="form-control-static">
+                                        {{ field_value.value }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'biomechanical_pdf' claim.pk %}" class="btn btn-default">
+            View Biomechanical Examination
+        </a>
+    {% endif %}
+    <br /><br />
+
+{% endblock %}

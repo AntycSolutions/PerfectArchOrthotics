@@ -1,0 +1,55 @@
+{% load static %}
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="3">
+                SPECIAL TOPCOVER REQUESTS
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="td_padding" style="width: 400px;">
+                <br />
+                Extra Foam Padding Topcover:
+            </td>
+            <td class="small_font">
+                {% if biomechanical.extra_foam_padding_topcover_18 %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;1/8"
+            </td>
+            <td class="small_font">
+                {% if biomechanical.extra_foam_padding_topcover_116 %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;1/16"
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="td_padding">
+                {% if biomechanical.suede_leather_topcover %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Suede Leather Topcvoer on Orthotic ($10 additional charge)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="td_padding">
+                {% if biomechanical.other_topcover %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Other Topcover (Please Specify): {{ biomechanical.other_topcover }}
+            </td>
+        </tr>
+    </tbody>
+</table>

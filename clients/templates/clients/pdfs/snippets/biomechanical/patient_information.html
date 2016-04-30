@@ -1,0 +1,58 @@
+{% load static %}
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="3" style="padding-left: 3px; padding-top: 1px; padding-bottom: 0;">
+                PATIENT INFORMATION
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="3" class="td_padding">
+                <br />
+                Name: {{ claim.patient }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="td_padding">
+                Date of Birth (M/D/Y): {{ claim.patient.birth_date }}
+            </td>
+        </tr>
+        <tr>
+            <td class="td_padding">
+                Sex: {{ claim.patient.gender|upper }}
+            </td>
+            <td>
+                Weight: {{ biomechanical.weight }}
+            </td>
+            <td>
+                Height: {{ biomechanical.height }}
+            </td>
+        </tr>
+        <tr>
+            <td class="td_padding">
+                Shoe Size: {{ biomechanical.shoe_size }}
+            </td>
+            <td colspan="2">
+                Shoe Type: {{ biomechanical.shoe_type }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="td_padding">
+                Main Activities: {{ biomechanical.main_activities }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="td_padding">
+                {% if biomechanical.fabricate %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Fabricate 2<sup>nd</sup> pair from cast on file (casts valid for 2 years):
+            </td>
+        </tr>
+    </tbody>
+</table>

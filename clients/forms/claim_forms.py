@@ -181,3 +181,9 @@ ClaimCoverageFormFormSet = utils_forms.minimum_nestedformset_factory(
     formset=ClaimCoverageInlineFormSet,
     extra=1, exclude=('items',),
 )
+
+
+class BiomechanicalModelForm(forms.ModelForm):
+    class Meta:
+        model = models.Biomechanical
+        exclude = ['claim']

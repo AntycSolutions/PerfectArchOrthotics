@@ -1,0 +1,182 @@
+{% load static %}
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                SPECIALTY ORTHOTICS
+            </th>
+        </tr>
+    </thead>
+</table>
+<table style="margin: 0; margin-bottom: 1px;">
+    <tbody class="small_font">
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td class="inline_th" style="font-weight: bold;">
+                Leather
+            </td>
+            <td>
+                {% if biomechanical.leather_sulcus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Sulcus
+            </td>
+            <td>
+                {% if biomechanical.leather_full %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Full Length
+            </td>
+        </tr>
+        <tr class="thin_row" style="padding-bottom: 3px; border-bottom: 1px solid black;">
+            <td>
+                Modifications Available:
+            </td>
+            <td>
+                {% if biomechanical.leather_heel_spur_pad %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Heel Spur Pad
+            </td>
+            <td style="width: 270px;">
+                {% if biomechanical.leather_heel_lift %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;Heel Lift L {{ biomechanical.leather_heel_lift_l }} mm R {{ biomechanical.leather_heel_lift_r }} mm
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table style="padding: 0;">
+    <tbody class="small_font">
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td class="inline_th" style="vertical-align: bottom; font-weight: bold;">
+                UCBL
+            </td>
+            <td colspan="2" style="font-weight: bold;">
+                3/4&nbsp;length&nbsp;only&nbsp;-&nbsp;1mm&nbsp;black&nbsp;naugahyde&nbsp;topcover
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.ucbl_1mm %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;1mm
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.ucbl_2mm %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;2mm
+            </td>
+        </tr>
+        <tr class="thin_row" style="border-bottom: 1px solid black;">
+            <td style="width: 160px;">
+                Special&nbsp;Features:
+            </td>
+            <td colspan="2" style="font-weight: bold;">
+                High&nbsp;medial&nbsp;and&nbsp;lateral&nbsp;flanges,&nbsp;and&nbsp;deep&nbsp;heel&nbsp;cups
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td class="inline_th" style="font-weight: bold;">
+                Gait Plate
+            </td>
+            <td style="font-weight: bold; width: 325px;">
+                3/4&nbsp;length&nbsp;only&nbsp;-&nbsp;1mm&nbsp;black
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.gait_plate_2mm %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;2mm
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.gait_plate_3mm %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;3mm
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.gait_plate_35mm %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;3.5mm
+            </td>
+        </tr>
+        <tr class="thin_row" style="padding-bottom: 3px; border-bottom: 1px solid black;">
+            <td></td>
+            <td style="font-weight: bold;">
+                naugahyde&nbsp;topcover
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.gait_plate_induce_toe_in %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;induce&nbsp;toe&nbsp;in
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.gait_plate_induce_toe_out %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;induce&nbsp;toe&nbsp;out
+            </td>
+            <td></td>
+        </tr>
+        <tr class="thin_row" style="padding-top: 5px;">
+            <td class="inline_th" style="font-weight: bold;">
+                Diabetic
+            </td>
+            <td style="font-weight: bold;">
+                Full&nbsp;weight&nbsp;bearing&nbsp;cast&nbsp;only
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.diabetic_34 %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;3/4
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.diabetic_sulcus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;sulcus
+            </td>
+            <td class="very_small_font">
+                {% if biomechanical.diabetic_full_length %}
+                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                {% endif %}
+                &nbsp;full&nbsp;length
+            </td>
+        </tr>
+    </tbody>
+</table>

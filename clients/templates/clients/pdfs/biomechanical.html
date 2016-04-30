@@ -1,0 +1,176 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load static %}
+{% load nbsp %}
+
+{% block layout_style %}
+    {% comment %}
+        <style type="text/css">
+            @page {
+                size: {{ pagesize|default:"A4" }};
+                margin: 1.5cm;
+            }
+        </style>
+    {% endcomment %}
+{% endblock layout_style %}
+
+{% block extra_style %}
+    <style type="text/css">
+        table {
+            margin-bottom: 5px;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: lightgrey;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            padding-top: 2px;
+            padding-left: 3px;
+            line-height: 110%;
+            text-align: left;
+        }
+
+        .right_border {
+            border-right: 1px solid black;
+        }
+        .bottom_border {
+            border-bottom: 1px solid black;
+        }
+        .left_border {
+            border-left: 1px solid black;
+        }
+
+        .inline_th {
+            border: none;
+            background-color: white;
+            font-size: 6pt;
+            margin: 0;
+            padding-top: 1px; /* value does nothing, but key does */
+            padding-bottom: 0;
+        }
+
+        .plain_th {
+            border: none;
+            background-color: white;
+            margin: 0;
+            padding-top: 1px;
+            padding-bottom: 0;
+            font-size: 6pt;
+            font-weight: normal;
+        }
+
+        .td_padding {
+            padding-bottom: 2px;
+        }
+
+        .small_font {
+            font-size: 6pt;
+        }
+        .very_small_font {
+            font-size: 5.5pt;
+        }
+
+        .thin_row {
+            line-height: 100%;
+            margin: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-left: 3px;
+        }
+
+        .checkbox {
+            text-align: center;
+        }
+
+        .text_center {
+            text-align: center;
+        }
+    </style>
+{% endblock extra_style %}
+
+{% block content %}
+
+    {# style="border: 1px solid black;" #}
+    {# 10 table colspan because real css didn't work #}
+    <table>
+        <tbody>
+            <tr>
+                <td colspan="3">
+                    <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='300' />
+                </td>
+                <td colspan="4" style="text-align: center;">
+                    <span style="font-size: 11pt;">
+                        BIO-MECHANICAL EXAMINATION
+                    </span>
+                    {{ address|nbsp|linebreaksbr }}
+                </td>
+                <td colspan="3"></td>
+            </tr>
+        </tbody>
+    </table>
+    {# 20 table colspan because real css didn't work #}
+    <table>
+        <tbody>
+            <tr>
+                <td colspan="10" class="right_border" style="vertical-align: top; padding-right: 5px;">
+                    {% include 'clients/pdfs/snippets/biomechanical/practitioner_clinic_information.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/examination_findings.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/optional_findings.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/orthotics.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/specialty_orthotics.html' %}
+                </td>
+                <td colspan="10" style="vertical-align: top; padding-left: 5px;">
+                    {% include 'clients/pdfs/snippets/biomechanical/patient_information.html' %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    CHIEF COMPLAINTS / SPECIAL INSTRUCTIONS
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <br />
+                                    {{ biomechanical.chief_complaints_special_instructions }}
+                                </td>
+                                <td style="text-align: right;">
+                                    <img src="{% static 'images/feet_bones.png' %}" width='150' />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% include 'clients/pdfs/snippets/biomechanical/additions_modifications.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/special_topcover_requests.html' %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    Name of Insurance Company: {{ claim.insurance.provider }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Practitioner's Signature: <img src="/media/DSCN2103.png" width="150" />
+                </td>
+                <td>
+                    Date: {% now 'F j, Y' %}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="small_font" style="text-align: right;">
+                    Last updated: December 2011
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+{% endblock content %}
+
