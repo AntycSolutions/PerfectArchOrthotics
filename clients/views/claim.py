@@ -2,7 +2,7 @@ import itertools
 from os import path
 from datetime import datetime
 
-from django import forms
+from django import forms, shortcuts
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.views.generic import DetailView
@@ -11,6 +11,7 @@ from django.core import urlresolvers
 from django.core.files import storage
 from django.conf import settings
 from django.utils.translation import ugettext as trans
+from django.db import utils as db_utils
 
 from formtools.wizard import views as wizard_views, forms as wizard_forms
 
@@ -524,6 +525,16 @@ class CreateInsuranceLetterView(CreateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        # Ensure InsuranceLetter does not already exist
+        claim = Claim.objects.get(id=self.kwargs['claim_id'])
+        try:
+            claim.insuranceletter
+            return HttpResponseRedirect(
+                claim.insuranceletter.get_absolute_url()
+            )
+        except clients_models.InsuranceLetter.DoesNotExist:
+            pass
+
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -546,7 +557,16 @@ class CreateInsuranceLetterView(CreateView):
         self.object = form.save(commit=False)
         claim = Claim.objects.get(id=self.kwargs['claim_id'])
         self.object.claim = claim
-        self.object.save()
+        try:
+            self.object.save()
+        except db_utils.IntegrityError:
+            # Was receiving errors that a user was trying to create a
+            #  second insurance letter for this claim, so redirect to
+            #  existing insurance letter since one already exists
+            #  for this OneToOne
+            return HttpResponseRedirect(
+                claim.insuranceletter.get_absolute_url()
+            )
         laboratory_form.instance = self.object
         laboratory_form.save()
 
@@ -608,6 +628,9 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
     template_name = 'utils/generics/wizard.html'
     storage_name = 'utils.wizard.storage.MultiFileSessionStorage'
 
+    class SkippedStepException(BaseException):
+        pass
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -641,6 +664,8 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
 
         if step == self.COVERAGES:
             info_data = self.storage.get_step_data(self.INFO)
+            if not info_data:
+                raise self.SkippedStepException
             submitted_datetime_str = info_data.get('info-submitted_datetime')
             submitted_datetime = datetime.strptime(
                 submitted_datetime_str, '%Y-%m-%d %I:%M %p'
@@ -705,6 +730,14 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
             self.url_name,
             kwargs={'step': step, 'client_id': self.kwargs['client_id']}
         )
+
+    def get(self, *args, **kwargs):
+        try:
+            return super().get(*args, **kwargs)
+        except self.SkippedStepException:
+            self.storage.current_step = self.steps.first
+
+            return shortcuts.redirect(self.get_step_url(self.steps.first))
 
     def post(self, *args, **kwargs):
         """

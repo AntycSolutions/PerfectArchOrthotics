@@ -42,8 +42,8 @@ class InsuranceCoverageInlineFormSet(forms.BaseInlineFormSet):
         super().clean()
 
         for form in self.forms:
-            period = form.cleaned_data['period']
-            period_date = form.cleaned_data['period_date']
+            period = form.cleaned_data.get('period', None)
+            period_date = form.cleaned_data.get('period_date', None)
             is_BENEFIT_YEAR = period == models.Coverage.BENEFIT_YEAR
             if is_BENEFIT_YEAR and not period_date:
                 msg = 'Benefit Year period requires a period date'
