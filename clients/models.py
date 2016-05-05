@@ -964,6 +964,8 @@ class InsuranceLetter(models.Model):
         "Other", max_length=64,
         blank=True)
 
+    signature_date = models.DateField(blank=True, null=True)
+
     # ForeignKey
     # Laboratory
 

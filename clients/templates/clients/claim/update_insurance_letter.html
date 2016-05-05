@@ -7,16 +7,14 @@
 
 {% block extra_head %}
     {% now 'Y' as current_year %}
-    <script>
-        $(function() {
-            $( "#id_dispense_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-            $( "#id_biomedical_and_gait_analysis_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var datepicker_options = {
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}",
+            };
+            $(".datepicker").datepicker(datepicker_options);
         });
     </script>
 {% endblock %}
