@@ -14,12 +14,13 @@ from clients.forms import claim_forms
 
 class BiomechanicalCreate(generic.CreateView):
     model = clients_models.Biomechanical
-    template_name = 'utils/generics/create.html'
+    template_name = 'clients/claim/biomechanical.html'
     form_class = claim_forms.BiomechanicalModelForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context['save_text'] = 'create'
         context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = urlresolvers.reverse(
             'claim', kwargs={'claim_id': self.kwargs['claim_pk']}
@@ -37,12 +38,13 @@ class BiomechanicalCreate(generic.CreateView):
 
 class BiomechanicalUpdate(generic.UpdateView):
     model = clients_models.Biomechanical
-    template_name = 'utils/generics/update.html'
+    template_name = 'clients/claim/biomechanical.html'
     form_class = claim_forms.BiomechanicalModelForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context['save_text'] = 'update'
         context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = self.object.get_absolute_url()
 
@@ -120,7 +122,7 @@ def biomechanical_pdf(request, claim_pk):
         request,
         'clients/pdfs/biomechanical.html',
         {
-            'title': "Bio-mechanical Examination",
+            'title': "Bio-mechanical/Gait Examination",
             'claim': claim,
             'biomechanical': biomechanical,
             'address': settings.BILL_TO[0][1],

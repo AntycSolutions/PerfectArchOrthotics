@@ -1,0 +1,345 @@
+{% load static %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                EXAMINATION FINDINGS
+            </th>
+        </tr>
+    </thead>
+</table>
+<table>
+    <thead>
+        <tr>
+            <th colspan="3" class="right_border">
+                Arch Height (non-weight
+                bearing)
+            </th>
+            <th colspan="3">
+                Arch Height (weight bearing)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="text_center">
+            <td></td>
+            <td>
+                Left
+            </td>
+            <td class="right_border">
+                Right
+            </td>
+            <td></td>
+            <td>
+                Left
+            </td>
+            <td>
+                Right
+            </td>
+        </tr>
+        <tr>
+            <td>
+                High
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_high_left }}
+                    </label>
+                </div>
+            </td>
+            <td class="right_border">
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_high_right }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                High
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_high_left }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_high_right }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Medium
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_medium_left }}
+                    </label>
+                </div>
+            </td>
+            <td class="right_border">
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_medium_right }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                Medium
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_medium_left }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_medium_right }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr class="bottom_border">
+            <td>
+                Low
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_low_left }}
+                    </label>
+                </div>
+            </td>
+            <td class="right_border">
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_non_weight_low_right }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                Low
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_low_left }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="text_center checkbox">
+                    <label>
+                        {{ form.arch_height_weight_low_right }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <tbody>
+        <td class="top_valign">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="6">
+                            Gait
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Toe&nbsp;in
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.gait_toe_in }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            Straight
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.gait_straight }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            Toe&nbsp;out
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    {{ form.gait_toe_out }}
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="3" class="left_border">
+                            <label>
+                                {{ form.supination }}
+                            </label>
+                            &nbsp;Supination
+                        </th>
+                        <th colspan="3">
+                            <label>
+                                {{ form.pronation }}
+                            </label>
+                            &nbsp;Pronation
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text_center">
+                        <td class="left_border"></td>
+                        <td>
+                            Left
+                        </td>
+                        <td>
+                            Right
+                        </td>
+                        <td></td>
+                        <td>
+                            Left
+                        </td>
+                        <td>
+                            Right
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left_border">
+                            Mild
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_mild_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_mild_right }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            Mild
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_mild_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_mild_right }}
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left_border">
+                            Moderate
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_moderate_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_moderate_right }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            Moderate
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_moderate_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_moderate_right }}
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left_border">
+                            Severe
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_severe_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.supination_severe_right }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            Severe
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_severe_left }}
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text_center checkbox">
+                                <label>
+                                    {{ form.pronation_severe_right }}
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tbody>
+</table>

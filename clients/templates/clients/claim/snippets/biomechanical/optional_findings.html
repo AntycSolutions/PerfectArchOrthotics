@@ -1,0 +1,339 @@
+{% load static %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                OPTIONAL FINDINGS
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="3" class="right_border" style="width: 190px;">
+                                Ankle&nbsp;Dorsi-Flexion
+                            </th>
+                            <th colspan="3" class="right_border">
+                                General&nbsp;Foot&nbsp;Motion
+                            </th>
+                            <th colspan="3" class="right_border">
+                                <label>
+                                    {{ form.forefoot_varus }}
+                                </label>
+                                &nbsp;Forefoot&nbsp;Varus
+                            </th>
+                            <th colspan="3" class="inline_th" style="width: 160px;">
+                                <label>
+                                    {{ form.forefoot_valgus }}
+                                </label>
+                                &nbsp;Forefoot&nbsp;Valgus
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text_center">
+                            <td></td>
+                            <td>
+                                Left
+                            </td>
+                            <td class="right_border">
+                                Right
+                            </td>
+                            <td></td>
+                            <td>
+                                Left
+                            </td>
+                            <td class="right_border">
+                                Right
+                            </td>
+                            <td></td>
+                            <td>
+                                Left
+                            </td>
+                            <td class="right_border">
+                                Right
+                            </td>
+                            <td></td>
+                            <td>
+                                Left
+                            </td>
+                            <td>
+                                Right
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Adequate
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.ankle_dorsi_flexion_adequate_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.ankle_dorsi_flexion_adequate_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Restricted
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_restricted_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_restricted_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Mild
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_mild_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_mild_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Mild
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_mild_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_mild_right }}
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Limited
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.ankle_dorsi_flexion_limited_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.ankle_dorsi_flexion_limited_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Normal
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_normal_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_normal_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Moderate
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_moderate_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_moderate_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Moderate
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_moderate_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_moderate_right }}
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                Hyper-mobile
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_hyper_mobile_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.general_foot_motion_hyper_mobile_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Severe
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_severe_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="right_border">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_varus_severe_right }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                Severe
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_severe_left }}
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.forefoot_valgus_severe_right }}
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <tbody>
+        <tr>
+            <td></td>
+            <td>
+                Hyper-mobile
+            </td>
+            <td>
+                Limited ROM
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Subtalar Joint
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.subtalar_joint_hyper_mobile }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.subtalar_joint_limited_rom }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Ankle Joint
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.ankle_joint_hyper_mobile }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.ankle_joint_limited_rom }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                1st MPJ
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.first_mpj_hyper_mobile }}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="checkbox">
+                    <label>
+                        {{ form.first_mpj_limited_rom }}
+                    </label>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -86,6 +86,10 @@
         .text_center {
             text-align: center;
         }
+
+        .red {
+            color: red;
+        }
     </style>
 {% endblock extra_style %}
 
@@ -101,7 +105,7 @@
                 </td>
                 <td colspan="4" style="text-align: center;">
                     <span style="font-size: 11pt;">
-                        BIO-MECHANICAL EXAMINATION
+                        BIO-MECHANICAL/GAIT EXAMINATION
                     </span>
                     {{ address|nbsp|linebreaksbr }}
                 </td>
@@ -134,7 +138,7 @@
                             <tr>
                                 <td style="vertical-align: top;">
                                     <br />
-                                    {{ biomechanical.chief_complaints_special_instructions }}
+                                    {{ biomechanical.chief_complaints_special_instructions|nbsp|linebreaksbr }}
                                 </td>
                                 <td style="text-align: right;">
                                     <img src="{% static 'images/feet_bones.png' %}" width='150' />
@@ -161,7 +165,7 @@
                     Practitioner's Signature: <img src="/media/DSCN2103.png" width="150" />
                 </td>
                 <td>
-                    Date: {% now 'F j, Y' %}
+                    Date: {{ biomechanical.signature_date|default:"______________________" }}
                 </td>
             </tr>
             <tr>

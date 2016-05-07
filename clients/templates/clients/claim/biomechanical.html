@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load field_utils %}
+{% load crispy_forms_tags %}
+{% load update_attrs %}
+
+{% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
+
+{% block extra_head %}
+    {% now 'Y' as current_year %}
+    <script type="text/javascript">
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+        $(document).ready(function() {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('<br />').insertBefore('.btn-file input[type=checkbox]');
+            $('.btn-file label').css('margin-bottom', '0px');
+        });
+    </script>
+
+    <style type="text/css">
+        table {
+            width: 100%;
+        }
+
+        .table_header {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .right_border {
+            border-right: 1px solid black;
+        }
+        .bottom_border {
+            border-bottom: 1px solid black;
+        }
+        .left_border {
+            border-left: 1px solid black;
+        }
+        .text_center {
+            text-align: center;
+        }
+
+        .top_valign {
+            vertical-align: top;
+        }
+        .bottom_valign {
+            vertical-align: bottom;
+        }
+
+        td, th {
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+
+        .form-horizontal .form-group {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1>
+        {{ save_text|title }} {{ model_name|title }}
+    </h1>
+
+    {% include 'utils/snippets/messages.html' %}
+
+    <form id="{{ save_text }}_{{ model_name }}_form" class="form-horizontal" method="POST" enctype="{{ form_type }}">
+        {% csrf_token %}
+        <div class="row">
+            <fieldset class="col-lg-12">
+                <div class="form-group">
+                    <label class="control-label">
+                        <h5>
+                            {{ model_name|title }}
+                        </h5>
+                    </label>
+                </div>
+                <table style="margin-bottom: 10px;">
+                    <tbody>
+                        <tr>
+                            <td colspan="10" class="right_border" style="vertical-align: top;">
+                                {% include 'clients/claim/snippets/biomechanical/examination_findings.html' %}
+                                {% include 'clients/claim/snippets/biomechanical/optional_findings.html' %}
+                                {% include 'clients/claim/snippets/biomechanical/orthotics.html' %}
+                                {% include 'clients/claim/snippets/biomechanical/specialty_orthotics.html' %}
+                            </td>
+                            <td colspan="10" style="vertical-align: top;">
+                                {% include 'clients/claim/snippets/biomechanical/patient_information.html' %}
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="table_header">
+                                                CHIEF COMPLAINTS / SPECIAL INSTRUCTIONS
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="vertical-align: top;">
+                                                {{ form.chief_complaints_special_instructions|as_crispy_field }}
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <img src="{% static 'images/feet_bones.png' %}" width='150' />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% include 'clients/claim/snippets/biomechanical/additions_modifications.html' %}
+                                {% include 'clients/claim/snippets/biomechanical/special_topcover_requests.html' %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="col-lg-4">
+                    <div class="form-group{% if form.signature_date.errors %} has-error{% endif %}">
+                        <label class="control-label" for="{{ form.signature_date.auto_id }}">
+                            {{ form.signature_date.label }}{% if form.signature_date.field.required %}*{% endif %}
+                        </label>
+                        {{ form.signature_date|update_attrs:"class: form-control datepicker" }}
+                        {% if form.signature_date.help_text %}
+                            <span class="help-block">
+                                {{ form.signature_date.help_text }}
+                            </span>
+                        {% endif %}
+                        {% if form.signature_date.errors %}
+                            <span class="help-block">
+                                {{ form.signature_date.errors }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary" name="submit">
+                            {{ save_text|title }}
+                        </button>
+                        <a href="{{ cancel_url }}" class="btn btn-default">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

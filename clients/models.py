@@ -1467,6 +1467,8 @@ class Biomechanical(models.Model, model_utils.FieldList):
         blank=True
     )
 
+    signature_date = models.DateField(blank=True, null=True)
+
     def get_absolute_url(self):
         return urlresolvers.reverse_lazy(
             'biomechanical_fill_out', kwargs={'claim_pk': self.claim.pk}

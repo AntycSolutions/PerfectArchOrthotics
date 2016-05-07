@@ -1,0 +1,249 @@
+{% load static %}
+{% load update_attrs %}
+{% load crispy_forms_tags %}
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="5" class="table_header">
+                ADDITIONS / MODIFICATIONS
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <img src="{% static 'images/full_heel_cushion.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/neuroma_pad.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/metatarsal_pad.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/forefoot_pad.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/sub-metatarsal_accommodation.png' %}" width="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    {{ form.full_heel_cushion }}
+                </label>
+                &nbsp;Full Heel Cushion (Bilateral)
+            </td>
+            <td>
+                <label>
+                    {{ form.neuroma_pad }}
+                </label>
+                &nbsp;Neuroma Pad
+                <br />L {{ form.neuroma_pad_l_1|update_attrs:"class: form-control" }}-{{ form.neuroma_pad_l_2|update_attrs:"class: form-control" }} Interspace
+                <br />R {{ form.neuroma_pad_r_1|update_attrs:"class: form-control" }}-{{ form.neuroma_pad_l_2|update_attrs:"class: form-control" }} Interspace
+            </td>
+            <td>
+                <label>
+                    {{ form.metatarsal_pad }}
+                </label>
+                &nbsp;Metatarsasl Pad
+                <br />
+                <label>
+                    {{ form.metatarsal_pad_low_profile }}
+                </label>
+                &nbsp;Low Profile
+                <br />
+                <label>
+                    {{ form.metatarsal_pad_distal_placement }}
+                </label>
+                &nbsp;Distal Placement
+            </td>
+            <td>
+                <label>
+                    {{ form.forefoot_pad_to_sulcus }}
+                </label>
+                &nbsp;Forefoot Pad to sulcus
+                <br />L {{ form.forefoot_pad_to_sulcus_l|update_attrs:"class: form-control" }} R {{ form.forefoot_pad_to_sulcus_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.sub_metatarsal_accommodation }}
+                </label>
+                &nbsp;Sub-Metatarsal Accommodation
+                <br />L {{ form.sub_metatarsal_accommodation_l|update_attrs:"class: form-control" }} Met
+                <br />R {{ form.sub_metatarsal_accommodation_r|update_attrs:"class: form-control" }} Met
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="{% static 'images/heel_spur_pad.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/mortons_extension.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/reinforced_arch.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/rearfoot_extrinsic_post.png' %}" width="80" />
+            </td>
+            <td rowspan="3" class="bottom_valign">
+                <img src="{% static 'images/medial_skive.png' %}" width="80" />
+                <br />
+                <label>
+                    {{ form.medial_skive }}
+                </label>
+                &nbsp;Medial Skive
+                <br />L {{ form.medial_skive_l|update_attrs:"class: form-control" }}mm
+                <br />R {{ form.medial_skive_r|update_attrs:"class: form-control" }}mm
+                <br />
+                <label>
+                    {{ form.lateral_skive }}
+                </label>
+                &nbsp;Lateral Skive
+                <br />L {{ form.lateral_skive_l|update_attrs:"class: form-control" }}mm
+                <br />R {{ form.lateral_skive_r|update_attrs:"class: form-control" }}mm
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    {{ form.heel_spur_pad }}
+                </label>
+                &nbsp;Heel Spur Pad
+                <br />L {{ form.heel_spur_pad_l|update_attrs:"class: form-control" }} R {{ form.heel_spur_pad_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.mortons_extension }}
+                </label>
+                &nbsp;Morton's Extension
+                <br />L {{ form.mortons_extension_l|update_attrs:"class: form-control" }} R {{ form.mortons_extension_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.reinforced_arch }}
+                </label>
+                &nbsp;Reinforced Arch
+                <br />(greater than 280lbs)
+            </td>
+            <td>
+                <label>
+                    {{ form.rearfoot_extrinsic_post }}
+                </label>
+                &nbsp;Rearfoot Extrinsic Post
+                <br />L {{ form.rearfoot_extrinsic_post_l|update_attrs:"class: form-control" }}&deg; R {{ form.rearfoot_extrinsic_post_r|update_attrs:"class: form-control" }}&deg;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="{% static 'images/hole_in_heel.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/reverse_mortons_extension.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/extrinsic_forefoot_post_34_length.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/heel_lift.png' %}" width="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    {{ form.hole_in_heel }}
+                </label>
+                &nbsp;Hole in Heel
+                <br />L {{ form.hole_in_heel_l|update_attrs:"class: form-control" }} R {{ form.hole_in_heel_r|update_attrs:"class: form-control" }}
+                <br />
+                <label>
+                    {{ form.hole_in_heel_with_foam_disk }}
+                </label>
+                &nbsp;With foam disk
+            </td>
+            <td>
+                <label>
+                    {{ form.reverse_mortons_extension }}
+                </label>
+                &nbsp;Reverse Morton's Extension
+                <br />L {{ form.reverse_mortons_extension_l|update_attrs:"class: form-control" }} R {{ form.reverse_mortons_extension_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.extrinsic_forefoot_post_34_length }}
+                </label>
+                &nbsp;Extrinsic Forefoot Post (3/4 Length)
+                <br />L {{ form.extrinsic_forefoot_post_34_length_l|update_attrs:"class: form-control" }}&deg; R {{ form.extrinsic_forefoot_post_34_length_r|update_attrs:"class: form-control" }}&deg;
+            </td>
+            <td>
+                <label>
+                    {{ form.heel_lift }}
+                </label>
+                &nbsp;Heel Lift
+                <br />L {{ form.heel_lift_l|update_attrs:"class: form-control" }}mm R {{ form.heel_lift_r|update_attrs:"class: form-control" }}mm
+                <br />(10mm maximum)
+            </td>
+            <td rowspan="3">
+                <img src="{% static 'images/medial_flange.png' %}" width="80" />
+                <br />
+                <label>
+                    {{ form.medial_flange }}
+                </label>
+                &nbsp;Medial Flange
+                <br />L {{ form.medial_flange_l|update_attrs:"class: form-control" }} R {{ form.medial_flange_r|update_attrs:"class: form-control" }}
+                <br />
+                <label>
+                    {{ form.lateral_flange }}
+                </label>
+                &nbsp;Lateral Flange
+                <br />L {{ form.lateral_flange_l|update_attrs:"class: form-control" }} R {{ form.lateral_flange_r|update_attrs:"class: form-control" }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="{% static 'images/deep_heel_cups.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/1st_metatarsal_cut-out.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/extrinsic_forefoot_post_sulcus_length.png' %}" width="80" />
+            </td>
+            <td>
+                <img src="{% static 'images/vinyl_sandwich.png' %}" width="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    {{ form.deep_heel_cups }}
+                </label>
+                &nbsp;Deep Heel Cups
+                <br />L {{ form.deep_heel_cups_l|update_attrs:"class: form-control" }} R {{ form.deep_heel_cups_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.first_metatarsal_cut_out }}
+                </label>
+                &nbsp;1st Metatarsal Cut-Out
+                <br />L {{ form.first_metatarsal_cut_out_l|update_attrs:"class: form-control" }} R {{ form.first_metatarsal_cut_out_r|update_attrs:"class: form-control" }}
+            </td>
+            <td>
+                <label>
+                    {{ form.extrinsic_forefoot_post_sulcus_length }}
+                </label>
+                &nbsp;Extrinsic Forefoot Post (Sulcus Length)
+                <br />L {{ form.extrinsic_forefoot_post_sulcus_length_l|update_attrs:"class: form-control" }}&deg; R {{ form.extrinsic_forefoot_post_sulcus_length_r|update_attrs:"class: form-control" }}&deg;
+            </td>
+            <td>
+                <label>
+                    {{ form.vinyl_sandwich_bilateral }}
+                </label>
+                &nbsp;Vinyl Sandwich
+                <br />(Bilateral)
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -29,62 +29,73 @@
         <tr class="thin_row">
             <td>
                 {% if biomechanical.full_heel_cushion %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Full Heel Cushion (Bilateral)
             </td>
             <td>
                 {% if biomechanical.neuroma_pad %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Neuroma Pad
-                <br />L {{ biomechanical.neuroma_pad_l_1 }}-{{ biomechanical.neuroma_pad_l_2 }} Interspace
-                <br />R {{ biomechanical.neuroma_pad_r_1 }}-{{ biomechanical.neuroma_pad_l_2 }} Interspace
+                <br />
+                <span{% if biomechanical.neuroma_pad_l_1 or biomechanical.neuroma_pad_l_2 or biomechanical.neuroma_pad_r_1 or biomechanical.neuroma_pad_l_2 %} class="red"{% endif %}>
+                    L {{ biomechanical.neuroma_pad_l_1 }}-{{ biomechanical.neuroma_pad_l_2 }} Interspace
+                    <br />
+                    R {{ biomechanical.neuroma_pad_r_1 }}-{{ biomechanical.neuroma_pad_l_2 }} Interspace
+                </span>
             </td>
             <td>
                 {% if biomechanical.metatarsal_pad %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Metatarsasl Pad
                 <br />
                 {% if biomechanical.metatarsal_pad_low_profile %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Low Profile
                 <br />
                 {% if biomechanical.metatarsal_pad_distal_placement %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Distal Placement
             </td>
             <td>
                 {% if biomechanical.forefoot_pad_to_sulcus %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Forefoot Pad to sulcus
-                <br />L {{ biomechanical.forefoot_pad_to_sulcus_l }} R {{ biomechanical.forefoot_pad_to_sulcus_r }}
+                <br />
+                <span{% if biomechanical.forefoot_pad_to_sulcus_l or biomechanical.forefoot_pad_to_sulcus_r %} class="red"{% endif %}>
+                    L {{ biomechanical.forefoot_pad_to_sulcus_l }} R {{ biomechanical.forefoot_pad_to_sulcus_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.sub_metatarsal_accommodation %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Sub-Metatarsal Accommodation
-                <br />L {{ biomechanical.sub_metatarsal_accommodation_l }} Met
-                <br />R {{ biomechanical.sub_metatarsal_accommodation_r }} Met
+                <br />
+                <span{% if biomechanical.sub_metatarsal_accommodation_l or biomechanical.sub_metatarsal_accommodation_r %} class="red"{% endif %}>
+                    L {{ biomechanical.sub_metatarsal_accommodation_l }} Met
+                    <br />
+                    R {{ biomechanical.sub_metatarsal_accommodation_r }} Met
+                </span>
             </td>
         </tr>
         <tr class="thin_row">
@@ -104,60 +115,78 @@
                 <img src="{% static 'images/medial_skive.png' %}" />
                 <br />
                 {% if biomechanical.medial_skive %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Medial Skive
-                <br />L {{ biomechanical.medial_skive_l }}mm
-                <br />R {{ biomechanical.medial_skive_r }}mm
+                <br />
+                <span{% if biomechanical.medial_skive_l or biomechanical.medial_skive_r %} class="red"{% endif %}>
+                    L {{ biomechanical.medial_skive_l }}mm
+                    <br />
+                    R {{ biomechanical.medial_skive_r }}mm
+                </span>
                 <br />
                 {% if biomechanical.lateral_skive %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Lateral Skive
-                <br />L {{ biomechanical.lateral_skive_l }}mm
-                <br />R {{ biomechanical.lateral_skive_r }}mm
+                <br />
+                <span{% if biomechanical.lateral_skive_l or biomechanical.lateral_skive_r %} class="red"{% endif %}>
+                    L {{ biomechanical.lateral_skive_l }}mm
+                    <br />
+                    R {{ biomechanical.lateral_skive_r }}mm
+                </span>
             </td>
         </tr>
         <tr class="thin_row">
             <td>
                 {% if biomechanical.heel_spur_pad %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Heel Spur Pad
-                <br />L {{ biomechanical.heel_spur_pad_l }} R {{ biomechanical.heel_spur_pad_r }}
+                <br />
+                <span{% if biomechanical.heel_spur_pad_l or biomechanical.heel_spur_pad_r %} class="red"{% endif %}>
+                    L {{ biomechanical.heel_spur_pad_l }} R {{ biomechanical.heel_spur_pad_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.mortons_extension %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Morton's Extension
-                <br />L {{ biomechanical.mortons_extension_l }} R {{ biomechanical.mortons_extension_r }}
+                <br />
+                <span{% if biomechanical.mortons_extension_l or biomechanical.mortons_extension_r %} class="red"{% endif %}>
+                    L {{ biomechanical.mortons_extension_l }} R {{ biomechanical.mortons_extension_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.reinforced_arch %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Reinforced Arch
-                <br />(greater than 280lbs)
+                <br />
+                (greater than 280lbs)
             </td>
             <td>
                 {% if biomechanical.rearfoot_extrinsic_post %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Rearfoot Extrinsic Post
-                <br />L {{ biomechanical.rearfoot_extrinsic_post_l }}&deg; R {{ biomechanical.rearfoot_extrinsic_post_r }}&deg;
+                <br />
+                <span{% if biomechanical.rearfoot_extrinsic_post_l or biomechanical.rearfoot_extrinsic_post_r %} class="red"{% endif %}>
+                    L {{ biomechanical.rearfoot_extrinsic_post_l }}&deg; R {{ biomechanical.rearfoot_extrinsic_post_r }}&deg;
+                </span>
             </td>
         </tr>
         <tr class="thin_row">
@@ -177,66 +206,85 @@
         <tr class="thin_row">
             <td>
                 {% if biomechanical.hole_in_heel %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Hole in Heel
-                <br />L {{ biomechanical.hole_in_heel_l }} R {{ biomechanical.hole_in_heel_r }}
+                <br />
+                <span{% if biomechanical.hole_in_heel_l or biomechanical.hole_in_heel_r %} class="red"{% endif %}>
+                    L {{ biomechanical.hole_in_heel_l }} R {{ biomechanical.hole_in_heel_r }}
+                </span>
                 <br />
                 {% if biomechanical.hole_in_heel_with_foam_disk %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;With foam disk
             </td>
             <td>
                 {% if biomechanical.reverse_mortons_extension %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Reverse Morton's Extension
-                <br />L {{ biomechanical.reverse_mortons_extension_l }} R {{ biomechanical.reverse_mortons_extension_r }}
+                <br />
+                <span{% if biomechanical.reverse_mortons_extension_l or biomechanical.reverse_mortons_extension_r %} class="red"{% endif %}>
+                    L {{ biomechanical.reverse_mortons_extension_l }} R {{ biomechanical.reverse_mortons_extension_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.extrinsic_forefoot_post_34_length %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Extrinsic Forefoot Post (3/4 Length)
-                <br />L {{ biomechanical.extrinsic_forefoot_post_34_length_l }}&deg; R {{ biomechanical.extrinsic_forefoot_post_34_length_r }}&deg;
+                <br />
+                <span{% if biomechanical.extrinsic_forefoot_post_34_length_l or biomechanical.extrinsic_forefoot_post_34_length_r %} class="red"{% endif %}>
+                    L {{ biomechanical.extrinsic_forefoot_post_34_length_l }}&deg; R {{ biomechanical.extrinsic_forefoot_post_34_length_r }}&deg;
+                </span>
             </td>
             <td>
                 {% if biomechanical.heel_lift %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Heel Lift
-                <br />L {{ biomechanical.heel_lift_l }}mm R {{ biomechanical.heel_lift_r }}mm
-                <br />(10mm maximum)
+                <br />
+                <span{% if biomechanical.heel_lift_l or biomechanical.heel_lift_r %} class="red"{% endif %}>
+                    L {{ biomechanical.heel_lift_l }}mm R {{ biomechanical.heel_lift_r }}mm
+                </span>
+                <br />
+                (10mm maximum)
             </td>
             <td rowspan="3">
                 <img src="{% static 'images/medial_flange.png' %}" />
                 <br />
                 {% if biomechanical.medial_flange %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Medial Flange
-                <br />L {{ biomechanical.medial_flange_l }} R {{ biomechanical.medial_flange_r }}
+                <br />
+                <span{% if biomechanical.medial_flange_l or biomechanical.medial_flange_r %} class="red"{% endif %}>
+                    L {{ biomechanical.medial_flange_l }} R {{ biomechanical.medial_flange_r }}
+                </span>
                 <br />
                 {% if biomechanical.lateral_flange %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Lateral Flange
-                <br />L {{ biomechanical.lateral_flange_l }} R {{ biomechanical.lateral_flange_r }}
+                <br />
+                <span{% if biomechanical.lateral_flange_l or biomechanical.lateral_flange_r %} class="red"{% endif %}>
+                    L {{ biomechanical.lateral_flange_l }} R {{ biomechanical.lateral_flange_r }}
+                </span>
             </td>
         </tr>
         <tr class="thin_row">
@@ -256,39 +304,49 @@
         <tr class="thin_row">
             <td>
                 {% if biomechanical.deep_heel_cups %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Deep Heel Cups
-                <br />L {{ biomechanical.deep_heel_cups_l }} R {{ biomechanical.deep_heel_cups_r }}
+                <br />
+                <span{% if biomechanical.deep_heel_cups_l or biomechanical.deep_heel_cups_r %} class="red"{% endif %}>
+                    L {{ biomechanical.deep_heel_cups_l }} R {{ biomechanical.deep_heel_cups_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.first_metatarsal_cut_out %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;1st Metatarsal Cut-Out
-                <br />L {{ biomechanical.first_metatarsal_cut_out_l }} R {{ biomechanical.first_metatarsal_cut_out_r }}
+                <br />
+                <span{% if biomechanical.first_metatarsal_cut_out_l or biomechanical.first_metatarsal_cut_out_r %} class="red"{% endif %}>
+                    L {{ biomechanical.first_metatarsal_cut_out_l }} R {{ biomechanical.first_metatarsal_cut_out_r }}
+                </span>
             </td>
             <td>
                 {% if biomechanical.extrinsic_forefoot_post_sulcus_length %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Extrinsic Forefoot Post (Sulcus Length)
-                <br />L {{ biomechanical.extrinsic_forefoot_post_sulcus_length_l }}&deg; R {{ biomechanical.extrinsic_forefoot_post_sulcus_length_r }}&deg;
+                <br />
+                <span{% if biomechanical.extrinsic_forefoot_post_sulcus_length_l or biomechanical.extrinsic_forefoot_post_sulcus_length_r %} class="red"{% endif %}>
+                    L {{ biomechanical.extrinsic_forefoot_post_sulcus_length_l }}&deg; R {{ biomechanical.extrinsic_forefoot_post_sulcus_length_r }}&deg;
+                </span>
             </td>
             <td>
                 {% if biomechanical.vinyl_sandwich_bilateral %}
-                    <img src="{% static 'images/checked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="5.5" height="5.5" />
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
                 &nbsp;Vinyl Sandwich
-                <br />(Bilateral)
+                <br />
+                (Bilateral)
             </td>
         </tr>
     </tbody>
