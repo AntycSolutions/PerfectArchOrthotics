@@ -1151,7 +1151,7 @@ class ProofOfManufacturing(models.Model):
         )
 
 
-class Biomechanical(models.Model, model_utils.FieldList):
+class BiomechanicalGait(models.Model, model_utils.FieldList):
     claim = models.OneToOneField(Claim)
 
     # Examination Findings
@@ -1471,7 +1471,7 @@ class Biomechanical(models.Model, model_utils.FieldList):
 
     def get_absolute_url(self):
         return urlresolvers.reverse_lazy(
-            'biomechanical_fill_out', kwargs={'claim_pk': self.claim.pk}
+            'biomechanical_gait_fill_out', kwargs={'claim_pk': self.claim.pk}
         )
 
     def __str__(self):
@@ -1605,7 +1605,7 @@ auditlog.register(ClaimItem)
 auditlog.register(Invoice)
 auditlog.register(InsuranceLetter)
 auditlog.register(ProofOfManufacturing)
-auditlog.register(Biomechanical)
+auditlog.register(BiomechanicalGait)
 auditlog.register(Laboratory)
 auditlog.register(Referral)
 auditlog.register(Receipt)

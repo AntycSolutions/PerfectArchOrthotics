@@ -4,7 +4,7 @@
 {% load nbsp %}
 {% load field_utils %}
 
-{% block title %} - Biomechanical Examination for {{ claim.patient.full_name }}{% endblock %}
+{% block title %} - Biomechanical/Gait Examination for {{ claim.patient.full_name }}{% endblock %}
 
 {% block content %}
 
@@ -18,21 +18,21 @@
         </a>
     </div>
     <h1>
-        Biomechanical Examination for {{ claim.patient.full_name }}
+        Biomechanical/Gait Examination for {{ claim.patient.full_name }}
     </h1>
     <div>
-        {% if biomechanical %}
-            <a href="{% url 'biomechanical_update' biomechanical.pk %}" class="btn btn-primary">
+        {% if biomechanical_gait %}
+            <a href="{% url 'biomechanical_gait_update' biomechanical_gait.pk %}" class="btn btn-primary">
                 Update
             </a>
         {% else %}
-            <a href="{% url 'biomechanical_create' claim.pk %}" class="btn btn-primary">
+            <a href="{% url 'biomechanical_gait_create' claim.pk %}" class="btn btn-primary">
                 Create
             </a>
         {% endif %}
     </div>
     <br />
-    {% if biomechanical %}
+    {% if biomechanical_gait %}
         <div class="panel panel-default">
             <div class="panel-heading clearfix">
                 <div class="panel-title">
@@ -41,13 +41,13 @@
             </div>
             <div class="panel-body">
                 <div class="form-horizontal">
-                    {% for name, field_value in biomechanical.get_all_fields.items %}
+                    {% for name, field_value in biomechanical_gait.get_all_fields.items %}
                         {% if name == 'id' %}
                             {# Skip ID #}
                         {% elif field_value.field|is_image %}
                             <div class="form-group">
                                 <label class="col-lg-4 control-label">
-                                    {% verbose_field_name biomechanical name %}
+                                    {% verbose_field_name biomechanical_gait name %}
                                 </label>
                                 <div class="col-lg-8">
                                     <p class="form-control-static">
@@ -64,7 +64,7 @@
                         {% elif field_value.field|is_foreignkey %}
                             <div class="form-group">
                                 <label class="col-lg-4 control-label">
-                                    {% verbose_field_name biomechanical name %}
+                                    {% verbose_field_name biomechanical_gait name %}
                                 </label>
                                 <div class="col-lg-8">
                                     <p class="form-control-static">
@@ -83,7 +83,7 @@
                         {% else %}
                             <div class="form-group">
                                 <label class="col-lg-4 control-label">
-                                    {% verbose_field_name biomechanical name %}
+                                    {% verbose_field_name biomechanical_gait name %}
                                 </label>
                                 <div class="col-lg-8">
                                     <p class="form-control-static">
@@ -96,8 +96,8 @@
                 </div>
             </div>
         </div>
-        <a href="{% url 'biomechanical_pdf' claim.pk %}" class="btn btn-default">
-            View Biomechanical Examination
+        <a href="{% url 'biomechanical_gait_pdf' claim.pk %}" class="btn btn-default">
+            View Biomechanical/Gait Examination
         </a>
     {% endif %}
     <br /><br />

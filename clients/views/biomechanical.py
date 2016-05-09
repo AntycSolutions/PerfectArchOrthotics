@@ -5,17 +5,15 @@ from django.views import generic
 from django.conf import settings
 from django.core import urlresolvers
 
-from utils import views_utils
-
 from clients import models as clients_models
 from clients.views import views as clients_views
 from clients.forms import claim_forms
 
 
-class BiomechanicalCreate(generic.CreateView):
-    model = clients_models.Biomechanical
-    template_name = 'clients/claim/biomechanical.html'
-    form_class = claim_forms.BiomechanicalModelForm
+class BiomechanicalGaitCreate(generic.CreateView):
+    model = clients_models.BiomechanicalGait
+    template_name = 'clients/claim/biomechanical_gait.html'
+    form_class = claim_forms.BiomechanicalGaitModelForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -36,10 +34,10 @@ class BiomechanicalCreate(generic.CreateView):
         return http.HttpResponseRedirect(self.get_success_url())
 
 
-class BiomechanicalUpdate(generic.UpdateView):
-    model = clients_models.Biomechanical
-    template_name = 'clients/claim/biomechanical.html'
-    form_class = claim_forms.BiomechanicalModelForm
+class BiomechanicalGaitUpdate(generic.UpdateView):
+    model = clients_models.BiomechanicalGait
+    template_name = 'clients/claim/biomechanical_gait.html'
+    form_class = claim_forms.BiomechanicalGaitModelForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -51,80 +49,54 @@ class BiomechanicalUpdate(generic.UpdateView):
         return context
 
 
-class BiomechanicalDelete(views_utils.PermissionMixin, generic.DeleteView):
-    model = clients_models.Biomechanical
-    template_name = 'utils/generics/delete.html'
-
-    def get_permissions(self):
-        permissions = {
-            'permission': 'clients.delete_biomechanical',
-            'redirect': self.get_object().get_absolute_url(),
-        }
-
-        return permissions
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['model_name'] = self.model._meta.verbose_name
-        context['cancel_url'] = self.object.get_absolute_url()
-
-        return context
-
-    def get_success_url(self):
-        return urlresolvers.reverse(
-            'claim', kwargs={'claim_id': self.kwargs['claim_pk']}
-        )
-
-
-def _biomechanical(claim_pk):
+def _biomechanical_gait(claim_pk):
     claim = clients_models.Claim.objects.select_related(
-        'patient', 'biomechanical'
+        'patient', 'biomechanicalgait'
     ).get(pk=claim_pk)
     try:
-        biomechanical = claim.biomechanical
-    except clients_models.Biomechanical.DoesNotExist:
-        biomechanical = None
+        biomechanical_gait = claim.biomechanicalgait
+    except clients_models.BiomechanicalGait.DoesNotExist:
+        biomechanical_gait = None
 
-    return claim, biomechanical
+    return claim, biomechanical_gait
 
 
-def biomechanical_fill_out(request, claim_pk):
+def biomechanical_gait_fill_out(request, claim_pk):
     context = template.RequestContext(request)
 
-    claim, biomechanical = _biomechanical(claim_pk)
+    claim, biomechanical_gait = _biomechanical_gait(claim_pk)
 
     return shortcuts.render_to_response(
-        'clients/make_biomechanical.html',
+        'clients/make_biomechanical_gait.html',
         {
             'claim': claim,
-            'biomechanical': biomechanical,
+            'biomechanical_gait': biomechanical_gait,
         },
         context
     )
 
 
-def biomechanical_pdf(request, claim_pk):
-    claim, biomechanical = _biomechanical(claim_pk)
+def biomechanical_gait_pdf(request, claim_pk):
+    claim, biomechanical_gait = _biomechanical_gait(claim_pk)
 
     # return shortcuts.render(
     #     request,
-    #     'clients/pdfs/biomechanical.html',
+    #     'clients/pdfs/biomechanical_gait.html',
     #     {
-    #         'title': "Bio-mechanical Examination",
+    #         'title': "Bio-mechanical/Gait Examination",
     #         'claim': claim,
-    #         'biomechanical': biomechanical,
+    #         'biomechanical_gait': biomechanical_gait,
     #         'address': settings.BILL_TO[0][1],
     #         'email': settings.DANNY_EMAIL,
     #     }
     # )
     return clients_views.render_to_pdf(
         request,
-        'clients/pdfs/biomechanical.html',
+        'clients/pdfs/biomechanical_gait.html',
         {
             'title': "Bio-mechanical/Gait Examination",
             'claim': claim,
-            'biomechanical': biomechanical,
+            'biomechanical_gait': biomechanical_gait,
             'address': settings.BILL_TO[0][1],
             'email': settings.DANNY_EMAIL,
         }

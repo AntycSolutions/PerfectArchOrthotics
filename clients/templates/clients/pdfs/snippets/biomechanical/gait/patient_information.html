@@ -25,28 +25,28 @@
                 Sex: {{ claim.patient.gender|upper }}
             </td>
             <td>
-                Weight: {{ biomechanical.weight }}
+                Weight: {{ biomechanical_gait.weight }}
             </td>
             <td>
-                Height: {{ biomechanical.height }}
+                Height: {{ biomechanical_gait.height }}
             </td>
         </tr>
         <tr>
             <td class="td_padding">
-                Shoe Size: {{ biomechanical.shoe_size }}
+                Shoe Size: {{ biomechanical_gait.shoe_size }}
             </td>
             <td colspan="2">
-                Shoe Type: {{ biomechanical.shoe_type }}
+                Shoe Type: {{ biomechanical_gait.shoe_type }}
             </td>
         </tr>
         <tr>
             <td colspan="3" class="td_padding">
-                Main Activities: {{ biomechanical.main_activities }}
+                Main Activities: {{ biomechanical_gait.main_activities }}
             </td>
         </tr>
         <tr>
             <td colspan="3" class="td_padding">
-                {% if biomechanical.fabricate %}
+                {% if biomechanical_gait.fabricate %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />

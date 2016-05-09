@@ -21,7 +21,7 @@
                                 General Foot Motion
                             </th>
                             <th colspan="3" class="inline_th" style="border-right: 1px solid black;">
-                                {% if biomechanical.forefoot_varus %}
+                                {% if biomechanical_gait.forefoot_varus %}
                                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                 {% else %}
                                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -29,7 +29,7 @@
                                 &nbsp;Forefoot Varus
                             </th>
                             <th colspan="3" class="inline_th">
-                                {% if biomechanical.forefoot_valgus %}
+                                {% if biomechanical_gait.forefoot_valgus %}
                                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                 {% else %}
                                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -75,7 +75,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.ankle_dorsi_flexion_adequate_left %}
+                                    {% if biomechanical_gait.ankle_dorsi_flexion_adequate_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -84,7 +84,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.ankle_dorsi_flexion_adequate_right %}
+                                    {% if biomechanical_gait.ankle_dorsi_flexion_adequate_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -96,7 +96,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_restricted_left %}
+                                    {% if biomechanical_gait.general_foot_motion_restricted_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -105,7 +105,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_restricted_right %}
+                                    {% if biomechanical_gait.general_foot_motion_restricted_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -117,7 +117,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_mild_left %}
+                                    {% if biomechanical_gait.forefoot_varus_mild_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -126,7 +126,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_mild_right %}
+                                    {% if biomechanical_gait.forefoot_varus_mild_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -138,7 +138,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_mild_left %}
+                                    {% if biomechanical_gait.forefoot_valgus_mild_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -147,7 +147,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_mild_right %}
+                                    {% if biomechanical_gait.forefoot_valgus_mild_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -161,7 +161,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.ankle_dorsi_flexion_limited_left %}
+                                    {% if biomechanical_gait.ankle_dorsi_flexion_limited_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -170,7 +170,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.ankle_dorsi_flexion_limited_right %}
+                                    {% if biomechanical_gait.ankle_dorsi_flexion_limited_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -182,7 +182,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_normal_left %}
+                                    {% if biomechanical_gait.general_foot_motion_normal_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -191,7 +191,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_normal_right %}
+                                    {% if biomechanical_gait.general_foot_motion_normal_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -203,7 +203,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_moderate_left %}
+                                    {% if biomechanical_gait.forefoot_varus_moderate_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -212,7 +212,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_moderate_right %}
+                                    {% if biomechanical_gait.forefoot_varus_moderate_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -224,7 +224,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_moderate_left %}
+                                    {% if biomechanical_gait.forefoot_valgus_moderate_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -233,7 +233,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_moderate_right %}
+                                    {% if biomechanical_gait.forefoot_valgus_moderate_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -250,7 +250,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_hyper_mobile_left %}
+                                    {% if biomechanical_gait.general_foot_motion_hyper_mobile_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -259,7 +259,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.general_foot_motion_hyper_mobile_right %}
+                                    {% if biomechanical_gait.general_foot_motion_hyper_mobile_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -271,7 +271,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_severe_left %}
+                                    {% if biomechanical_gait.forefoot_varus_severe_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -280,7 +280,7 @@
                             </td>
                             <td class="right_border">
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_varus_severe_right %}
+                                    {% if biomechanical_gait.forefoot_varus_severe_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -292,7 +292,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_severe_left %}
+                                    {% if biomechanical_gait.forefoot_valgus_severe_left %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -301,7 +301,7 @@
                             </td>
                             <td>
                                 <div class="checkbox">
-                                    {% if biomechanical.forefoot_valgus_severe_right %}
+                                    {% if biomechanical_gait.forefoot_valgus_severe_right %}
                                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                                     {% else %}
                                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -332,7 +332,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.subtalar_joint_hyper_mobile %}
+                    {% if biomechanical_gait.subtalar_joint_hyper_mobile %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -341,7 +341,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.subtalar_joint_limited_rom %}
+                    {% if biomechanical_gait.subtalar_joint_limited_rom %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -355,7 +355,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.ankle_joint_hyper_mobile %}
+                    {% if biomechanical_gait.ankle_joint_hyper_mobile %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -364,7 +364,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.ankle_joint_limited_rom %}
+                    {% if biomechanical_gait.ankle_joint_limited_rom %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -378,7 +378,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.first_mpj_hyper_mobile %}
+                    {% if biomechanical_gait.first_mpj_hyper_mobile %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -387,7 +387,7 @@
             </td>
             <td>
                 <div class="checkbox">
-                    {% if biomechanical.first_mpj_limited_rom %}
+                    {% if biomechanical_gait.first_mpj_limited_rom %}
                         <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                     {% else %}
                         <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />

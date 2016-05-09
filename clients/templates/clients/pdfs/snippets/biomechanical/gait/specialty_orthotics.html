@@ -16,7 +16,7 @@
                 Leather
             </td>
             <td>
-                {% if biomechanical.leather_sulcus %}
+                {% if biomechanical_gait.leather_sulcus %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -24,7 +24,7 @@
                 &nbsp;Sulcus
             </td>
             <td>
-                {% if biomechanical.leather_full %}
+                {% if biomechanical_gait.leather_full %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -37,7 +37,7 @@
                 Modifications Available:
             </td>
             <td>
-                {% if biomechanical.leather_heel_spur_pad %}
+                {% if biomechanical_gait.leather_heel_spur_pad %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -45,12 +45,12 @@
                 &nbsp;Heel Spur Pad
             </td>
             <td style="width: 270px;">
-                {% if biomechanical.leather_heel_lift %}
+                {% if biomechanical_gait.leather_heel_lift %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
                 {% endif %}
-                &nbsp;Heel Lift L {{ biomechanical.leather_heel_lift_l }} mm R {{ biomechanical.leather_heel_lift_r }} mm
+                &nbsp;Heel Lift L {{ biomechanical_gait.leather_heel_lift_l }} mm R {{ biomechanical_gait.leather_heel_lift_r }} mm
             </td>
         </tr>
     </tbody>
@@ -65,7 +65,7 @@
                 3/4&nbsp;length&nbsp;only&nbsp;-&nbsp;1mm&nbsp;black&nbsp;naugahyde&nbsp;topcover
             </td>
             <td class="very_small_font">
-                {% if biomechanical.ucbl_1mm %}
+                {% if biomechanical_gait.ucbl_1mm %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -73,7 +73,7 @@
                 &nbsp;1mm
             </td>
             <td class="very_small_font">
-                {% if biomechanical.ucbl_2mm %}
+                {% if biomechanical_gait.ucbl_2mm %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -99,7 +99,7 @@
                 3/4&nbsp;length&nbsp;only&nbsp;-&nbsp;1mm&nbsp;black
             </td>
             <td class="very_small_font">
-                {% if biomechanical.gait_plate_2mm %}
+                {% if biomechanical_gait.gait_plate_2mm %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -107,7 +107,7 @@
                 &nbsp;2mm
             </td>
             <td class="very_small_font">
-                {% if biomechanical.gait_plate_3mm %}
+                {% if biomechanical_gait.gait_plate_3mm %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -115,7 +115,7 @@
                 &nbsp;3mm
             </td>
             <td class="very_small_font">
-                {% if biomechanical.gait_plate_35mm %}
+                {% if biomechanical_gait.gait_plate_35mm %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -129,7 +129,7 @@
                 naugahyde&nbsp;topcover
             </td>
             <td class="very_small_font">
-                {% if biomechanical.gait_plate_induce_toe_in %}
+                {% if biomechanical_gait.gait_plate_induce_toe_in %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -137,7 +137,7 @@
                 &nbsp;induce&nbsp;toe&nbsp;in
             </td>
             <td class="very_small_font">
-                {% if biomechanical.gait_plate_induce_toe_out %}
+                {% if biomechanical_gait.gait_plate_induce_toe_out %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -154,7 +154,7 @@
                 Full&nbsp;weight&nbsp;bearing&nbsp;cast&nbsp;only
             </td>
             <td class="very_small_font">
-                {% if biomechanical.diabetic_34 %}
+                {% if biomechanical_gait.diabetic_34 %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -162,7 +162,7 @@
                 &nbsp;3/4
             </td>
             <td class="very_small_font">
-                {% if biomechanical.diabetic_sulcus %}
+                {% if biomechanical_gait.diabetic_sulcus %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
@@ -170,7 +170,7 @@
                 &nbsp;sulcus
             </td>
             <td class="very_small_font">
-                {% if biomechanical.diabetic_full_length %}
+                {% if biomechanical_gait.diabetic_full_length %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
                     <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />

@@ -1,4 +1,5 @@
 {% load static %}
+{% load update_attrs %}
 
 <table>
     <thead>
@@ -32,7 +33,7 @@
             <td>
                 Modifications Available:
             </td>
-            <td>
+            <td class="top_valign">
                 <label>
                     {{ form.leather_heel_spur_pad }}
                 </label>
@@ -42,7 +43,9 @@
                 <label>
                     {{ form.leather_heel_lift }}
                 </label>
-                &nbsp;Heel Lift L {{ biomechanical.leather_heel_lift_l }} mm R {{ biomechanical.leather_heel_lift_r }} mm
+                &nbsp;Heel Lift L {{ form.leather_heel_lift_l|update_attrs:"class: form-control" }} mm
+                <br />
+                R {{ form.leather_heel_lift_r|update_attrs:"class: form-control" }} mm
             </td>
         </tr>
     </tbody>

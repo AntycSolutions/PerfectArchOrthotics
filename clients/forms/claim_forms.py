@@ -183,7 +183,7 @@ ClaimCoverageFormFormSet = utils_forms.minimum_nestedformset_factory(
 )
 
 
-class BiomechanicalModelForm(forms.ModelForm):
+class BiomechanicalGaitModelForm(forms.ModelForm):
     class Meta:
-        model = models.Biomechanical
+        model = models.BiomechanicalGait
         exclude = ['claim']

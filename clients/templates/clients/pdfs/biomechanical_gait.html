@@ -118,14 +118,14 @@
         <tbody>
             <tr>
                 <td colspan="10" class="right_border" style="vertical-align: top; padding-right: 5px;">
-                    {% include 'clients/pdfs/snippets/biomechanical/practitioner_clinic_information.html' %}
-                    {% include 'clients/pdfs/snippets/biomechanical/examination_findings.html' %}
-                    {% include 'clients/pdfs/snippets/biomechanical/optional_findings.html' %}
-                    {% include 'clients/pdfs/snippets/biomechanical/orthotics.html' %}
-                    {% include 'clients/pdfs/snippets/biomechanical/specialty_orthotics.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/practitioner_clinic_information.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/examination_findings.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/optional_findings.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/orthotics.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/specialty_orthotics.html' %}
                 </td>
                 <td colspan="10" style="vertical-align: top; padding-left: 5px;">
-                    {% include 'clients/pdfs/snippets/biomechanical/patient_information.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/patient_information.html' %}
                     <table>
                         <thead>
                             <tr>
@@ -138,7 +138,7 @@
                             <tr>
                                 <td style="vertical-align: top;">
                                     <br />
-                                    {{ biomechanical.chief_complaints_special_instructions|nbsp|linebreaksbr }}
+                                    {{ biomechanical_gait.chief_complaints_special_instructions|nbsp|linebreaksbr }}
                                 </td>
                                 <td style="text-align: right;">
                                     <img src="{% static 'images/feet_bones.png' %}" width='150' />
@@ -146,8 +146,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    {% include 'clients/pdfs/snippets/biomechanical/additions_modifications.html' %}
-                    {% include 'clients/pdfs/snippets/biomechanical/special_topcover_requests.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/additions_modifications.html' %}
+                    {% include 'clients/pdfs/snippets/biomechanical/gait/special_topcover_requests.html' %}
                 </td>
             </tr>
         </tbody>
@@ -165,7 +165,7 @@
                     Practitioner's Signature: <img src="/media/DSCN2103.png" width="150" />
                 </td>
                 <td>
-                    Date: {{ biomechanical.signature_date|default:"______________________" }}
+                    Date: {{ biomechanical_gait.signature_date|default:"______________________" }}
                 </td>
             </tr>
             <tr>

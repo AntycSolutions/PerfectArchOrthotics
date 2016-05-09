@@ -88,32 +88,30 @@ coverage_type_patterns = patterns(
         name='coverage_type_create'),
 )
 
-biomechanical_patterns = [
+biomechanical_gait_patterns = [
     urls.url(
         r'^create/(?P<claim_pk>\w+)/$',
-        login_required(biomechanical.BiomechanicalCreate.as_view()),
-        name='biomechanical_create'
+        login_required(biomechanical.BiomechanicalGaitCreate.as_view()),
+        name='biomechanical_gait_create'
     ),
     urls.url(
         r'^update/(?P<pk>\w+)/$',
-        login_required(biomechanical.BiomechanicalUpdate.as_view()),
-        name='biomechanical_update'
-    ),
-    urls.url(
-        r'^delete/(?P<pk>\w+)/$',
-        login_required(biomechanical.BiomechanicalDelete.as_view()),
-        name='biomechanical_delete'
+        login_required(biomechanical.BiomechanicalGaitUpdate.as_view()),
+        name='biomechanical_gait_update'
     ),
     urls.url(
         r'^fill_out/(?P<claim_pk>\w+)/$',
-        login_required(biomechanical.biomechanical_fill_out),
-        name='biomechanical_fill_out'
+        login_required(biomechanical.biomechanical_gait_fill_out),
+        name='biomechanical_gait_fill_out'
     ),
     urls.url(
         r'^pdf/(?P<claim_pk>\w+)/$',
-        login_required(biomechanical.biomechanical_pdf),
-        name='biomechanical_pdf'
+        login_required(biomechanical.biomechanical_gait_pdf),
+        name='biomechanical_gait_pdf'
     ),
+]
+biomechanical_patterns = [
+    url(r'^gait/', include(biomechanical_gait_patterns)),
 ]
 
 create_claim_wizard = claim.CreateClaimWizard.as_view(
