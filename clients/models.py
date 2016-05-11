@@ -1576,7 +1576,10 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         blank=True
     )
 
-    subtalar_joint_comments = models.CharField(max_length=64)
+    subtalar_joint_comments = models.CharField(
+        max_length=64,
+        blank=True
+    )
 
     INV = 'I'
     EV = 'E'
@@ -1593,7 +1596,10 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         blank=True
     )
 
-    midtarsal_joint_comments = models.CharField(max_length=64)
+    midtarsal_joint_comments = models.CharField(
+        max_length=64,
+        blank=True
+    )
 
     Y = 'Y'
     N = 'N'
@@ -1633,7 +1639,10 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         blank=True
     )
 
-    first_ray_comments = models.CharField(max_length=64)
+    first_ray_comments = models.CharField(
+        max_length=64,
+        blank=True
+    )
 
     FULL = 'F'
     LIM = 'L'
@@ -1650,7 +1659,10 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         blank=True
     )
 
-    first_mtp_joint_comments = models.CharField(max_length=64)
+    first_mtp_joint_comments = models.CharField(
+        max_length=64,
+        blank=True
+    )
 
     lesser_mtp_joints_2_left = models.CharField(
         max_length=2, choices=MTP_JOINTS_CHOICES,
@@ -1685,7 +1697,10 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         blank=True
     )
 
-    lesser_mtp_joints_comments = models.CharField(max_length=64)
+    lesser_mtp_joints_comments = models.CharField(
+        max_length=64,
+        blank=True
+    )
 
     # Treatment Recommendations
     treatment_recommendations = models.TextField(blank=True)

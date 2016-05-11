@@ -64,6 +64,9 @@
                         </h5>
                     </label>
                 </div>
+                <div class="form-group" style="color: #a94442;">
+                    {{ form.errors }}
+                </div>
                 <table style="margin-bottom: 20px;">
                     <tbody>
                         <tr>
@@ -73,7 +76,7 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                Exam Date: {{ form.exam_date|update_attrs:"class: form-control datepicker" }}
+                                                Exam Date: {{ form.exam_date|update_attrs:"class: form-control datepicker" }} <span style="color: #a94442;">{{ form.exam_date.errors }}</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -92,25 +95,25 @@
                                                         Angle of Gait:
                                                         <br />
                                                         Left [
-                                                        {{ form.angle_of_gait_left|update_attrs:"class: form-control|style: width: auto; display: inline;" }}
+                                                        {{ form.angle_of_gait_left|update_attrs:"class: form-control|style: width: auto; display: inline;" }} <span style="color: #a94442;">{{ form.angle_of_gait_left.errors }}</span>
                                                         ]
                                                         Right [
-                                                        {{ form.angle_of_gait_right|update_attrs:"class: form-control|style: width: auto; display: inline;" }}
+                                                        {{ form.angle_of_gait_right|update_attrs:"class: form-control|style: width: auto; display: inline;" }} <span style="color: #a94442;">{{ form.angle_of_gait_right.errors }}</span>
                                                         ]
                                                         <br />
-                                                        Base of Gait: {{ form.base_of_gait|update_attrs:"class: form-control" }} centimeters
+                                                        Base of Gait: {{ form.base_of_gait|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.base_of_gait.errors }}</span> centimeters
                                                     </li>
                                                     <li class="li_padding">
-                                                        Contact Period: {{ form.contact_period|update_attrs:"class: form-control" }}
+                                                        Contact Period: {{ form.contact_period|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.contact_period.errors }}</span>
                                                     </li>
                                                     <li class="li_padding">
-                                                        Midstance Period: {{ form.midstance_period|update_attrs:"class: form-control" }}
+                                                        Midstance Period: {{ form.midstance_period|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.midstance_period.errors }}</span>
                                                     </li>
                                                     <li class="li_padding">
-                                                        Propulsive Period: {{ form.propulsive_period|update_attrs:"class: form-control" }}
+                                                        Propulsive Period: {{ form.propulsive_period|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.propulsive_period.errors }}</span>
                                                     </li>
                                                     <li class="li_padding">
-                                                        Postural Considerations (limb length/asymmetry): {{ form.postural_considerations|update_attrs:"class: form-control" }}
+                                                        Postural Considerations (limb length/asymmetry): {{ form.postural_considerations|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.postural_considerations.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -139,17 +142,17 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.subtalar_joint_left|update_attrs:"class: form-control" }}
+                                                {{ form.subtalar_joint_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.subtalar_joint_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.subtalar_joint_right|update_attrs:"class: form-control" }}
+                                                {{ form.subtalar_joint_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.subtalar_joint_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr style="padding-bottom: 5px;">
                                             <td colspan="3">
                                                 <ul>
                                                     <li class="no_bullets">
-                                                        Comments: {{ form.subtalar_joint_comments|update_attrs:"class: form-control" }}
+                                                        Comments: {{ form.subtalar_joint_comments|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.subtalar_joint_comments.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -163,17 +166,17 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.midtarsal_joint_left|update_attrs:"class: form-control" }}
+                                                {{ form.midtarsal_joint_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.midtarsal_joint_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.midtarsal_joint_right|update_attrs:"class: form-control" }}
+                                                {{ form.midtarsal_joint_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.midtarsal_joint_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr style="padding-bottom: 5px;">
                                             <td colspan="3">
                                                 <ul>
                                                     <li class="no_bullets">
-                                                        Comments: {{ form.midtarsal_joint_comments|update_attrs:"class: form-control" }}
+                                                        Comments: {{ form.midtarsal_joint_comments|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.midtarsal_joint_comments.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -199,10 +202,10 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.ankle_joint_knee_extended_left|update_attrs:"class: form-control" }}
+                                                {{ form.ankle_joint_knee_extended_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.ankle_joint_knee_extended_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.ankle_joint_knee_extended_right|update_attrs:"class: form-control" }}
+                                                {{ form.ankle_joint_knee_extended_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.ankle_joint_knee_extended_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr style="padding-bottom: 5px;">
@@ -214,10 +217,10 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.ankle_joint_knee_flexed_left|update_attrs:"class: form-control" }}
+                                                {{ form.ankle_joint_knee_flexed_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.ankle_joint_knee_flexed_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.ankle_joint_knee_flexed_right|update_attrs:"class: form-control" }}
+                                                {{ form.ankle_joint_knee_flexed_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.ankle_joint_knee_flexed_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -229,17 +232,17 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.first_ray_left|update_attrs:"class: form-control" }}
+                                                {{ form.first_ray_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_ray_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.first_ray_right|update_attrs:"class: form-control" }}
+                                                {{ form.first_ray_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_ray_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr style="padding-bottom: 5px;">
                                             <td colspan="3">
                                                 <ul>
                                                     <li class="no_bullets">
-                                                        Comments: {{ form.first_ray_comments|update_attrs:"class: form-control" }}
+                                                        Comments: {{ form.first_ray_comments|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_ray_comments.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -278,17 +281,17 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.first_mtp_joint_left|update_attrs:"class: form-control" }}
+                                                {{ form.first_mtp_joint_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_mtp_joint_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.first_mtp_joint_right|update_attrs:"class: form-control" }}
+                                                {{ form.first_mtp_joint_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_mtp_joint_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="3" style="padding-bottom: 10px;">
                                                 <ul>
                                                     <li class="no_bullets">
-                                                        Comments: {{ form.first_mtp_joint_comments|update_attrs:"class: form-control" }}
+                                                        Comments: {{ form.first_mtp_joint_comments|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.first_mtp_joint_comments.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -311,10 +314,10 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_2_left|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_2_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_2_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_2_right|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_2_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_2_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -326,10 +329,10 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_3_left|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_3_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_3_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_3_right|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_3_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_3_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -341,10 +344,10 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_4_left|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_4_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_4_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_4_right|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_4_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_4_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -356,17 +359,17 @@
                                                 </ul>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_5_left|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_5_left|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_5_left.errors }}</span>
                                             </td>
                                             <td class="text_center">
-                                                {{ form.lesser_mtp_joints_5_right|update_attrs:"class: form-control" }}
+                                                {{ form.lesser_mtp_joints_5_right|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_5_right.errors }}</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="3" style="padding-bottom: 10px;">
                                                 <ul>
                                                     <li class="no_bullets">
-                                                        Comments: {{ form.lesser_mtp_joints_comments|update_attrs:"class: form-control" }}
+                                                        Comments: {{ form.lesser_mtp_joints_comments|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.lesser_mtp_joints_comments.errors }}</span>
                                                     </li>
                                                 </ul>
                                             </td>
@@ -377,7 +380,7 @@
                                     Treatment Recommendations:
                                 </p>
                                 <p style="padding-left: 20px; padding-bottom: 20px;">
-                                    {{ form.treatment_recommendations|update_attrs:"class: form-control" }}
+                                    {{ form.treatment_recommendations|update_attrs:"class: form-control" }} <span style="color: #a94442;">{{ form.treatment_recommendations.errors }}</span>
                                 </p>
                             </td>
                         </tr>
