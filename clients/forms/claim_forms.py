@@ -187,3 +187,9 @@ class BiomechanicalGaitModelForm(forms.ModelForm):
     class Meta:
         model = models.BiomechanicalGait
         exclude = ['claim']
+
+
+class BiomechanicalFootModelForm(forms.ModelForm):
+    class Meta:
+        model = models.BiomechanicalFoot
+        exclude = ['claim']

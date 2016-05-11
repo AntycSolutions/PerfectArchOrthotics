@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+
+{% load update_attrs %}
+
+{% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
+
+{% block extra_head %}
+    {% now 'Y' as current_year %}
+    <script type="text/javascript">
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+        $(document).ready(function() {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
+        });
+    </script>
+
+    <style type="text/css">
+        .text_center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .no_bullets {
+            list-style-type: none;
+        }
+
+        .form-horizontal .form-group {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .li_padding {
+            padding-bottom: 10px;
+        }
+
+        ul {
+            margin-bottom: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1>
+        {{ save_text|title }} {{ model_name|title }}
+    </h1>
+
+    {% include 'utils/snippets/messages.html' %}
+
+    <form id="{{ save_text }}_{{ model_name }}_form" class="form-horizontal" method="POST" enctype="{{ form_type }}">
+        {% csrf_token %}
+        <div class="row">
+            <fieldset class="col-lg-12">
+                <div class="form-group">
+                    <label class="control-label">
+                        <h5>
+                            {{ model_name|title }}
+                        </h5>
+                    </label>
+                </div>
+                <table style="margin-bottom: 20px;">
+                    <tbody>
+                        <tr>
+                            {# must be inline #}
+                            <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                                <table style="margin-bottom: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                Exam Date: {{ form.exam_date|update_attrs:"class: form-control datepicker" }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding-bottom: 5px;">
+                                                KINECTIC STANCE (GAIT): Record all abnormal variations and asymmetries
+                                            </td>
+                                        </tr>
+                                        <tr style="padding-bottom: 10px;">
+                                            <td>
+                                                <ul style="padding-bottom: 10px;">
+                                                    <li class="li_padding">
+                                                        Angle of Gait:
+                                                        <br />
+                                                        Left [
+                                                        {{ form.angle_of_gait_left|update_attrs:"class: form-control|style: width: auto; display: inline;" }}
+                                                        ]
+                                                        Right [
+                                                        {{ form.angle_of_gait_right|update_attrs:"class: form-control|style: width: auto; display: inline;" }}
+                                                        ]
+                                                        <br />
+                                                        Base of Gait: {{ form.base_of_gait|update_attrs:"class: form-control" }} centimeters
+                                                    </li>
+                                                    <li class="li_padding">
+                                                        Contact Period: {{ form.contact_period|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                    <li class="li_padding">
+                                                        Midstance Period: {{ form.midstance_period|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                    <li class="li_padding">
+                                                        Propulsive Period: {{ form.propulsive_period|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                    <li class="li_padding">
+                                                        Postural Considerations (limb length/asymmetry): {{ form.postural_considerations|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table>
+                                    <tbody>
+                                        <tr style="padding-bottom: 5px;">
+                                            <td>
+                                                STATIC&nbsp;STANCE
+                                            </td>
+                                            <td class="text_center">
+                                                Left
+                                            </td>
+                                            <td class="text_center">
+                                                Right
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        Subtalar&nbsp;Joint:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.subtalar_joint_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.subtalar_joint_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr style="padding-bottom: 5px;">
+                                            <td colspan="3">
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Comments: {{ form.subtalar_joint_comments|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        Midtarsal&nbsp;Joint:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.midtarsal_joint_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.midtarsal_joint_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr style="padding-bottom: 5px;">
+                                            <td colspan="3">
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Comments: {{ form.midtarsal_joint_comments|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        Ankle Joint:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td colspan="2" class="text_center">
+                                                (min 10&deg; dorsiflexion)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Knee&nbsp;Extended
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.ankle_joint_knee_extended_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.ankle_joint_knee_extended_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr style="padding-bottom: 5px;">
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Knee&nbsp;Flexed
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.ankle_joint_knee_flexed_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.ankle_joint_knee_flexed_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        First Ray:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.first_ray_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.first_ray_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr style="padding-bottom: 5px;">
+                                            <td colspan="3">
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Comments: {{ form.first_ray_comments|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            {# must be inline #}
+                            <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                                <table>
+                                    <tbody>
+                                        <tr class="text_center">
+                                            <td></td>
+                                            <td>
+                                                Left
+                                            </td>
+                                            <td>
+                                                Right
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        First&nbsp;MTP&nbsp;Joint:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        1<sup>st</sup>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.first_mtp_joint_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.first_mtp_joint_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" style="padding-bottom: 10px;">
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Comments: {{ form.first_mtp_joint_comments|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        Lesser&nbsp;MTP&nbsp;Joints:
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        2<sup>nd</sup>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_2_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_2_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        3<sup>rd</sup>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_3_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_3_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        4<sup>th</sup>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_4_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_4_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        5<sup>th</sup>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_5_left|update_attrs:"class: form-control" }}
+                                            </td>
+                                            <td class="text_center">
+                                                {{ form.lesser_mtp_joints_5_right|update_attrs:"class: form-control" }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" style="padding-bottom: 10px;">
+                                                <ul>
+                                                    <li class="no_bullets">
+                                                        Comments: {{ form.lesser_mtp_joints_comments|update_attrs:"class: form-control" }}
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p>
+                                    Treatment Recommendations:
+                                </p>
+                                <p style="padding-left: 20px; padding-bottom: 20px;">
+                                    {{ form.treatment_recommendations|update_attrs:"class: form-control" }}
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary" name="submit">
+                            {{ save_text|title }}
+                        </button>
+                        <a href="{{ cancel_url }}" class="btn btn-default">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

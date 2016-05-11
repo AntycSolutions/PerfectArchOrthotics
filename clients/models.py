@@ -1478,6 +1478,227 @@ class BiomechanicalGait(models.Model, model_utils.FieldList):
         return "Claim ID: {}".format(self.claim_id)
 
 
+class BiomechanicalFoot(models.Model, model_utils.FieldList):
+    claim = models.OneToOneField(Claim)
+
+    exam_date = models.DateField()
+
+    # Kinetic Stance
+    ADD = 'D'
+    ABD = 'B'
+    ANGLE_OF_GAIT_CHOICES = (
+        (ADD, 'ADD'),
+        (ABD, 'ABD'),
+    )
+    angle_of_gait_left = models.CharField(
+        max_length=1, choices=ANGLE_OF_GAIT_CHOICES,
+        blank=True
+    )
+    angle_of_gait_right = models.CharField(
+        max_length=1, choices=ANGLE_OF_GAIT_CHOICES,
+        blank=True
+    )
+
+    base_of_gait = models.CharField(
+        max_length=5,
+        blank=True
+    )
+
+    TOE_HEEL_GAIT = 'T'
+    FOREFOOT_SLAP = 'FO'
+    EQUINUS = 'E'
+    STEPPAGE_GAIT = 'S'
+    FESTINATION = 'FE'
+    CONTACT_PERIOD_CHOICES = (
+        (TOE_HEEL_GAIT, 'Toe Heel Gait'),
+        (FOREFOOT_SLAP, 'Forefoot Slap'),
+        (EQUINUS, 'Equinus (Uncomp.)'),
+        (STEPPAGE_GAIT, 'Steppage Gait'),
+        (FESTINATION, 'Festination'),
+    )
+    contact_period = models.CharField(
+        max_length=2, choices=CONTACT_PERIOD_CHOICES,
+        blank=True
+    )
+
+    EXTENSOR_SUBSTITUION = 'EX'
+    ABDUCTORY_TWIST = 'AB'
+    EARLY_HEEL_OFF = 'EA'
+    SCISSORS_GAIT = 'S'
+    ATAXIC_GAIT = 'AT'
+    TRENDELENBURG_GAIT = 'T'
+    MIDSTANCE_PERIOD_CHOICES = (
+        (EXTENSOR_SUBSTITUION, 'Extensor Substitution'),
+        (ABDUCTORY_TWIST, 'Abductory Twist'),
+        (EARLY_HEEL_OFF, 'Early Heel Off'),
+        (SCISSORS_GAIT, 'Scissors Gait'),
+        (ATAXIC_GAIT, 'Ataxic Gait'),
+        (TRENDELENBURG_GAIT, 'Trendelenburg Gait'),
+    )
+    midstance_period = models.CharField(
+        max_length=2, choices=MIDSTANCE_PERIOD_CHOICES,
+        blank=True
+    )
+
+    ANTALGIA = 'A'
+    CEREBELLAR_GAIT = 'CE'
+    CALCANEUS_GAIT = 'CA'
+    LACK_OF_1ST_MPJ_DORSIFLEXION = 'L'
+    PROPULSIVE_PERIOD_CHOICES = (
+        (ANTALGIA, 'Antalgia'),
+        (CEREBELLAR_GAIT, 'Cerebellar Gait'),
+        (CALCANEUS_GAIT, 'Calcaneus Gait'),
+        (LACK_OF_1ST_MPJ_DORSIFLEXION, 'Lack of 1st MPJ Dorsiflexion'),
+    )
+    propulsive_period = models.CharField(
+        max_length=2, choices=PROPULSIVE_PERIOD_CHOICES,
+        blank=True
+    )
+
+    postural_considerations = models.CharField(
+        max_length=64,
+        blank=True
+    )
+
+    # Static Stance
+    SUP = 'S'
+    PRO = 'P'
+    SUBTALAR_JOINT_CHOICES = (
+        (SUP, 'SUP'),
+        (PRO, 'PRO'),
+    )
+    subtalar_joint_left = models.CharField(
+        max_length=2, choices=SUBTALAR_JOINT_CHOICES,
+        blank=True
+    )
+    subtalar_joint_right = models.CharField(
+        max_length=2, choices=SUBTALAR_JOINT_CHOICES,
+        blank=True
+    )
+
+    subtalar_joint_comments = models.CharField(max_length=64)
+
+    INV = 'I'
+    EV = 'E'
+    MIDTARSAL_JOINT_CHOICES = (
+        (INV, 'INV'),
+        (EV, 'EV'),
+    )
+    midtarsal_joint_left = models.CharField(
+        max_length=2, choices=MIDTARSAL_JOINT_CHOICES,
+        blank=True
+    )
+    midtarsal_joint_right = models.CharField(
+        max_length=2, choices=MIDTARSAL_JOINT_CHOICES,
+        blank=True
+    )
+
+    midtarsal_joint_comments = models.CharField(max_length=64)
+
+    Y = 'Y'
+    N = 'N'
+    ANKLE_JOINT_CHOICES = (
+        (Y, Y),
+        (N, N),
+    )
+    ankle_joint_knee_extended_left = models.CharField(
+        max_length=2, choices=ANKLE_JOINT_CHOICES,
+        blank=True
+    )
+    ankle_joint_knee_extended_right = models.CharField(
+        max_length=2, choices=ANKLE_JOINT_CHOICES,
+        blank=True
+    )
+    ankle_joint_knee_flexed_left = models.CharField(
+        max_length=2, choices=ANKLE_JOINT_CHOICES,
+        blank=True
+    )
+    ankle_joint_knee_flexed_right = models.CharField(
+        max_length=2, choices=ANKLE_JOINT_CHOICES,
+        blank=True
+    )
+
+    DOR = 'D'
+    PLN = 'P'
+    FIRST_RAY_CHOICES = (
+        (DOR, 'DOR'),
+        (PLN, 'PLN'),
+    )
+    first_ray_left = models.CharField(
+        max_length=2, choices=FIRST_RAY_CHOICES,
+        blank=True
+    )
+    first_ray_right = models.CharField(
+        max_length=2, choices=FIRST_RAY_CHOICES,
+        blank=True
+    )
+
+    first_ray_comments = models.CharField(max_length=64)
+
+    FULL = 'F'
+    LIM = 'L'
+    MTP_JOINTS_CHOICES = (
+        (FULL, 'FULL'),
+        (LIM, 'LIM'),
+    )
+    first_mtp_joint_left = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    first_mtp_joint_right = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+
+    first_mtp_joint_comments = models.CharField(max_length=64)
+
+    lesser_mtp_joints_2_left = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_2_right = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_3_left = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_3_right = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_4_left = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_4_right = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_5_left = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+    lesser_mtp_joints_5_right = models.CharField(
+        max_length=2, choices=MTP_JOINTS_CHOICES,
+        blank=True
+    )
+
+    lesser_mtp_joints_comments = models.CharField(max_length=64)
+
+    # Treatment Recommendations
+    treatment_recommendations = models.TextField(blank=True)
+
+    def get_absolute_url(self):
+        return urlresolvers.reverse_lazy(
+            'biomechanical_foot_fill_out', kwargs={'claim_pk': self.claim.pk}
+        )
+
+    def __str__(self):
+        return "Claim ID: {}".format(self.claim_id)
+
+
 class Laboratory(models.Model):
     # Dont set default on information, or itll mess up FormSets
     information = models.CharField(

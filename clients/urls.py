@@ -110,8 +110,31 @@ biomechanical_gait_patterns = [
         name='biomechanical_gait_pdf'
     ),
 ]
+biomechanical_foot_patterns = [
+    urls.url(
+        r'^create/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalFootCreate.as_view()),
+        name='biomechanical_foot_create'
+    ),
+    urls.url(
+        r'^update/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalFootUpdate.as_view()),
+        name='biomechanical_foot_update'
+    ),
+    urls.url(
+        r'^fill_out/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.biomechanical_foot_fill_out),
+        name='biomechanical_foot_fill_out'
+    ),
+    urls.url(
+        r'^pdf/(?P<claim_pk>\w+)/$',
+        login_required(biomechanical.biomechanical_foot_pdf),
+        name='biomechanical_foot_pdf'
+    ),
+]
 biomechanical_patterns = [
     url(r'^gait/', include(biomechanical_gait_patterns)),
+    url(r'^foot/', include(biomechanical_foot_patterns)),
 ]
 
 create_claim_wizard = claim.CreateClaimWizard.as_view(

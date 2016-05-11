@@ -101,3 +101,92 @@ def biomechanical_gait_pdf(request, claim_pk):
             'email': settings.DANNY_EMAIL,
         }
     )
+
+
+class BiomechanicalFootCreate(generic.CreateView):
+    model = clients_models.BiomechanicalFoot
+    template_name = 'clients/claim/biomechanical_foot.html'
+    form_class = claim_forms.BiomechanicalFootModelForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['save_text'] = 'create'
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = urlresolvers.reverse(
+            'claim', kwargs={'claim_id': self.kwargs['claim_pk']}
+        )
+
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.claim_id = self.kwargs['claim_pk']
+        self.object.save()
+
+        return http.HttpResponseRedirect(self.get_success_url())
+
+
+class BiomechanicalFootUpdate(generic.UpdateView):
+    model = clients_models.BiomechanicalFoot
+    template_name = 'clients/claim/biomechanical_foot.html'
+    form_class = claim_forms.BiomechanicalFootModelForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['save_text'] = 'update'
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
+        return context
+
+
+def _biomechanical_foot(claim_pk):
+    claim = clients_models.Claim.objects.select_related(
+        'patient', 'biomechanicalfoot'
+    ).get(pk=claim_pk)
+    try:
+        biomechanical_foot = claim.biomechanicalfoot
+    except clients_models.BiomechanicalFoot.DoesNotExist:
+        biomechanical_foot = None
+
+    return claim, biomechanical_foot
+
+
+def biomechanical_foot_fill_out(request, claim_pk):
+    context = template.RequestContext(request)
+
+    claim, biomechanical_foot = _biomechanical_foot(claim_pk)
+
+    return shortcuts.render_to_response(
+        'clients/make_biomechanical_foot.html',
+        {
+            'claim': claim,
+            'biomechanical_foot': biomechanical_foot,
+        },
+        context
+    )
+
+
+def biomechanical_foot_pdf(request, claim_pk):
+    claim, biomechanical_foot = _biomechanical_foot(claim_pk)
+
+    # return shortcuts.render(
+    #     request,
+    #     'clients/pdfs/biomechanical_foot.html',
+    #     {
+    #         'title': "Biomechanical Foot Examination",
+    #         'claim': claim,
+    #         'biomechanical_foot': biomechanical_foot,
+    #     }
+    # )
+    return clients_views.render_to_pdf(
+        request,
+        'clients/pdfs/biomechanical_foot.html',
+        {
+            'title': "Biomechanical Foot Examination",
+            'claim': claim,
+            'biomechanical_foot': biomechanical_foot,
+        }
+    )

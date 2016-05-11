@@ -1,0 +1,421 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load static %}
+{% load nbsp %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin: 1.5cm;
+
+            @frame footer_frame { {# static Frame #}
+                -pdf-frame-content: footer_content;
+                top: 795pt;
+            }
+        }
+    </style>
+{% endblock layout_style %}
+
+{% block extra_style %}
+    <style type="text/css">
+        .text_center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .no_bullets {
+            list-style-type: none;
+        }
+    </style>
+{% endblock extra_style %}
+
+{% block content %}
+
+    {# 10 table colspan because real css didn't work #}
+    <table style="margin-bottom: 20px;">
+        <tbody>
+            <tr class="text_center">
+                <td colspan="3">
+                    Century Park Pain and Health Clinic
+                    <br />
+                    2393 - 111 ST NW
+                    <br />
+                    Edmonton, AB &nbsp;T6J 5E5
+                </td>
+                <td colspan="4">
+                    <img src="{% static 'images/harmony_foot_and_ankle_clinics_logo.png' %}" />
+                </td>
+                <td colspan="3">
+                    Refresh Wellness
+                    <br />
+                    94 Athabascan AVE
+                    <br />
+                    Sherwood Park, AB &nbsp; T8A 4E3
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {# 20 table colspan because real css didn't work #}
+    <table>
+        <tbody>
+            <tr>
+                {# must be inline #}
+                <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                    <table style="margin-bottom: 10px;">
+                        <tbody>
+                            <tr style="padding-bottom: 5px;">
+                                <td class="text_center bold">
+                                    Biomechanical Foot Examination Form
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Patient: {{ claim.patient }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    DOB: {{ claim.patient.birth_date }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Exam Date: {{ biomechanical_foot.exam_date }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <tbody>
+                            <tr style="padding-bottom: 5px;">
+                                <td>
+                                    KINECTIC STANCE (GAIT): Record all abnormal variations and asymmetries
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 10px;">
+                                <td>
+                                    <ul style="padding-bottom: 10px;">
+                                        <li>
+                                            Angle of Gait:
+                                            <br />
+                                            Left [{{ biomechanical_foot.get_angle_of_gait_left_display }}] Right [{{ biomechanical_foot.get_angle_of_gait_right_display }}]
+                                            <br />
+                                            Base of Gait: {{ biomechanical_foot.base_of_gait }} centimeters
+                                        </li>
+                                        <li>
+                                            Contact Period: {{ biomechanical_foot.get_contact_period_display }}
+                                        </li>
+                                        <li>
+                                            Midstance Period: {{ biomechanical_foot.get_midstance_period_display }}
+                                        </li>
+                                        <li>
+                                            Propulsive Period: {{ biomechanical_foot.get_propulsive_period_display }}
+                                        </li>
+                                        <li>
+                                            Postural Considerations (limb length/asymmetry):
+                                            <br />
+                                            {{ biomechanical_foot.postural_considerations }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <tbody>
+                            <tr style="padding-bottom: 5px;">
+                                <td>
+                                    STATIC&nbsp;STANCE
+                                </td>
+                                <td class="text_center">
+                                    Left
+                                </td>
+                                <td class="text_center">
+                                    Right
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            Subtalar&nbsp;Joint:
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_subtalar_joint_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_subtalar_joint_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td colspan="3">
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Comments: {{ biomechanical_foot.subtalar_joint_comments }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            Midtarsal&nbsp;Joint:
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_midtarsal_joint_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_midtarsal_joint_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td colspan="3">
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Comments: {{ biomechanical_foot.midtarsal_joint_comments }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            Ankle Joint:
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td colspan="2" class="text_center">
+                                    (min 10&deg; dorsiflexion)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Knee&nbsp;Extended
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_ankle_joint_knee_extended_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_ankle_joint_knee_extended_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Knee&nbsp;Flexed
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_ankle_joint_knee_flexed_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_ankle_joint_knee_flexed_right_display }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            First Ray:
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_first_ray_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_first_ray_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td colspan="3">
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Comments: {{ biomechanical_foot.first_ray_comments }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                {# must be inline #}
+                <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                    <table>
+                        <tbody>
+                            <tr class="text_center" style="padding-bottom: 5px;">
+                                <td></td>
+                                <td>
+                                    Left
+                                </td>
+                                <td>
+                                    Right
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            First&nbsp;MTP&nbsp;Joint:
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            1<sup>st</sup>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_first_mtp_joint_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_first_mtp_joint_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td colspan="3">
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Comments: {{ biomechanical_foot.first_mtp_joint_comments }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            Lesser&nbsp;MTP&nbsp;Joints:
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            2<sup>nd</sup>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_2_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_2_right_display }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            3<sup>rd</sup>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_3_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_3_right_display }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            4<sup>th</sup>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_4_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_4_right_display }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li class="no_bullets">
+                                            5<sup>th</sup>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_5_left_display }}
+                                </td>
+                                <td class="text_center">
+                                    {{ biomechanical_foot.get_lesser_mtp_joints_5_right_display }}
+                                </td>
+                            </tr>
+                            <tr style="padding-bottom: 5px;">
+                                <td colspan="3">
+                                    <ul>
+                                        <li class="no_bullets">
+                                            Comments: {{ biomechanical_foot.lesser_mtp_joints_comments }}
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        Diagnostic Impressions:
+                    </p>
+                    <p style="padding-left: 20px; padding-bottom: 20px;">
+                        {{ claim.insuranceletter.diagnosis }}
+                    </p>
+                    <p>
+                        Treatment Recommendations:
+                    </p>
+                    <p style="padding-left: 20px; padding-bottom: 20px;">
+                        {{ biomechanical_foot.treatment_recommendations|nbsp|linebreaksbr }}
+                    </p>
+                    <p style="padding-bottom: 20px;">
+                        Clinician:
+                    </p>
+                    <p>
+                        Signature: _________________________________
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="footer_content" style="text-align: center;">
+        <table>
+            <tbody>
+                <tr class="text_center">
+                    <td>
+                        Appointments: 1-780-628-1518
+                    </td>
+                    <td>
+                        Fax: 1-855-635-3586
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock content %}
