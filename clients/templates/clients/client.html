@@ -48,7 +48,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_information" data-toggle="collapse" data-target="#information">
+                <a href="#toggle_information" data-toggle="collapse" data-target="#information">
                     Information
                     <span class="caret"></span>
                 </a>
@@ -264,7 +264,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_notes" data-toggle="collapse" data-target="#notes">
+                <a href="#toggle_notes" data-toggle="collapse" data-target="#notes">
                     Notes
                     <span class="caret"></span>
                 </a>
@@ -336,7 +336,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_referrals" data-toggle="collapse" data-target="#referrals">
+                <a href="#toggle_referrals" data-toggle="collapse" data-target="#referrals">
                     Referrals
                     <span class="caret"></span>
                 </a>
@@ -445,7 +445,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_dependents" data-toggle="collapse" data-target="#dependents">
+                <a href="#toggle_dependents" data-toggle="collapse" data-target="#dependents">
                     Dependents
                     <span class="caret"></span>
                 </a>
@@ -641,7 +641,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_insurances" data-toggle="collapse" data-target="#insurances">
+                <a href="#toggle_insurances" data-toggle="collapse" data-target="#insurances">
                     Insurances
                     <span class="caret"></span>
                 </a>
@@ -662,7 +662,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_biomechanical_gaits" data-toggle="collapse" data-target="#biomechanical_gaits">
+                <a href="#toggle_biomechanical_gaits" data-toggle="collapse" data-target="#biomechanical_gaits">
                     Biomechanical Gait Examination Forms
                     <span class="caret"></span>
                 </a>
@@ -687,7 +687,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_claims" data-toggle="collapse" data-target="#claims">
+                <a href="#toggle_claims" data-toggle="collapse" data-target="#claims">
                     Claims
                     <span class="caret"></span>
                 </a>
@@ -774,7 +774,7 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
-                <a href="#collapse_orders" data-toggle="collapse" data-target="#orders">
+                <a href="#toggle_orders" data-toggle="collapse" data-target="#orders">
                     Orders
                     <span class="caret"></span>
                 </a>
@@ -823,8 +823,8 @@
 
 {% block extra_scripts %}
     <script type="text/javascript">
-        {% if 'expand' in request.GET %}
-            var id = '#' + '{{ request.GET.expand }}';
+        {% if 'toggle' in request.GET %}
+            var id = '#' + '{{ request.GET.toggle }}';
             $(id).collapse('show');
         {% else %}
             var id = '';

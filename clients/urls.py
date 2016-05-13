@@ -7,7 +7,7 @@ from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
     CreateInsuranceView
 from clients.views.client import CreateClientView, DeleteClientView
 from clients.views.coverage_type import UpdateCoverageView, \
-    DeleteCoverageView, CreateCoverageView
+    DeleteCoverageView
 from clients.views.claim import DeleteClaimView, \
     UpdateInvoiceView, CreateInvoiceView, UpdateInsuranceLetterView, \
     CreateInsuranceLetterView, \
@@ -83,9 +83,6 @@ coverage_type_patterns = patterns(
     url(r'^delete/(?P<coverage_type_id>\w+)/$',
         login_required(DeleteCoverageView.as_view()),
         name='coverage_type_delete'),
-    url(r'^create/(?P<insurance_id>\w+)/$',
-        login_required(CreateCoverageView.as_view()),
-        name='coverage_type_create'),
 )
 
 biomechanical_gait_patterns = [

@@ -29,7 +29,7 @@ class BiomechanicalGaitCreate(generic.CreateView):
 
         context['save_text'] = 'create'
         context['model_name'] = self.model._meta.verbose_name
-        context['cancel_url'] = '{}?expand=biomechanical_gaits'.format(
+        context['cancel_url'] = '{}?toggle=biomechanical_gaits'.format(
             urlresolvers.reverse(
                 'client', kwargs={'client_id': self.kwargs['client_pk']}
             )
@@ -74,7 +74,7 @@ class BiomechanicalGaitDelete(views_utils.PermissionMixin, generic.DeleteView):
         return context
 
     def get_success_url(self):
-        url = '{}?expand=biomechanical_gaits'.format(
+        url = '{}?toggle=biomechanical_gaits'.format(
             urlresolvers.reverse(
                 'client',
                 kwargs={'client_id': self.object.patient.get_client().pk}

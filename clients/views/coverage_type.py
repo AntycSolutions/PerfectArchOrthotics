@@ -1,10 +1,9 @@
-from django.http import HttpResponseRedirect
 from django.core import urlresolvers
-from django.views.generic.edit import UpdateView, DeleteView, CreateView
+from django.views.generic.edit import UpdateView, DeleteView
 
 from utils import views_utils
 
-from clients.models import Coverage, Insurance
+from clients.models import Coverage
 from clients.forms.forms import CoverageForm
 
 
@@ -51,27 +50,6 @@ class DeleteCoverageView(views_utils.PermissionMixin, DeleteView):
         client_id = self.object.insurance.client.id
         self.success_url = urlresolvers.reverse_lazy(
             'client', kwargs={'client_id': client_id}
-        )
-
-        return self.success_url
-
-
-class CreateCoverageView(CreateView):
-    template_name = 'clients/coverage_type/create_coverage.html'
-    model = Coverage
-    form_class = CoverageForm
-
-    def form_valid(self, form):
-        saved = form.save(commit=False)
-        insurance = Insurance.objects.get(id=self.kwargs['insurance_id'])
-        saved.insurance = insurance
-        saved.save()
-
-        return HttpResponseRedirect(self.get_success_url(insurance))
-
-    def get_success_url(self, insurance):
-        self.success_url = urlresolvers.reverse_lazy(
-            'insurance_update', kwargs={'insurance_id': insurance.id}
         )
 
         return self.success_url

@@ -207,7 +207,7 @@ class Dependent(Person):
         "Relationship", max_length=4, choices=RELATIONSHIPS)
 
     def get_absolute_url(self):
-        url = '{}?expand=dependents#dependent_{}'.format(
+        url = '{}?toggle=dependents#dependent_{}'.format(
             urlresolvers.reverse(
                 'client', kwargs={'client_id': self.client_id}
             ),
@@ -251,7 +251,7 @@ class Insurance(models.Model):
     # Coverage
 
     def get_absolute_url(self):
-        url = '{}?expand=insurances#insurance_{}'.format(
+        url = '{}?toggle=insurances#insurance_{}'.format(
             urlresolvers.reverse(
                 'client',
                 kwargs={'client_id': self.main_claimant.get_client().pk}
@@ -1476,7 +1476,7 @@ class BiomechanicalGait(models.Model, model_utils.FieldList):
     signature_date = models.DateField(blank=True, null=True)
 
     def get_absolute_url(self):
-        url = '{}?expand=biomechanical_gaits#biomechanical_gait_{}'.format(
+        url = '{}?toggle=biomechanical_gaits#biomechanical_gait_{}'.format(
             urlresolvers.reverse(
                 'client', kwargs={'client_id': self.patient.get_client().pk}
             ),
