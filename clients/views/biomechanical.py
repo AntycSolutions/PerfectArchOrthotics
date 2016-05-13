@@ -1,3 +1,5 @@
+import json
+
 from django import http
 from django import template
 from django import shortcuts
@@ -35,6 +37,24 @@ class BiomechanicalGaitCreate(generic.CreateView):
             )
         )
 
+        try:
+            # PostgreSQL
+            providers = list(
+                clients_models.Insurance.objects.all().distinct(
+                    'provider'
+                ).values_list(
+                    'provider', flat=True
+                )
+            )
+        except NotImplementedError:
+            # SQLite
+            providers = list(set(
+                clients_models.Insurance.objects.all().values_list(
+                    'provider', flat=True
+                )
+            ))
+        context['provider_choices'] = json.dumps(providers)
+
         return context
 
 
@@ -49,6 +69,26 @@ class BiomechanicalGaitUpdate(generic.UpdateView):
         context['save_text'] = 'update'
         context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = self.object.get_absolute_url()
+
+        try:
+            # PostgreSQL
+            providers = list(
+                clients_models.Insurance.objects.all().distinct(
+                    'provider'
+                ).values_list(
+                    'provider', flat=True
+                )
+            )
+        except NotImplementedError:
+            # SQLite
+            providers = list(set(
+                clients_models.Insurance.objects.all().values_list(
+                    'provider', flat=True
+                )
+            ))
+        context['provider_choices'] = json.dumps(providers)
+
+        return context
 
         return context
 
