@@ -121,22 +121,29 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="col-lg-4">
-                    <div class="form-group{% if form.signature_date.errors %} has-error{% endif %}">
-                        <label class="control-label" for="{{ form.signature_date.auto_id }}">
-                            {{ form.signature_date.label }}{% if form.signature_date.field.required %}*{% endif %}
-                        </label>
-                        {{ form.signature_date|update_attrs:"class: form-control datepicker" }}
-                        {% if form.signature_date.help_text %}
-                            <span class="help-block">
-                                {{ form.signature_date.help_text }}
-                            </span>
-                        {% endif %}
-                        {% if form.signature_date.errors %}
-                            <span class="help-block">
-                                {{ form.signature_date.errors }}
-                            </span>
-                        {% endif %}
+                <div class="row">
+                    <div class="col-lg-4">
+                        {{ form.provider|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group{% if form.signature_date.errors %} has-error{% endif %}">
+                            <label class="control-label" for="{{ form.signature_date.auto_id }}">
+                                {{ form.signature_date.label }}{% if form.signature_date.field.required %}*{% endif %}
+                            </label>
+                            {{ form.signature_date|update_attrs:"class: form-control datepicker" }}
+                            {% if form.signature_date.help_text %}
+                                <span class="help-block">
+                                    {{ form.signature_date.help_text }}
+                                </span>
+                            {% endif %}
+                            {% if form.signature_date.errors %}
+                                <span class="help-block">
+                                    {{ form.signature_date.errors }}
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </fieldset>

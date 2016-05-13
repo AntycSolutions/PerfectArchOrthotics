@@ -90,7 +90,7 @@ coverage_type_patterns = patterns(
 
 biomechanical_gait_patterns = [
     urls.url(
-        r'^create/(?P<claim_pk>\w+)/$',
+        r'^create/(?P<client_pk>\w+)/$',
         login_required(biomechanical.BiomechanicalGaitCreate.as_view()),
         name='biomechanical_gait_create'
     ),
@@ -100,12 +100,12 @@ biomechanical_gait_patterns = [
         name='biomechanical_gait_update'
     ),
     urls.url(
-        r'^fill_out/(?P<claim_pk>\w+)/$',
-        login_required(biomechanical.biomechanical_gait_fill_out),
-        name='biomechanical_gait_fill_out'
+        r'^delete/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalGaitDelete.as_view()),
+        name='biomechanical_gait_delete'
     ),
     urls.url(
-        r'^pdf/(?P<claim_pk>\w+)/$',
+        r'^pdf/(?P<pk>\w+)/$',
         login_required(biomechanical.biomechanical_gait_pdf),
         name='biomechanical_gait_pdf'
     ),
@@ -189,7 +189,6 @@ claim_patterns = patterns(
     url(r'^receipt/list/(?P<claim_pk>\w+)/$',
         login_required(receipt.ReceiptList.as_view()),
         name='receipt_list'),
-    url(r'^biomechanical/', include(biomechanical_patterns)),
     url(
         r'^wizard/create/(?P<client_id>\w+)/(?P<step>.+)/$',
         create_claim_wizard,
@@ -259,6 +258,7 @@ urlpatterns = patterns(
     url(r'^claim/(?P<claim_id>\w+)/fill_out_proof_of_manufacturing/$',
         login_required(views.fillOutProofOfManufacturingView),
         name='fillOutProof'),
+    url(r'^biomechanical/', include(biomechanical_patterns)),
     url(r'^insurance/', include(insurance_patterns)),
     url(r'^coverage_type/', include(coverage_type_patterns)),
     url(r'^item/', include(item_patterns)),

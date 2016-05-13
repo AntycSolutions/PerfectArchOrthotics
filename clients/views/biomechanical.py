@@ -5,6 +5,8 @@ from django.views import generic
 from django.conf import settings
 from django.core import urlresolvers
 
+from utils import views_utils
+
 from clients import models as clients_models
 from clients.views import views as clients_views
 from clients.forms import claim_forms
@@ -15,23 +17,25 @@ class BiomechanicalGaitCreate(generic.CreateView):
     template_name = 'clients/claim/biomechanical_gait.html'
     form_class = claim_forms.BiomechanicalGaitModelForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs['client_pk'] = self.kwargs['client_pk']
+
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['save_text'] = 'create'
         context['model_name'] = self.model._meta.verbose_name
-        context['cancel_url'] = urlresolvers.reverse(
-            'claim', kwargs={'claim_id': self.kwargs['claim_pk']}
+        context['cancel_url'] = '{}?expand=biomechanical_gaits'.format(
+            urlresolvers.reverse(
+                'client', kwargs={'client_id': self.kwargs['client_pk']}
+            )
         )
 
         return context
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.claim_id = self.kwargs['claim_pk']
-        self.object.save()
-
-        return http.HttpResponseRedirect(self.get_success_url())
 
 
 class BiomechanicalGaitUpdate(generic.UpdateView):
@@ -49,42 +53,48 @@ class BiomechanicalGaitUpdate(generic.UpdateView):
         return context
 
 
-def _biomechanical_gait(claim_pk):
-    claim = clients_models.Claim.objects.select_related(
-        'patient', 'biomechanicalgait'
-    ).get(pk=claim_pk)
-    try:
-        biomechanical_gait = claim.biomechanicalgait
-    except clients_models.BiomechanicalGait.DoesNotExist:
-        biomechanical_gait = None
+class BiomechanicalGaitDelete(views_utils.PermissionMixin, generic.DeleteView):
+    model = clients_models.BiomechanicalGait
+    template_name = 'utils/generics/delete.html'
 
-    return claim, biomechanical_gait
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.delete_biomechanicalgait',
+            'redirect': self.get_object().get_absolute_url(),
+        }
+
+        return permissions
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['model_name'] = self.model._meta.verbose_name
+        context['cancel_url'] = self.object.get_absolute_url()
+
+        return context
+
+    def get_success_url(self):
+        url = '{}?expand=biomechanical_gaits'.format(
+            urlresolvers.reverse(
+                'client',
+                kwargs={'client_id': self.object.patient.get_client().pk}
+            )
+        )
+
+        return url
 
 
-def biomechanical_gait_fill_out(request, claim_pk):
-    context = template.RequestContext(request)
-
-    claim, biomechanical_gait = _biomechanical_gait(claim_pk)
-
-    return shortcuts.render_to_response(
-        'clients/make_biomechanical_gait.html',
-        {
-            'claim': claim,
-            'biomechanical_gait': biomechanical_gait,
-        },
-        context
-    )
-
-
-def biomechanical_gait_pdf(request, claim_pk):
-    claim, biomechanical_gait = _biomechanical_gait(claim_pk)
+def biomechanical_gait_pdf(request, pk):
+    biomechanical_gait = \
+        clients_models.BiomechanicalGait.objects.select_related(
+            'patient',
+        ).get(pk=pk)
 
     # return shortcuts.render(
     #     request,
     #     'clients/pdfs/biomechanical_gait.html',
     #     {
     #         'title': "Bio-mechanical/Gait Examination",
-    #         'claim': claim,
     #         'biomechanical_gait': biomechanical_gait,
     #         'address': settings.BILL_TO[0][1],
     #         'email': settings.DANNY_EMAIL,
@@ -95,7 +105,6 @@ def biomechanical_gait_pdf(request, claim_pk):
         'clients/pdfs/biomechanical_gait.html',
         {
             'title': "Bio-mechanical/Gait Examination",
-            'claim': claim,
             'biomechanical_gait': biomechanical_gait,
             'address': settings.BILL_TO[0][1],
             'email': settings.DANNY_EMAIL,

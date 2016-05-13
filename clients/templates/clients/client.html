@@ -662,6 +662,31 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
+                <a href="#collapse_biomechanical_gaits" data-toggle="collapse" data-target="#biomechanical_gaits">
+                    Biomechanical Gait Examination Forms
+                    <span class="caret"></span>
+                </a>
+            </div>
+            <div class="btn-group pull-right">
+                <a href="{% url 'biomechanical_gait_create' client.pk %}" class="btn btn-default">
+                    Add Biomechanical Gait
+                </a>
+            </div>
+        </div>
+        <div id="biomechanical_gaits" class="panel-body collapse">
+            {% if client.biomechanicalgait_set.exists %}
+                {% include 'clients/snippets/biomechanical_gaits.html' %}
+            {% else %}
+                <p>
+                    There are no Biomechanical Gaits for this Client currently.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left" style="padding-top: 7.5px;">
                 <a href="#collapse_claims" data-toggle="collapse" data-target="#claims">
                     Claims
                     <span class="caret"></span>
@@ -798,14 +823,17 @@
 
 {% block extra_scripts %}
     <script type="text/javascript">
-        if (window.location.hash) {
-            var hash = window.location.hash;
-            if (hash.indexOf('insurance') > -1) {
-                $('#insurances').collapse('show');
-            }
-            else if (hash.indexOf('dependent') > -1) {
-                $('#dependents').collapse('show');
-            }
+        {% if 'expand' in request.GET %}
+            var id = '#' + '{{ request.GET.expand }}';
+            $(id).collapse('show');
+        {% else %}
+            var id = '';
+        {% endif %}
+        if (location.hash) {
+            location.hash = location.hash; {# go to location on refresh #}
+        }
+        else if (id) {
+            location.hash = id;
         }
     </script>
 {% endblock extra_scripts %}

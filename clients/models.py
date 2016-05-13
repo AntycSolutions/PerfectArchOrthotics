@@ -207,12 +207,14 @@ class Dependent(Person):
         "Relationship", max_length=4, choices=RELATIONSHIPS)
 
     def get_absolute_url(self):
-        return "{0}#dependent_{1}".format(
-            urlresolvers.reverse_lazy(
-                'client', kwargs={'client_id': self.client.id}
+        url = '{}?expand=dependents#dependent_{}'.format(
+            urlresolvers.reverse(
+                'client', kwargs={'client_id': self.client_id}
             ),
-            self.id
+            self.pk
         )
+
+        return url
 
     def __str__(self):
         return self.full_name()
@@ -249,13 +251,15 @@ class Insurance(models.Model):
     # Coverage
 
     def get_absolute_url(self):
-        return "{0}#insurance_{1}".format(
-            urlresolvers.reverse_lazy(
+        url = '{}?expand=insurances#insurance_{}'.format(
+            urlresolvers.reverse(
                 'client',
-                kwargs={'client_id': self.main_claimant.get_client().id}
+                kwargs={'client_id': self.main_claimant.get_client().pk}
             ),
-            self.id
+            self.pk
         )
+
+        return url
 
     def __unicode__(self):
         return "{} - Person ID: {}".format(
@@ -1152,7 +1156,9 @@ class ProofOfManufacturing(models.Model):
 
 
 class BiomechanicalGait(models.Model, model_utils.FieldList):
-    claim = models.OneToOneField(Claim)
+    patient = models.ForeignKey(Person)
+
+    provider = models.CharField(max_length=128)
 
     # Examination Findings
     arch_height_non_weight_high_left = models.BooleanField(default=False)
@@ -1470,12 +1476,17 @@ class BiomechanicalGait(models.Model, model_utils.FieldList):
     signature_date = models.DateField(blank=True, null=True)
 
     def get_absolute_url(self):
-        return urlresolvers.reverse_lazy(
-            'biomechanical_gait_fill_out', kwargs={'claim_pk': self.claim.pk}
+        url = '{}?expand=biomechanical_gaits#biomechanical_gait_{}'.format(
+            urlresolvers.reverse(
+                'client', kwargs={'client_id': self.patient.get_client().pk}
+            ),
+            self.pk
         )
 
+        return url
+
     def __str__(self):
-        return "Claim ID: {}".format(self.claim_id)
+        return "{} - Patient ID: {}".format(self.provider, self.patient_id)
 
 
 class BiomechanicalFoot(models.Model, model_utils.FieldList):

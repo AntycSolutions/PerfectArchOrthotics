@@ -1,9 +1,9 @@
 <style>
-    .crud:not(:last-child) {
+    .ins_crud:not(:last-child) {
         width: 75px;
         margin-bottom: 5px;
     }
-    .crud:last-child {
+    .ins_crud:last-child {
         width: 75px;
     }
 </style>
@@ -26,16 +26,16 @@
                     <td style="width: 91px;"><!-- from computed when width < 91 -->
                         <a class="anchor" id="insurance_{{ insurance.id }}"></a>
                         {% if not disable_view %}
-                            <a class="btn btn-info crud" href="{{ insurance.get_absolute_url }}">
+                            <a class="btn btn-info ins_crud" href="{{ insurance.get_absolute_url }}">
                                 View
                             </a>
                             <br />
                         {% endif %}
-                        <a href="{% url 'insurance_update' insurance.id %}" class="btn btn-default crud">
+                        <a href="{% url 'insurance_update' insurance.id %}" class="btn btn-default ins_crud">
                             Update
                         </a>
                         <br />
-                        <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-danger crud">
+                        <a href="{% url 'insurance_delete' insurance.id %}" class="btn btn-danger ins_crud">
                             Delete
                         </a>
                     </td>

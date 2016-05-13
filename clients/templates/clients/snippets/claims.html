@@ -1,10 +1,10 @@
 
 <style type="text/css">
-    .crud:not(:last-child) {
+    .claim_crud:not(:last-child) {
         width: 75px;
         margin-bottom: 5px;
     }
-    .crud:last-child {
+    .claim_crud:last-child {
         width: 75px;
     }
 </style>
@@ -52,15 +52,15 @@
             {% for claim in claims %}
                 <tr>
                     <td style="width: 91px;">{# from computed when width < 91 #}
-                        <a class="btn btn-info crud" href="{% url 'claim' claim.id %}">
+                        <a class="btn btn-info claim_crud" href="{% url 'claim' claim.id %}">
                             View
                         </a>
                         <br />
-                        <a class="btn btn-default crud" href="{% url 'claim_update' claim.id %}?reset">
+                        <a class="btn btn-default claim_crud" href="{% url 'claim_update' claim.id %}?reset">
                             Update
                         </a>
                         <br />
-                        <a class="btn btn-danger crud" href="{% url 'claim_delete' claim.id %}">
+                        <a class="btn btn-danger claim_crud" href="{% url 'claim_delete' claim.id %}">
                             Delete
                         </a>
                     </td>
