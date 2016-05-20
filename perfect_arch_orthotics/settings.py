@@ -62,6 +62,7 @@ THIRD_PARTY_MIDDLEWARE = (
 )
 LOCAL_MIDDLEWARE = (
     'middleware.active_users.ActiveUserMiddleware',
+    'utils.middleware.exception.ExceptionUserInfoMiddleware',
 )
 MIDDLEWARE_CLASSES = (
     DJANGO_MIDDLEWARE + THIRD_PARTY_MIDDLEWARE + LOCAL_MIDDLEWARE
