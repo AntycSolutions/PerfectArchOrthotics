@@ -11,6 +11,10 @@ def index(request):
     return render_to_response('index.html', context)
 
 
+def raise_exception(request):
+    raise Exception('Intentional error: raise_exception')
+
+
 # TODO: not sure where to put this
 class LogEntryAdmin(admin.ModelAdmin):
     readonly_fields = ['timestamp']

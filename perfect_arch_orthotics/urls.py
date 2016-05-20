@@ -28,12 +28,13 @@ urlpatterns = patterns(
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
         name='get_thumbnail'),
-    url(r'^404/',
+    url(r'^404/$',
         base.TemplateView.as_view(template_name='404.html'),
         name='404'),
-    url(r'^500/',
+    url(r'^500/$',
         base.TemplateView.as_view(template_name='500.html'),
-        name='500')
+        name='500'),
+    url(r'^raise_exception/$', views.raise_exception, name='raise_exception')
 )
 
 if settings.DEBUG:
