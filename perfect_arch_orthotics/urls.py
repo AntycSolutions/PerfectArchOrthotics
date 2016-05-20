@@ -34,7 +34,9 @@ urlpatterns = patterns(
     url(r'^500/$',
         base.TemplateView.as_view(template_name='500.html'),
         name='500'),
-    url(r'^raise_exception/$', views.raise_exception, name='raise_exception')
+    url(r'^raise_exception/$',
+        utils_views.raise_exception,
+        name='raise_exception')
 )
 
 if settings.DEBUG:
