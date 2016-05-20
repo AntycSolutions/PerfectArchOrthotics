@@ -90,8 +90,6 @@ class BiomechanicalGaitUpdate(generic.UpdateView):
 
         return context
 
-        return context
-
 
 class BiomechanicalGaitDelete(views_utils.PermissionMixin, generic.DeleteView):
     model = clients_models.BiomechanicalGait
