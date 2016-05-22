@@ -682,6 +682,13 @@ def clientView(request, client_id):
         shoe_order_cost + coverage_order_cost
     )
 
+    biomechanical_gaits = \
+        clients_models.BiomechanicalGait.objects.select_related(
+            'patient'
+        ).filter(
+            patient_id__in=person_pk_list
+        )
+
     # Forms
     if request.method == 'GET':
         try:
@@ -730,6 +737,7 @@ def clientView(request, client_id):
         'referral_form': referral_form,
         'note_form': note_form,
         'now': timezone.now(),
+        'biomechanical_gaits': biomechanical_gaits,
     }
 
     return render_to_response('clients/client.html', context_dict, context)

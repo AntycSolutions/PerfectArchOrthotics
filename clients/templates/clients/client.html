@@ -674,7 +674,7 @@
             </div>
         </div>
         <div id="biomechanical_gaits" class="panel-body collapse">
-            {% if client.biomechanicalgait_set.exists %}
+            {% if biomechanical_gaits %}
                 {% include 'clients/snippets/biomechanical_gaits.html' %}
             {% else %}
                 <p>
