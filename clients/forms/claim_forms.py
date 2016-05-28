@@ -18,9 +18,11 @@ class ClaimForm(forms.ModelForm):
         input_formats=['%Y-%m-%d %I:%M %p'],
         widget=bs3_widgets.DateTimePicker(
             options={"format": "YYYY-MM-DD hh:mm a"},
-            attrs={"class": "form-control",
-                   # am/pm -> AM/PM
-                   "style": "text-transform: uppercase; float: none;"},
+            attrs={
+                "class": "form-control",
+                # am/pm -> AM/PM
+                "style": "text-transform: uppercase; float: none;"
+            },
         )
     )
     claim_package = utils_fields.MultiFileField(

@@ -65,10 +65,10 @@
             <table>
                 <tr>
                     <td>
-                        {% now 'm/d/y' %}
+                        {{ receipt.datetime|date:'m/d/y' }}
                     </td>
                     <td style="text-align: right;">
-                        {% now 'H:i:s' %}
+                        {{ receipt.datetime|time:'H:i:s' }}
                     </td>
                 </tr>
             </table>

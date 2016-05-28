@@ -1798,6 +1798,9 @@ class Receipt(models.Model, model_utils.FieldList):
     TID = models.CharField(max_length=22)
     REF = models.CharField(max_length=8)
     batch = models.CharField(max_length=3)
+
+    datetime = models.DateTimeField()
+
     RRN = models.CharField(max_length=12, blank=True)
     APPR = models.CharField(max_length=6)
     trace = models.CharField(max_length=1)
@@ -1853,6 +1856,7 @@ auditlog.register(Invoice)
 auditlog.register(InsuranceLetter)
 auditlog.register(ProofOfManufacturing)
 auditlog.register(BiomechanicalGait)
+auditlog.register(BiomechanicalFoot)
 auditlog.register(Laboratory)
 auditlog.register(Referral)
 auditlog.register(Receipt)

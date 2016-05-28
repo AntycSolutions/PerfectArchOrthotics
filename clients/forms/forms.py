@@ -2,6 +2,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.template import defaultfilters
 
+from bootstrap3_datetime import widgets as bs3_widgets
 from crispy_forms import helper, layout, bootstrap
 
 from clients.models import Client, Dependent, Coverage, \
@@ -136,6 +137,18 @@ class ReferralForm(forms.ModelForm):
 
 
 class ReceiptForm(forms.ModelForm):
+    datetime = forms.DateTimeField(
+        label="Submitted Datetime",
+        input_formats=['%Y-%m-%d %I:%M %p'],
+        widget=bs3_widgets.DateTimePicker(
+            options={"format": "YYYY-MM-DD hh:mm a"},
+            attrs={
+                "class": "form-control",
+                # am/pm -> AM/PM
+                "style": "text-transform: uppercase; float: none;"
+            },
+        )
+    )
 
     class Meta:
         model = clients_models.Receipt
