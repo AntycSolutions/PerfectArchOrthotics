@@ -138,7 +138,6 @@ class ReferralForm(forms.ModelForm):
 
 class ReceiptForm(forms.ModelForm):
     datetime = forms.DateTimeField(
-        label="Submitted Datetime",
         input_formats=['%Y-%m-%d %I:%M %p'],
         widget=bs3_widgets.DateTimePicker(
             options={"format": "YYYY-MM-DD hh:mm a"},
