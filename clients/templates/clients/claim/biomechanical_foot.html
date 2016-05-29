@@ -4,10 +4,13 @@
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
 
-{% block extra_head %}
-    {% now 'Y' as current_year %}
-    <script type="text/javascript">
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
         var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
         $(document).ready(function() {
             $(".datepicker").datepicker({
                 changeMonth: true,
@@ -15,7 +18,11 @@
                 yearRange: year_range,
             });
         });
-    </script>
+    {% endblock %}
+</script>
+
+{% block styles %}
+    {{ block.super }}
 
     <style type="text/css">
         .text_center {
@@ -43,7 +50,7 @@
             margin-bottom: 0;
         }
     </style>
-{% endblock %}
+{% endblock styles %}
 
 {% block content %}
 

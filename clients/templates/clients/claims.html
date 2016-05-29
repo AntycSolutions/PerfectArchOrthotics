@@ -2,30 +2,22 @@
 
 {% block title %} - Claims{% endblock %}
 
-{% block extra_head %}
-    {% now 'Y' as current_year %}
-    <script type="text/javascript">
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
         var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
-        $(function() {
-            $("#actual_paid_date_from").datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: year_range});
-            $("#actual_paid_date_to").datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: year_range});
-            $("#submitted_date_from").datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: year_range});
-            $("#submitted_date_to").datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: year_range});
+
+        $(document).ready(function() {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
         });
-    </script>
-{% endblock extra_head %}
+    {% endblock %}
+</script>
 
 {% block content %}
 
@@ -38,16 +30,16 @@
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}" autofocus />
         </div>
         <div class="form-group">
-            <input type="text" id="actual_paid_date_from" class="form-control search-query" name="apdf" placeholder="Actual Paid Date From" value="{{ apdf }}">
+            <input type="text" class="form-control search-query datepicker" name="apdf" placeholder="Actual Paid Date From" value="{{ apdf }}">
         </div>
         <div class="form-group">
-            <input type="text" id="actual_paid_date_to" class="form-control search-query" name="apdt" placeholder="Actual Paid Date To" value="{{ apdt }}">
+            <input type="text" class="form-control search-query datepicker" name="apdt" placeholder="Actual Paid Date To" value="{{ apdt }}">
         </div>
         <div class="form-group">
-            <input type="text" id="submitted_date_from" class="form-control search-query" name="sdf" placeholder="Submitted Date From" value="{{ sdf }}">
+            <input type="text" class="form-control search-query datepicker" name="sdf" placeholder="Submitted Date From" value="{{ sdf }}">
         </div>
         <div class="form-group">
-            <input type="text" id="submitted_date_to" class="form-control search-query" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
+            <input type="text" class="form-control search-query datepicker" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
         </div>
         {% for name, select in selects.items %}
             <div class="form-group">

@@ -5,19 +5,23 @@
 
 {% block title %} - Update Insurance Letter{% endblock %}
 
-{% block extra_head %}
-    {% now 'Y' as current_year %}
-    <script type="text/javascript">
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+
+        {% now 'Y' as current_year %}
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
         $(document).ready(function() {
-            var datepicker_options = {
+            $(".datepicker").datepicker({
                 changeMonth: true,
                 changeYear: true,
-                yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}",
-            };
-            $(".datepicker").datepicker(datepicker_options);
+                yearRange: year_range,
+            });
         });
-    </script>
-{% endblock %}
+    {% endblock %}
+</script>
 
 {% block content %}
 

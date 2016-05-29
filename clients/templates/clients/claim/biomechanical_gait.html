@@ -7,142 +7,59 @@
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
 
-{% block extra_head %}
-    {% now 'Y' as current_year %}
-    <script type="text/javascript">
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        biomechanical_gait_css: "{% static 'clients/css/biomechanical_gait.css' %}",
+
+        typeahead_css: "{% static 'utils/css/typeahead.css' %}",
+
+        'jQuery.fn.typeahead': [
+            '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.min.js',
+            "{% static 'utils/js/typeahead.jquery.min.js' %}"
+        ],
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        'jQuery.fn.typeahead': ['jQuery'],
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
         var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
+        var providers = {{ provider_choices|safe }};
+
         $(document).ready(function() {
             $(".datepicker").datepicker({
                 changeMonth: true,
                 changeYear: true,
                 yearRange: year_range,
             });
+
+            $('#id_provider').typeahead(
+                {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+                },
+                {
+                    name: 'provider',
+                    source: startstringMatcher(providers),
+                }
+            );
         });
-    </script>
-
-    <style type="text/css">
-        table {
-            width: 100%;
-        }
-
-        .table_header {
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background-color: #f5f5f5;
-        }
-
-        .right_border {
-            border-right: 1px solid black;
-        }
-        .bottom_border {
-            border-bottom: 1px solid black;
-        }
-        .left_border {
-            border-left: 1px solid black;
-        }
-        .text_center {
-            text-align: center;
-        }
-
-        .top_valign {
-            vertical-align: top;
-        }
-        .bottom_valign {
-            vertical-align: bottom;
-        }
-
-        td, th {
-            padding-left: 3px;
-            padding-right: 3px;
-        }
-
-        .form-horizontal .form-group {
-            margin-left: 0;
-            margin-right: 0;
-        }
-    </style>
-
-    <style type="text/css">
-        .typeahead,
-        .tt-query,
-        .tt-hint {
-            width: 396px;
-            height: 30px;
-            padding: 8px 12px;
-            font-size: 24px;
-            line-height: 30px;
-            border: 2px solid #ccc;
-            -webkit-border-radius: 8px;
-            -moz-border-radius: 8px;
-            border-radius: 8px;
-            outline: none;
-            display: none;
-        }
-
-        .typeahead {
-            background-color: #fff;
-        }
-
-        .typeahead:focus {
-            border: 2px solid #0097cf;
-        }
-
-        .tt-query {
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-            -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-        }
-
-        .tt-hint {
-            color: #999
-        }
-
-        .tt-menu {
-            width: 422px;
-            margin: 12px 0;
-            padding: 8px 0;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            -webkit-border-radius: 8px;
-            -moz-border-radius: 8px;
-            border-radius: 8px;
-            -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-            -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-            box-shadow: 0 5px 10px rgba(0,0,0,.2);
-        }
-
-        .tt-suggestion {
-            padding: 3px 20px;
-            font-size: 18px;
-            line-height: 24px;
-        }
-
-        .tt-suggestion:hover {
-            cursor: pointer;
-            color: #fff;
-            background-color: #0097cf;
-        }
-
-        .tt-suggestion.tt-cursor {
-            color: #fff;
-            background-color: #0097cf;
-
-        }
-
-        .tt-suggestion p {
-            margin: 0;
-        }
-
-        .twitter-typeahead {
-            {% comment %}
-                typeahead surrounds the input in a span with this class,
-                which has a inline css "display: inline-block;"
-            {% endcomment %}
-            width: 100%;
-        }
-    </style>
-{% endblock %}
+    {% endblock %}
+</script>
 
 {% block content %}
 
@@ -247,8 +164,9 @@
 
 {% endblock %}
 
-{% block extra_scripts %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.min.js" type="text/javascript"></script>
+{% block body_scripts %}
+    {{ block.super }}
+
     <script type="text/javascript">
         var startstringMatcher = function(strs) {
             return function findMatches(q, cb) {
@@ -271,21 +189,5 @@
                 cb(matches);
             };
         };
-
-        var providers = {{ provider_choices|safe }};
-
-        $(document).ready(function() {
-            $('#id_provider').typeahead(
-                {
-                    hint: true,
-                    highlight: true,
-                    minLength: 1,
-                },
-                {
-                    name: 'provider',
-                    source: startstringMatcher(providers),
-                }
-            );
-        });
     </script>
 {% endblock %}

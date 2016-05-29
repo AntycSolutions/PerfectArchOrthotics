@@ -8,6 +8,8 @@ from auditlog import models
 def index(request):
     context = RequestContext(request)
 
+    context['lazy'] = True
+
     return render_to_response('index.html', context)
 
 

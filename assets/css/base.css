@@ -1,0 +1,9 @@
+
+body {
+    margin-top: 50px;
+}
+
+.ui-datepicker {
+    {# make jquery.datepicker have a higher z-index than boostrap input-group #}
+    z-index: 3 !important;
+}

@@ -105,6 +105,13 @@ AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
 }
 
+UTILS = {
+    'fallback': True,
+    'bootstrap3': True,
+    'font_awesome': True,
+    'jquery_ui': True,
+}
+
 # import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *

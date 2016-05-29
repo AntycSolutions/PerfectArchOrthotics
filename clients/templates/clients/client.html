@@ -7,6 +7,25 @@
 
 {% block title %} - {{ client.full_name }}{% endblock %}
 
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% if 'toggle' in request.GET %}
+            var id = '#' + '{{ request.GET.toggle }}';
+            $(id).collapse('show');
+        {% else %}
+            var id = '';
+        {% endif %}
+        if (location.hash) {
+            location.hash = location.hash; {# go to location on refresh #}
+        }
+        else if (id) {
+            location.hash = id;
+        }
+    {% endblock %}
+</script>
+
 {% block content %}
 
     <h1>
@@ -820,20 +839,3 @@
     </div>
 
 {% endblock content %}
-
-{% block extra_scripts %}
-    <script type="text/javascript">
-        {% if 'toggle' in request.GET %}
-            var id = '#' + '{{ request.GET.toggle }}';
-            $(id).collapse('show');
-        {% else %}
-            var id = '';
-        {% endif %}
-        if (location.hash) {
-            location.hash = location.hash; {# go to location on refresh #}
-        }
-        else if (id) {
-            location.hash = id;
-        }
-    </script>
-{% endblock extra_scripts %}

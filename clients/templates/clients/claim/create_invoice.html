@@ -4,25 +4,22 @@
 
 {% block title %} - Add Invoice{% endblock %}
 
-{% block extra_head %}
-    {% now 'Y' as current_year %}
-    <script>
-        $(function() {
-            $( "#id_payment_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-            $( "#id_deposit_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-            $( "#id_invoice_date" ).datepicker(
-                {changeMonth: true,
-                 changeYear: true,
-                 yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
+        $(document).ready(function() {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
         });
-    </script>
-{% endblock %}
+    {% endblock %}
+</script>
 
 {% block content %}
 
