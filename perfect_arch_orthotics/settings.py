@@ -112,13 +112,38 @@ UTILS = {
     'jquery_ui': True,
 }
 
+DEBUG_TOOLBAR_PANELS = [
+    # defaults
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    # 'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    # built in
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+    # third party
+    'template_profiler_panel.panels.template.TemplateProfilerPanel',
+    'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+]
+
 # import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
 elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
 
-    INSTALLED_APPS += ('debug_toolbar',)
+    INSTALLED_APPS += (
+        'debug_toolbar',
+        'template_profiler_panel',
+        'template_timings_panel',
+    )
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
     MIDDLEWARE_CLASSES.insert(
         5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
@@ -139,7 +164,11 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
 
-    INSTALLED_APPS += ('debug_toolbar',)
+    INSTALLED_APPS += (
+        'debug_toolbar',
+        'template_profiler_panel',
+        'template_timings_panel',
+    )
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_COLLAPSED': True,
     }
