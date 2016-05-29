@@ -92,7 +92,8 @@ class ListOrderView(ListView):
     def get_queryset(self):
         # Start from all, drilldown to q
         queryset = super(ListOrderView, self).get_queryset().select_related(
-            'claimant',
+            'claimant__client',
+            'claimant__dependent__client',
             'shoeorder__shoe_attributes__shoe',
             'coverageorder',
             'adjustmentorder'

@@ -433,9 +433,12 @@ def claimSearchView(request):
     claims = None
     # Start from all, drilldown to q df dt
     found_claims = Claim.objects.select_related(
-        'insurance'
+        'insurance',
+        'patient__client',
+        'patient__dependent__client'
     ).prefetch_related(
-        'claimcoverage_set__claimitem_set__item__itemhistory_set'
+        'claimcoverage_set__claimitem_set__item__itemhistory_set',
+        'claimcoverage_set__coverage'
     ).order_by(
         '-submitted_datetime'
     )
@@ -553,8 +556,13 @@ def insuranceSearchView(request):
     context = RequestContext(request)
     context_dict = {}
 
-    found_insurances = Insurance.objects.prefetch_related(
-        'coverage_set__claimcoverage_set__claimitem_set'
+    found_insurances = Insurance.objects.select_related(
+        'main_claimant__client',
+        'main_claimant__dependent__client'
+    ).prefetch_related(
+        'coverage_set__claimcoverage_set__claimitem_set',
+        'coverage_set__claimant__client',
+        'coverage_set__claimant__dependent__client'
     ).all()
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ["provider", "policy_number",
@@ -582,10 +590,11 @@ def clientView(request, client_id):
     context = RequestContext(request)
 
     client = Client.objects.select_related(
-        'referred_by', 'person_ptr__referred_by'
+        'referred_by',
+        'person_ptr__referred_by'
     ).prefetch_related(
         'insurance_set__coverage_set',
-        'dependent_set__person_ptr',
+        'dependent_set__person_ptr__referred_by',
         'referred_by'
     ).get(
         id=client_id
@@ -608,15 +617,19 @@ def clientView(request, client_id):
             orders.append(_order_info(dependent, request))
 
     insurances = Insurance.objects.select_related(
-        'main_claimant'
+        'main_claimant__client',
+        'main_claimant__dependent__client'
     ).prefetch_related(
-        'coverage_set__claimant'
+        'coverage_set__claimant__client',
+        'coverage_set__claimant__dependent__client'
     ).filter(
         main_claimant_id__in=person_pk_list
     )
 
     claims = Claim.objects.select_related(
-        'patient', 'insurance'
+        'patient__client',
+        'patient__dependent__client',
+        'insurance'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
         'claimcoverage_set__coverage'
@@ -684,7 +697,8 @@ def clientView(request, client_id):
 
     biomechanical_gaits = \
         clients_models.BiomechanicalGait.objects.select_related(
-            'patient'
+            'patient__client',
+            'patient__dependent__client'
         ).filter(
             patient_id__in=person_pk_list
         )
