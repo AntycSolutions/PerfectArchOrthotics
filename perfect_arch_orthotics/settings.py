@@ -1,12 +1,11 @@
 # perfect_arch_orthotics settings
 
-# django settings
+# Django
 
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Application definition
 DJANGO_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,7 +46,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS
 )
 
-# middleware
 DJANGO_MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -97,7 +95,7 @@ TEMPLATE_DIRS = (
 # Email
 EMAIL_USE_TLS = True
 
-# third party app settings
+# Third Party
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -126,12 +124,11 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
-    # built in
-    'debug_toolbar.panels.profiling.ProfilingPanel',
-    # third party
-    'template_profiler_panel.panels.template.TemplateProfilerPanel',
-    'template_timings_panel.panels.TemplateTimings.TemplateTimings',
 ]
+
+# Project
+
+PROFILING = False
 
 # import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
@@ -139,11 +136,7 @@ if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
 elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
 
-    INSTALLED_APPS += (
-        'debug_toolbar',
-        'template_profiler_panel',
-        'template_timings_panel',
-    )
+    INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
     MIDDLEWARE_CLASSES.insert(
         5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
@@ -164,13 +157,23 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
 
-    INSTALLED_APPS += (
-        'debug_toolbar',
-        'template_profiler_panel',
-        'template_timings_panel',
-    )
+    INSTALLED_APPS += ('debug_toolbar',)
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_COLLAPSED': True,
     }
 else:
     raise Exception("Please create a settings decision file.")
+
+if PROFILING:
+    INSTALLED_APPS += (
+        'template_profiler_panel',
+        'template_timings_panel',
+    )
+
+    DEBUG_TOOLBAR_PANELS += [
+        # built in
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+        # third party
+        'template_profiler_panel.panels.template.TemplateProfilerPanel',
+        'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+    ]
