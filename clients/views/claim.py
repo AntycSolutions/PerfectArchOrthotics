@@ -96,18 +96,42 @@ class CreateInvoiceView(CreateView):
 
         return context
 
+    def get(self, request, *args, **kwargs):
+        # Ensure Invoice does not already exist
+        claim = Claim.objects.get(id=self.kwargs['claim_id'])
+        try:
+            claim.invoice
+            return HttpResponseRedirect(
+                claim.invoice.get_absolute_url()
+            )
+        except clients_models.Invoice.DoesNotExist:
+            pass
+
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        claim = Claim.objects.get(id=self.kwargs['claim_id'])
-        self.object.claim = claim
-        self.object.save()
+        claim_id = self.kwargs['claim_id']
+        self.object.claim_id = claim_id
+        try:
+            self.object.save()
+        except db_utils.IntegrityError:
+            claim = Claim.objects.get(id=claim_id)
+            # Was receiving errors that a user was trying to create a
+            #  second invoice for this claim, so redirect to
+            #  existing invoice since one already exists
+            #  for this OneToOne
+            return HttpResponseRedirect(
+                claim.invoice.get_absolute_url()
+            )
 
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         claim_id = self.object.claim.id
-        self.success_url = reverse_lazy('fillOutInvoice',
-                                        kwargs={'claim_id': claim_id})
+        self.success_url = reverse_lazy(
+            'fillOutInvoice', kwargs={'claim_id': claim_id}
+        )
         return self.success_url
 
 
@@ -203,7 +227,9 @@ class CreateInsuranceLetterView(CreateView):
         self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
+
         laboratory_form = LaboratoryInsuranceLetterFormSet()
+
         return self.render_to_response(
             self.get_context_data(form=form, laboratory_form=laboratory_form)
         )
@@ -213,6 +239,7 @@ class CreateInsuranceLetterView(CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         laboratory_form = LaboratoryInsuranceLetterFormSet(request.POST)
+
         if form.is_valid() and laboratory_form.is_valid():
             return self.form_valid(form, laboratory_form)
         else:
@@ -220,11 +247,12 @@ class CreateInsuranceLetterView(CreateView):
 
     def form_valid(self, form, laboratory_form):
         self.object = form.save(commit=False)
-        claim = Claim.objects.get(id=self.kwargs['claim_id'])
-        self.object.claim = claim
+        claim_id = self.kwargs['claim_id']
+        self.object.claim_id = claim_id
         try:
             self.object.save()
         except db_utils.IntegrityError:
+            claim = Claim.objects.get(id=claim_id)
             # Was receiving errors that a user was trying to create a
             #  second insurance letter for this claim, so redirect to
             #  existing insurance letter since one already exists
@@ -232,6 +260,7 @@ class CreateInsuranceLetterView(CreateView):
             return HttpResponseRedirect(
                 claim.insuranceletter.get_absolute_url()
             )
+
         laboratory_form.instance = self.object
         laboratory_form.save()
 
@@ -244,8 +273,10 @@ class CreateInsuranceLetterView(CreateView):
 
     def get_success_url(self, claim):
         claim_id = claim.id
-        self.success_url = reverse_lazy('fillOutInsurance',
-                                        kwargs={'claim_id': claim_id})
+        self.success_url = reverse_lazy(
+            'fillOutInsurance', kwargs={'claim_id': claim_id}
+        )
+
         return self.success_url
 
 
