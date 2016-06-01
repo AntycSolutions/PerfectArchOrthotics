@@ -125,6 +125,9 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_COLLAPSED': True,
+}
 
 # Project
 
@@ -149,18 +152,14 @@ elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
                 request.user.is_staff):
             return True
         return False
-    DEBUG_TOOLBAR_CONFIG = {
+    DEBUG_TOOLBAR_CONFIG.update({
         'SHOW_TOOLBAR_CALLBACK':
             'perfect_arch_orthotics.settings.show_toolbar',
-        'SHOW_COLLAPSED': True,
-    }
+    })
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
 
     INSTALLED_APPS += ('debug_toolbar',)
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_COLLAPSED': True,
-    }
 else:
     raise Exception("Please create a settings decision file.")
 
