@@ -266,7 +266,7 @@ class CreateInsuranceLetterView(CreateView):
         laboratory_form.instance = self.object
         laboratory_form.save()
 
-        return HttpResponseRedirect(self.get_success_url(claim_id))
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, laboratory_form):
         return self.render_to_response(
