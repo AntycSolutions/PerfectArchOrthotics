@@ -1,0 +1,31 @@
+
+.text_center {
+    text-align: center;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.no_bullets {
+    list-style-type: none;
+}
+
+.form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.li_padding {
+    padding-bottom: 10px;
+}
+
+ul {
+    margin-bottom: 0;
+}
+
+.two_column {
+    vertical-align: top;
+    padding-right: 10px;
+    padding-left: 10px;
+}

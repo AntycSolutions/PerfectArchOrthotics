@@ -555,7 +555,13 @@ def _overdue_claims():
 
 def _old_ordered_date_orders():
     cutoff = datetime.now() - timedelta(days=30)
-    orders = inventory_models.Order.objects.filter(
+    orders = inventory_models.Order.objects.select_related(
+        'claimant__client',
+        'claimant__dependent__client',
+        'shoeorder__shoe_attributes__shoe',
+        'coverageorder',
+        'adjustmentorder'
+    ).filter(
         dispensed_date__isnull=True,
         arrived_date__isnull=True,
         ordered_date__lte=cutoff,
@@ -566,7 +572,13 @@ def _old_ordered_date_orders():
 
 def _old_arrvied_date_orders():
     cutoff = datetime.now() - timedelta(days=30)
-    orders = inventory_models.Order.objects.filter(
+    orders = inventory_models.Order.objects.select_related(
+        'claimant__client',
+        'claimant__dependent__client',
+        'shoeorder__shoe_attributes__shoe',
+        'coverageorder',
+        'adjustmentorder'
+    ).filter(
         dispensed_date__isnull=True,
         arrived_date__lte=cutoff,
     )

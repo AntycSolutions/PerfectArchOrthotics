@@ -598,7 +598,7 @@ class Claim(models.Model, model_utils.FieldList):
         except AttributeError:
             submitted_datetime = None
 
-        return "{}".format(submitted_datetime)
+        return "{} - {}".format(submitted_datetime, self.patient)
 
     def __str__(self):
         try:

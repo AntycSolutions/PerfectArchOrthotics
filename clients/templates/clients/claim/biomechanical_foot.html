@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% load update_attrs %}
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        biomechanical_foot_css: "{% static 'clients/css/biomechanical_foot.css' %}",
+    {% endblock %}
+</script>
 
 <script type="text/javascript">
     {% block fallback_ready %}
@@ -20,37 +29,6 @@
         });
     {% endblock %}
 </script>
-
-{% block styles %}
-    {{ block.super }}
-
-    <style type="text/css">
-        .text_center {
-            text-align: center;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-
-        .no_bullets {
-            list-style-type: none;
-        }
-
-        .form-horizontal .form-group {
-            margin-left: 0;
-            margin-right: 0;
-        }
-
-        .li_padding {
-            padding-bottom: 10px;
-        }
-
-        ul {
-            margin-bottom: 0;
-        }
-    </style>
-{% endblock styles %}
 
 {% block content %}
 
@@ -78,7 +56,7 @@
                     <tbody>
                         <tr>
                             {# must be inline #}
-                            <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                            <td colspan="10" class="two_column">
                                 <table style="margin-bottom: 10px;">
                                     <tbody>
                                         <tr>
@@ -258,7 +236,7 @@
                                 </table>
                             </td>
                             {# must be inline #}
-                            <td colspan="10" class="2_column" style="vertical-align: top; padding-right: 10px; padding-left: 10px;">
+                            <td colspan="10" class="two_column">
                                 <table>
                                     <tbody>
                                         <tr class="text_center">
