@@ -128,10 +128,12 @@ class CreateInvoiceView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        claim_id = self.object.claim.id
+        claim_id = self.object.claim_id
+
         self.success_url = reverse_lazy(
             'fillOutInvoice', kwargs={'claim_id': claim_id}
         )
+
         return self.success_url
 
 
@@ -264,15 +266,16 @@ class CreateInsuranceLetterView(CreateView):
         laboratory_form.instance = self.object
         laboratory_form.save()
 
-        return HttpResponseRedirect(self.get_success_url(claim))
+        return HttpResponseRedirect(self.get_success_url(claim_id))
 
     def form_invalid(self, form, laboratory_form):
         return self.render_to_response(
             self.get_context_data(form=form, laboratory_form=laboratory_form)
         )
 
-    def get_success_url(self, claim):
-        claim_id = claim.id
+    def get_success_url(self):
+        claim_id = self.object.claim_id
+
         self.success_url = reverse_lazy(
             'fillOutInsurance', kwargs={'claim_id': claim_id}
         )
