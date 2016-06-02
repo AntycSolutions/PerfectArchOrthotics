@@ -103,22 +103,26 @@ class InventoryOrdersStatistics(TemplateView):
         shoe_attributes_list = shoe_attributes_objects.select_related(
             'shoe'
         ).prefetch_related(
-            Prefetch('shoeorder_set',
-                     # see dispensed() in clients_models.ShoeAttributes
-                     queryset=inventory_models.ShoeOrder.objects.filter(
-                        dispensed_date__isnull=False,  # with
-                        ordered_date__isnull=True  # without
-                     ),
-                     to_attr="dispensed_set")
+            Prefetch(
+                'shoeorder_set',
+                # see dispensed() in clients_models.ShoeAttributes
+                queryset=inventory_models.ShoeOrder.objects.filter(
+                    dispensed_date__isnull=False,  # with
+                    ordered_date__isnull=True  # without
+                ),
+                to_attr="dispensed_set"
+            )
         )
         for shoe_attributes in shoe_attributes_list:
             # use prefetched .dispensed_set instead of .dispensed() which
             #  would result in a lot of queries
-            actual_quantity = (shoe_attributes.quantity
-                               - len(shoe_attributes.dispensed_set))
+            actual_quantity = (
+                shoe_attributes.quantity - len(shoe_attributes.dispensed_set)
+            )
             total_in_stock += actual_quantity
-            total_cost_of_inventory += (actual_quantity
-                                        * shoe_attributes.shoe.cost)
+            total_cost_of_inventory += (
+                actual_quantity - shoe_attributes.shoe.cost
+            )
 
         return {'total_in_stock': total_in_stock,
                 'total_cost_of_inventory': total_cost_of_inventory}
@@ -191,17 +195,19 @@ def old_arrived_date_orders_report(request):
 
 def _stats():
     revenue_claims = clients_models.Claim.objects.select_related(
-        'insurance', 'patient', 'insurance__main_claimant'
+        'insurance',
+        'patient__client',
+        'patient__dependent__client',
     ).annotate(
         invoice_revenue=(
-            Coalesce(F('invoice__payment_made'), 0)
-            + Coalesce(F('invoice__deposit'), 0)
+            Coalesce(F('invoice__payment_made'), 0) +
+            Coalesce(F('invoice__deposit'), 0)
         ),
         expected_back_revenue=Sum(
             Case(
                 When(
-                    Q(insurance__benefits='a')
-                    & Q(claimcoverage__actual_paid_date__isnull=False),
+                    Q(insurance__benefits='a') &
+                    Q(claimcoverage__actual_paid_date__isnull=False),
                     then='claimcoverage__expected_back',
                 ),
                 default=0,
@@ -211,8 +217,9 @@ def _stats():
         total_revenue=F('expected_back_revenue') + F('invoice_revenue')
     ).order_by('id')
 
-    outstanding_claims = clients_models.Claim.objects.prefetch_related(
-        'coverages'
+    outstanding_claims = clients_models.Claim.objects.select_related(
+        'patient__client',
+        'patient__dependent__client',
     ).annotate(
         total_amount=Sum(
             # TODO: need to use get_unit_price
@@ -244,8 +251,8 @@ def _stats():
         if outstanding_claim.total_amount > revenue_claim.total_revenue:
             claims_less_list.append(revenue_claim)
             amount_remaining = (
-                outstanding_claim.total_amount
-                - revenue_claim.total_revenue
+                outstanding_claim.total_amount -
+                revenue_claim.total_revenue
             )
             if revenue_claim.insurance.benefits == 'na':
                 outstanding_non_assignment_clients_set.add(
@@ -306,8 +313,8 @@ def _stats():
         'outstanding_non_assignment_clients':
             outstanding_non_assignment_clients,
         'total_outstanding_clients': (
-            outstanding_assignment_clients
-            + outstanding_non_assignment_clients
+            outstanding_assignment_clients +
+            outstanding_non_assignment_clients
         ),
         'claims_greater_list': claims_greater_list,
         'claims_less_list': claims_less_list,
@@ -334,16 +341,16 @@ def _insurance_providers_stats(request):
         )),
         assignment_expected_back=Sum(Case(
             When(
-                Q(benefits='a')
-                & Q(claim__claimcoverage__actual_paid_date__isnull=False),
+                Q(benefits='a') &
+                Q(claim__claimcoverage__actual_paid_date__isnull=False),
                 then='claim__claimcoverage__expected_back',
             ),
             default=0,
         )),
         pending_assignment_expected_back=Sum(Case(
             When(
-                Q(benefits='a')
-                & Q(claim__claimcoverage__actual_paid_date__isnull=True),
+                Q(benefits='a') &
+                Q(claim__claimcoverage__actual_paid_date__isnull=True),
                 then='claim__claimcoverage__expected_back',
             ),
             default=0,
@@ -351,8 +358,8 @@ def _insurance_providers_stats(request):
         num_claims=Count('claim', distinct=True),
     ).annotate(
         total_assignment_expected_back=(
-            F('assignment_expected_back')
-            + F('pending_assignment_expected_back')
+            F('assignment_expected_back') +
+            F('pending_assignment_expected_back')
         ),
     )
 
@@ -368,8 +375,8 @@ def _insurance_providers_stats(request):
             When(
                 benefits='na',
                 then=(
-                    Coalesce(F('claim__invoice__payment_made'), 0)
-                    + Coalesce(F('claim__invoice__deposit'), 0)
+                    Coalesce(F('claim__invoice__payment_made'), 0) +
+                    Coalesce(F('claim__invoice__deposit'), 0)
                 )
             ),
             default=0,
@@ -378,16 +385,16 @@ def _insurance_providers_stats(request):
             When(
                 benefits='a',
                 then=(
-                    Coalesce(F('claim__invoice__payment_made'), 0)
-                    + Coalesce(F('claim__invoice__deposit'), 0)
+                    Coalesce(F('claim__invoice__payment_made'), 0) +
+                    Coalesce(F('claim__invoice__deposit'), 0)
                 )
             ),
             default=0,
         )),
     ).annotate(
         total_invoice_revenue=(
-            F('non_assignment_invoice_revenue')
-            + F('assignment_invoice_revenue')
+            F('non_assignment_invoice_revenue') +
+            F('assignment_invoice_revenue')
         ),
     )
 
@@ -406,8 +413,8 @@ def _insurance_providers_stats(request):
                     # TODO: use get_unit_price
                     F('claim__claimcoverage__claimitem__item__unit_price'),
                     0
-                )
-                * Coalesce(
+                ) *
+                Coalesce(
                     F('claim__claimcoverage__claimitem__quantity'),
                     0
                 )
@@ -421,8 +428,8 @@ def _insurance_providers_stats(request):
                     # TODO: use get_unit_price
                     F('claim__claimcoverage__claimitem__item__unit_price'),
                     0
-                )
-                * Coalesce(
+                ) *
+                Coalesce(
                     F('claim__claimcoverage__claimitem__quantity'),
                     0
                 )
@@ -431,8 +438,7 @@ def _insurance_providers_stats(request):
         )),
     ).annotate(
         amount_claimed__sum=(
-            F('assignment_amount_claimed')
-            + F('non_assignment_amount_claimed')
+            F('assignment_amount_claimed') + F('non_assignment_amount_claimed')
         )
     )
 
@@ -515,20 +521,20 @@ def _insurance_providers_stats_totals(insurances):
 
     # Totals of totals
     insurances_totals['amount_claimed__sum'] = (
-        (insurances_totals['non_assignment_amount_claimed'] or 0)
-        + (insurances_totals['assignment_amount_claimed'] or 0)
+        (insurances_totals['non_assignment_amount_claimed'] or 0) +
+        (insurances_totals['assignment_amount_claimed'] or 0)
     )
     insurances_totals['expected_back__sum'] = (
-        (insurances_totals['non_assignment_expected_back'] or 0)
-        + (insurances_totals['total_assignment_expected_back'] or 0)
+        (insurances_totals['non_assignment_expected_back'] or 0) +
+        (insurances_totals['total_assignment_expected_back'] or 0)
     )
     insurances_totals['total_invoice_revenue'] = (
-        (insurances_totals['non_assignment_invoice_revenue'] or 0)
-        + (insurances_totals['assignment_invoice_revenue'] or 0)
+        (insurances_totals['non_assignment_invoice_revenue'] or 0) +
+        (insurances_totals['assignment_invoice_revenue'] or 0)
     )
     insurances_totals['total_revenue'] = (
-        (insurances_totals['total_invoice_revenue'] or 0)
-        + (insurances_totals['assignment_expected_back'] or 0)
+        (insurances_totals['total_invoice_revenue'] or 0) +
+        (insurances_totals['assignment_expected_back'] or 0)
     )
 
     return insurances_totals
@@ -545,7 +551,10 @@ def _merge_by_key(dicts, key):
 
 def _overdue_claims():
     cutoff = utils.timezone.now() - timedelta(days=30)
-    overdue_claims = clients_models.Claim.objects.filter(
+    overdue_claims = clients_models.Claim.objects.select_related(
+        'patient__client',
+        'patient__dependent__client',
+    ).filter(
         submitted_datetime__lte=cutoff,
         claimcoverage__actual_paid_date__isnull=True
     ).order_by('submitted_datetime').distinct()

@@ -4,6 +4,23 @@
 
 {% block title %} - Claims Statistics{% endblock %}
 
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
+        $(document).ready(function() {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
+        });
+    {% endblock %}
+</script>
+
 {% block content %}
 
     <div class="row">
@@ -222,21 +239,8 @@
                 AC = Amount Claimed
                 {% if insurances %}
                     <form method="get">
-                        <input type="text" id="dateFromSearchBox" class="input-medium search-query" name="df" placeholder="Date From" value="{{ df }}">
-                        <input type="text" id="dateToSearchBox" class="input-medium search-query" name="dt" placeholder="Date To" value="{{ dt }}">
-                        {% now 'Y' as current_year %}
-                        <script>
-                            $(function() {
-                                $("#dateFromSearchBox").datepicker(
-                                    {changeMonth: true,
-                                     changeYear: true,
-                                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-                                $("#dateToSearchBox").datepicker(
-                                    {changeMonth: true,
-                                     changeYear: true,
-                                     yearRange: "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}"});
-                            });
-                        </script>
+                        <input type="text" id="dateFromSearchBox" class="input-medium search-query datepicker" name="df" placeholder="Date From" value="{{ df }}">
+                        <input type="text" id="dateToSearchBox" class="input-medium search-query datepicker" name="dt" placeholder="Date To" value="{{ dt }}">
                         <input type="submit" class="btn" value="Search">
                     </form>
                     <div class="table-responsive">
