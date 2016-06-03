@@ -153,7 +153,7 @@ PIPELINE = {
                 'css/base.css',
             ),
             'output_filename': 'css/base_all.css',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'base_all_css',
             },
@@ -163,7 +163,7 @@ PIPELINE = {
                 'css/index.css',
             ),
             'output_filename': 'css/index_all.css',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'index_all_css',
             },
@@ -173,7 +173,7 @@ PIPELINE = {
                 'clients/css/biomechanical_foot.css',
             ),
             'output_filename': 'css/biomechanical_foot_all.css',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'biomechanical_foot_all_css',
             },
@@ -184,7 +184,7 @@ PIPELINE = {
                 'utils/css/typeahead.css',
             ),
             'output_filename': 'css/biomechanical_gait_all.css',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'biomechanical_gait_all_css',
             },
@@ -194,7 +194,7 @@ PIPELINE = {
                 'clients/css/insurance.css',
             ),
             'output_filename': 'css/insurance_all.css',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'insurance_all_css',
             },
@@ -206,7 +206,7 @@ PIPELINE = {
                 'clients/js/insurance.js',
             ),
             'output_filename': 'js/insurance_all.js',
-            'template_name': 'pipeline_fallback_css_js.html',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'insurance_all_js',
             },
