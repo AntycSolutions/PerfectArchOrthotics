@@ -139,12 +139,6 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # Django Pipeline
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-# STATICFILES_FINDERS = (
-#     'django.contrib.staticfiles.finders.FileSystemFinder',
-#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#     'pipeline.finders.CachedFileFinder',
-#     'pipeline.finders.PipelineFinder',
-# )
 PIPELINE = {
     'STYLESHEETS': {
         'base': {
@@ -215,19 +209,16 @@ PIPELINE = {
 }
 system = platform.system()
 if system == 'Windows':
-    PIPELINE['YUGLIFY_BINARY'] = (
-        os.path.normpath(
-            os.path.join(BASE_DIR, '../node_modules/.bin/yuglify.cmd')
-        )
-    )
+    yuglify = 'yuglify.cmd'
 elif system == 'Linux':
-    PIPELINE['YUGLIFY_BINARY'] = (
-        os.path.normpath(
-            os.path.join(BASE_DIR, '../node_modules/.bin/yuglify')
-        )
-    )
+    yuglify = 'yuglify'
 else:
     raise Exception('Unknown platform.system')
+PIPELINE['YUGLIFY_BINARY'] = (
+    os.path.normpath(
+        os.path.join(BASE_DIR, '../node_modules/.bin/' + yuglify)
+    )
+)
 
 # Project
 
@@ -236,43 +227,47 @@ PROFILING = False
 # import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
+    env = 'prod'
 elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
-
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
-    MIDDLEWARE_CLASSES.insert(
-        5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
-    )
-    MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
-
-    def show_toolbar(request):
-        if (
-            hasattr(request, 'user') and not request.is_ajax() and
-                request.user.is_staff):
-            return True
-        return False
-    DEBUG_TOOLBAR_CONFIG.update({
-        'SHOW_TOOLBAR_CALLBACK':
-            'perfect_arch_orthotics.settings.show_toolbar',
-    })
+    env = 'test'
 elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
-
-    INSTALLED_APPS += ('debug_toolbar',)
+    env = 'devl'
 else:
     raise Exception("Please create a settings decision file.")
 
-if PROFILING:
-    INSTALLED_APPS += (
-        'template_profiler_panel',
-        'template_timings_panel',
-    )
+if DEBUG:
+    INSTALLED_APPS += ('debug_toolbar',)
 
-    DEBUG_TOOLBAR_PANELS += [
-        # built in
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-        # third party
-        'template_profiler_panel.panels.template.TemplateProfilerPanel',
-        'template_timings_panel.panels.TemplateTimings.TemplateTimings',
-    ]
+    if env == 'prod' or env == 'test':
+        MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
+        MIDDLEWARE_CLASSES.insert(
+            5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
+        )
+        MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
+
+        def show_toolbar(request):
+            if (
+                hasattr(request, 'user') and not request.is_ajax() and
+                    request.user.is_staff):
+                return True
+            return False
+        DEBUG_TOOLBAR_CONFIG.update({
+            'SHOW_TOOLBAR_CALLBACK':
+                'perfect_arch_orthotics.settings.show_toolbar',
+        })
+
+    if PROFILING:
+        INSTALLED_APPS += (
+            'template_profiler_panel',
+            'template_timings_panel',
+        )
+
+        DEBUG_TOOLBAR_PANELS += [
+            # built in
+            'debug_toolbar.panels.profiling.ProfilingPanel',
+            # third party
+            'template_profiler_panel.panels.template.TemplateProfilerPanel',
+            'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+        ]
