@@ -475,16 +475,16 @@ class Item(models.Model, model_utils.FieldList):
         self._initial_unit_price = self.unit_price
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
         initial_cost = self._initial_cost
         initial_unit_price = self._initial_unit_price
         new_cost = self.cost != initial_cost
         new_unit_price = self.unit_price != initial_unit_price
-        if new_cost or new_unit_price:
+        if self.pk and (new_cost or new_unit_price):
             ItemHistory.objects.create(
                 item=self, cost=initial_cost, unit_price=initial_unit_price
             )
+
+        super().save(*args, **kwargs)
 
         self._initial_cost = self.cost
         self._initial_unit_price = self.unit_price
