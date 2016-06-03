@@ -1,6 +1,7 @@
 {% extends 'utils/base/base.html' %}
 
 {% load static %}
+{% load pipeline %}
 
 {% block meta %}
     {{ block.super }}
@@ -24,7 +25,9 @@
 
     {# favicon #}
     <link href="{% static 'images/PerfectArchLogo.jpg' %}" rel="icon" type="image/x-icon" />
-    <link href="{% static 'images/PerfectArchLogo.jpg' %}" rel="shortcut icon" type="image/x-icon" />
+    <!--[if IE]>
+        <link href="{% static 'images/PerfectArchLogo.jpg' %}" rel="shortcut icon" type="image/x-icon" />
+    <![endif]-->
 {% endblock %}
 
 <script type="text/javascript">
@@ -40,9 +43,7 @@
     {% block fallback_load %}
         {{ block.super }}
 
-        base_css: "{% static 'css/base.css' %}",
-
-        sticky_footer_css: "{% static 'css/sticky-footer.css' %}",
+        {% stylesheet 'base' %}
     {% endblock %}
 </script>
 

@@ -1,37 +1,19 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load pipeline %}
 
 {% block title %} - Welcome{% endblock %}
 
-{% block full_content %}
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
 
-    <style type="text/css">
-        {# TODO: move to .css #}
-        {# Bootstrap cover example #}
-        .site-wrapper {
-            display: table;
-            width: 100%;
-            text-align: center;
-        }
-        .site-wrapper-inner {
-            display: table-cell;
-            vertical-align: middle;
-        }
-        .cover {
-            padding: 0 20px;
-        }
-        @media (max-width: 768px) {
-            #main {
-                height: 40vh;
-            }
-        }
-        @media (min-width: 768px) {
-            #main {
-                height: 65vh;
-            }
-        }
-    </style>
+        {% stylesheet 'index' %}
+    {% endblock %}
+</script>
+
+{% block full_content %}
 
     <div id="main" class="site-wrapper">
         <div class="site-wrapper-inner">

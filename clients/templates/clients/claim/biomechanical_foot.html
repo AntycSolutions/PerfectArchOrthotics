@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load update_attrs %}
+{% load pipeline %}
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
 
@@ -9,7 +10,7 @@
     {% block fallback_load %}
         {{ block.super }}
 
-        biomechanical_foot_css: "{% static 'clients/css/biomechanical_foot.css' %}",
+        {% stylesheet 'biomechanical_foot' %}
     {% endblock %}
 </script>
 

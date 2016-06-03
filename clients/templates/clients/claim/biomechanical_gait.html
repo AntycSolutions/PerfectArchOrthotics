@@ -11,9 +11,7 @@
     {% block fallback_load %}
         {{ block.super }}
 
-        biomechanical_gait_css: "{% static 'clients/css/biomechanical_gait.css' %}",
-
-        typeahead_css: "{% static 'utils/css/typeahead.css' %}",
+        {% stylesheet 'biomechanical_gait' %}
 
         'jQuery.fn.typeahead': [
             '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.min.js',

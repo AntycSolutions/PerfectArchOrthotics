@@ -1,0 +1,24 @@
+/* Bootstrap cover example */
+
+.site-wrapper {
+    display: table;
+    width: 100%;
+    text-align: center;
+}
+.site-wrapper-inner {
+    display: table-cell;
+    vertical-align: middle;
+}
+.cover {
+    padding: 0 20px;
+}
+@media (max-width: 768px) {
+    #main {
+        height: 40vh;
+    }
+}
+@media (min-width: 768px) {
+    #main {
+        height: 65vh;
+    }
+}

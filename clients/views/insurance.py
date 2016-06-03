@@ -1,6 +1,5 @@
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
-from django.contrib.staticfiles.templatetags import staticfiles
 from django.core import urlresolvers
 
 from utils import views_utils
@@ -24,8 +23,8 @@ class UpdateInsuranceView(UpdateView):
         context['inline_model_name_plural'] = \
             Coverage._meta.verbose_name_plural
         context['cancel_url'] = self.object.get_absolute_url()
-        context['js_url'] = staticfiles.static('js/insurance.js')
-        context['css_url'] = staticfiles.static('css/insurance.css')
+        context['js_url'] = 'insurance'
+        context['css_url'] = 'insurance'
 
         return context
 
@@ -120,8 +119,8 @@ class CreateInsuranceView(CreateView):
         context['cancel_url'] = urlresolvers.reverse(
             'client', kwargs={'client_id': self.kwargs['client_id']}
         )
-        context['js_url'] = staticfiles.static('js/insurance.js')
-        context['css_url'] = staticfiles.static('css/insurance.css')
+        context['js_url'] = 'insurance'
+        context['css_url'] = 'insurance'
 
         return context
 

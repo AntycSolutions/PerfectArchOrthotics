@@ -3,6 +3,7 @@
 # Django
 
 import os
+import platform
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -22,6 +23,7 @@ THIRD_PARTY_APPS = (
     'auditlog',
     'utils',
     'accounts',
+    'pipeline',
 )
 LOCAL_APPS = (
     'clients',
@@ -57,6 +59,7 @@ DJANGO_MIDDLEWARE = (
 )
 THIRD_PARTY_MIDDLEWARE = (
     'auditlog.middleware.AuditlogMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 LOCAL_MIDDLEWARE = (
     'middleware.active_users.ActiveUserMiddleware',
@@ -97,19 +100,24 @@ EMAIL_USE_TLS = True
 
 # Third Party
 
+# Django Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# Django Ajax  Selects
 AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
 }
 
+# Django Utils
 UTILS = {
     'fallback': True,
     'bootstrap3': True,
     'font_awesome': True,
     'jquery_ui': True,
+    'pipeline': True,
 }
 
+# Django Debug Toolbar
 DEBUG_TOOLBAR_PANELS = [
     # defaults
     'debug_toolbar.panels.versions.VersionsPanel',
@@ -128,6 +136,98 @@ DEBUG_TOOLBAR_PANELS = [
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_COLLAPSED': True,
 }
+
+# Django Pipeline
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     'pipeline.finders.CachedFileFinder',
+#     'pipeline.finders.PipelineFinder',
+# )
+PIPELINE = {
+    'STYLESHEETS': {
+        'base': {
+            'source_filenames': (
+                'css/sticky-footer.css',
+                'css/base.css',
+            ),
+            'output_filename': 'css/base_all.css',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'base_all_css',
+            },
+        },
+        'index': {
+            'source_filenames': (
+                'css/index.css',
+            ),
+            'output_filename': 'css/index_all.css',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'index_all_css',
+            },
+        },
+        'biomechanical_foot': {
+            'source_filenames': (
+                'clients/css/biomechanical_foot.css',
+            ),
+            'output_filename': 'css/biomechanical_foot_all.css',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'biomechanical_foot_all_css',
+            },
+        },
+        'biomechanical_gait': {
+            'source_filenames': (
+                'clients/css/biomechanical_gait.css',
+                'utils/css/typeahead.css',
+            ),
+            'output_filename': 'css/biomechanical_gait_all.css',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'biomechanical_gait_all_css',
+            },
+        },
+        'insurance': {
+            'source_filenames': (
+                'clients/css/insurance.css',
+            ),
+            'output_filename': 'css/insurance_all.css',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'insurance_all_css',
+            },
+        },
+    },
+    'JAVASCRIPT': {
+        'insurance': {
+            'source_filenames': (
+                'clients/js/insurance.js',
+            ),
+            'output_filename': 'js/insurance_all.js',
+            'template_name': 'pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'insurance_all_js',
+            },
+        },
+    },
+}
+system = platform.system()
+if system == 'Windows':
+    PIPELINE['YUGLIFY_BINARY'] = (
+        os.path.normpath(
+            os.path.join(BASE_DIR, '../node_modules/.bin/yuglify.cmd')
+        )
+    )
+elif system == 'Linux':
+    PIPELINE['YUGLIFY_BINARY'] = (
+        os.path.normpath(
+            os.path.join(BASE_DIR, '../node_modules/.bin/yuglify')
+        )
+    )
+else:
+    raise Exception('Unknown platform.system')
 
 # Project
 
