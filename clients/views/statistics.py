@@ -121,7 +121,7 @@ class InventoryOrdersStatistics(TemplateView):
             )
             total_in_stock += actual_quantity
             total_cost_of_inventory += (
-                actual_quantity - shoe_attributes.shoe.cost
+                actual_quantity * shoe_attributes.shoe.cost
             )
 
         return {'total_in_stock': total_in_stock,
