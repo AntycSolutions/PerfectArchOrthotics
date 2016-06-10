@@ -226,7 +226,7 @@ PROFILING = False
 
 VERSIONS = {
     'bootswatch_cerulean_css': '3.3.6',
-    'typeahead': '0.11.1',
+    'typeahead_js': '0.11.1',
 }
 
 # import environment aware settings
