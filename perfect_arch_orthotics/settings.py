@@ -224,6 +224,11 @@ PIPELINE['YUGLIFY_BINARY'] = (
 
 PROFILING = False
 
+VERSIONS = {
+    'bootswatch_cerulean_css': '3.3.6',
+    'typeahead': '0.11.1',
+}
+
 # import environment aware settings
 if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
@@ -248,11 +253,11 @@ if DEBUG:
         MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
 
         def show_toolbar(request):
-            if (
-                hasattr(request, 'user') and not request.is_ajax() and
-                    request.user.is_staff):
-                return True
-            return False
+            return (
+                hasattr(request, 'user') and
+                not request.is_ajax() and
+                request.user.is_staff
+            )
         DEBUG_TOOLBAR_CONFIG.update({
             'SHOW_TOOLBAR_CALLBACK':
                 'perfect_arch_orthotics.settings.show_toolbar',

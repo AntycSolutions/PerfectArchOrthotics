@@ -33,7 +33,7 @@
 <script type="text/javascript">
     {% block bootstrap_fallback_load_css %}
         bootswatch_cerulean_bootstrap_css: [
-            '//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css',
+            '//maxcdn.bootstrapcdn.com/bootswatch/{{ settings.VERSIONS.bootswatch_cerulean_css }}/cerulean/bootstrap.min.css',
             "{% static 'css/bootstrap.min.css' %}"
         ],
     {% endblock %}

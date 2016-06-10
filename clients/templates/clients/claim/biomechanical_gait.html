@@ -15,7 +15,7 @@
         {% stylesheet 'biomechanical_gait' %}
 
         'jQuery.fn.typeahead': [
-            '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.jquery.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/{{ settings.VERSIONS.typeahead_js }}/typeahead.jquery.min.js',
             "{% static 'utils/js/typeahead.jquery.min.js' %}"
         ],
     {% endblock %}
