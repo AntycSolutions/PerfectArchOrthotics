@@ -25,6 +25,7 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^clients/', include('clients.urls')),
     url(r'^inventory/', include('inventory.urls')),
+    url(r'^$', include('utils.urls')),
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
         name='get_thumbnail'),
