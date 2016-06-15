@@ -193,6 +193,28 @@ PIPELINE = {
                 'fallback_key': 'insurance_all_css',
             },
         },
+        'client': {
+            'source_filenames': (
+                'clients/css/client.css',
+                'clients/css/form-static.css',
+                'clients/css/anchor.css',
+            ),
+            'output_filename': 'css/client_all.css',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'client_all_css',
+            },
+        },
+        'claim': {
+            'source_filenames': (
+                'clients/css/form-static.css',
+            ),
+            'output_filename': 'css/claim_all.css',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'claim_all_css',
+            },
+        },
     },
     'JAVASCRIPT': {
         'insurance': {

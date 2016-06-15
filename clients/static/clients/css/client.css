@@ -1,0 +1,16 @@
+
+.spouse-crud:not(:last-child) {
+    width: 165px;
+    margin-bottom: 5px;
+}
+.spouse-crud:last-child {
+    width: 165px;
+}
+
+.child-crud:not(:last-child) {
+    width: 165px;
+    margin-bottom: 5px;
+}
+.child-crud:last-child {
+    width: 165px;
+}

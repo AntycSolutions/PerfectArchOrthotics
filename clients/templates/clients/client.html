@@ -4,8 +4,17 @@
 {% load crispy_forms_tags %}
 {% load update_attrs %}
 {% load nbsp %}
+{% load pipeline %}
 
 {% block title %} - {{ client.full_name }}{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        {% stylesheet 'client' %}
+    {% endblock %}
+</script>
 
 <script type="text/javascript">
     {% block fallback_ready %}
@@ -47,23 +56,6 @@
         </a>
     </div>
     <br />
-    <style type="text/css">
-        .form-static .form-group {
-            margin-bottom: 0;
-        }
-        .form-static .control-label,
-        .form-static .form-control-static,
-        .form-static .checkbox {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-        a.anchor {
-            display: block;
-            position: relative;
-            top: -50px;
-            visibility: hidden;
-        }
-    </style>
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
@@ -509,15 +501,6 @@
                         <tbody>
                             <tr>
                                 <td style="width: 181px;"><!-- from computed when width < 181 -->
-                                    <style>
-                                        .spouse-crud:not(:last-child) {
-                                            width: 165px;
-                                            margin-bottom: 5px;
-                                        }
-                                        .spouse-crud:last-child {
-                                            width: 165px;
-                                        }
-                                    </style>
                                     <a href="{% url 'shoe_order_person_create' spouse.id %}" class="btn btn-default spouse-crud">
                                         Add Shoe Order
                                     </a>
@@ -601,15 +584,6 @@
                             {% for child in children %}
                                 <tr>
                                     <td style="width: 181px;"><!-- from computed when width < 181 -->
-                                        <style>
-                                            .child-crud:not(:last-child) {
-                                                width: 165px;
-                                                margin-bottom: 5px;
-                                            }
-                                            .child-crud:last-child {
-                                                width: 165px;
-                                            }
-                                        </style>
                                         <a href="{% url 'shoe_order_person_create' child.id %}" class="btn btn-default child-crud">
                                             Add Shoe Order
                                         </a>
