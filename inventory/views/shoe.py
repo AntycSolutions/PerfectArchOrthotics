@@ -130,12 +130,14 @@ class ListShoeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ListShoeView, self).get_context_data(**kwargs)
+
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'a'
         context['rows_per_page'] = self.request.session.get(
             'rows_per_page', self.paginate_by)
         context['search'] = True
+        context['lazy'] = True
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
