@@ -7,7 +7,7 @@
     <h1>Insurances</h1>
     {% include 'utils/snippets/messages.html' %}
     <form method="GET" class="form-inline">
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Insurance Search" autofocus />
         </div>
         <button type="submit" class="btn">Search</button>
@@ -30,7 +30,7 @@
             </span>
 
             {% if insurances.has_next %}
-                <a href="?q={{q}}&page={{ insurances.next_page_number }}" class="btn btn-default">Next</a>
+                <a href="?q={{q}}&page={{ insurances.next_page_number }}" class="btn btn-default inline">Next</a>
             {% endif %}
         </span>
     </div>

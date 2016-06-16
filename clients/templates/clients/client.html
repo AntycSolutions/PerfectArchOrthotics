@@ -42,13 +42,13 @@
     </h1>
     {% include 'utils/snippets/messages.html' %}
     <div>
-        <a href="{% url 'claim_create' client.id %}?reset" class="btn btn-primary">
+        <a href="{% url 'claim_create' client.id %}?reset" class="btn btn-primary inline">
             Create Claim
         </a>
-        <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary">
+        <a href="{% url 'shoe_order_person_create' client.pk %}" class="btn btn-primary inline">
             Create Shoe Order
         </a>
-        <a href="{% url 'coverage_order_person_create' client.pk %}" class="btn btn-primary">
+        <a href="{% url 'coverage_order_person_create' client.pk %}" class="btn btn-primary inline">
             Create Coverage Order
         </a>
         <a href="{% url 'adjustment_order_person_create' client.pk %}" class="btn btn-primary">
@@ -716,7 +716,7 @@
 
                         {% if client_claims.has_next %}
                             <!-- q={{q}}&df={{df}}&dt={{dt}}& -->
-                            <a href="?claims_page={{ client_claims.next_page_number }}" class="btn btn-default">Next</a>
+                            <a href="?claims_page={{ client_claims.next_page_number }}" class="btn btn-default inline">Next</a>
                         {% endif %}
                     </span>
                 </div>
@@ -797,7 +797,7 @@
                             {% endif %}
 
                             {% if order_info.order_set.has_next %}
-                                <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.next_page_number }}" class="btn btn-default">Next</a>
+                                <a href="?{{ order_info.person_pk }}_page={{ order_info.order_set.next_page_number }}" class="btn btn-default inline">Next</a>
                             {% endif %}
                         </span>
                     </div>

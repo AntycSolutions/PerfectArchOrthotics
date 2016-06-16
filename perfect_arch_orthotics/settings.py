@@ -141,6 +141,7 @@ DEBUG_TOOLBAR_CONFIG = {
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE = {
     'STYLESHEETS': {
+        # templates
         'base': {
             'source_filenames': (
                 'css/sticky-footer.css',
@@ -162,6 +163,7 @@ PIPELINE = {
                 'fallback_key': 'index_all_css',
             },
         },
+        # clients
         'biomechanical_foot': {
             'source_filenames': (
                 'clients/css/biomechanical_foot.css',
@@ -217,6 +219,7 @@ PIPELINE = {
         },
     },
     'JAVASCRIPT': {
+        # clients
         'insurance': {
             'source_filenames': (
                 'clients/js/insurance.js',

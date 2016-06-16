@@ -26,24 +26,24 @@
     </h1>
     {% include 'utils/snippets/messages.html' %}
     <form method="GET" class="form-inline">
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}" autofocus />
         </div>
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" class="form-control search-query datepicker" name="apdf" placeholder="Actual Paid Date From" value="{{ apdf }}">
         </div>
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" class="form-control search-query datepicker" name="apdt" placeholder="Actual Paid Date To" value="{{ apdt }}">
         </div>
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" class="form-control search-query datepicker" name="sdf" placeholder="Submitted Date From" value="{{ sdf }}">
         </div>
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" class="form-control search-query datepicker" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
         </div>
         {% for name, select in selects.items %}
-            <div class="form-group">
-                <label for="payment_type" class="control-label">
+            <div class="form-group inline">
+                <label for="payment_type" class="control-label inline">
                     {{ select.label }}:
                 </label>
                 <select id="payment_type" name="payment_type" class="form-control">
@@ -56,7 +56,7 @@
                 </select>
             </div>
         {% endfor %}
-        <div class="radio">
+        <div class="radio inline">
             <label>
                 <input type="radio" name="apd" value="has_actual_paid_date" {% if apd == 'has_actual_paid_date' %}checked{% endif %}>
                 Has Actual Paid Date
@@ -102,7 +102,7 @@
             </span>
 
             {% if claims.has_next %}
-                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default">
+                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default inline">
                     Next
                 </a>
             {% endif %}

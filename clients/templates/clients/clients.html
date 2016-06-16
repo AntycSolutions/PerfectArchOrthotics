@@ -12,7 +12,7 @@
     </div>
     <br />
     <form class="form-inline" method="GET">
-        <div class="form-group">
+        <div class="form-group inline">
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Client Search" value="{{ q }}" autofocus />
         </div>
         <button type="submit" class="btn">Search</button>
@@ -66,7 +66,7 @@
             </span>
 
             {% if clients.has_next %}
-                <a href="?q={{q}}&page={{ clients.next_page_number }}" class="btn btn-default">Next</a>
+                <a href="?q={{q}}&page={{ clients.next_page_number }}" class="btn btn-default inline">Next</a>
             {% endif %}
         </span>
     </div>

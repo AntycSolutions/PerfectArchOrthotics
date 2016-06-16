@@ -265,23 +265,28 @@
             {% endif %}
         </div>
         <div class="panel-footer">
+            <div>
+                <label>
+                    Generate
+                </label>
+            </div>
             <div class="btn-group">
                 <a href="{% url 'fillOutInvoice' claim.id %}" class="btn btn-default">
-                    Generate Invoice
+                    Invoice
                 </a>
                 <a href="{% url 'fillOutInsurance' claim.id %}" class="btn btn-default">
-                    Generate Insurance Letter
+                    Insurance Letter
                 </a>
                 {% if has_orthotics %}
                     <a href="{% url 'fillOutProof' claim.id %}" class="btn btn-default">
-                        Generate Manufacturing Work Order
+                        Manufacturing Work Order
                     </a>
                 {% endif %}
                 <a href="{% url 'biomechanical_foot_fill_out' claim.pk %}" class="btn btn-default">
-                    Generate Biomechanical Foot Examination
+                    Biomechanical Foot Examination
                 </a>
                 <a href="{% url 'receipt_list' claim.pk %}" class="btn btn-default">
-                    Generate Receipt
+                    Receipt
                 </a>
             </div>
         </div>
