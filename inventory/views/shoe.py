@@ -218,6 +218,7 @@ class DetailShoeView(DetailView):
             select={'size_int': 'cast(size as real)'}
         ).order_by('size_int')
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
+        context['lazy'] = True
 
         return context
 
