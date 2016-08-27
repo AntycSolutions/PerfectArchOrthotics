@@ -17,9 +17,13 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',  # Tells django to view the rest as str
-    url(r'^$',
-        views.index,
-        name='index'),
+    url(r'^$', views.index, name='index'),
+    url(
+        r'^inventory_csv/$',
+        login_required(views.inventory_csv),
+        name='inventory_csv'
+    ),
+
     url(r'^accounts/', include(account_urls, namespace='accounts')),
     url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
@@ -29,6 +33,7 @@ urlpatterns = patterns(
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
         name='get_thumbnail'),
+
     url(r'^404/$',
         base.TemplateView.as_view(template_name='404.html'),
         name='404'),

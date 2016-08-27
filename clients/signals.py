@@ -22,6 +22,10 @@ def get_credit_divisor(created):
 
 
 def claimcoverage_pre_save(sender, instance, **kwargs):
+    # raw implies fixture, db not in consistent state, don't run signals
+    if kwargs.get('raw', False):
+        return
+
     # print('claimcoverage_pre_save')
 
     try:
@@ -84,6 +88,10 @@ def claimcoverage_post_delete(sender, instance, **kwargs):
 
 
 def shoeorder_pre_save(sender, instance, **kwargs):
+    # raw implies fixture, db not in consistent state, don't run signals
+    if kwargs.get('raw', False):
+        return
+
     try:
         sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
@@ -95,6 +103,10 @@ def shoeorder_pre_save(sender, instance, **kwargs):
 
 
 def coverageorder_and_adjustmentorder_pre_save(sender, instance, **kwargs):
+    # raw implies fixture, db not in consistent state, don't run signals
+    if kwargs.get('raw', False):
+        return
+
     # ignore coverageorder quantity as credit_value is already the total
     try:
         obj = sender.objects.get(pk=instance.pk)
@@ -127,6 +139,10 @@ def coverageorder_and_adjustmentorder_post_delete(sender, instance, **kwargs):
 
 
 def referral_pre_save(sender, instance, **kwargs):
+    # raw implies fixture, db not in consistent state, don't run signals
+    if kwargs.get('raw', False):
+        return
+
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
@@ -150,6 +166,10 @@ def referral_post_delete(sender, instance, **kwargs):
 
 
 def shoe_pre_save(sender, instance, **kwargs):
+    # raw implies fixture, db not in consistent state, don't run signals
+    if kwargs.get('raw', False):
+        return
+
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
