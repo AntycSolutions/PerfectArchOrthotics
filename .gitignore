@@ -20,3 +20,8 @@ static/*
 # Coverage
 .coverage
 htmlcov
+
+# settings files
+perfect_arch_orthotics/configs/devl_settings.py
+perfect_arch_orthotics/configs/test_settings.py
+perfect_arch_orthotics/configs/prod_settings.py
