@@ -1141,7 +1141,7 @@ class ProofOfManufacturing(models.Model):
             invoice = self.claim.invoice
             if invoice.invoice_date:
                 return invoice.invoice_date - timedelta(weeks=1)
-        except Claim.DoesNotExist:
+        except (Claim.DoesNotExist, Invoice.DoesNotExist):
             pass
 
     def get_absolute_url(self):

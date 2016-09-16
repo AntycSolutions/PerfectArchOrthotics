@@ -2,6 +2,7 @@
 
 # Backup database/media
 #  tar/gzip the json file and media folder
+#  tar -xzf <file> to un-tar/gzip
 
 filename="default"
 now=$(date +"%Y_%m_%d")
@@ -21,7 +22,8 @@ fi
 
 idx="$filename"_"$now"
 
-python3 manage.py dumpdata > "$idx".json
+# exclude contenttypes as they are created during migrate
+python3 manage.py dumpdata -e contenttypes > "$idx".json
 tar -czf ../backups/"$idx".tar.gz "$idx".json
 # Media folder is big, so overwrite it
 tar -czf ../backups/media_"$filename".tar.gz "media/"
