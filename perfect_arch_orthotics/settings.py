@@ -1,11 +1,11 @@
 # perfect_arch_orthotics settings
 
-# Django
-
-import os
 import platform
+from os import path
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+# Django settings
+
+BASE_DIR = path.dirname(path.dirname(__file__))
 
 DJANGO_APPS = (
     'django.contrib.admin',
@@ -82,7 +82,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "assets"),
+    path.join(BASE_DIR, "assets"),
 )
 
 # Media files (user uploaded)
@@ -92,7 +92,7 @@ MEDIA_ROOT = BASE_DIR + '/media/'
 LOGIN_REDIRECT_URL = '/'
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
+    path.join(BASE_DIR, 'templates'),
 )
 
 # Email
@@ -240,8 +240,8 @@ elif system == 'Linux':
 else:
     raise Exception('Unknown platform.system')
 PIPELINE['YUGLIFY_BINARY'] = (
-    os.path.normpath(
-        os.path.join(BASE_DIR, '../node_modules/.bin/' + yuglify)
+    path.normpath(
+        path.join(BASE_DIR, '../node_modules/.bin/' + yuglify)
     )
 )
 
@@ -255,13 +255,13 @@ VERSIONS = {
 }
 
 # import environment aware settings
-if os.path.isfile(os.path.join(BASE_DIR, "../prod")):
+if path.isfile(path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
     env = 'prod'
-elif os.path.isfile(os.path.join(BASE_DIR, "../test")):
+elif path.isfile(path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
     env = 'test'
-elif os.path.isfile(os.path.join(BASE_DIR, "../devl")):
+elif path.isfile(path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
     env = 'devl'
 else:
