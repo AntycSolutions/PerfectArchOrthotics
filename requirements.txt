@@ -8,5 +8,6 @@ django-pipeline==1.6.8
 piexif==1.0.3
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
 git+https://github.com/AntycSolutions/xhtml2pdf
+html5lib==1.0b8  # xhtml2pdf requirement is out of date
 git+https://github.com/AntycSolutions/utils
 git+https://github.com/AntycSolutions/django-accounts
