@@ -1,5 +1,4 @@
-# autocomplete/colours (older version required for windows)
-#  cli.py line 284 needs to be fixed: 'c = dict(c.items() |'
+# autocomplete/colours
+#  cli.py line 284 needs to be fixed: 'c = dict(c.items() |' (for py3 support)
 bpython==0.14.2
-pyreadline # cli history (windows)
 django-debug-toolbar==1.5

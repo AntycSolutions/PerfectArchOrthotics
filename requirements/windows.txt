@@ -1,0 +1,4 @@
+pyreadline # cli history (windows)
+# curses-2.2-cp35-none-win32.whl required for bpython-curses
+#  use the relevant bitness / version required for your version of python
+#  available from http://www.lfd.uci.edu/~gohlke/pythonlibs/
