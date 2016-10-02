@@ -11,7 +11,9 @@ from django.core import urlresolvers
 from django.core.files import storage
 from django.conf import settings
 from django.utils.translation import ugettext as trans
+from django.utils import safestring
 from django.db import utils as db_utils
+from django.contrib import messages
 
 from formtools.wizard import views as wizard_views, forms as wizard_forms
 
@@ -330,6 +332,9 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
     class SkippedStepException(BaseException):
         pass
 
+    class MissingPeriodDateException(BaseException):
+        pass
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -379,6 +384,15 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
             ).filter(
                 insurance_id=insurance_id, claimant_id=patient_id
             )
+            for coverage in coverages:
+                requires_period_date = (
+                    coverage.period == Coverage.BENEFIT_YEAR and
+                    coverage.period_date is None
+                )
+                if requires_period_date:
+                    exception = self.MissingPeriodDateException
+                    exception.coverage = coverage
+                    raise exception
             label = (
                 lambda obj:
                     "%s - %s - %s"
@@ -435,6 +449,27 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
             return super().get(*args, **kwargs)
         except self.SkippedStepException:
             self.storage.current_step = self.steps.first
+
+            return shortcuts.redirect(self.get_step_url(self.steps.first))
+        except self.MissingPeriodDateException as e:
+            self.storage.current_step = self.steps.first
+
+            coverage = e.coverage
+            messages.add_message(
+                self.request, messages.ERROR,
+                safestring.mark_safe(
+                    "One of {}'s Coverages is set to Benefit Year "
+                    "but does not have a Period Date set. Please "
+                    "<a href='{}'>Click here to edit it</a> "
+                    "before continuing".format(
+                        coverage.claimant,
+                        urlresolvers.reverse(
+                            'insurance_update',
+                            kwargs={'insurance_id': coverage.insurance.pk}
+                        )
+                    )
+                )
+            )
 
             return shortcuts.redirect(self.get_step_url(self.steps.first))
 

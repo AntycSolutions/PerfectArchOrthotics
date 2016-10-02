@@ -6,7 +6,7 @@ from datetime import date, timedelta, time
 
 from django.db import models
 from django.conf import settings
-from django.core import urlresolvers
+from django.core import urlresolvers, exceptions
 from django.utils import timezone
 from django.db.models import Sum, Case, When
 from django.template import defaultfilters
@@ -392,6 +392,16 @@ class Coverage(models.Model):
 
     def quantity_remaining_period(self):
         return self.max_quantity - self.total_quantity_claimed_period()
+
+    MISSING_PERIOD_DATE = "Benefit Year requires Period Date to be set"
+
+    def clean(self):
+        if self.period == self.BENEFIT_YEAR and self.period_date is None:
+            msg = self.MISSING_PERIOD_DATE
+            raise exceptions.ValidationError({
+                'period': msg,
+                'period_date': msg,
+            })
 
     def __str__(self):
         return "{} - Insurance ID: {} - Person ID: {}".format(

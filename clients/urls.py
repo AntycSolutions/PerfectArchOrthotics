@@ -188,22 +188,22 @@ claim_patterns = patterns(
         name='receipt_list'),
     url(
         r'^wizard/create/(?P<client_id>\w+)/(?P<step>.+)/$',
-        create_claim_wizard,
+        login_required(create_claim_wizard),
         name='claim_create_step'
     ),
     url(
         r'^wizard/create/(?P<client_id>\w+)/$',
-        create_claim_wizard,
+        login_required(create_claim_wizard),
         name='claim_create'
     ),
     url(
         r'^wizard/update/(?P<claim_pk>\w+)/(?P<step>.+)/$',
-        update_claim_wizard,
+        login_required(update_claim_wizard),
         name='claim_update_step'
     ),
     url(
         r'^wizard/update/(?P<claim_pk>\w+)/$',
-        update_claim_wizard,
+        login_required(update_claim_wizard),
         name='claim_update'
     ),
 )
