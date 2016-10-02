@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.core import urlresolvers
+from django.utils import safestring
 
 from clients.models import Client, Insurance, Claim, Dependent, \
     Coverage, Person, Invoice, Item, InsuranceLetter, \
@@ -50,7 +52,16 @@ class ClaimAdmin(admin.ModelAdmin):
 
 class CoverageAdmin(admin.ModelAdmin):
     inlines = (ClaimCoverageInline,)
-    list_filter = ('period', ('period_date', admin.AllValuesFieldListFilter))
+    list_filter = ('period', ('period_date', admin.AllValuesFieldListFilter),)
+    list_display = ('__str__', 'get_update_url',)
+
+    def get_update_url(self, obj):
+        update_url = urlresolvers.reverse(
+            'insurance_update', kwargs={'insurance_id': obj.insurance.pk}
+        )
+
+        return safestring.mark_safe('<a href="{}">Link</a>'.format(update_url))
+    get_update_url.short_description = 'Update Link'
 
 
 admin.site.register(Coverage, CoverageAdmin)
