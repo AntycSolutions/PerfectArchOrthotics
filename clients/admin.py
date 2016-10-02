@@ -15,6 +15,7 @@ class DependentInline(admin.TabularInline):
 class ClientAdmin(admin.ModelAdmin):
     inlines = (DependentInline,)
 
+
 admin.site.register(Dependent)
 admin.site.register(Client, ClientAdmin)
 
@@ -29,6 +30,7 @@ class InsuranceAdmin(admin.ModelAdmin):
 
 class PersonAdmin(admin.ModelAdmin):
     inlines = (CoverageInline,)
+
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Insurance, InsuranceAdmin)
@@ -48,6 +50,8 @@ class ClaimAdmin(admin.ModelAdmin):
 
 class CoverageAdmin(admin.ModelAdmin):
     inlines = (ClaimCoverageInline,)
+    list_filter = ('period', ('period_date', admin.AllValuesFieldListFilter))
+
 
 admin.site.register(Coverage, CoverageAdmin)
 admin.site.register(ClaimAttachment)
@@ -71,6 +75,7 @@ class ItemAdmin(admin.ModelAdmin):
 class ClaimCoverageAdmin(admin.ModelAdmin):
     inlines = (ClaimItemInline,)
 
+
 admin.site.register(Item, ItemAdmin)
 admin.site.register(ClaimCoverage, ClaimCoverageAdmin)
 
@@ -83,6 +88,7 @@ class LaboratoryInline(admin.TabularInline):
 
 class InsuranceLetterAdmin(admin.ModelAdmin):
     inlines = (LaboratoryInline,)
+
 
 admin.site.register(Laboratory)
 admin.site.register(InsuranceLetter, InsuranceLetterAdmin)
