@@ -626,6 +626,32 @@ def clientView(request, client_id):
         main_claimant_id__in=person_pk_list
     )
 
+    invalid_coverages = False
+    for insurance in insurances:
+        for coverage in insurance.coverage_set.all():
+            is_BENEFIT_YEAR = (
+                coverage.period == clients_models.Coverage.BENEFIT_YEAR
+            )
+            if is_BENEFIT_YEAR and coverage.period_date is None:
+                invalid_coverages = True
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    safestring.mark_safe(
+                        "One of {}'s Coverages is set to Benefit Year "
+                        "but does not have a Period Date set. Please "
+                        "<a href='{}'>Click here to edit it</a> ".format(
+                            coverage.claimant,
+                            urlresolvers.reverse(
+                                'insurance_update',
+                                kwargs={'insurance_id': coverage.insurance.pk}
+                            )
+                        )
+                    )
+                )
+    if invalid_coverages:
+        insurances = None
+
     claims = Claim.objects.select_related(
         'patient__client',
         'patient__dependent__client',
