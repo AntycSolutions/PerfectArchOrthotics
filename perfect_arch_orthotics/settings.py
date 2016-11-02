@@ -103,7 +103,7 @@ EMAIL_USE_TLS = True
 # Django Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-# Django Ajax  Selects
+# Django Ajax Selects
 AJAX_LOOKUP_CHANNELS = {
     'shoe': ('inventory.lookups', 'ShoeLookup'),
 }
