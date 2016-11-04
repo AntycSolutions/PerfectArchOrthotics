@@ -6,14 +6,20 @@
 {% block meta %}
     {{ block.super }}
 
+    <meta name="robots" content="index, follow">
     <meta name="description" content="We are an Edmonton based company providing orthotics to those in need." />
 
     <meta name="google-site-verification" content="Nwpb8CcAO_B8BYCSo2EKaUQxW6hIS0Zo77CnlM0izzc" />
 
+    <meta property="og:type" content="business.business" />
     <meta property="og:title" content="Perfect Arch" />
-    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://perfectarch.ca/" />
     <meta property="og:image" content="https://perfectarch.ca/static/images/PerfectArchLogo.jpg" />
+    <meta property="business:contact_data:street_address" content="10540 - 169 St NW">
+    <meta property="business:contact_data:locality" content="Edmonton">
+    <meta property="business:contact_data:region" content="AB">
+    <meta property="business:contact_data:postal_code" content="T5P 3X6">
+    <meta property="business:contact_data:country_name" content="Canada">
 {% endblock %}
 
 {% block head %}
@@ -28,6 +34,37 @@
     <!--[if IE]>
         <link href="{% static 'images/PerfectArchLogo.jpg' %}" rel="shortcut icon" type="image/x-icon" />
     <![endif]-->
+
+    <script type='application/ld+json'>
+        {
+            "@context": "http://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Perfect Arch",
+            "legalName": "The Perfect Arch Orthotics",
+            "logo": "https://perfectarch.ca/static/images/PerfectArchLogo.jpg",
+            "url": "https://perfectarch.ca",
+            "email": "info@perfectarch.ca",
+            "sameAs": [
+              "https://www.facebook.com/The-Perfect-Arch-Orthotics-1580421348860249/"
+            ],
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Edmonton",
+              "addressRegion": "AB",
+              "postalCode": "T5P 3X6",
+              "addressCountry": "Canada"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": "53.551592",
+              "longitude": "-113.613429"
+            },
+            "openingHours": [
+                "Mo-Fr 10:30-19:00",
+                "Sa 11:00-17:00"
+            ]
+        }
+    </script>
 {% endblock %}
 
 <script type="text/javascript">
