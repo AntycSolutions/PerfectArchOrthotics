@@ -202,17 +202,15 @@ def _biomechanical_foot(claim_pk):
 
 
 def biomechanical_foot_fill_out(request, claim_pk):
-    context = template.RequestContext(request)
-
     claim, biomechanical_foot = _biomechanical_foot(claim_pk)
 
-    return shortcuts.render_to_response(
-        'clients/make_biomechanical_foot.html',
-        {
-            'claim': claim,
-            'biomechanical_foot': biomechanical_foot,
-        },
-        context
+    context = {
+        'claim': claim,
+        'biomechanical_foot': biomechanical_foot,
+    }
+
+    return shortcuts.render(
+        request, 'clients/make_biomechanical_foot.html', context
     )
 
 

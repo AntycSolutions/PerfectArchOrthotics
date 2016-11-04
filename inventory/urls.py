@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 from django.views.generic import base
 
@@ -7,8 +7,7 @@ from inventory.views import shoe
 from inventory.views import order
 
 
-adjustment_order_patterns = patterns(
-    '',
+adjustment_order_patterns = [
     url(r'^$',
         base.RedirectView.as_view(pattern_name='order_list', permanent=False),
         name='adjustment_order_list'),
@@ -27,11 +26,10 @@ adjustment_order_patterns = patterns(
     url(r'^delete/(?P<pk>\d+)/$',
         login_required(order.AdjustmentDeleteOrderView.as_view()),
         name='adjustment_order_delete'),
-)
+]
 
 
-shoe_order_patterns = patterns(
-    '',
+shoe_order_patterns = [
     url(r'^$',
         base.RedirectView.as_view(pattern_name='order_list', permanent=False),
         name='shoe_order_list'),
@@ -50,11 +48,10 @@ shoe_order_patterns = patterns(
     url(r'^delete/(?P<pk>\d+)/$',
         login_required(order.ShoeDeleteOrderView.as_view()),
         name='shoe_order_delete'),
-)
+]
 
 
-coverage_order_patterns = patterns(
-    '',
+coverage_order_patterns = [
     url(r'^$',
         base.RedirectView.as_view(pattern_name='order_list', permanent=False),
         name='coverage_order_list'),
@@ -73,11 +70,10 @@ coverage_order_patterns = patterns(
     url(r'^delete/(?P<pk>\d+)/$',
         login_required(order.CoverageDeleteOrderView.as_view()),
         name='coverage_order_delete'),
-)
+]
 
 
-order_patterns = patterns(
-    '',
+order_patterns = [
     url(r'^$',
         login_required(order.ListOrderView.as_view()),
         name='order_list'),
@@ -93,11 +89,10 @@ order_patterns = patterns(
     url(r'^shoe/', include(shoe_order_patterns)),
     url(r'^coverage/', include(coverage_order_patterns)),
     url(r'^adjustment/', include(adjustment_order_patterns)),
-)
+]
 
 
-shoe_patterns = patterns(
-    '',
+shoe_patterns = [
     url(r'^$',
         login_required(shoe.ListShoeView.as_view()),
         name='shoe_list'),
@@ -113,10 +108,9 @@ shoe_patterns = patterns(
     url(r'^create/$',
         login_required(shoe.CreateShoeView.as_view()),
         name='shoe_create'),
-)
+]
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^shoe/', include(shoe_patterns)),
     url(r'^order/', include(order_patterns)),
-)
+]

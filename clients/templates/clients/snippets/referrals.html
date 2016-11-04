@@ -27,7 +27,7 @@
     </label>
     <div class="col-lg-9">
         <p class="form-control-static">
-            {% for referrer in object.person_ptr.referred_by.all %}
+            {% for referrer in object.person_ptr.referred_set.all %}
                 <a href="{{ referrer.get_absolute_url }}">
                     {{ referrer }}
                 </a>

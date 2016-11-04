@@ -85,7 +85,7 @@ class Person(models.Model):
         except Client.DoesNotExist:
             pass
         try:
-            return self.dependent.client
+            return self.dependent.primary
         except Dependent.DoesNotExist:
             pass
 
@@ -121,8 +121,9 @@ class Client(Person):
         "Email", max_length=254,
         blank=True, null=True)
     referred_by = models.ForeignKey(
-        Person, verbose_name="Referred By", related_name="referred_by",
-        blank=True, null=True)
+        Person, related_name="referred_set",
+        blank=True, null=True
+    )
     notes = models.TextField(
         "Notes",
         blank=True)
@@ -201,15 +202,14 @@ class Dependent(Person):
     RELATIONSHIPS = ((SPOUSE, 'Spouse'),
                      (CHILD, 'Child'))
 
-    client = models.ForeignKey(
-        Client, verbose_name="Client")
+    primary = models.ForeignKey(Client)
     relationship = models.CharField(
         "Relationship", max_length=4, choices=RELATIONSHIPS)
 
     def get_absolute_url(self):
         url = '{}?toggle=dependents#dependent_{}'.format(
             urlresolvers.reverse(
-                'client', kwargs={'client_id': self.client_id}
+                'client', kwargs={'client_id': self.primary_id}
             ),
             self.pk
         )

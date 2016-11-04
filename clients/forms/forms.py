@@ -20,7 +20,9 @@ class ClientForm(forms.ModelForm):
 
         def label_from_instance(obj):
             try:
-                client = clients_models.Dependent.objects.get(pk=obj.pk).client
+                client = clients_models.Dependent.objects.get(
+                    pk=obj.pk
+                ).primary
                 return '{obj}, Dependent of {client}'.format(
                     obj=obj, client=client
                 )
@@ -93,7 +95,7 @@ class ReferralForm(forms.ModelForm):
         widgets = {'claims': forms.CheckboxSelectMultiple}
 
     def _get_referred_claims(self, person, claims_queryset):
-        referred_set = person.referred_by.all()
+        referred_set = person.referred_set.all()
         for referred in referred_set:
             claims = referred.claim_set.filter(
                 claimcoverage__actual_paid_date__isnull=False

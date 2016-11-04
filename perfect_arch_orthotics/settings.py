@@ -32,21 +32,31 @@ LOCAL_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 DJANGO_CONTEXT_PROCESSORS = [
-    "django.contrib.auth.context_processors.auth",
-    "django.template.context_processors.debug",
-    "django.template.context_processors.i18n",
-    "django.template.context_processors.media",
-    "django.template.context_processors.static",
-    "django.template.context_processors.tz",
-    "django.template.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
+    'django.contrib.auth.context_processors.auth',
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.template.context_processors.tz',
+    'django.template.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
 ]
 LOCAL_CONTEXT_PROCESSORS = [
-    "perfect_arch_orthotics.context_processors.site",
+    'perfect_arch_orthotics.context_processors.site',
 ]
-TEMPLATE_CONTEXT_PROCESSORS = (
-    DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors':
+                DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS,
+        },
+    },
+]
 
 DJANGO_MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
@@ -90,10 +100,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR + '/media/'
 
 LOGIN_REDIRECT_URL = '/'
-
-TEMPLATE_DIRS = (
-    path.join(BASE_DIR, 'templates'),
-)
 
 # Email
 EMAIL_USE_TLS = True

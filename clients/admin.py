@@ -11,7 +11,7 @@ from clients import models as clients_models
 
 class DependentInline(admin.TabularInline):
     model = Dependent
-    fk_name = "client"
+    fk_name = "primary"
 
 
 class ClientAdmin(admin.ModelAdmin):

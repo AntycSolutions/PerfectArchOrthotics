@@ -1,5 +1,5 @@
 from django.conf import urls
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 
 from clients.views import views
@@ -17,8 +17,7 @@ from .views.item import CreateItemView, ListItemView, DetailItemView, \
 from clients.views import statistics, dependent, receipt, claim, biomechanical
 
 
-report_patterns = patterns(
-    '',
+report_patterns = [
     url(r'^insurance_stats_report/$',
         login_required(statistics.insurance_stats_report),
         name='insurance_stats_report'),
@@ -31,11 +30,10 @@ report_patterns = patterns(
     url(r'^old_arrived_date_orders_report/$',
         login_required(statistics.old_arrived_date_orders_report),
         name='old_arrived_date_orders_report'),
-)
+]
 
 
-item_patterns = patterns(
-    '',
+item_patterns = [
     url(r'^$',
         login_required(ListItemView.as_view()),
         name='item_list'),
@@ -51,10 +49,9 @@ item_patterns = patterns(
     url(r'^create/$',
         login_required(CreateItemView.as_view()),
         name='item_create'),
-)
+]
 
-insurance_patterns = patterns(
-    '',
+insurance_patterns = [
     url(r'^$',
         login_required(views.insuranceSearchView),
         name='insurance'),
@@ -70,10 +67,9 @@ insurance_patterns = patterns(
     url(r'^create/(?P<client_id>\w+)/(?P<spouse_id>\w+)/$',
         login_required(CreateInsuranceView.as_view()),
         name='insurance_create_spouse'),
-)
+]
 
-coverage_type_patterns = patterns(
-    '',
+coverage_type_patterns = [
     url(r'^update/(?P<coverage_type_id>\w+)/$',
         login_required(UpdateCoverageView.as_view()),
         name='coverage_type_update'),
@@ -83,7 +79,7 @@ coverage_type_patterns = patterns(
     url(r'^delete/(?P<coverage_type_id>\w+)/$',
         login_required(DeleteCoverageView.as_view()),
         name='coverage_type_delete'),
-)
+]
 
 biomechanical_gait_patterns = [
     urls.url(
@@ -142,8 +138,7 @@ update_claim_wizard = claim.UpdateClaimWizard.as_view(
     url_name='claim_update_step',
     done_step_name='finished'
 )
-claim_patterns = patterns(
-    '',
+claim_patterns = [
     url(r'^$',
         login_required(views.claimSearchView),
         name='claims'),
@@ -206,7 +201,7 @@ claim_patterns = patterns(
         login_required(update_claim_wizard),
         name='claim_update'
     ),
-)
+]
 
 pdf_patterns = [
     url(r'^receipt/(?P<pk>\w+)/(?P<_type>\w+)/$',
@@ -215,8 +210,7 @@ pdf_patterns = [
 ]
 
 # TODO: make this not gross
-urlpatterns = patterns(
-    '',  # Tells django to view the rest as str
+urlpatterns = [
     url(r'^$',
         login_required(views.clientSearchView),
         name='client_list'),
@@ -284,4 +278,4 @@ urlpatterns = patterns(
         login_required(statistics.InventoryOrdersStatistics.as_view()),
         name='inventory_orders_statistics'),
     url(r'^reports/', include(report_patterns)),
-)
+]

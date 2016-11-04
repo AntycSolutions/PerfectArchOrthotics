@@ -2,18 +2,15 @@ import csv
 
 from django import http
 from django.db import models as db_models
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from inventory import models as inventory_models
 
 
 def index(request):
-    context = RequestContext(request)
+    context = {'lazy': True}
 
-    context['lazy'] = True
-
-    return render_to_response('index.html', context)
+    return render(request, 'index.html', context)
 
 
 def inventory_csv(request):

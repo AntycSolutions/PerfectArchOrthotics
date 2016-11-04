@@ -26,6 +26,6 @@ class DeleteDependentView(views_utils.PermissionMixin, DeleteView):
         return context
 
     def get_success_url(self):
-        self.success_url = self.object.client.get_absolute_url()
+        self.success_url = self.object.primary.get_absolute_url()
 
         return self.success_url

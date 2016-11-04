@@ -20,7 +20,7 @@ class InsuranceCoverageInlineFormSet(forms.BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
         person = models.Person.objects.select_related(
-            'client', 'dependent__client'
+            'client', 'dependent__primary'
         ).get(pk=main_claimant_id)
         client = person.get_client()
         dependents = client.dependent_set.all()

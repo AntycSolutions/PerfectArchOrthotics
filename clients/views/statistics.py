@@ -197,7 +197,7 @@ def _stats():
     revenue_claims = clients_models.Claim.objects.select_related(
         'insurance',
         'patient__client',
-        'patient__dependent__client',
+        'patient__dependent__primary',
     ).annotate(
         invoice_revenue=(
             Coalesce(F('invoice__payment_made'), 0) +
@@ -219,7 +219,7 @@ def _stats():
 
     outstanding_claims = clients_models.Claim.objects.select_related(
         'patient__client',
-        'patient__dependent__client',
+        'patient__dependent__primary',
     ).annotate(
         total_amount=Sum(
             # TODO: need to use get_unit_price
@@ -553,7 +553,7 @@ def _overdue_claims():
     cutoff = utils.timezone.now() - timedelta(days=30)
     overdue_claims = clients_models.Claim.objects.select_related(
         'patient__client',
-        'patient__dependent__client',
+        'patient__dependent__primary',
     ).filter(
         submitted_datetime__lte=cutoff,
         claimcoverage__actual_paid_date__isnull=True
@@ -566,7 +566,7 @@ def _old_ordered_date_orders():
     cutoff = datetime.now() - timedelta(days=30)
     orders = inventory_models.Order.objects.select_related(
         'claimant__client',
-        'claimant__dependent__client',
+        'claimant__dependent__primary',
         'shoeorder__shoe_attributes__shoe',
         'coverageorder',
         'adjustmentorder'
@@ -583,7 +583,7 @@ def _old_arrvied_date_orders():
     cutoff = datetime.now() - timedelta(days=30)
     orders = inventory_models.Order.objects.select_related(
         'claimant__client',
-        'claimant__dependent__client',
+        'claimant__dependent__primary',
         'shoeorder__shoe_attributes__shoe',
         'coverageorder',
         'adjustmentorder'

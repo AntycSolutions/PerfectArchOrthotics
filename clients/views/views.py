@@ -6,7 +6,7 @@ import itertools
 from cgi import escape
 
 # Django
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import http
 from django.template import RequestContext
@@ -199,23 +199,21 @@ def _proof_of_manufacturing(claim_id):
 
 @login_required
 def fillOutInvoiceView(request, claim_id):
-    context = RequestContext(request)
-
     claim, patient, invoice, invoice_number = _invoice(claim_id)
 
-    return render_to_response('clients/make_invoice.html',
-                              {'patient': patient,
-                               'claim': claim,
-                               'invoice': invoice,
-                               'insurance_class': Insurance,
-                               'invoice_number': invoice_number},
-                              context)
+    context = {
+        'patient': patient,
+        'claim': claim,
+        'invoice': invoice,
+        'insurance_class': Insurance,
+        'invoice_number': invoice_number
+    }
+
+    return render(request, 'clients/make_invoice.html', context)
 
 
 @login_required
 def fillOutInsuranceLetterView(request, claim_id):
-    context = RequestContext(request)
-
     claim, patient, insurance_letter = _insurance_letter(claim_id)
 
     underline = (
@@ -230,41 +228,40 @@ def fillOutInsuranceLetterView(request, claim_id):
         ' line-height: 10px;'
     )
 
-    return render_to_response('clients/make_insurance_letter.html',
-                              {'patient': patient,
-                               'claim': claim,
-                               'insurance_letter': insurance_letter,
-                               'underline': underline,
-                               'notunderline': notunderline},
-                              context)
+    context = {
+        'patient': patient,
+        'claim': claim,
+        'insurance_letter': insurance_letter,
+        'underline': underline,
+        'notunderline': notunderline
+    }
+
+    return render(request, 'clients/make_insurance_letter.html', context)
 
 
 @login_required
 def fillOutProofOfManufacturingView(request, claim_id):
-    context = RequestContext(request)
-
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
         claim_id)
 
-    return render_to_response(
-        'clients/make_proof_of_manufacturing.html',
-        {'claim': claim,
-         'proof_of_manufacturing': proof_of_manufacturing,
-         'invoice_number': invoice_number},
-        context)
+    context = {
+        'claim': claim,
+        'proof_of_manufacturing': proof_of_manufacturing,
+        'invoice_number': invoice_number
+    }
+
+    return render(request, 'clients/make_proof_of_manufacturing.html', context)
 
 
 @login_required
 def claimView(request, claim_id):
-    context = RequestContext(request)
-
     claim = Claim.objects.select_related(
         'patient', 'insurance'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set'
     ).get(id=claim_id)
     has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
-    context_dict = {
+    context = {
         'claim': claim,
         'has_orthotics': has_orthotics,
         'claim_coverage_class': ClaimCoverage,
@@ -274,13 +271,12 @@ def claimView(request, claim_id):
         'now': timezone.now(),
     }
 
-    return render_to_response('clients/claim.html', context_dict, context)
+    return render(request, 'clients/claim.html', context)
 
 
 @login_required
 def clientSearchView(request):
-    context = RequestContext(request)
-    context_dict = {}
+    context = {}
 
     found_clients = Client.objects.order_by('-id')
     found_dependents = Dependent.objects.order_by('-id')
@@ -288,7 +284,7 @@ def clientSearchView(request):
         fields = ['first_name', 'last_name', 'address', 'phone_number',
                   'employer', 'health_care_number']
         query_string = request.GET['q']
-        context_dict['q'] = query_string
+        context['q'] = query_string
 
         client_query = get_query(query_string, fields)
         found_clients = Client.objects.filter(client_query)
@@ -296,7 +292,7 @@ def clientSearchView(request):
         fields = ['first_name', 'last_name',
                   'employer', 'health_care_number']
         query_string = request.GET['q']
-        context_dict['q'] = query_string
+        context['q'] = query_string
 
         client_query = get_query(query_string, fields)
         found_dependents = Dependent.objects.filter(client_query)
@@ -312,10 +308,10 @@ def clientSearchView(request):
         clients_rows_per_page
     )
 
-    context_dict['clients'] = clients
-    context_dict['clients_rows_per_page'] = clients_rows_per_page
+    context['clients'] = clients
+    context['clients_rows_per_page'] = clients_rows_per_page
 
-    return render_to_response('clients/clients.html', context_dict, context)
+    return render(request, 'clients/clients.html', context)
 
 
 def _actual_paid_date(request, context_dict, found_claims):
@@ -356,8 +352,9 @@ def _run_query(request, claim_query, found_claims):
     return found_claims
 
 
-def _date_from_date_to(request, context_dict, found_claims, df, dt,
-                       date_field):
+def _date_from_date_to(
+    request, context_dict, found_claims, df, dt, date_field
+):
     if ((df in request.GET) and request.GET[df].strip()
             and (dt in request.GET) and request.GET[dt].strip()):
         query_date_from_string = request.GET[df]
@@ -427,15 +424,14 @@ def _payment_type(request, context_dict, found_claims):
 
 @login_required
 def claimSearchView(request):
-    context = RequestContext(request)
-    context_dict = {}
+    context = {}
 
     claims = None
     # Start from all, drilldown to q df dt
     found_claims = Claim.objects.select_related(
         'insurance',
         'patient__client',
-        'patient__dependent__client'
+        'patient__dependent__primary'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
         'claimcoverage_set__coverage'
@@ -448,23 +444,23 @@ def claimSearchView(request):
         fields = ['patient__first_name', 'patient__last_name',
                   'insurance__provider', 'patient__employer']
         query_string = request.GET['q']
-        context_dict['q'] = query_string
+        context['q'] = query_string
         claim_query = get_query(query_string, fields)
         if found_claims:
             found_claims = found_claims.filter(claim_query)
         else:
             found_claims = Claim.objects.filter(claim_query)
 
-    found_claims = _date_from_date_to(request, context_dict, found_claims,
+    found_claims = _date_from_date_to(request, context, found_claims,
                                       'apdf', 'apdt',
                                       'claimcoverage__actual_paid_date')
 
-    found_claims = _date_from_date_to(request, context_dict, found_claims,
+    found_claims = _date_from_date_to(request, context, found_claims,
                                       'sdf', 'sdt', 'submitted_datetime')
 
-    found_claims = _payment_type(request, context_dict, found_claims)
+    found_claims = _payment_type(request, context, found_claims)
 
-    found_claims = _actual_paid_date(request, context_dict, found_claims)
+    found_claims = _actual_paid_date(request, context, found_claims)
 
     # Expected Back
     totals = ClaimCoverage.objects.filter(
@@ -529,47 +525,44 @@ def claimSearchView(request):
 
     total_assignment_expected_back = \
         assignment_expected_back + pending_assignment_expected_back
-    context_dict['claims'] = claims
-    context_dict['claims_rows_per_page'] = claims_rows_per_page
-    context_dict['assignment_amount_claimed'] = assignment_amount_claimed
-    context_dict['non_assignment_amount_claimed'] = \
+    context['claims'] = claims
+    context['claims_rows_per_page'] = claims_rows_per_page
+    context['assignment_amount_claimed'] = assignment_amount_claimed
+    context['non_assignment_amount_claimed'] = \
         non_assignment_amount_claimed
-    context_dict['total_amount_claimed'] = \
+    context['total_amount_claimed'] = \
         assignment_amount_claimed + non_assignment_amount_claimed
-    context_dict['non_assignment_expected_back'] = non_assignment_expected_back
-    context_dict['assignment_expected_back'] = assignment_expected_back
-    context_dict['pending_assignment_expected_back'] = \
+    context['non_assignment_expected_back'] = non_assignment_expected_back
+    context['assignment_expected_back'] = assignment_expected_back
+    context['pending_assignment_expected_back'] = \
         pending_assignment_expected_back
-    context_dict['total_assignment_expected_back'] = \
+    context['total_assignment_expected_back'] = \
         total_assignment_expected_back
-    context_dict['total_expected_back'] = \
+    context['total_expected_back'] = \
         non_assignment_expected_back + total_assignment_expected_back
     context['now'] = timezone.now()
 
-    return render_to_response(
-        'clients/claims.html', context_dict, context
-    )
+    return render(request, 'clients/claims.html', context)
 
 
 @login_required
 def insuranceSearchView(request):
-    context = RequestContext(request)
-    context_dict = {}
+    context = {}
 
     found_insurances = Insurance.objects.select_related(
         'main_claimant__client',
-        'main_claimant__dependent__client'
+        'main_claimant__dependent__primary'
     ).prefetch_related(
         'coverage_set__claimcoverage_set__claimitem_set',
         'coverage_set__claimant__client',
-        'coverage_set__claimant__dependent__client'
+        'coverage_set__claimant__dependent__primary'
     ).all()
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ["provider", "policy_number",
                   "main_claimant__first_name", "main_claimant__last_name",
                   "main_claimant__employer"]
         query_string = request.GET['q']
-        context_dict['q'] = query_string
+        context['q'] = query_string
         insurance_query = get_query(query_string, fields)
         found_insurances = Insurance.objects.filter(insurance_query)
 
@@ -579,23 +572,21 @@ def insuranceSearchView(request):
     insurances = views_utils._paginate(request, found_insurances, 'page',
                                        insurances_rows_per_page)
 
-    context_dict['insurances'] = insurances
-    context_dict['insurances_rows_per_page'] = insurances_rows_per_page
+    context['insurances'] = insurances
+    context['insurances_rows_per_page'] = insurances_rows_per_page
 
-    return render_to_response('clients/insurances.html', context_dict, context)
+    return render(request, 'clients/insurances.html', context)
 
 
 @login_required
 def clientView(request, client_id):
-    context = RequestContext(request)
-
     client = Client.objects.select_related(
         'referred_by',
-        'person_ptr__referred_by'
+        'person_ptr'
     ).prefetch_related(
         'insurance_set__coverage_set',
-        'dependent_set__person_ptr__referred_by',
-        'referred_by'
+        'dependent_set__person_ptr__referred_set',
+        'person_ptr__referred_set'
     ).get(
         id=client_id
     )
@@ -618,10 +609,10 @@ def clientView(request, client_id):
 
     insurances = Insurance.objects.select_related(
         'main_claimant__client',
-        'main_claimant__dependent__client'
+        'main_claimant__dependent__primary'
     ).prefetch_related(
         'coverage_set__claimant__client',
-        'coverage_set__claimant__dependent__client'
+        'coverage_set__claimant__dependent__primary'
     ).filter(
         main_claimant_id__in=person_pk_list
     )
@@ -654,7 +645,7 @@ def clientView(request, client_id):
 
     claims = Claim.objects.select_related(
         'patient__client',
-        'patient__dependent__client',
+        'patient__dependent__primary',
         'insurance'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
@@ -724,7 +715,7 @@ def clientView(request, client_id):
     biomechanical_gaits = \
         clients_models.BiomechanicalGait.objects.select_related(
             'patient__client',
-            'patient__dependent__client'
+            'patient__dependent__primary'
         ).filter(
             patient_id__in=person_pk_list
         )
@@ -757,7 +748,7 @@ def clientView(request, client_id):
             urlresolvers.reverse('client', args=[client_id])
         )
 
-    context_dict = {
+    context = {
         'client': client,
         'insurances': insurances,
         'client_claims': claims,
@@ -780,7 +771,7 @@ def clientView(request, client_id):
         'biomechanical_gaits': biomechanical_gaits,
     }
 
-    return render_to_response('clients/client.html', context_dict, context)
+    return render(request, 'clients/client.html', context)
 
 
 def _order_info(person, request):
@@ -823,8 +814,6 @@ def _order_info(person, request):
 
 @login_required
 def add_client(request):
-    context = RequestContext(request)
-
     if request.method == 'POST':
         form = ClientForm(request.POST)
 
@@ -845,23 +834,19 @@ def add_client(request):
 
     cancel_url = urlresolvers.reverse('client_list')
 
-    return render_to_response(
-        'utils/generics/create.html',
-        {
-            'form': form,
-            'model_name_plural': Client._meta.verbose_name_plural,
-            'model_name': Client._meta.verbose_name,
-            'indefinite_article': 'a',
-            'cancel_url': cancel_url
-        },
-        context
-    )
+    context = {
+        'form': form,
+        'model_name_plural': Client._meta.verbose_name_plural,
+        'model_name': Client._meta.verbose_name,
+        'indefinite_article': 'a',
+        'cancel_url': cancel_url
+    }
+
+    return render(request, 'utils/generics/create.html', context)
 
 
 @login_required
 def editClientView(request, client_id):
-    context = RequestContext(request)
-
     client = Client.objects.get(id=client_id)
     if request.method == 'POST':
         client_form = ClientForm(request.POST, instance=client)
@@ -883,17 +868,15 @@ def editClientView(request, client_id):
         'client', kwargs={'client_id': client.pk}
     )
 
-    return render_to_response(
-        'utils/generics/update.html',
-        {
-            'form': client_form,
-            'model_name_plural': Client._meta.verbose_name_plural,
-            'model_name': Client._meta.verbose_name,
-            'indefinite_article': 'a',
-            'cancel_url': cancel_url
-        },
-        context
-    )
+    context = {
+        'form': client_form,
+        'model_name_plural': Client._meta.verbose_name_plural,
+        'model_name': Client._meta.verbose_name,
+        'indefinite_article': 'a',
+        'cancel_url': cancel_url
+    }
+
+    return render(request, 'utils/generics/update.html', context)
 
 
 @login_required
@@ -906,7 +889,7 @@ def editDependentsView(request, client_id, dependent_id):
         dependent_form = DependentForm(request.POST, instance=dependent)
         if dependent_form.is_valid():
             saved = dependent_form.save(commit=False)
-            saved.client = client
+            saved.primary = client
             saved.save()
             return redirect('client', client_id)
 
@@ -916,14 +899,15 @@ def editDependentsView(request, client_id, dependent_id):
     cancel_url = urlresolvers.reverse('client',
                                       kwargs={'client_id': client.pk})
 
-    return render_to_response(
-        'utils/generics/update.html',
-        {'form': dependent_form,
-         'model_name_plural': Dependent._meta.verbose_name_plural,
-         'model_name': Dependent._meta.verbose_name,
-         'indefinite_article': 'a',
-         'cancel_url': cancel_url},
-        context)
+    context = {
+        'form': dependent_form,
+        'model_name_plural': Dependent._meta.verbose_name_plural,
+        'model_name': Dependent._meta.verbose_name,
+        'indefinite_article': 'a',
+        'cancel_url': cancel_url
+    }
+
+    return render(request, 'utils/generics/update.html', context)
 
 
 @login_required
@@ -938,7 +922,7 @@ def add_new_dependent(request, client_id):
             saved = form.save(commit=False)
 
             client = Client.objects.get(id=client_id)
-            saved.client = client
+            saved.primary = client
             saved.save()
             return redirect('client', client_id)
     else:
@@ -947,14 +931,15 @@ def add_new_dependent(request, client_id):
     cancel_url = urlresolvers.reverse('client',
                                       kwargs={'client_id': client.pk})
 
-    return render_to_response(
-        'utils/generics/create.html',
-        {'form': form,
-         'model_name_plural': Dependent._meta.verbose_name_plural,
-         'model_name': Dependent._meta.verbose_name,
-         'indefinite_article': 'a',
-         'cancel_url': cancel_url},
-        context)
+    context = {
+        'form': form,
+        'model_name_plural': Dependent._meta.verbose_name_plural,
+        'model_name': Dependent._meta.verbose_name,
+        'indefinite_article': 'a',
+        'cancel_url': cancel_url
+    }
+
+    return render(request, 'utils/generics/create.html', context)
 
 
 @login_required
@@ -971,7 +956,7 @@ def add_dependent(request, client_id):
             saved = form.save(commit=False)
 
             client = Client.objects.get(id=client_id)
-            saved.client = client
+            saved.primary = client
             saved.save()
 
             if request.POST['submit'] == "Create and proceed":
@@ -995,12 +980,13 @@ def add_dependent(request, client_id):
         "{0} {1}".format(create_and_proceed, skip_step)
     )
 
-    return render_to_response(
-        'utils/generics/create.html',
-        {'form': form,
-         'model_name_plural': Dependent._meta.verbose_name_plural,
-         'model_name': Dependent._meta.verbose_name,
-         'indefinite_article': 'a',
-         'cancel_url': cancel_url,
-         'multistep_buttons': multistep_buttons},
-        context)
+    context = {
+        'form': form,
+        'model_name_plural': Dependent._meta.verbose_name_plural,
+        'model_name': Dependent._meta.verbose_name,
+        'indefinite_article': 'a',
+        'cancel_url': cancel_url,
+        'multistep_buttons': multistep_buttons
+    }
+
+    return render(request, 'utils/generics/create.html', context)

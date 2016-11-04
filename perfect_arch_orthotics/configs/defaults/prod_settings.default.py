@@ -11,7 +11,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 SECRET_KEY = ''
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # Get from file
 ALLOWED_HOSTS = []

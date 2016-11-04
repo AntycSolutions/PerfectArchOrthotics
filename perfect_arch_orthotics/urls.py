@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.views.generic import base
@@ -15,8 +15,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-urlpatterns = patterns(
-    '',  # Tells django to view the rest as str
+urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(
         r'^inventory_csv/$',
@@ -29,7 +28,7 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^clients/', include('clients.urls')),
     url(r'^inventory/', include('inventory.urls')),
-    url(r'^$', include('utils.urls')),
+    url(r'^', include('utils.urls')),
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
         name='get_thumbnail'),
@@ -43,7 +42,7 @@ urlpatterns = patterns(
     url(r'^raise_exception/$',
         utils_views.raise_exception,
         name='raise_exception')
-)
+]
 
 urlpatterns += static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
