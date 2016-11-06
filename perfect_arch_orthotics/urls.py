@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.views.generic import base
+from django.contrib import admin
 
 from ajax_select import urls as ajax_select_urls
 
@@ -11,7 +12,7 @@ from utils import views as utils_views
 
 import views
 
-from django.contrib import admin
+
 admin.autodiscover()
 
 
@@ -41,7 +42,9 @@ urlpatterns = [
         name='500'),
     url(r'^raise_exception/$',
         utils_views.raise_exception,
-        name='raise_exception')
+        name='raise_exception'),
+
+    url(r'session_security/', include('session_security.urls')),
 ]
 
 urlpatterns += static(

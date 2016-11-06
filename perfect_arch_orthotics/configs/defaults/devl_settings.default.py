@@ -1,10 +1,12 @@
 # Devl settings
 
-# django settings
+from os import path
 
-import os
+from ..settings import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+# Django settings
+
+BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Get from file
@@ -25,7 +27,7 @@ DATABASES = {
 ADMINS = ()
 MANAGERS = ADMINS
 
-EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Devl] '
+EMAIL_SUBJECT_PREFIX = '[Devl - Perfect Arch] '
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SERVER_EMAIL = 'Perfect Arch <root@localhost>'
 DEFAULT_FROM_EMAIL = 'Perfect Arch <no-reply@localhost>'
@@ -39,6 +41,11 @@ DEFAULT_FROM_EMAIL = 'Perfect Arch <no-reply@localhost>'
 # EMAIL_HOST = ''
 # Get from file
 # EMAIL_PORT = ''
+
+# third party settings
+
+# Django Session Security
+SESSION_SECURITY_INSECURE = True
 
 # local app settings
 

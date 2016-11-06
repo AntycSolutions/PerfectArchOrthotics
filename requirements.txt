@@ -5,6 +5,7 @@ django-easy-pdf==0.1.0
 django-formtools==1.0
 django-auditlog==0.3.3
 django-pipeline==1.6.8
+django-session-security==2.4.0
 piexif==1.0.3
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
 git+https://github.com/AntycSolutions/xhtml2pdf

@@ -5,7 +5,7 @@ from os import path
 
 # Django settings
 
-BASE_DIR = path.dirname(path.dirname(__file__))
+BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
 DJANGO_APPS = (
     'django.contrib.admin',
@@ -24,6 +24,7 @@ THIRD_PARTY_APPS = (
     'utils',
     'accounts',
     'pipeline',
+    'session_security',
 )
 LOCAL_APPS = (
     'clients',
@@ -104,6 +105,14 @@ LOGIN_REDIRECT_URL = '/'
 # Email
 EMAIL_USE_TLS = True
 
+password_validation = 'django.contrib.auth.password_validation.'
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': password_validation + 'UserAttributeSimilarityValidator'},
+    {'NAME': password_validation + 'MinimumLengthValidator'},
+    {'NAME': password_validation + 'CommonPasswordValidator'},
+    {'NAME': password_validation + 'NumericPasswordValidator'},
+]
+
 # Third Party
 
 # Django Crispy Forms
@@ -152,6 +161,7 @@ PIPELINE = {
             'source_filenames': (
                 'css/sticky-footer.css',
                 'css/base.css',
+                'session_security/style.css',
             ),
             'output_filename': 'css/base_all.css',
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
@@ -225,6 +235,16 @@ PIPELINE = {
         },
     },
     'JAVASCRIPT': {
+        'base': {
+            'source_filenames': (
+                'session_security/script.js',
+            ),
+            'output_filename': 'js/base_all.js',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'base_all_js',
+            },
+        },
         # clients
         'insurance': {
             'source_filenames': (
@@ -276,13 +296,13 @@ else:
 if DEBUG:
     INSTALLED_APPS += ('debug_toolbar',)
 
-    if env == 'prod' or env == 'test':
-        MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
-        MIDDLEWARE_CLASSES.insert(
-            5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
-        )
-        MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
+    MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
+    MIDDLEWARE_CLASSES.insert(
+        5, 'debug_toolbar.middleware.DebugToolbarMiddleware'
+    )
+    MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
 
+    if env != 'devl':
         def show_toolbar(request):
             return (
                 hasattr(request, 'user') and
@@ -307,3 +327,8 @@ if DEBUG:
             'template_profiler_panel.panels.template.TemplateProfilerPanel',
             'template_timings_panel.panels.TemplateTimings.TemplateTimings',
         ]
+
+if env != 'devl':
+    MIDDLEWARE_CLASSES += (
+        'session_security.middleware.SessionSecurityMiddleware',
+    )

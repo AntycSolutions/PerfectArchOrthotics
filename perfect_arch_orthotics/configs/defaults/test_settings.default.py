@@ -2,9 +2,9 @@
 
 # django settings
 
-import os
+from os import path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Get from file
@@ -30,7 +30,7 @@ DATABASES = {
 ADMINS = ()
 MANAGERS = ADMINS
 
-EMAIL_SUBJECT_PREFIX = '[Perfect Arch Orthotics - Test] '
+EMAIL_SUBJECT_PREFIX = '[Test - Perfect Arch] '
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Get from file
 SERVER_EMAIL = ''

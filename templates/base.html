@@ -2,6 +2,8 @@
 
 {% load static %}
 {% load pipeline %}
+{% load session_security_tags %}
+{% load i18n l10n %}
 
 {% block meta %}
     {{ block.super }}
@@ -81,6 +83,24 @@
         {{ block.super }}
 
         {% stylesheet 'base' %}
+        {% if request.user.is_authenticated %}
+            {% javascript 'base' %}
+        {% endif %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% if request.user.is_authenticated %}
+            var sessionSecurity = new yourlabs.SessionSecurity({
+                pingUrl: "{% url 'session_security_ping' %}",
+                warnAfter: {{ request|warn_after|unlocalize }},
+                expireAfter: {{ request|expire_after|unlocalize }},
+                confirmFormDiscard: "{% trans 'You have unsaved changes in a form of this page.' %}"
+            });
+        {% endif %}
     {% endblock %}
 </script>
 
@@ -96,6 +116,10 @@
     </div>
 
     {% include 'footer.html' %}
+
+    {% if request.user.is_authenticated %}
+        {% include 'session_security/dialog.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block body_scripts %}
