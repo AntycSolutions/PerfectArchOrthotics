@@ -201,6 +201,11 @@ claim_patterns = [
         login_required(update_claim_wizard),
         name='claim_update'
     ),
+    url(
+        r'^detail/(?P<claim_id>\w+)/$',
+        login_required(views.claimView),
+        name='claim_detail'
+    ),
 ]
 
 pdf_patterns = [
