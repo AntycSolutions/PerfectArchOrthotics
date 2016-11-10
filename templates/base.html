@@ -83,7 +83,7 @@
         {{ block.super }}
 
         {% stylesheet 'base' %}
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated and settings.ENV != 'devl' %}
             {% javascript 'base' %}
         {% endif %}
     {% endblock %}
@@ -93,7 +93,7 @@
     {% block fallback_ready %}
         {{ block.super }}
 
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated and settings.ENV != 'devl' %}
             var sessionSecurity = new yourlabs.SessionSecurity({
                 pingUrl: "{% url 'session_security_ping' %}",
                 warnAfter: {{ request|warn_after|unlocalize }},
