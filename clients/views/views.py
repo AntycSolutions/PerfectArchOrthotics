@@ -9,7 +9,6 @@ from cgi import escape
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import http
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
@@ -23,9 +22,11 @@ from django.utils import safestring, timezone
 # xhtml2pdf
 import xhtml2pdf.pisa as pisa
 
-# PerfectArchOrthotics
+# django-utils
 from utils.search import get_query, get_date_query
 from utils import views_utils
+
+# PerfectArchOrthotics
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients import models as clients_models
@@ -881,7 +882,7 @@ def editClientView(request, client_id):
 
 @login_required
 def editDependentsView(request, client_id, dependent_id):
-    context = RequestContext(request)
+    context = {}
 
     client = Client.objects.get(id=client_id)
     dependent = client.dependent_set.get(id=dependent_id)
@@ -912,7 +913,7 @@ def editDependentsView(request, client_id, dependent_id):
 
 @login_required
 def add_new_dependent(request, client_id):
-    context = RequestContext(request)
+    context = {}
 
     client = Client.objects.get(id=client_id)
     if request.method == 'POST':
@@ -944,7 +945,7 @@ def add_new_dependent(request, client_id):
 
 @login_required
 def add_dependent(request, client_id):
-    context = RequestContext(request)
+    context = {}
 
     if request.method == 'POST':
         if request.POST['submit'] == "Skip step":
