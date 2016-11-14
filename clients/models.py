@@ -603,8 +603,9 @@ class Claim(models.Model, model_utils.FieldList):
     def get_str(self):
         try:
             submitted_datetime = timezone.localtime(self.submitted_datetime)
-            submitted_datetime = submitted_datetime.strftime(
-                "%Y-%m-%d %I:%M %p")
+            submitted_datetime = defaultfilters.date(
+                submitted_datetime, "N j, Y, P"
+            )
         except AttributeError:
             submitted_datetime = None
 
@@ -613,8 +614,9 @@ class Claim(models.Model, model_utils.FieldList):
     def __str__(self):
         try:
             submitted_datetime = timezone.localtime(self.submitted_datetime)
-            submitted_datetime = submitted_datetime.strftime(
-                "%Y-%m-%d %I:%M %p")
+            submitted_datetime = defaultfilters.date(
+                submitted_datetime, "N j, Y, P"
+            )
         except AttributeError:
             submitted_datetime = None
 
