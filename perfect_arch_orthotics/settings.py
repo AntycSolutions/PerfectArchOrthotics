@@ -25,10 +25,14 @@ THIRD_PARTY_APPS = (
     'accounts',
     'pipeline',
     'session_security',
+    'multiselectfield',
+    'django_js_reverse',
+    'django_twilio',
 )
 LOCAL_APPS = (
     'clients',
     'inventory',
+    'reminders',
 )
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -256,6 +260,17 @@ PIPELINE = {
                 'fallback_key': 'insurance_all_js',
             },
         },
+        # reminders
+        'reminders': {
+            'source_filenames': (
+                'utils/jquery_utils/ajax.js',
+            ),
+            'output_filename': 'js/reminders_all.js',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'reminders_all_js',
+            },
+        },
     },
 }
 system = platform.system()
@@ -283,17 +298,18 @@ VERSIONS = {
 # import environment aware settings
 if path.isfile(path.join(BASE_DIR, "../prod")):
     from .configs.prod_settings import *
-    env = 'prod'
+    ENV = 'prod'
 elif path.isfile(path.join(BASE_DIR, "../test")):
     from .configs.test_settings import *
-    env = 'test'
+    ENV = 'test'
 elif path.isfile(path.join(BASE_DIR, "../devl")):
     from .configs.devl_settings import *
-    env = 'devl'
+    ENV = 'devl'
 else:
     raise Exception("Please create a settings decision file.")
 
 if DEBUG:
+    # Django Debug Toolbar
     INSTALLED_APPS += ('debug_toolbar',)
 
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES)
@@ -302,7 +318,7 @@ if DEBUG:
     )
     MIDDLEWARE_CLASSES = tuple(MIDDLEWARE_CLASSES)
 
-    if env != 'devl':
+    if ENV != 'devl':
         def show_toolbar(request):
             return (
                 hasattr(request, 'user') and
@@ -313,6 +329,8 @@ if DEBUG:
             'SHOW_TOOLBAR_CALLBACK':
                 'perfect_arch_orthotics.settings.show_toolbar',
         })
+    else:
+        INTERNAL_IPS = ['127.0.0.1']
 
     if PROFILING:
         INSTALLED_APPS += (
@@ -328,7 +346,8 @@ if DEBUG:
             'template_timings_panel.panels.TemplateTimings.TemplateTimings',
         ]
 
-if env != 'devl':
+if ENV != 'devl':
+    # Django Session Security
     MIDDLEWARE_CLASSES += (
         'session_security.middleware.SessionSecurityMiddleware',
     )

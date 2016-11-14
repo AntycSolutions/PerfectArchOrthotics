@@ -1,0 +1,540 @@
+{% extends 'base.html' %}
+
+{% load pipeline %}
+
+{% block title %} - Reminders{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        {% javascript 'reminders' %}
+        js_reverse: '/jsreverse/',
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        'staticutilsjquery_utilsajaxjs': ['jQuery'],
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% if 'toggle' in request.GET %}
+            var id = '#' + '{{ request.GET.toggle }}';
+            $(id).collapse('show');
+        {% else %}
+            var id = '';
+        {% endif %}
+        if (location.hash) {
+            location.hash = location.hash; {# go to location on refresh #}
+        }
+        else if (id) {
+            location.hash = id;
+        }
+
+        var benefits_lookup = {
+            {% for unpaid_claims_reminder in unpaid_claims_reminders %}
+                '{{ unpaid_claims_reminder.pk }}': '{{ unpaid_claims_reminder.claim.insurance.benefits }}',
+            {% endfor %}
+        };
+
+        var REQUIRED = 'r';
+        var EMAIL = 'e';
+        var TEXT = 't';
+        var CALL = 'c';
+
+        var NO_ANSWER = 'n';
+        var VOICEMAIL = 'v';
+
+        var ASSIGNMENT = 'a';
+
+        var value_in_list = function(list, value) {
+            return list.indexOf(value) !== -1;
+        }
+
+        var get_follow_up_vals = function(model_name, pk) {
+            if (typeof model_name === 'undefined' && typeof pk === 'undefined') {
+                throw new Error('incorrect arguments for get_follow_up_vals');
+            }
+
+            var follow_up = $(
+                '#' + model_name + '_' + pk + '_follow_up'
+            ).text().trim();
+            var follow_up_vals = [];
+            if (value_in_list(follow_up, 'Required')) {
+                follow_up_vals.push(REQUIRED);
+            }
+            if (value_in_list(follow_up, 'Text')) {
+                follow_up_vals.push(TEXT);
+            }
+            if (value_in_list(follow_up, 'Email')) {
+                follow_up_vals.push(EMAIL);
+            }
+            if (value_in_list(follow_up, 'Call')) {
+                follow_up_vals.push(CALL);
+            }
+            if (!follow_up_vals) {
+                throw new Error('Missing follow up value');
+            }
+
+            return follow_up_vals;
+        }
+
+        var reminder_modal_init = function(event) {
+            var btn = $(event.relatedTarget);
+            var pk = btn.data('pk');
+            var model_name = btn.data('model-name');
+            var modal = $(this);
+
+            var follow_up_vals = get_follow_up_vals(model_name, pk);
+            modal.find(
+                'input[name="' + model_name + '-follow_up"]'
+            ).val(follow_up_vals);
+
+            var result = $(
+                '#' + model_name + '_' + pk + '_result'
+            ).text().trim();
+            if (result === 'No answer') {
+                result = NO_ANSWER;
+            }
+            else if (result === 'Voicemail') {
+                result = VOICEMAIL;
+            }
+            else if (result === '') {
+                // pass
+            }
+            else {
+                throw new Error('Unhandled result ' + result);
+            }
+            modal.find('#id_' + model_name + '-result').val(result);
+
+            modal.find('#' + model_name + '_pk').val(pk);
+
+            // hide options
+            if (benefits_lookup[pk] == ASSIGNMENT) {
+                var text = modal.find('input[value="' + TEXT + '"]');
+                text.prop('checked', false);
+                text.parent().hide();
+                var email = modal.find('input[value="' + EMAIL + '"]');
+                email.prop('checked', false);
+                email.parent().hide();
+            }
+            else {
+                var text = modal.find('input[value="' + TEXT + '"]');
+                text.parent().show();
+                var email = modal.find('input[value="' + EMAIL + '"]');
+                email.parent().show();
+            }
+        }
+        $('#claimreminder_modal').on('show.bs.modal', reminder_modal_init);
+        $('#orderreminder_modal').on('show.bs.modal', reminder_modal_init);
+
+        var reminder_save = function() {
+            var form_id = $(this).attr('form-id');
+            var form = $(form_id);
+
+            var model_name = form.find('#model_name').val();
+
+            var follow_up = [];
+            form.find(
+                'input[name="' + model_name + '-follow_up"]:checked'
+            ).each(
+                function() { follow_up.push($(this).val()); }
+            );
+            if (!follow_up.length) {
+                window.alert('Please select a Follow up action.');
+                return;
+            }
+
+            var pk = form.find('#' + model_name + '_pk').val();
+
+            var old_follow_up = get_follow_up_vals(model_name, pk);
+            var msg = '';
+            var sending_email = (
+                value_in_list(follow_up, EMAIL) &&
+                !value_in_list(old_follow_up, EMAIL)
+            );
+            if (sending_email) {
+                msg += 'Send email?';
+            }
+            var sending_text = (
+                value_in_list(follow_up, TEXT) &&
+                !value_in_list(old_follow_up, TEXT)
+            );
+            if (sending_text) {
+                if (msg) { msg += '\nand\n'; }
+                msg += 'Send text message?';
+            }
+            if (msg.length) {
+                var c = window.confirm(msg);
+                if (!c) { return; }
+            }
+
+            var result = form.find('#id_' + model_name + '-result').val();
+
+            var data = {'follow_up': follow_up, 'result': result};
+
+            var url = Urls['reminders:' + model_name + '_update'](pk);
+            $.ajax(
+                // traditional prevents jquery from appending [] to follow_up
+                {url: url, data: data, method: "POST", traditional: true}
+            ).done(function(data) {
+                if ('pk' in data) {
+                    var follow_up_vals = [];
+                    if (value_in_list(follow_up, REQUIRED)) {
+                        follow_up_vals.push('Required');
+                    }
+                    if (value_in_list(follow_up, TEXT)) {
+                        follow_up_vals.push('Text');
+                    }
+                    if (value_in_list(follow_up, EMAIL)) {
+                        follow_up_vals.push('Email');
+                    }
+                    if (value_in_list(follow_up, CALL)) {
+                        follow_up_vals.push('Call');
+                    }
+                    $('#' + model_name + '_' + pk + '_follow_up').html(
+                        follow_up_vals.join(',<br />')
+                    );
+
+                    if (result === NO_ANSWER) {
+                        result = 'No answer';
+                    }
+                    else if (result === VOICEMAIL) {
+                        result = 'Voicemail';
+                    }
+                    else if (result === '') {
+                        // pass
+                    }
+                    $('#' + model_name + '_' + pk + '_result').text(result);
+
+                    $('#' + model_name + '_modal').modal('hide');
+                }
+                else {
+                    window.alert(
+                        'Something went wrong... but the message was sent'
+                    );
+                }
+            }).fail(function(xhr) {
+                var json = {};
+                try {
+                    json = JSON.parse(xhr.responseText);
+                }
+                catch (e) {
+                    // pass
+                    console.log('Could not parse json');
+                }
+                var msg = '';
+                if ('error' in json) {
+                    msg = json['error'];
+                }
+                else {
+                    for (var key in json) {
+                        msg += json[key] + '\n';
+                    }
+                }
+                if (!msg.length) {
+                    msg = 'Something went wrong...';
+                }
+                window.alert(msg);
+            });
+        }
+        $('#claimreminder_save').on('click', reminder_save);
+        $('#orderreminder_save').on('click', reminder_save);
+    {% endblock %}
+</script>
+
+{% block content %}
+
+    <div class="page-header"><h1>Reminders</h1></div>
+
+    {% include 'utils/snippets/messages.html' %}
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form method="GET" class="form-inline">
+                {% for name, select in selects.items %}
+                    <div class="checkbox inline">
+                        {% for option in select.options %}
+                            <label>
+                                <input type="checkbox"
+                                        name="{{ name }}"
+                                        value="{{ option.value }}"
+                                        {% if option.selected %} checked="checked"{% endif %} />
+                                    {{ option.value_display }}
+                            </label>
+                            <br />
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
+                <a href="#toggle_unpaid_claims_reminders"
+                        data-toggle="collapse"
+                        data-target="#unpaid_claims_reminders">
+                    Unpaid Claims
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="unpaid_claims_reminders" class="collapse in">
+            {% if unpaid_claims_reminders %}
+                {% with object_list=unpaid_claims_reminders model_name="claimreminder" %}
+                    {% include 'utils/generics/list_table.html' %}
+                {% endwith %}
+            {% endif %}
+            <div class="panel-body">
+                {% if unpaid_claims_reminders %}
+                {% comment %}
+                    <!-- Pagination stuff -->
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if unpaid_claims_reminders.has_previous %}
+                                <a href="?unpaid_claims_reminders_page={{ unpaid_claims_reminders.previous_page_number }}"
+                                        class="btn btn-default">
+                                    Previous
+                                </a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ unpaid_claims_reminders.number }} of {{ unpaid_claims_reminders.paginator.num_pages }}.
+                            </span>
+
+                            {% if unpaid_claims_reminders.has_next %}
+                                <a href="?unpaid_claims_reminders_page={{ unpaid_claims_reminders.next_page_number }}"
+                                        class="btn btn-default inline">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="GET"
+                            class="form-inline"
+                            style="display: inline-block;">
+                        <div class="form-group">
+                            Rows per Page:
+                            <input type="number"
+                                    id="unpaid_claims_reminders_rows_per_page"
+                                    name="unpaid_claims_reminders_rows_per_page"
+                                    class="form-control"
+                                    value="{{ unpaid_claims_reminders.rows_per_page }}" />
+                        </div>
+                        <button type="submit" class="btn">Paginate</button>
+                    </form>
+                {% endcomment %}
+                {% else %}
+                    There are no unpaid Claims.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
+                <a href="#toggle_arrived_orders_reminders"
+                        data-toggle="collapse"
+                        data-target="#arrived_orders_reminders">
+                    Arrived Orders
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="arrived_orders_reminders" class="collapse in">
+            {% if arrived_orders_reminders %}
+                {% with object_list=arrived_orders_reminders model_name="orderreminder" %}
+                    {% include 'utils/generics/list_table.html' %}
+                {% endwith %}
+            {% endif %}
+            <div class="panel-body">
+                {% if arrived_orders_reminders %}
+                {% comment %}
+                    <!-- Pagination stuff -->
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if arrived_orders_reminders.has_previous %}
+                                <a href="?arrived_orders_reminders_page={{ arrived_orders_reminders.previous_page_number }}"
+                                        class="btn btn-default">
+                                    Previous
+                                </a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ arrived_orders_reminders.number }} of {{ arrived_orders_reminders.paginator.num_pages }}.
+                            </span>
+
+                            {% if arrived_orders_reminders.has_next %}
+                                <a href="?arrived_orders_reminders_page={{ arrived_orders_reminders.next_page_number }}"
+                                        class="btn btn-default inline">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="GET"
+                            class="form-inline"
+                            style="display: inline-block;">
+                        <div class="form-group">
+                            Rows per Page:
+                            <input type="number"
+                                    id="arrived_orders_reminders_rows_per_page"
+                                    name="arrived_orders_reminders_rows_per_page"
+                                    class="form-control"
+                                    value="{{ arrived_orders_reminders.rows_per_page }}" />
+                        </div>
+                        <button type="submit" class="btn">Paginate</button>
+                    </form>
+                {% endcomment %}
+                {% else %}
+                    There are no arrived Orders.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
+                <a href="#toggle_claims_without_orders_reminders"
+                        data-toggle="collapse"
+                        data-target="#claims_without_orders_reminders">
+                    Claims without Orders
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="claims_without_orders_reminders" class="collapse in">
+            {% if claims_without_orders_reminders %}
+                {% with object_list=claims_without_orders_reminders model_name="claim" %}
+                    {% include 'utils/generics/list_table.html' %}
+                {% endwith %}
+            {% endif %}
+            <div class="panel-body">
+                {% if claims_without_orders_reminders %}
+                {% comment %}
+                    <!-- Pagination stuff -->
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if claims_without_orders_reminders.has_previous %}
+                                <a href="?claims_without_orders_reminders_page={{ claims_without_orders_reminders.previous_page_number }}"
+                                        class="btn btn-default">
+                                    Previous
+                                </a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ claims_without_orders_reminders.number }} of {{ claims_without_orders_reminders.paginator.num_pages }}.
+                            </span>
+
+                            {% if claims_without_orders_reminders.has_next %}
+                                <a href="?claims_without_orders_reminders_page={{ claims_without_orders_reminders.next_page_number }}"
+                                        class="btn btn-default inline">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="GET"
+                            class="form-inline"
+                            style="display: inline-block;">
+                        <div class="form-group">
+                            Rows per Page:
+                            <input type="number"
+                                    id="claims_without_orders_reminders_rows_per_page"
+                                    name="claims_without_orders_reminders_rows_per_page"
+                                    class="form-control"
+                                    value="{{ claims_without_orders_reminders.rows_per_page }}" />
+                        </div>
+                        <button type="submit" class="btn">Paginate</button>
+                    </form>
+                {% endcomment %}
+                {% else %}
+                    There are no Claims without Orders.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div id="claimreminder_modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title">Update Reminder</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="claimreminder_form" class="form-horizontal">
+                        {% include 'utils/generics/form.html' with form=claim_reminder_form %}
+                        <input type="hidden" id="claimreminder_pk" />
+                        <input type="hidden"
+                                id="model_name"
+                                value="claimreminder" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button"
+                            id="claimreminder_save"
+                            form-id="#claimreminder_form"
+                            class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderreminder_modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title">Update Reminder</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="orderreminder_form" class="form-horizontal">
+                        {% include 'utils/generics/form.html' with form=order_reminder_form %}
+                        <input type="hidden" id="orderreminder_pk" />
+                        <input type="hidden"
+                                id="model_name"
+                                value="orderreminder" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button"
+                            id="orderreminder_save"
+                            form-id="#orderreminder_form"
+                            class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

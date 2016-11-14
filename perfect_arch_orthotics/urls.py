@@ -6,11 +6,14 @@ from django.views.generic import base
 from django.contrib import admin
 
 from ajax_select import urls as ajax_select_urls
+from session_security import urls as session_security_urls
+from django_js_reverse import views as django_js_reverse_views
 
 from accounts import urls as account_urls
 from utils import views as utils_views
 
 import views
+from reminders import urls as reminders_urls
 
 
 admin.autodiscover()
@@ -29,6 +32,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^clients/', include('clients.urls')),
     url(r'^inventory/', include('inventory.urls')),
+    url(r'^reminders/', include(reminders_urls, namespace='reminders')),
     url(r'^', include('utils.urls')),
     url(r'^thumbnail/(?P<width>\d+)/(?P<height>\d+)/(?P<url>.+)/$',
         login_required(utils_views.get_thumbnail),
@@ -44,9 +48,16 @@ urlpatterns = [
         utils_views.raise_exception,
         name='raise_exception'),
 
-    url(r'session_security/', include('session_security.urls')),
+    url(r'^session_security/', include(session_security_urls)),
+    url(r'^jsreverse/$', django_js_reverse_views.urls_js, name='js_reverse'),
 ]
 
 urlpatterns += static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]

@@ -13,6 +13,9 @@
         <div class="collapse navbar-collapse" id="navbar">
             {% if user.is_authenticated %}
                 <ul class="nav navbar-nav">
+                    <li>
+                        <a href="{% url 'reminders:reminders' %}">Reminders</a>
+                    </li>
                     <li><a href="{% url 'client_list' %}">Clients</a></li>
                     <li><a href="{% url 'claims' %}">Claims</a></li>
                     <li><a href="{% url 'insurance' %}">Insurances</a></li>
