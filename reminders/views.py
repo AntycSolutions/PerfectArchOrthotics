@@ -164,57 +164,82 @@ class Reminders(generic.TemplateView):
         return context
 
 
-def send_email(reminder, client, old_follow_up, subject, body):
+# send_email expects body to end in two newlines: \n\n
+def send_email(client, subject, body, user=None):
+    if settings.ENV != 'prod':
+        body += settings.ENV
+        if user:
+            body += ' - {}'.format(user)
+        body += '\n\n'
+
+    try:
+        mail.send_mail(subject, body, '', [client.email])
+    except smtplib.SMTPRecipientsRefused:
+        return (
+            'Could not send email to \'{email}\''.format(
+                email=client.email
+            )
+        )
+
+    return ''
+
+
+def send_reminder_email(
+    reminder, client, old_follow_up, subject, body, user=None
+):
     EMAIL = reminders_models.Reminder.EMAIL
     sending_email = (
         EMAIL in reminder.follow_up and EMAIL not in old_follow_up
     )
+    error = ''
     if sending_email:
-        try:
-            mail.send_mail(
-                subject,
-                body,
-                '',
-                [client.email]
+        error = send_email(client, subject, body, user=user)
+
+    return error
+
+
+def send_text_message(client, body, user=None):
+    if settings.ENV != 'prod':
+        body += '\n' + settings.ENV
+        if user:
+            body += ' - {}'.format(user)
+
+    number = None
+    if client.cell_number:
+        number = client.cell_number
+    elif client.phone_number:
+        number = client.phone_number
+
+    try:
+        django_twilio_client.twilio_client.messages.create(
+            to='+1{}'.format(number),
+            from_=settings.DEFAULT_FROM_NUMBER,
+            body=body
+        )
+    except twilio.TwilioRestException as e:
+        return (
+            'Could not send text message to'
+            ' \'{number}\'\\n\\nError: {msg}'.format(
+                number=number,
+                msg=e.msg
             )
-        except smtplib.SMTPRecipientsRefused:
-            return (
-                'Could not send email to'
-                ' \'{email}\''.format(
-                    email=client.email
-                )
-            )
+        )
 
     return ''
 
 
-def send_text_message(reminder, client, old_follow_up, body):
+def send_reminder_text_message(
+    reminder, client, old_follow_up, body, user=None
+):
     TEXT = reminders_models.Reminder.TEXT
     sending_text = (
         TEXT in reminder.follow_up and TEXT not in old_follow_up
     )
+    error = ''
     if sending_text:
-        number = None
-        if client.cell_number:
-            number = client.cell_number
-        elif client.phone_number:
-            number = client.phone_number
-        try:
-            django_twilio_client.twilio_client.messages.create(
-                to='+1{}'.format(number),
-                from_=settings.DEFAULT_FROM_NUMBER,
-                body=body
-            )
-        except twilio.TwilioRestException as e:
-            return (
-                'Could not send text message to'
-                ' \'{number}\'\\n\\nError: {msg}'.format(
-                    number=number,
-                    msg=e.msg
-                )
-            )
+        error = send_text_message(client, body, user=user)
 
-    return ''
+    return error
 
 
 class ClaimReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
@@ -262,8 +287,13 @@ class ClaimReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
                 address=settings.BILL_TO[0][1],
             )
         )
-        error += send_email(
-            self.object, client, self.old_follow_up, subject, body
+        error += send_reminder_email(
+            self.object,
+            client,
+            self.old_follow_up,
+            subject,
+            body,
+            user=self.request.user
         )
 
         if error:
@@ -278,8 +308,12 @@ class ClaimReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
                 ),
             )
         )
-        error += send_text_message(
-            self.object, client, self.old_follow_up, body
+        error += send_reminder_text_message(
+            self.object,
+            client,
+            self.old_follow_up,
+            body,
+            user=self.request.user
         )
 
         if error:
@@ -336,8 +370,13 @@ class OrderReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
                 address=settings.BILL_TO[0][1],
             )
         )
-        error += send_email(
-            self.object, client, self.old_follow_up, subject, body
+        error += send_reminder_email(
+            self.object,
+            client,
+            self.old_follow_up,
+            subject,
+            body,
+            user=self.request.user
         )
 
         if error:
@@ -352,8 +391,12 @@ class OrderReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
                 ),
             )
         )
-        error += send_text_message(
-            self.object, client, self.old_follow_up, body
+        error += send_reminder_text_message(
+            self.object,
+            client,
+            self.old_follow_up,
+            body,
+            user=self.request.user
         )
 
         if error:
