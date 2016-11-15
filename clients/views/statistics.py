@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.views.generic import TemplateView
 from django.db.models import Count, Sum, F, Q, Case, When, Prefetch
 from django.db.models.functions import Coalesce
+from django.core import urlresolvers
 from django import utils
 
 from utils import views_utils
@@ -14,8 +15,16 @@ from inventory import models as inventory_models
 from clients.views import views
 
 
-class ClaimsStatistics(TemplateView):
+class ClaimsStatistics(views_utils.PermissionMixin, TemplateView):
     template_name = "clients/statistics/claims_statistics.html"
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.view_statistics',
+            'redirect': urlresolvers.reverse_lazy('index'),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,8 +85,16 @@ class ClaimsStatistics(TemplateView):
         return context
 
 
-class InventoryOrdersStatistics(TemplateView):
+class InventoryOrdersStatistics(views_utils.PermissionMixin, TemplateView):
     template_name = "clients/statistics/inventory_orders_statistics.html"
+
+    def get_permissions(self):
+        permissions = {
+            'permission': 'clients.view_statistics',
+            'redirect': urlresolvers.reverse_lazy('index'),
+        }
+
+        return permissions
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

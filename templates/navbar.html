@@ -24,28 +24,32 @@
                     <li><a href="{% url 'order_list' %}">Orders</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Statistics
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{% url 'claims_statistics' %}">
-                                    Claims
-                                </a>
-                                <a href="{% url 'inventory_orders_statistics' %}">
-                                    Inventory/Orders
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    {% if perms.clents.view_statistics %}
+                        <li class="dropdown">
+                            <a href="#"
+                                    class="dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Statistics
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'claims_statistics' %}">
+                                        Claims
+                                    </a>
+                                    <a href="{% url 'inventory_orders_statistics' %}">
+                                        Inventory/Orders
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
                     {% if user.is_staff %}
                         <li><a href="/admin/">Admin</a></li>
                     {% endif %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %}
+                            Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.get_username }}{% endif %}
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">

@@ -173,10 +173,10 @@
                                                         </td>
                                                     {% endwith %}
                                                 {% endcomment %}
-                                                <td>
+                                                <td{% if claim_coverage.payment_type == claim_coverage.DELINQUENT or claim_coverage.payment_type == claim_coverage.NO_COVERAGE %} style="color: red;"{% endif %}>
                                                     {{ claim_coverage.get_payment_type_display }}
                                                 </td>
-                                                <td{% if not claim_coverage.actual_paid_date %} style="color: red;"{% endif %}>
+                                                <td style={% if not claim_coverage.actual_paid_date %}"color: red;"{% else %}"color: green;"{% endif %}>
                                                     {{ claim_coverage.actual_paid_date }}
                                                 </td>
                                             </tr>

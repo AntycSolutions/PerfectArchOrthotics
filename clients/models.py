@@ -42,6 +42,11 @@ class Person(models.Model):
     created = models.DateTimeField(
         "Created", auto_now_add=True)
 
+    class Meta:
+        permissions = (
+            ('view_statistics', 'Can see statistics'),
+        )
+
     # ModelInheritance
     # Client, Dependent
     # ManyToManyField
@@ -653,12 +658,22 @@ class ClaimCoverage(models.Model):
     VISA = "vis"
     MASTERCARD = "mas"
     DEBIT = "deb"
+    DELINQUENT = 'del'
+    NO_COVERAGE = 'noc'
+    E_TRANSFER = 'etr'
     PAYMENT_TYPES = (
-        (CASH, "Cash"),
-        (CHEQUE, "Cheque"),
-        (VISA, "VISA"),
-        (MASTERCARD, "MasterCard"),
-        (DEBIT, "Interac Debit"),
+        ('Paid', (
+            (CASH, "Cash"),
+            (CHEQUE, "Cheque"),
+            (VISA, "VISA"),
+            (MASTERCARD, "MasterCard"),
+            (DEBIT, "Interac Debit"),
+            (E_TRANSFER, "e-Transfer"),
+        )),
+        ('Not paid', (
+            (DELINQUENT, "Delinquent"),
+            (NO_COVERAGE, "No coverage"),
+        )),
     )
     payment_type = models.CharField(
         max_length=3, choices=PAYMENT_TYPES,
