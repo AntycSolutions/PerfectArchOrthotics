@@ -159,6 +159,8 @@ DEBUG_TOOLBAR_CONFIG = {
 # Django Pipeline
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE = {
+    # if there are multiple source_filesnames and DEBUG = True
+    #  we need to define debug_keys to keep fallback key unique
     'STYLESHEETS': {
         # templates
         'base': {
@@ -171,6 +173,11 @@ PIPELINE = {
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'base_all_css',
+                'debug_fallback_keys': {
+                    STATIC_URL + 'css/sticky-footer.css': 'sticky_footer_css',
+                    STATIC_URL + 'css/base.css': 'base_css',
+                    STATIC_URL + 'session_security/style.css': 'style_css',
+                },
             },
         },
         'index': {
@@ -203,6 +210,11 @@ PIPELINE = {
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'biomechanical_gait_all_css',
+                'debug_fallback_keys': {
+                    STATIC_URL + 'clients/css/biomechanical_gait.css':
+                        'biomechanical_gait_css',
+                    STATIC_URL + 'utils/css/typeahead.css': 'typeahead_css',
+                },
             },
         },
         'insurance': {
@@ -225,6 +237,12 @@ PIPELINE = {
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'client_all_css',
+                'debug_fallback_keys': {
+                    STATIC_URL + 'clients/css/client.css': 'client_css',
+                    STATIC_URL + 'clients/css/form-static.css':
+                        'form_static_css',
+                    STATIC_URL + 'clients/css/anchor.css': 'anchor_css',
+                },
             },
         },
         'claim': {
