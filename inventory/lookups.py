@@ -12,11 +12,15 @@ class ShoeLookup(LookupChannel):
     model = models.ShoeAttributes
 
     def get_query(self, q, request):
-        fields = ['size',
-                  'shoe__name', 'shoe__brand', 'shoe__style', 'shoe__sku',
-                  'shoe__colour']
+        fields = [
+            'size',
+            'shoe__name', 'shoe__brand', 'shoe__style', 'shoe__sku',
+            'shoe__colour'
+        ]
         query = search_get_query(q, fields)
-        queryset = models.ShoeAttributes.objects.filter(query)
+        queryset = models.ShoeAttributes.objects.select_related(
+            'shoe'
+        ).filter(query)
 
         return queryset
 

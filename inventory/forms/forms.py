@@ -17,33 +17,54 @@ class ShoeOrderForm(forms.ModelForm):
             shoe_attributes = cleaned_data['shoe_attributes']
             ordered_date = cleaned_data['ordered_date']
             dispensed_date = cleaned_data['dispensed_date']
+            customer_ordered_date = cleaned_data['customer_ordered_date']
 
-            if (shoe_attributes and shoe_attributes.quantity > 0
-                    and not dispensed_date
-                    and not ordered_date):
+            new_shoe_order = (
+                customer_ordered_date and
+                not ordered_date and
+                not dispensed_date
+            )
+            if new_shoe_order:
+                return
+
+            # shoe needs to have been either ordered, dispensed, or
+            #  ordered and dispensed
+
+            dispensed_date_required = (
+                (shoe_attributes and shoe_attributes.quantity > 0) and
+                not dispensed_date and
+                not ordered_date
+            )
+            if dispensed_date_required:
                 raise forms.ValidationError(
                     "%s is in stock. Please enter the Dispensed Date." % (
-                        shoe_attributes
+                        shoe_attributes.get_str()
                     )
                 )
 
-            if (shoe_attributes and shoe_attributes.quantity <= 0
-                    and not dispensed_date
-                    and not ordered_date):
+            ordered_date_required = (
+                (shoe_attributes and shoe_attributes.quantity <= 0) and
+                not dispensed_date and
+                not ordered_date
+            )
+            if ordered_date_required:
                 raise forms.ValidationError(
                     "%s is not in stock. Please enter the Ordered Date." % (
-                        shoe_attributes
+                        shoe_attributes.get_str()
                     )
                 )
 
-            if (shoe_attributes and shoe_attributes.quantity <= 0
-                    and dispensed_date
-                    and not ordered_date):
+            not_in_stock = (
+                (shoe_attributes and shoe_attributes.quantity <= 0) and
+                dispensed_date and
+                not ordered_date
+            )
+            if not_in_stock:
                 raise forms.ValidationError(
                     "%s is not in stock and the Dispensed Date was entered."
                     " The Ordered Date must be entered to"
                     " indicate the Shoe was ordered and can be dispensed." % (
-                        shoe_attributes
+                        shoe_attributes.get_str()
                     )
                 )
 
@@ -52,9 +73,8 @@ class ShoeOrderForm(forms.ModelForm):
 
         queryset = self.fields['claimant'].queryset
         queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-                }).order_by('lower_first_name')
+            select={'lower_first_name': 'lower(first_name)'}
+        ).order_by('lower_first_name')
         self.fields['claimant'].queryset = queryset
 
     class Meta:
