@@ -167,7 +167,7 @@ class Reminders(generic.TemplateView):
 # send_email expects body to end in two newlines: \n\n
 def send_email(client, subject, body, user=None):
     if settings.ENV != 'prod':
-        body += settings.ENV
+        body += 'ENV: ' + settings.ENV
         if user:
             body += ' - {}'.format(user)
         body += '\n\n'
@@ -200,7 +200,7 @@ def send_reminder_email(
 
 def send_text_message(client, body, user=None):
     if settings.ENV != 'prod':
-        body += '\n' + settings.ENV
+        body += '\nENV: ' + settings.ENV
         if user:
             body += ' - {}'.format(user)
 
