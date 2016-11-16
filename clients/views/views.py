@@ -5,10 +5,9 @@ import collections
 import itertools
 from cgi import escape
 
-# Django
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django import http
+from django import http, forms
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
@@ -19,14 +18,12 @@ from django.db.models import Sum, Case, When, Q
 from django.core import urlresolvers
 from django.utils import safestring, timezone
 
-# xhtml2pdf
 import xhtml2pdf.pisa as pisa
+from crispy_forms import helper
 
-# django-utils
 from utils.search import get_query, get_date_query
 from utils import views_utils
 
-# PerfectArchOrthotics
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients import models as clients_models
@@ -384,36 +381,32 @@ def _date_from_date_to(
     return found_claims
 
 
-def _payment_type(request, context_dict, found_claims):
-    # payment type dropdown search
-    Option = collections.namedtuple('Option', ['value',
-                                               'value_display',
-                                               'selected'])
-    Select = collections.namedtuple('Select', ['label', 'options'])
-    payment_types = []
-    for payment_type in ClaimCoverage.PAYMENT_TYPES:
-        if (
-            "payment_type" in request.GET and
-            request.GET["payment_type"].strip() and
-            request.GET["payment_type"] == payment_type[0]
-                ):
-            payment_types.append(
-                Option(payment_type[0], payment_type[1], True)
-            )
-        else:
-            payment_types.append(
-                Option(payment_type[0], payment_type[1], False)
-            )
-    selects = collections.OrderedDict()
-    selects.update({"payment_type": Select("Payment Type", payment_types)})
-    context_dict['selects'] = selects
+class PaymentTypeForm(forms.ModelForm):
+    class Meta:
+        model = ClaimCoverage
+        fields = ('payment_type',)
 
-    if (
-        'payment_type' in request.GET and
-        request.GET['payment_type'].strip()
-            ):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['payment_type'].label += ':'
+
+        self.helper = helper.FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+
+
+def _payment_type(request, context_dict, found_claims):
+    context_dict['payment_type_form'] = PaymentTypeForm(request.GET)
+
+    payment_type_filter = (
+        'payment_type' in request.GET and request.GET['payment_type'].strip()
+    )
+    if payment_type_filter:
         fields = ['claimcoverage__payment_type']
-        query_string = request.GET['payment_type']
+        query_string = request.GET['payment_type'].strip()
+        context_dict['payment_type'] = query_string
         claim_query = get_query(query_string, fields)
         if found_claims:
             found_claims = found_claims.filter(claim_query)
@@ -423,11 +416,7 @@ def _payment_type(request, context_dict, found_claims):
     return found_claims
 
 
-@login_required
-def claimSearchView(request):
-    context = {}
-
-    claims = None
+def _found_claims(request, context):
     # Start from all, drilldown to q df dt
     found_claims = Claim.objects.select_related(
         'insurance',
@@ -462,6 +451,15 @@ def claimSearchView(request):
     found_claims = _payment_type(request, context, found_claims)
 
     found_claims = _actual_paid_date(request, context, found_claims)
+
+    return found_claims
+
+
+@login_required
+def claims_search_stats(request):
+    context = {}
+
+    found_claims = _found_claims(request, {})
 
     # Expected Back
     totals = ClaimCoverage.objects.filter(
@@ -518,16 +516,9 @@ def claimSearchView(request):
                 else:
                     raise Exception('Unknown Insurance benefits')
 
-    claims_rows_per_page = views_utils._get_paginate_by(
-        request, 'claims_rows_per_page'
-    )
-    claims = views_utils._paginate(request, found_claims, 'page',
-                                   claims_rows_per_page)
-
     total_assignment_expected_back = \
         assignment_expected_back + pending_assignment_expected_back
-    context['claims'] = claims
-    context['claims_rows_per_page'] = claims_rows_per_page
+
     context['assignment_amount_claimed'] = assignment_amount_claimed
     context['non_assignment_amount_claimed'] = \
         non_assignment_amount_claimed
@@ -541,6 +532,24 @@ def claimSearchView(request):
         total_assignment_expected_back
     context['total_expected_back'] = \
         non_assignment_expected_back + total_assignment_expected_back
+
+    return http.JsonResponse(context)
+
+
+@login_required
+def claimSearchView(request):
+    context = {}
+
+    found_claims = _found_claims(request, context)
+
+    claims_rows_per_page = views_utils._get_paginate_by(
+        request, 'claims_rows_per_page'
+    )
+    claims = views_utils._paginate(request, found_claims, 'page',
+                                   claims_rows_per_page)
+
+    context['claims'] = claims
+    context['claims_rows_per_page'] = claims_rows_per_page
     context['now'] = timezone.now()
 
     return render(request, 'clients/claims.html', context)

@@ -142,6 +142,11 @@ claim_patterns = [
     url(r'^$',
         login_required(views.claimSearchView),
         name='claims'),
+    url(
+        r'^stats/$',
+        login_required(views.claims_search_stats),
+        name='claims_search_stats'
+    ),
     # url(r'^create/(?P<client_id>\w+)/$',
     #     login_required(CreateClaimView.as_view()),
     #     name='claim_create'),

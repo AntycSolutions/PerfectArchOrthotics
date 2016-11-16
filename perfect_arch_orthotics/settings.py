@@ -278,6 +278,16 @@ PIPELINE = {
                 'fallback_key': 'insurance_all_js',
             },
         },
+        'claims': {
+            'source_filenames': (
+                'utils/jquery_utils/ajax.js',
+            ),
+            'output_filename': 'js/claims_all.js',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'claims_all_js',
+            },
+        },
         # reminders
         'reminders': {
             'source_filenames': (

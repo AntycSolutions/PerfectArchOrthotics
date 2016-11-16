@@ -1,10 +1,32 @@
 {% extends 'base.html' %}
 
+{% load pipeline %}
+{% load crispy_forms_tags %}
+
 {% block title %} - Claims{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        {% javascript 'claims' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        'claims_all_js': ['jQuery'],
+    {% endblock %}
+</script>
 
 <script type="text/javascript">
     {% block fallback_ready %}
         {{ block.super }}
+
+        {# we want to show the label on inline select #}
+        $('label[for="id_payment_type"]').removeClass('sr-only');
 
         {% now 'Y' as current_year %}
         var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
@@ -16,6 +38,51 @@
                 yearRange: year_range,
             });
         });
+
+        var GET = $('#search').serialize();
+        if (GET.length) { GET = '?' + GET; }
+        var url = "{% url 'claims_search_stats' %}" + GET;
+        var claims_stats = false;
+        $('#stats').on('show.bs.collapse', function() {
+            if (claims_stats) { return; }
+
+            $.post(url).done(function(data) {
+                if (data) {
+                    for (var key in data) {
+                        $('#' + key).text('$' + data[key]);
+                    }
+                    claims_stats = true;
+                    $('#stats_msg').fadeOut();
+                }
+                else {
+                    window.alert(
+                        'Something went wrong...'
+                    );
+                }
+            }).fail(function(xhr) {
+                var json = {};
+                try {
+                    json = JSON.parse(xhr.responseText);
+                }
+                catch (e) {
+                    // pass
+                    console.log('Could not parse json');
+                }
+                var msg = '';
+                if ('error' in json) {
+                    msg = json['error'];
+                }
+                else {
+                    for (var key in json) {
+                        msg += json[key] + '\n';
+                    }
+                }
+                if (!msg.length) {
+                    msg = 'Something went wrong...';
+                }
+                window.alert(msg);
+            });
+        });
     {% endblock %}
 </script>
 
@@ -25,7 +92,7 @@
         Claims
     </h1>
     {% include 'utils/snippets/messages.html' %}
-    <form method="GET" class="form-inline">
+    <form method="GET" class="form-inline" id="search">
         <div class="form-group inline">
             <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Claim Search" value="{{ q }}" autofocus />
         </div>
@@ -41,21 +108,9 @@
         <div class="form-group inline">
             <input type="text" class="form-control search-query datepicker" name="sdt" placeholder="Submitted Date To" value="{{ sdt }}">
         </div>
-        {% for name, select in selects.items %}
-            <div class="form-group inline">
-                <label for="payment_type" class="control-label inline">
-                    {{ select.label }}:
-                </label>
-                <select id="payment_type" name="payment_type" class="form-control">
-                    <option value="">---------</option>
-                    {% for option in select.options %}
-                        <option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>
-                            {{ option.value_display }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        {% endfor %}
+
+        {% crispy payment_type_form %}
+
         <div class="radio inline">
             <label>
                 <input type="radio" name="apd" value="has_actual_paid_date" {% if apd == 'has_actual_paid_date' %}checked{% endif %}>
@@ -78,7 +133,7 @@
     </form>
     {% if claims %}
         {% include 'clients/snippets/claims.html' %}
-    {% elif q or df or dt %}
+    {% elif q or apdf or apdt or sdf or sdt or payment_type or apd %}
         <p>
             There are no claims for this search.
         </p>
@@ -92,7 +147,7 @@
     <div class="pagination">
         <span class="step-links">
             {% if claims.has_previous %}
-                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.previous_page_number }}" class="btn btn-default">
+                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&payment_type={{ payment_type }}&apd={{ apd }}&page={{ claims.previous_page_number }}" class="btn btn-default">
                     Previous
                 </a>
             {% endif %}
@@ -102,7 +157,7 @@
             </span>
 
             {% if claims.has_next %}
-                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default inline">
+                <a href="?q={{ q }}&apdf={{ apdf }}&apdt={{ apdt }}&sdf={{ sdf }}&sdt={{ sdt }}&payment_type={{ payment_type }}&apd={{ apd }}&page={{ claims.next_page_number }}" class="btn btn-default inline">
                     Next
                 </a>
             {% endif %}
@@ -124,6 +179,11 @@
         {% if sdt %}
             <input type="hidden" name="sdt" value="{{ sdt }}">
         {% endif %}
+        {% if payment_type %}
+            <input type="hidden"
+                    name="payment_type"
+                    value="{{ payment_type }}" />
+        {% endif %}
         {% if apd %}
             <input type="hidden" name="apd" value="{{ apd }}">
         {% endif %}
@@ -135,71 +195,71 @@
             Paginate
         </button>
     </form>
-    <div>
-        A = Assignment,
-        NA = Non-assignment,
-        EB = Expected Back,
-        AC = Amount Claimed
-    </div>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>
-                        NA EB
-                    </th>
-                    <th>
-                        A EB
-                    </th>
-                    <th>
-                        Pending A EB
-                    </th>
-                    <th>
-                        Total A EB
-                    </th>
-                    <th>
-                        Total EB
-                    </th>
-                    <th>
-                        NA AC
-                    </th>
-                    <th>
-                        A AC
-                    </th>
-                    <th>
-                        Total AC
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        {{ non_assignment_expected_back }}
-                    </td>
-                    <td>
-                        {{ assignment_expected_back }}
-                    </td>
-                    <td>
-                        {{ pending_assignment_expected_back }}
-                    </td>
-                    <td>
-                        {{ total_assignment_expected_back }}
-                    </td>
-                    <td>
-                        {{ total_expected_back }}
-                    </td>
-                    <td>
-                        {{ non_assignment_amount_claimed }}
-                    </td>
-                    <td>
-                        {{ assignment_amount_claimed }}
-                    </td>
-                    <td>
-                        {{ total_amount_claimed }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
+                <a href="#toggle_stats"
+                        data-toggle="collapse"
+                        data-target="#stats">
+                    Statistics
+                    <span class="caret"></span>
+                    <span id="stats_msg">(click here to load)</span>
+                </a>
+            </div>
+        </div>
+        <div id="stats" class="collapse">
+            <div class="panel-body">
+                A = Assignment,
+                NA = Non-assignment,
+                EB = Expected Back,
+                AC = Amount Claimed
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                NA EB
+                            </th>
+                            <th>
+                                A EB
+                            </th>
+                            <th>
+                                Pending A EB
+                            </th>
+                            <th>
+                                Total A EB
+                            </th>
+                            <th>
+                                Total EB
+                            </th>
+                            <th>
+                                NA AC
+                            </th>
+                            <th>
+                                A AC
+                            </th>
+                            <th>
+                                Total AC
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="non_assignment_expected_back"></td>
+                            <td id="assignment_expected_back"></td>
+                            <td id="pending_assignment_expected_back"></td>
+                            <td id="total_assignment_expected_back"></td>
+                            <td id="total_expected_back"></td>
+                            <td id="non_assignment_amount_claimed"></td>
+                            <td id="assignment_amount_claimed"></td>
+                            <td id="total_amount_claimed"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 {% endblock content %}
