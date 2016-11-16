@@ -7,16 +7,16 @@ from . import views
 claimreminder_urls = [
     urls.url(
         r'^update/(?P<pk>\d+)/$',
-        decorators.login_required(views.ClaimReminderUpdate.as_view()),
-        name='claimreminder_update'
+        decorators.login_required(views.UnpaidClaimReminderUpdate.as_view()),
+        name='unpaidclaimreminder_update'
     ),
 ]
 
 orderreminder_urls = [
     urls.url(
         r'^update/(?P<pk>\d+)/$',
-        decorators.login_required(views.OrderReminderUpdate.as_view()),
-        name='orderreminder_update'
+        decorators.login_required(views.OrderArrivedReminderUpdate.as_view()),
+        name='orderarrivedreminder_update'
     ),
 ]
 

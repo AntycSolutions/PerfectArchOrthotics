@@ -26,7 +26,7 @@ class Reminders(generic.TemplateView):
         three_weeks_ago = timezone.now() - three_weeks
 
         claims = clients_models.Claim.objects.prefetch_related(
-            'claimreminder_set',
+            'unpaidclaimreminder_set',
         ).filter(
             claimcoverage__actual_paid_date__isnull=True,
             submitted_datetime__lte=three_weeks_ago,
@@ -34,14 +34,14 @@ class Reminders(generic.TemplateView):
 
         unpaid_claims_reminders = []
         for claim in claims:
-            if not claim.claimreminder_set.exists():
+            if not claim.unpaidclaimreminder_set.exists():
                 created = claim.submitted_datetime.date() - three_weeks
                 unpaid_claims_reminders.append(
-                    reminders_models.ClaimReminder(
+                    reminders_models.UnpaidClaimReminder(
                         claim=claim, created=created
                     )
                 )
-        reminders_models.ClaimReminder.objects.bulk_create(
+        reminders_models.UnpaidClaimReminder.objects.bulk_create(
             unpaid_claims_reminders
         )
 
@@ -50,7 +50,7 @@ class Reminders(generic.TemplateView):
         one_week_ago = timezone.now() - one_week
 
         orders = inventory_models.CoverageOrder.objects.prefetch_related(
-            'orderreminder_set',
+            'orderarrivedreminder_set',
         ).filter(
             order_type=clients_models.Coverage.ORTHOTICS,
             dispensed_date__isnull=True,
@@ -59,14 +59,14 @@ class Reminders(generic.TemplateView):
 
         arrived_orders_reminders = []
         for order in orders:
-            if not order.orderreminder_set.exists():
+            if not order.orderarrivedreminder_set.exists():
                 created = order.arrived_date - one_week
                 arrived_orders_reminders.append(
                     reminders_models.OrderReminder(
                         order=order, created=created
                     )
                 )
-        reminders_models.OrderReminder.objects.bulk_create(
+        reminders_models.OrderArrivedReminder.objects.bulk_create(
             arrived_orders_reminders
         )
 
@@ -125,7 +125,7 @@ class Reminders(generic.TemplateView):
 
         self._find_unpaid_claims()
         unpaid_claims_reminders = (
-            reminders_models.ClaimReminder.objects.select_related(
+            reminders_models.UnpaidClaimReminder.objects.select_related(
                 'claim__patient__client',
                 'claim__patient__dependent',
                 'claim__insurance__main_claimant__client',
@@ -139,7 +139,7 @@ class Reminders(generic.TemplateView):
 
         self._find_arrived_orders()
         arrived_orders_reminders = (
-            reminders_models.OrderReminder.objects.select_related(
+            reminders_models.OrderArrivedReminder.objects.select_related(
                 'order__claimant__client',
                 'order__claimant__dependent',
             ).filter(follow_up_filter)
@@ -154,11 +154,11 @@ class Reminders(generic.TemplateView):
         #     claims_without_orders_reminders
         # )
 
-        context['claim_reminder_form'] = forms.ClaimReminderForm(
-            prefix="claimreminder"
+        context['unpaid_claim_reminder_form'] = (
+            forms.UnpaidClaimReminderForm(prefix="unpaidclaimreminder")
         )
-        context['order_reminder_form'] = forms.OrderReminderForm(
-            prefix="orderreminder"
+        context['order_arrived_reminder_form'] = (
+            forms.OrderArrivedReminderForm(prefix="orderarrivedreminder")
         )
 
         return context
@@ -242,10 +242,12 @@ def send_reminder_text_message(
     return error
 
 
-class ClaimReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
+class UnpaidClaimReminderUpdate(
+    views_utils.AjaxResponseMixin, generic.UpdateView
+):
     template_name = 'reminders/reminders.html'
-    model = reminders_models.ClaimReminder
-    form_class = forms.ClaimReminderForm
+    model = reminders_models.UnpaidClaimReminder
+    form_class = forms.UnpaidClaimReminderForm
     success_url = urlresolvers.reverse_lazy('reminders:reminders')
 
     def post(self, request, *args, **kwargs):
@@ -325,10 +327,12 @@ class ClaimReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
         return response
 
 
-class OrderReminderUpdate(views_utils.AjaxResponseMixin, generic.UpdateView):
+class OrderArrivedReminderUpdate(
+    views_utils.AjaxResponseMixin, generic.UpdateView
+):
     template_name = 'reminders/reminders.html'
-    model = reminders_models.OrderReminder
-    form_class = forms.OrderReminderForm
+    model = reminders_models.OrderArrivedReminder
+    form_class = forms.OrderArrivedReminderForm
     success_url = urlresolvers.reverse_lazy('reminders:reminders')
 
     def post(self, request, *args, **kwargs):

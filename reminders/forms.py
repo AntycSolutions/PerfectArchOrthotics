@@ -3,15 +3,13 @@ from django import forms
 from . import models
 
 
-class ClaimReminderForm(forms.ModelForm):
-
+class UnpaidClaimReminderForm(forms.ModelForm):
     class Meta:
-        model = models.ClaimReminder
+        model = models.UnpaidClaimReminder
         exclude = ('claim', 'created',)
 
 
-class OrderReminderForm(forms.ModelForm):
-
+class OrderArrivedReminderForm(forms.ModelForm):
     class Meta:
-        model = models.OrderReminder
+        model = models.OrderArrivedReminder
         exclude = ('order', 'created',)

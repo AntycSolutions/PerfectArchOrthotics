@@ -132,8 +132,12 @@
                 email.parent().show();
             }
         }
-        $('#claimreminder_modal').on('show.bs.modal', reminder_modal_init);
-        $('#orderreminder_modal').on('show.bs.modal', reminder_modal_init);
+        $('#unpaidclaimreminder_modal').on(
+            'show.bs.modal', reminder_modal_init
+        );
+        $('#orderarrivedreminder_modal').on(
+            'show.bs.modal', reminder_modal_init
+        );
 
         var reminder_save = function() {
             var form_id = $(this).attr('form-id');
@@ -245,8 +249,8 @@
                 window.alert(msg);
             });
         }
-        $('#claimreminder_save').on('click', reminder_save);
-        $('#orderreminder_save').on('click', reminder_save);
+        $('#unpaidclaimreminder_save').on('click', reminder_save);
+        $('#orderarrivedreminder_save').on('click', reminder_save);
     {% endblock %}
 </script>
 
@@ -291,7 +295,7 @@
         </div>
         <div id="unpaid_claims_reminders" class="collapse in">
             {% if unpaid_claims_reminders %}
-                {% with object_list=unpaid_claims_reminders model_name="claimreminder" %}
+                {% with object_list=unpaid_claims_reminders model_name="unpaidclaimreminder" %}
                     {% include 'utils/generics/list_table.html' %}
                 {% endwith %}
             {% endif %}
@@ -354,7 +358,7 @@
         </div>
         <div id="arrived_orders_reminders" class="collapse in">
             {% if arrived_orders_reminders %}
-                {% with object_list=arrived_orders_reminders model_name="orderreminder" %}
+                {% with object_list=arrived_orders_reminders model_name="orderarrivedreminder" %}
                     {% include 'utils/generics/list_table.html' %}
                 {% endwith %}
             {% endif %}
@@ -467,7 +471,7 @@
         </div>
     </div>
 
-    <div id="claimreminder_modal" class="modal fade" tabindex="-1">
+    <div id="unpaidclaimreminder_modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -477,12 +481,13 @@
                     <h4 class="modal-title">Update Reminder</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="claimreminder_form" class="form-horizontal">
-                        {% include 'utils/generics/form.html' with form=claim_reminder_form %}
-                        <input type="hidden" id="claimreminder_pk" />
+                    <form id="unpaidclaimreminder_form"
+                            class="form-horizontal">
+                        {% include 'utils/generics/form.html' with form=unpaid_claim_reminder_form %}
+                        <input type="hidden" id="unpaidclaimreminder_pk" />
                         <input type="hidden"
                                 id="model_name"
-                                value="claimreminder" />
+                                value="unpaidclaimreminder" />
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -492,8 +497,8 @@
                         Close
                     </button>
                     <button type="button"
-                            id="claimreminder_save"
-                            form-id="#claimreminder_form"
+                            id="unpaidclaimreminder_save"
+                            form-id="#unpaidclaimreminder_form"
                             class="btn btn-primary">
                         Save
                     </button>
@@ -502,7 +507,7 @@
         </div>
     </div>
 
-    <div id="orderreminder_modal" class="modal fade" tabindex="-1">
+    <div id="orderarrivedreminder_modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -512,12 +517,13 @@
                     <h4 class="modal-title">Update Reminder</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="orderreminder_form" class="form-horizontal">
-                        {% include 'utils/generics/form.html' with form=order_reminder_form %}
-                        <input type="hidden" id="orderreminder_pk" />
+                    <form id="orderarrivedreminder_form"
+                            class="form-horizontal">
+                        {% include 'utils/generics/form.html' with form=order_arrived_reminder_form %}
+                        <input type="hidden" id="orderarrivedreminder_pk" />
                         <input type="hidden"
                                 id="model_name"
-                                value="orderreminder" />
+                                value="orderarrivedreminder" />
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -527,8 +533,8 @@
                         Close
                     </button>
                     <button type="button"
-                            id="orderreminder_save"
-                            form-id="#orderreminder_form"
+                            id="orderarrivedreminder_save"
+                            form-id="#orderarrivedreminder_form"
                             class="btn btn-primary">
                         Save
                     </button>

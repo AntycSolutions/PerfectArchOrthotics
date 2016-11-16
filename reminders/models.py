@@ -61,7 +61,7 @@ class Reminder(models.Model, model_utils.FieldList):
         return fields
 
 
-class OrderReminder(Reminder):
+class OrderArrivedReminder(Reminder):
     order = models.ForeignKey(inventory_models.CoverageOrder)
 
     # FOLLOWED_UP = 'fu'
@@ -127,7 +127,7 @@ class OrderReminder(Reminder):
         return fields
 
 
-class ClaimReminder(Reminder):
+class UnpaidClaimReminder(Reminder):
     claim = models.ForeignKey(clients_models.Claim)
 
     # PAID = 'pa'
