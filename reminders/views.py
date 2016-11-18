@@ -1,6 +1,6 @@
 import datetime
-import collections
 import smtplib
+import json
 
 from django.views import generic
 from django.utils import timezone
@@ -23,7 +23,9 @@ class Reminders(generic.TemplateView):
 
     def _find_unpaid_claims(self):
         three_weeks = datetime.timedelta(weeks=3)
-        three_weeks_ago = timezone.now() - three_weeks
+        now = timezone.now()
+        now_date = timezone.localtime(now).date()
+        three_weeks_ago = now - three_weeks
 
         claims = clients_models.Claim.objects.prefetch_related(
             'unpaidclaimreminder_set',
@@ -32,22 +34,32 @@ class Reminders(generic.TemplateView):
             submitted_datetime__lte=three_weeks_ago,
         ).distinct()
 
-        unpaid_claims_reminders = []
+        new_unpaid_claims_reminders = []
         for claim in claims:
             if not claim.unpaidclaimreminder_set.exists():
-                created = claim.submitted_datetime.date() - three_weeks
-                unpaid_claims_reminders.append(
+                new_unpaid_claims_reminders.append(
                     reminders_models.UnpaidClaimReminder(
-                        claim=claim, created=created
+                        claim=claim, created=now_date
                     )
                 )
         reminders_models.UnpaidClaimReminder.objects.bulk_create(
-            unpaid_claims_reminders
+            new_unpaid_claims_reminders
+        )
+
+        reminders_models.UnpaidClaimReminder.objects.filter(
+            claim__claimcoverage__actual_paid_date__isnull=True,
+            created__lte=timezone.localtime(three_weeks_ago).date()
+        ).update(
+            follow_up=reminders_models.Reminder.REQUIRED,
+            result='',
+            created=now_date
         )
 
     def _find_arrived_orders(self):
         one_week = datetime.timedelta(weeks=1)
-        one_week_ago = timezone.now() - one_week
+        now = timezone.now()
+        now_date = timezone.localtime(now).date()
+        one_week_ago = now - one_week
 
         orders = inventory_models.CoverageOrder.objects.prefetch_related(
             'orderarrivedreminder_set',
@@ -57,17 +69,25 @@ class Reminders(generic.TemplateView):
             arrived_date__lte=one_week_ago,
         )
 
-        arrived_orders_reminders = []
+        new_arrived_orders_reminders = []
         for order in orders:
             if not order.orderarrivedreminder_set.exists():
-                created = order.arrived_date - one_week
-                arrived_orders_reminders.append(
+                new_arrived_orders_reminders.append(
                     reminders_models.OrderReminder(
-                        order=order, created=created
+                        order=order, created=now_date
                     )
                 )
         reminders_models.OrderArrivedReminder.objects.bulk_create(
-            arrived_orders_reminders
+            new_arrived_orders_reminders
+        )
+
+        reminders_models.OrderArrivedReminder.objects.filter(
+            order__dispensed_date__isnull=True,
+            created__lte=timezone.localtime(one_week_ago).date()
+        ).update(
+            follow_up=reminders_models.Reminder.REQUIRED,
+            result='',
+            created=now_date
         )
 
     def _find_claims_without_orders(self):
@@ -85,33 +105,40 @@ class Reminders(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        Option = collections.namedtuple(
-            'Option', ['value', 'value_display', 'selected']
-        )
-        Select = collections.namedtuple('Select', ['label', 'options'])
-        follow_up_types = []
+        try:
+            # PostgreSQL
+            providers = list(
+                clients_models.Insurance.objects.all().distinct(
+                    'provider'
+                ).values_list(
+                    'provider', flat=True
+                )
+            )
+        except NotImplementedError:
+            # SQLite
+            providers = list(set(
+                clients_models.Insurance.objects.all().values_list(
+                    'provider', flat=True
+                )
+            ))
+        context['provider_choices'] = json.dumps(providers)
+
         GET = self.request.GET.copy()
+        follow_up_prefix = 'follow_up'
+        follow_up_str = follow_up_prefix + '-follow_up'
         no_value = (
-            ('follow_up_type' not in GET) or
-            (not GET.getlist('follow_up_type'))
+            (follow_up_str not in GET) or (not GET.getlist(follow_up_str))
         )
         if no_value:
-            GET.setlist('follow_up_type', [reminders_models.Reminder.REQUIRED])
-        follow_up_type_list = GET.getlist('follow_up_type')
-        for follow_up_type in reminders_models.Reminder.FOLLOW_UP_TYPES:
-            if (follow_up_type[0] in follow_up_type_list):
-                follow_up_types.append(
-                    Option(follow_up_type[0], follow_up_type[1], True)
-                )
-            else:
-                follow_up_types.append(
-                    Option(follow_up_type[0], follow_up_type[1], False)
-                )
-        selects = collections.OrderedDict()
-        selects.update(
-            {"follow_up_type": Select("Follow up type", follow_up_types)}
+            GET.setlist(follow_up_str, [reminders_models.Reminder.REQUIRED])
+        follow_up_list = GET.getlist(follow_up_str)
+
+        context['follow_up_form'] = forms.FollowUpForm(
+            GET, prefix=follow_up_prefix
         )
-        context['selects'] = selects
+        filter_prefix = 'filter'
+        result_str = filter_prefix + '-result'
+        context['filter_form'] = forms.ReminderForm(GET, prefix=filter_prefix)
 
         """
             Instead of using a cron like system of creating reminders
@@ -119,9 +146,28 @@ class Reminders(generic.TemplateView):
             the best implmentation but it works
         """
 
-        follow_up_filter = db_models.Q()
-        for follow_up in follow_up_type_list:
-            follow_up_filter &= db_models.Q(follow_up__contains=follow_up)
+        reminder_filter = db_models.Q()
+
+        for follow_up in follow_up_list:
+            reminder_filter &= db_models.Q(follow_up__contains=follow_up)
+
+        if result_str in GET and GET[result_str]:
+            reminder_filter &= db_models.Q(result=GET[result_str])
+
+        created_filter = views_utils._get_date_filter(
+            self.request,
+            context,
+            'filter-created_from',
+            'filter-created_to',
+            ['created']
+        )
+
+        insurance_str = filter_prefix + '-insurance'
+        insurance_filter = db_models.Q()
+        if insurance_str in GET and GET[insurance_str]:
+            insurance_filter = db_models.Q(
+                claim__insurance__provider=GET[insurance_str]
+            )
 
         self._find_unpaid_claims()
         unpaid_claims_reminders = (
@@ -133,7 +179,7 @@ class Reminders(generic.TemplateView):
             ).prefetch_related(
                 'claim__claimcoverage_set__claimitem_set__item__'
                 'itemhistory_set',
-            ).filter(follow_up_filter)
+            ).filter(reminder_filter, created_filter, insurance_filter)
         )
         context['unpaid_claims_reminders'] = unpaid_claims_reminders
 
@@ -142,7 +188,7 @@ class Reminders(generic.TemplateView):
             reminders_models.OrderArrivedReminder.objects.select_related(
                 'order__claimant__client',
                 'order__claimant__dependent',
-            ).filter(follow_up_filter)
+            ).filter(reminder_filter, created_filter)
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 

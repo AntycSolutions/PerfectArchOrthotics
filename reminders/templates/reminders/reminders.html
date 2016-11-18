@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% load pipeline %}
+{% load crispy_forms_tags %}
 
 {% block title %} - Reminders{% endblock %}
 
@@ -8,8 +10,16 @@
     {% block fallback_load %}
         {{ block.super }}
 
+        {% stylesheet 'reminders' %}
+
         {% javascript 'reminders' %}
+
         js_reverse: '/jsreverse/',
+
+        'jQuery.fn.typeahead': [
+            '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/{{ settings.VERSIONS.typeahead_js }}/typeahead.jquery.min.js',
+            "{% static 'utils/js/typeahead.jquery.min.js' %}"
+        ],
     {% endblock %}
 </script>
 
@@ -18,12 +28,17 @@
         {{ block.super }}
 
         'reminders_all_js': ['jQuery'],
+
+        'jQuery.fn.typeahead': ['jQuery'],
     {% endblock %}
 </script>
 
 <script type="text/javascript">
     {% block fallback_ready %}
         {{ block.super }}
+
+        {# we want to show the label on inline select #}
+        $('label[for="id_filter-result"]').removeClass('sr-only');
 
         {% if 'toggle' in request.GET %}
             var id = '#' + '{{ request.GET.toggle }}';
@@ -37,6 +52,31 @@
         else if (id) {
             location.hash = id;
         }
+
+        {% now 'Y' as current_year %}
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
+        var providers = {{ provider_choices|safe }};
+
+        $(document).ready(function() {
+            $(".dateinput").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: year_range,
+            });
+
+            $('#id_filter-insurance').typeahead(
+                {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+                },
+                {
+                    name: 'filter-insurance',
+                    source: startstringMatcher(providers),
+                }
+            );
+        });
 
         var benefits_lookup = {
             {% for unpaid_claims_reminder in unpaid_claims_reminders %}
@@ -263,20 +303,14 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <form method="GET" class="form-inline">
-                {% for name, select in selects.items %}
-                    <div class="checkbox inline">
-                        {% for option in select.options %}
-                            <label>
-                                <input type="checkbox"
-                                        name="{{ name }}"
-                                        value="{{ option.value }}"
-                                        {% if option.selected %} checked="checked"{% endif %} />
-                                    {{ option.value_display }}
-                            </label>
-                            <br />
-                        {% endfor %}
-                    </div>
-                {% endfor %}
+                {# manually render follow_up because crispy did it wrong #}
+                <div class="checkbox inline">
+                    {% for checkbox in follow_up_form.follow_up %}
+                        {{ checkbox }}
+                        <br />
+                    {% endfor %}
+                </div>
+                {% crispy filter_form %}
                 <button type="submit" class="btn">Search</button>
             </form>
         </div>
@@ -544,3 +578,31 @@
     </div>
 
 {% endblock content %}
+
+{% block body_scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        var startstringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+                var matches, substringRegex;
+
+                // an array that will be populated with substring matches
+                matches = [];
+
+                // regex used to determine if a string contains the substring `q`
+                substrRegex = new RegExp('^' + q, 'i');
+
+                // iterate through the pool of strings and for any string that
+                // contains the substring `q`, add it to the `matches` array
+                $.each(strs, function(i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+
+                cb(matches);
+            };
+        };
+    </script>
+{% endblock %}

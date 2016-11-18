@@ -255,6 +255,17 @@ PIPELINE = {
                 'fallback_key': 'claim_all_css',
             },
         },
+        # reminders
+        'reminders': {
+            'source_filenames': (
+                'utils/css/typeahead.css',
+            ),
+            'output_filename': 'css/reminders_all.css',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'reminders_all_css',
+            },
+        },
     },
     'JAVASCRIPT': {
         'base': {
