@@ -39,6 +39,8 @@
 
         {# we want to show the label on inline select #}
         $('label[for="id_filter-result"]').removeClass('sr-only');
+        {# form-inline needs to account for minifying html #}
+        $('#filter_form .form-group').addClass('inline');
 
         {% if 'toggle' in request.GET %}
             var id = '#' + '{{ request.GET.toggle }}';
@@ -302,9 +304,9 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <form method="GET" class="form-inline">
+            <form method="GET" class="form-inline" id="filter_form">
                 {# manually render follow_up because crispy did it wrong #}
-                <div class="checkbox inline">
+                <div class="form-group checkbox inline">
                     {% for checkbox in follow_up_form.follow_up %}
                         {{ checkbox }}
                         <br />
