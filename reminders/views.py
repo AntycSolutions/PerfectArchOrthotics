@@ -231,7 +231,7 @@ class Reminders(generic.TemplateView):
                 # for patient links
                 'claim__patient__client',
                 'claim__patient__dependent'
-            ).all()
+            ).filter(created_filter, insurance_filter)
         )
         context['claims_without_orders_reminders'] = (
             claims_without_orders_reminders
