@@ -1161,7 +1161,7 @@ class ProofOfManufacturing(models.Model):
 
     def laboratory_supervisor(self):
         laboratory_supervisor = \
-            self.get_laboratory_display().split('\n')[7].replace(
+            self.get_laboratory_display().split('\n')[8].replace(
                 'Laboratory Supervisor:', ''
             )
 

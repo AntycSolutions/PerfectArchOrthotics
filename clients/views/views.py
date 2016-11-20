@@ -67,8 +67,7 @@ def link_callback(uri, rel):
 @login_required
 def render_to_pdf(request, template_src, context_dict):
     template = get_template(template_src)
-    context = Context(context_dict)
-    html = template.render(context)
+    html = template.render(context_dict)
     result = io.BytesIO()
 
     # UTF-8 or ISO-8859-1

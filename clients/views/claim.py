@@ -300,18 +300,43 @@ class CreateProofOfManufacturingView(CreateView):
 
         return context
 
+    def get(self, request, *args, **kwargs):
+        # Ensure ProofOfManufacturing does not already exist
+        claim = Claim.objects.get(id=self.kwargs['claim_id'])
+        try:
+            claim.proofofmanufacturing
+            return HttpResponseRedirect(
+                claim.proofofmanufacturing.get_absolute_url()
+            )
+        except clients_models.ProofOfManufacturing.DoesNotExist:
+            pass
+
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        claim = Claim.objects.get(id=self.kwargs['claim_id'])
-        self.object.claim = claim
-        self.object.save()
+        claim_id = self.kwargs['claim_id']
+        self.object.claim_id = claim_id
+        try:
+            self.object.save()
+        except db_utils.IntegrityError:
+            claim = Claim.objects.get(id=claim_id)
+            # Was receiving errors that a user was trying to create a
+            #  second proof of manufacturing for this claim, so redirect to
+            #  existing proof of manufacturing since one already exists
+            #  for this OneToOne
+            return HttpResponseRedirect(
+                claim.proofofmanufacturing.get_absolute_url()
+            )
 
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         claim_id = self.object.claim.id
-        self.success_url = reverse_lazy('fillOutProof',
-                                        kwargs={'claim_id': claim_id})
+
+        self.success_url = reverse_lazy(
+            'fillOutProof', kwargs={'claim_id': claim_id}
+        )
 
         return self.success_url
 
