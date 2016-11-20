@@ -3,20 +3,19 @@
 <table>
     <thead>
         <tr>
-            <th colspan="3" style="padding-left: 3px; padding-top: 1px; padding-bottom: 0;">
+            <th colspan="4" style="padding-left: 3px; padding-top: 1px; padding-bottom: 0;">
                 PATIENT INFORMATION
             </th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="3" class="td_padding">
+            <td colspan="2" class="td_padding">
                 <br />
                 Name: {{ biomechanical_gait.patient }}
             </td>
-        </tr>
-        <tr>
-            <td colspan="3" class="td_padding">
+            <td colspan="2" class="td_padding">
+                <br />
                 Date of Birth: {{ biomechanical_gait.patient.birth_date }}
             </td>
         </tr>
@@ -30,9 +29,10 @@
             <td>
                 Height: {{ biomechanical_gait.height }}
             </td>
+            <td></td>
         </tr>
         <tr>
-            <td class="td_padding">
+            <td colspan="2" class="td_padding">
                 Shoe Size: {{ biomechanical_gait.shoe_size }}
             </td>
             <td colspan="2">
@@ -40,12 +40,12 @@
             </td>
         </tr>
         <tr>
-            <td colspan="3" class="td_padding">
+            <td colspan="4" class="td_padding">
                 Main Activities: {{ biomechanical_gait.main_activities }}
             </td>
         </tr>
         <tr>
-            <td colspan="3" class="td_padding">
+            <td colspan="4" class="td_padding">
                 {% if biomechanical_gait.fabricate %}
                     <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
                 {% else %}
@@ -54,5 +54,33 @@
                 &nbsp;Fabricate 2<sup>nd</sup> pair from cast on file (casts valid for 2 years)
             </td>
         </tr>
+        <tr>
+            <td colspan="4" class="td_padding">
+                {% with client=biomechanical_gait.patient.get_client %}
+                    Address:
+                    {{ client.address }}{% if client.address %},{% endif %}
+                    {{ client.city }}{% if client.city %},{% endif %}
+                    {{ client.province }}{% if client.province %},{% endif %}
+                    {{ client.postal_code }}{% if client.postal_code %},{% endif %}
+                    Canada
+                {% endwith %}
+            </td>
+        </tr>
+        {% with client=biomechanical_gait.patient.get_client %}
+            {% if client.phone_number or client.cell_number %}
+                <tr>
+                    <td colspan="2" class="td_padding">
+                        {% if client.phone_number %}
+                            Phone Number: {{ client.phone_number }}
+                        {% endif %}
+                    </td>
+                    <td colspan="2" class="td_padding">
+                        {% if client.cell_number %}
+                            Cell Number: {{ client.cell_number }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endwith %}
     </tbody>
 </table>
