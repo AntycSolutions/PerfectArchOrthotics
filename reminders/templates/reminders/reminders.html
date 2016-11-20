@@ -455,7 +455,7 @@
         </div>
         <div id="claims_without_orders_reminders" class="collapse in">
             {% if claims_without_orders_reminders %}
-                {% with object_list=claims_without_orders_reminders model_name="claim" %}
+                {% with object_list=claims_without_orders_reminders model_name="claimorderreminder" %}
                     {% include 'utils/generics/list_table.html' %}
                 {% endwith %}
             {% endif %}

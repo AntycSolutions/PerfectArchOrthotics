@@ -14,7 +14,7 @@ function display_period_date(period_value, form, form_count) {
     }
 }
 
-function add_form_callback(form, form_count) {
+function formset_add_form_callback(form, form_count) {
     var period = form.find('#id_coverage_set-' + form_count + '-period');
 
     display_period_date(period.val(), form, form_count);

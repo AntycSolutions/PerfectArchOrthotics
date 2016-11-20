@@ -10,6 +10,7 @@ from django.contrib import messages
 from utils import views_utils
 from utils.search import get_query, get_date_query
 
+from clients import models as clients_models
 from inventory import models
 from inventory.forms import forms
 
@@ -244,9 +245,16 @@ class CoverageCreateOrderView(CreateView):
         if form_class is None:
             form_class = self.get_form_class()
         order_form = form_class(**self.get_form_kwargs())
+
         if "person_pk" in self.kwargs:
-            person_pk = self.kwargs["person_pk"]
-            order_form.fields['claimant'].initial = person_pk
+            order_form.fields['claimant'].initial = self.kwargs["person_pk"]
+
+        if "claim_pk" in self.kwargs:
+            order_form.fields['claim'].initial = self.kwargs['claim_pk']
+            order_form.fields['order_type'].initial = (
+                clients_models.Coverage.ORTHOTICS
+            )
+
         return order_form
 
     def form_valid(self, form):
@@ -269,15 +277,13 @@ class CoverageCreateOrderView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
-        context = super(
-            CoverageCreateOrderView,
-            self
-        ).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
         context['cancel_url'] = reverse('order_list')
+        context['js_url'] = 'coverage_order'
 
         return context
 
@@ -446,8 +452,10 @@ class CoverageUpdateOrderView(UpdateView):
         context['model_name_plural'] = self.model._meta.verbose_name_plural
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
-        context['cancel_url'] = reverse('coverage_order_detail',
-                                        kwargs={'pk': self.object.pk})
+        context['cancel_url'] = reverse(
+            'coverage_order_detail', kwargs={'pk': self.object.pk}
+        )
+        context['js_url'] = 'coverage_order'
 
         return context
 

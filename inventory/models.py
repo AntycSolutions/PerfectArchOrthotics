@@ -3,9 +3,10 @@ from decimal import Decimal
 
 from django.db import models
 from django.core import urlresolvers
+from django.utils import timezone
 
 from auditlog.registry import auditlog
-from clients import models as client_models
+from clients import models as clients_models
 from utils import model_utils
 
 
@@ -142,7 +143,7 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
 class Order(models.Model, model_utils.FieldList):
     SHOE = "s"
     ADJUSTMENT = "a"
-    COVERAGE_TYPES = client_models.Coverage.COVERAGE_TYPES
+    COVERAGE_TYPES = clients_models.Coverage.COVERAGE_TYPES
     ORDER_TYPES = COVERAGE_TYPES + ((SHOE, "Shoe"),
                                     (ADJUSTMENT, "Adjustment"))
 
@@ -150,7 +151,7 @@ class Order(models.Model, model_utils.FieldList):
         "Order Type", max_length=4, choices=ORDER_TYPES)
 
     claimant = models.ForeignKey(
-        client_models.Person, verbose_name="Claimant")
+        clients_models.Person, verbose_name="Claimant")
 
     description = models.TextField(
         "Description",
@@ -296,6 +297,8 @@ class ShoeOrder(Order):
 
 
 class CoverageOrder(Order):
+    claim = models.ForeignKey(clients_models.Claim, blank=True, null=True)
+
     quantity = models.IntegerField(
         "Quantity", default=0)
     credit_value = models.IntegerField(
@@ -303,11 +306,19 @@ class CoverageOrder(Order):
     vendor = models.CharField(
         "Vendor", max_length=32)
 
+    # As Orders being tied to Claims is a newer feature we need to support
+    #  Claims/Orders created before this feature existed
+    ORDERS_TIED_TO_CLAIMS_START_DATETIME = timezone.make_aware(
+        # TODO: make this the day of deployment
+        timezone.datetime(2016, 10, 1)
+    )
+
     def get_all_fields(self):
         fields = super(CoverageOrder, self).get_all_fields()
 
         fields.pop('order_ptr')
         fields.pop('shoe')
+        fields.pop('customer_ordered_date')
 
         return fields
 
@@ -331,6 +342,7 @@ class AdjustmentOrder(Order):
 
         fields.pop('order_ptr')
         fields.pop('shoe')
+        fields.pop('customer_ordered_date')
 
         return fields
 

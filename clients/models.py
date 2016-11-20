@@ -542,6 +542,18 @@ class Claim(models.Model, model_utils.FieldList):
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage
 
+    def has_orthotics(self):
+        has_orthotics = (
+            self.coverages.filter(
+                coverage_type=Coverage.ORTHOTICS
+            ).exists() or
+            self.claimcoverage_set.filter(
+                items__coverage_type=Coverage.ORTHOTICS
+            ).exists()
+        )
+
+        return has_orthotics
+
     def total_expected_back(self):
         total_expected_back = 0
         for claim_coverage in self.claimcoverage_set.all():

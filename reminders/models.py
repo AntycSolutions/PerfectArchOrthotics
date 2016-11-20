@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import safestring, timezone
 from django.template import defaultfilters
-from django.core import exceptions
+from django.core import exceptions, urlresolvers
 
 import multiselectfield
 from utils import model_utils
@@ -46,7 +46,7 @@ class Reminder(models.Model, model_utils.FieldList):
         fields.pop('id')  # hide detail/update/delete in generic template
 
         modal_btn_pseudo = model_utils.FieldList.PseudoBtn('Update')
-        modal_btn_pseudo.name = 'modal'
+        modal_btn_pseudo.type = 'modal'
         modal_btn = self.Field(modal_btn_pseudo, '')
         fields.update({'modal_btn': modal_btn})
         fields.move_to_end('modal_btn', last=False)
@@ -222,5 +222,54 @@ class UnpaidClaimReminder(Reminder):
             )
         )
         fields.update({"number": number})
+
+        return fields
+
+
+class ClaimOrderReminder(models.Model, model_utils.FieldList):
+    created = models.DateField()
+
+    claim = models.ForeignKey(clients_models.Claim)
+
+    def get_all_fields(self):
+        fields = super().get_all_fields()
+
+        fields.pop('id')  # hide detail/update/delete in generic template
+
+        btn_pseudo = model_utils.FieldList.PseudoBtn(
+            'Create Orthotics Order'
+        )
+        btn_pseudo.attrs = {
+            'onclick':
+                "location.href='{}'".format(
+                    urlresolvers.reverse(
+                        'coverage_order_claim_create',
+                        kwargs={
+                            'claim_pk': self.claim_id,
+                            'person_pk': self.claim.patient_id
+                        }
+                    )
+                )
+        }
+        btn = self.Field(btn_pseudo, '')
+        fields.update({'btn': btn})
+        fields.move_to_end('btn', last=False)
+
+        patient = self.Field(
+            model_utils.FieldList.PseudoForeignKey("Patient"),
+            self.claim.patient
+        )
+        fields.update({"patient": patient})
+
+        def get_str():
+            submitted_datetime = timezone.localtime(
+                self.claim.submitted_datetime
+            )
+            submitted_datetime = defaultfilters.date(
+                submitted_datetime, "N j, Y, P"
+            )
+
+            return "{}".format(submitted_datetime)
+        fields['claim'].value.get_str = get_str
 
         return fields

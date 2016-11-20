@@ -91,16 +91,44 @@ class Reminders(generic.TemplateView):
         )
 
     def _find_claims_without_orders(self):
-        one_day_ago = timezone.now() - datetime.timedelta(days=1)
+        now = timezone.now()
+        now_date = timezone.localtime(now).date()
+        one_day_ago = now - datetime.timedelta(days=1)
 
+        ORTHOTICS = clients_models.Coverage.ORTHOTICS
+        cutoff = (
+            inventory_models.CoverageOrder.ORDERS_TIED_TO_CLAIMS_START_DATETIME
+        )
+        has_orthotics = (
+            db_models.Q(
+                coverages__coverage_type=ORTHOTICS
+            ) |
+            db_models.Q(
+                claimcoverage__items__coverage_type=ORTHOTICS
+            )
+        )
         claims = clients_models.Claim.objects.filter(
-            # add filter for missing orders
+            has_orthotics,
+            coverageorder=None,
             submitted_datetime__lte=one_day_ago,
+            submitted_datetime__gte=cutoff
         )
 
-        # bulk_create new claim reminder
+        new_claims_without_orders_reminders = []
         for claim in claims:
-            pass
+            if not claim.claimorderreminder_set.exists():
+                new_claims_without_orders_reminders.append(
+                    reminders_models.ClaimOrderReminder(
+                        claim=claim, created=now_date
+                    )
+                )
+        reminders_models.ClaimOrderReminder.objects.bulk_create(
+            new_claims_without_orders_reminders
+        )
+
+        reminders_models.ClaimOrderReminder.objects.filter(
+            claim__coverageorder__order_type=ORTHOTICS
+        ).delete()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,6 +152,7 @@ class Reminders(generic.TemplateView):
         context['provider_choices'] = json.dumps(providers)
 
         GET = self.request.GET.copy()
+
         follow_up_prefix = 'follow_up'
         follow_up_str = follow_up_prefix + '-follow_up'
         no_value = (
@@ -132,10 +161,10 @@ class Reminders(generic.TemplateView):
         if no_value:
             GET.setlist(follow_up_str, [reminders_models.Reminder.REQUIRED])
         follow_up_list = GET.getlist(follow_up_str)
-
         context['follow_up_form'] = forms.FollowUpForm(
             GET, prefix=follow_up_prefix
         )
+
         filter_prefix = 'filter'
         result_str = filter_prefix + '-result'
         context['filter_form'] = forms.ReminderForm(GET, prefix=filter_prefix)
@@ -172,11 +201,14 @@ class Reminders(generic.TemplateView):
         self._find_unpaid_claims()
         unpaid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.select_related(
+                # for patient links
                 'claim__patient__client',
                 'claim__patient__dependent',
+                # for benefits lookup
                 'claim__insurance__main_claimant__client',
                 'claim__insurance__main_claimant__dependent',
             ).prefetch_related(
+                # for expected back/amount claimed calcs
                 'claim__claimcoverage_set__claimitem_set__item__'
                 'itemhistory_set',
             ).filter(reminder_filter, created_filter, insurance_filter)
@@ -186,19 +218,24 @@ class Reminders(generic.TemplateView):
         self._find_arrived_orders()
         arrived_orders_reminders = (
             reminders_models.OrderArrivedReminder.objects.select_related(
+                # for claimant links
                 'order__claimant__client',
                 'order__claimant__dependent',
             ).filter(reminder_filter, created_filter)
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 
-        # self._find_claims_without_orders()
-        # claims_without_orders_reminders = (
-        #     reminders_models.ClaimReminder.objects.all()
-        # )
-        # context['claims_without_orders_reminders'] = (
-        #     claims_without_orders_reminders
-        # )
+        self._find_claims_without_orders()
+        claims_without_orders_reminders = (
+            reminders_models.ClaimOrderReminder.objects.select_related(
+                # for patient links
+                'claim__patient__client',
+                'claim__patient__dependent'
+            ).all()
+        )
+        context['claims_without_orders_reminders'] = (
+            claims_without_orders_reminders
+        )
 
         context['unpaid_claim_reminder_form'] = (
             forms.UnpaidClaimReminderForm(prefix="unpaidclaimreminder")

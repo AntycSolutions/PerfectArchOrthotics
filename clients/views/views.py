@@ -258,10 +258,9 @@ def claimView(request, claim_id):
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set'
     ).get(id=claim_id)
-    has_orthotics = claim.coverages.filter(coverage_type="o").count() > 0
+
     context = {
         'claim': claim,
-        'has_orthotics': has_orthotics,
         'claim_coverage_class': ClaimCoverage,
         'coverage_class': Coverage,
         'claim_item_class': ClaimItem,

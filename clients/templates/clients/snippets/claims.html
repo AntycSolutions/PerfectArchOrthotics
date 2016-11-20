@@ -106,6 +106,12 @@
                 </tr>
                 <tr>
                     <td colspan="5">
+                        {% if claim.has_orthotics %}
+                            <a href="{% url 'coverage_order_claim_create' person_pk=claim.patient.pk claim_pk=claim.pk %}"
+                                    class="btn btn-primary">
+                                Create an Orthotics Order
+                            </a>
+                        {% endif %}
                         <ul class="pull-right">
                             <li>
                                 Coverages:
