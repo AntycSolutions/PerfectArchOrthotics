@@ -3,7 +3,7 @@ django-ajax-selects==1.4.3
 django-crispy-forms==1.6.0
 django-easy-pdf==0.1.0
 django-formtools==1.0
-django-auditlog==0.3.3
+django-auditlog==0.4.0
 django-pipeline==1.6.8
 django-session-security==2.4.0
 django-multiselectfield==0.1.4
