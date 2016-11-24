@@ -49,13 +49,16 @@
         $('#stats').on('show.bs.collapse', function() {
             if (claims_stats) { return; }
 
+            $stats_msg = $('#stats_msg');
+            $stats_msg.text($stats_msg.text() + ' loading...');
+
             $.get(url).done(function(data) {
                 if (data) {
                     for (var key in data) {
                         $('#' + key).text('$' + data[key]);
                     }
                     claims_stats = true;
-                    $('#stats_msg').fadeOut();
+                    $stats_msg.fadeOut();
                 }
                 else {
                     window.alert(
