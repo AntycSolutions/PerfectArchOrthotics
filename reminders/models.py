@@ -5,6 +5,7 @@ from django.core import exceptions, urlresolvers
 
 import multiselectfield
 from utils import model_utils
+from auditlog.registry import auditlog
 
 from clients import models as clients_models
 from inventory import models as inventory_models
@@ -273,3 +274,8 @@ class ClaimOrderReminder(models.Model, model_utils.FieldList):
         fields['claim'].value.get_str = get_str
 
         return fields
+
+
+auditlog.register(OrderArrivedReminder)
+auditlog.register(UnpaidClaimReminder)
+auditlog.register(ClaimOrderReminder)
