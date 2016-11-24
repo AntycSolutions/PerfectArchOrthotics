@@ -2,6 +2,9 @@
 
 {% load pipeline %}
 {% load crispy_forms_tags %}
+{% load template_utils %}
+
+{% get_app_settings 'pipeline' as pipeline_settings %}
 
 {% block title %} - Claims{% endblock %}
 
@@ -204,6 +207,9 @@
                         data-target="#stats">
                     Statistics
                     <span class="caret"></span>
+                    {% if pipeline_settings.settings.PIPELINE_ENABLED %}
+                        &nbsp;
+                    {% endif %}
                     <span id="stats_msg">(click here to load)</span>
                 </a>
             </div>
