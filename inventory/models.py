@@ -310,7 +310,7 @@ class CoverageOrder(Order):
     #  Claims/Orders created before this feature existed
     ORDERS_TIED_TO_CLAIMS_START_DATETIME = timezone.make_aware(
         # TODO: make this the day of deployment
-        timezone.datetime(2016, 10, 1)
+        timezone.datetime(2016, 11, 24)
     )
 
     def get_all_fields(self):

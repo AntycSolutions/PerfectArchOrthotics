@@ -121,9 +121,9 @@ class CoverageOrderForm(forms.ModelForm):
             order_type == clients_models.Coverage.ORTHOTICS and
             not claim and
             (
-                (ordered_date and ordered_date > cutoff) or
-                (arrived_date and arrived_date > cutoff) or
-                (dispensed_date and dispensed_date > cutoff)
+                (ordered_date and ordered_date >= cutoff) or
+                (arrived_date and arrived_date >= cutoff) or
+                (dispensed_date and dispensed_date >= cutoff)
             )
         )
         if claim_required:
