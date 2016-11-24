@@ -207,10 +207,12 @@
                         data-target="#stats">
                     Statistics
                     <span class="caret"></span>
-                    {% if pipeline_settings.settings.PIPELINE_ENABLED %}
-                        &nbsp;
-                    {% endif %}
-                    <span id="stats_msg">(click here to load)</span>
+                    <span id="stats_msg"
+                        {% if pipeline_settings.settings.PIPELINE_ENABLED %}
+                            style="margin-left: 4px;"
+                        {% endif %}>
+                        (click here to load)
+                    </span>
                 </a>
             </div>
         </div>
