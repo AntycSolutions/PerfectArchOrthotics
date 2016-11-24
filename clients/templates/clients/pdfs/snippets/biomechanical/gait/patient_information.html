@@ -46,16 +46,6 @@
         </tr>
         <tr>
             <td colspan="4" class="td_padding">
-                {% if biomechanical_gait.fabricate %}
-                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
-                {% else %}
-                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
-                {% endif %}
-                &nbsp;Fabricate 2<sup>nd</sup> pair from cast on file (casts valid for 2 years)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="4" class="td_padding">
                 {% with client=biomechanical_gait.patient.get_client %}
                     Address:
                     {{ client.address }}{% if client.address %},{% endif %}
@@ -82,5 +72,15 @@
                 </tr>
             {% endif %}
         {% endwith %}
+        <tr>
+            <td colspan="4" class="td_padding">
+                {% if biomechanical_gait.fabricate %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5" />
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5" />
+                {% endif %}
+                &nbsp;Fabricate 2<sup>nd</sup> pair from cast on file (casts valid for 2 years)
+            </td>
+        </tr>
     </tbody>
 </table>
