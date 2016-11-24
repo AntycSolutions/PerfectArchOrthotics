@@ -73,7 +73,7 @@ class Reminders(generic.TemplateView):
         for order in orders:
             if not order.orderarrivedreminder_set.exists():
                 new_arrived_orders_reminders.append(
-                    reminders_models.OrderReminder(
+                    reminders_models.OrderArrivedReminder(
                         order=order, created=now_date
                     )
                 )
