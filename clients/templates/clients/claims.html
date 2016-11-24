@@ -49,7 +49,7 @@
         $('#stats').on('show.bs.collapse', function() {
             if (claims_stats) { return; }
 
-            $.post(url).done(function(data) {
+            $.get(url).done(function(data) {
                 if (data) {
                     for (var key in data) {
                         $('#' + key).text('$' + data[key]);
