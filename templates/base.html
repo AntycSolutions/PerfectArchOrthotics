@@ -103,16 +103,15 @@
 </script>
 
 <script type="text/javascript">
-    {% block fallback_bootstrap3_overlay_libraries %}
-        [
-            'bootstrap_css',
-            {% if pipeline_settings.settings.PIPELINE_ENABLED %}
-                'base_all_css',
-            {% else %}
-                'base_css',
-                'sticky_footer_css',
-            {% endif %}
-        ]
+    {% block fallback_overlay_libraries %}
+        {{ block.super }}
+
+        {% if pipeline_settings.settings.PIPELINE_ENABLED %}
+            'base_all_css',
+        {% else %}
+            'base_css',
+            'sticky_footer_css',
+        {% endif %}
     {% endblock %}
 </script>
 
