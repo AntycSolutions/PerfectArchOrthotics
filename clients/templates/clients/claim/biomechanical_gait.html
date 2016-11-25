@@ -5,6 +5,7 @@
 {% load crispy_forms_tags %}
 {% load update_attrs %}
 {% load pipeline %}
+{% load fallback_tags %}
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
 
@@ -24,6 +25,8 @@
 <script type="text/javascript">
     {% block fallback_shim %}
         {{ block.super }}
+
+        {% pipeline_css_shim 'biomechanical_gait' 'bootstrap_css' %}
 
         'jQuery.fn.typeahead': ['jQuery'],
     {% endblock %}

@@ -3,6 +3,7 @@
 {% load static %}
 {% load update_attrs %}
 {% load pipeline %}
+{% load fallback_tags %}
 
 {% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
 
@@ -11,6 +12,14 @@
         {{ block.super }}
 
         {% stylesheet 'biomechanical_foot' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        {% pipeline_css_shim 'biomechanical_foot' 'bootstrap_css' %}
     {% endblock %}
 </script>
 

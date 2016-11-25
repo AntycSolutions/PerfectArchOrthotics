@@ -5,6 +5,7 @@
 {% load update_attrs %}
 {% load nbsp %}
 {% load pipeline %}
+{% load fallback_tags %}
 
 {% block title %} - {{ client.full_name }}{% endblock %}
 
@@ -13,6 +14,14 @@
         {{ block.super }}
 
         {% stylesheet 'client' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        {% pipeline_css_shim 'client' 'bootstrap_css' %}
     {% endblock %}
 </script>
 

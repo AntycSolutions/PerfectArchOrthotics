@@ -2,6 +2,7 @@
 
 {% load verbose_name %}
 {% load pipeline %}
+{% load fallback_tags %}
 
 {% block title %} - Claim for {{ claim.patient.full_name }}{% endblock %}
 
@@ -10,6 +11,14 @@
         {{ block.super }}
 
         {% stylesheet 'claim' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        {% pipeline_css_shim 'claim' 'bootstrap_css' %}
     {% endblock %}
 </script>
 

@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load pipeline %}
+{% load fallback_tags %}
 {% load crispy_forms_tags %}
 
 {% block title %} - Reminders{% endblock %}
@@ -27,7 +28,9 @@
     {% block fallback_shim %}
         {{ block.super }}
 
-        'reminders_all_js': ['jQuery'],
+        {% pipeline_css_shim 'reminders' 'bootstrap_css' %}
+
+        {% pipeline_js_shim 'reminders' 'jQuery' %}
 
         'jQuery.fn.typeahead': ['jQuery'],
     {% endblock %}
