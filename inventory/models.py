@@ -320,6 +320,9 @@ class CoverageOrder(Order):
         fields.pop('shoe')
         fields.pop('customer_ordered_date')
 
+        if self.order_type != clients_models.Coverage.ORTHOTICS:
+            fields.pop('claim')
+
         return fields
 
     def get_absolute_url(self):

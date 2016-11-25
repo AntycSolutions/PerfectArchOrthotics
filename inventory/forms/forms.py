@@ -1,5 +1,5 @@
 from django import forms
-from django.template import defaultfilters
+from django.utils import safestring
 
 from clients import models as clients_models
 from inventory import models
@@ -97,49 +97,23 @@ class CoverageOrderForm(forms.ModelForm):
         ).order_by('lower_first_name')
         self.fields['claimant'].queryset = queryset
 
-        choices = self.fields['order_type'].choices
-        choices.remove((models.Order.SHOE, "Shoe"))
-        choices.remove((models.Order.ADJUSTMENT, "Adjustment"))
-        self.fields['order_type'].choices = choices
-
-        self.fields['claim'].label_from_instance = lambda obj: obj.get_str()
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        order_type = cleaned_data.get('order_type')
-        claim = cleaned_data['claim']
-        ordered_date = cleaned_data['ordered_date']
-        arrived_date = cleaned_data['arrived_date']
-        dispensed_date = cleaned_data['dispensed_date']
-
-        cutoff = (
-            models.CoverageOrder.ORDERS_TIED_TO_CLAIMS_START_DATETIME.date()
+        order_type = self.fields['order_type']
+        is_ORTHOTICS = (
+            self.instance.pk and
+            self.instance.order_type == clients_models.Coverage.ORTHOTICS
         )
-
-        claim_required = (
-            order_type == clients_models.Coverage.ORTHOTICS and
-            not claim and
-            (
-                (ordered_date and ordered_date >= cutoff) or
-                (arrived_date and arrived_date >= cutoff) or
-                (dispensed_date and dispensed_date >= cutoff)
-            )
-        )
-        if claim_required:
-            error = forms.ValidationError(
-                'Orthotics Orders must be tied to a Claim if created '
-                'after {}. Use the "Create an Orthotics Order" button '
-                'when viewing Claims'.format(
-                    defaultfilters.date(cutoff)
-                )
-            )
-            self.add_error('order_type', error)
-            self.add_error('claim', error)
+        if is_ORTHOTICS:
+            choices = ((clients_models.Coverage.ORTHOTICS, 'Orthotics'),)
+        else:
+            choices = order_type.choices
+            choices.remove((models.Order.SHOE, "Shoe"))
+            choices.remove((models.Order.ADJUSTMENT, "Adjustment"))
+            choices.remove((clients_models.Coverage.ORTHOTICS, 'Orthotics'))
+        order_type.choices = choices
 
     class Meta:
         model = models.CoverageOrder
-        fields = '__all__'
+        exclude = ('claim',)
 
 
 class AdjustmentOrderForm(forms.ModelForm):

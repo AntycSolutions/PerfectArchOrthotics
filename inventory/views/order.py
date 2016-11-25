@@ -241,21 +241,22 @@ class CoverageCreateOrderView(CreateView):
     model = models.CoverageOrder
     form_class = forms.CoverageOrderForm
 
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        order_form = form_class(**self.get_form_kwargs())
+    def get_initial(self):
+        initial = self.initial.copy()
 
         if "person_pk" in self.kwargs:
-            order_form.fields['claimant'].initial = self.kwargs["person_pk"]
+            initial['claimant'] = self.kwargs["person_pk"]
 
-        if "claim_pk" in self.kwargs:
-            order_form.fields['claim'].initial = self.kwargs['claim_pk']
-            order_form.fields['order_type'].initial = (
-                clients_models.Coverage.ORTHOTICS
-            )
+        return initial
 
-        return order_form
+    def get_form(self, form_class):
+        form = form_class(**self.get_form_kwargs())
+
+        if 'claim_pk' in self.kwargs:
+            choices = ((clients_models.Coverage.ORTHOTICS, 'Orthotics'),)
+            form.fields['order_type'].choices = choices
+
+        return form
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -271,6 +272,8 @@ class CoverageCreateOrderView(CreateView):
                 "Client's Credit (%s)." % (credit_value,
                                            client_credit))
             # return self.form_invalid(form)
+
+        self.object.claim_id = self.kwargs.get('claim_pk')
 
         self.object.save()
 
