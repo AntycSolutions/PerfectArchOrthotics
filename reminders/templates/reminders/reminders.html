@@ -343,43 +343,7 @@
             {% endif %}
             <div class="panel-body">
                 {% if unpaid_claims_reminders %}
-                {% comment %}
-                    <!-- Pagination stuff -->
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if unpaid_claims_reminders.has_previous %}
-                                <a href="?unpaid_claims_reminders_page={{ unpaid_claims_reminders.previous_page_number }}"
-                                        class="btn btn-default">
-                                    Previous
-                                </a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ unpaid_claims_reminders.number }} of {{ unpaid_claims_reminders.paginator.num_pages }}.
-                            </span>
-
-                            {% if unpaid_claims_reminders.has_next %}
-                                <a href="?unpaid_claims_reminders_page={{ unpaid_claims_reminders.next_page_number }}"
-                                        class="btn btn-default inline">
-                                    Next
-                                </a>
-                            {% endif %}
-                        </span>
-                    </div>
-                    <form method="GET"
-                            class="form-inline"
-                            style="display: inline-block;">
-                        <div class="form-group">
-                            Rows per Page:
-                            <input type="number"
-                                    id="unpaid_claims_reminders_rows_per_page"
-                                    name="unpaid_claims_reminders_rows_per_page"
-                                    class="form-control"
-                                    value="{{ unpaid_claims_reminders.rows_per_page }}" />
-                        </div>
-                        <button type="submit" class="btn">Paginate</button>
-                    </form>
-                {% endcomment %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=unpaid_claims_reminders rows_per_page=unpaid_claims_reminders_rows_per_page page_var='unpaid_claims_reminders_page' rows_per_page_var='unpaid_claims_reminders_rows_per_page' %}
                 {% else %}
                     There are no unpaid Claims.
                 {% endif %}
@@ -406,43 +370,7 @@
             {% endif %}
             <div class="panel-body">
                 {% if arrived_orders_reminders %}
-                {% comment %}
-                    <!-- Pagination stuff -->
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if arrived_orders_reminders.has_previous %}
-                                <a href="?arrived_orders_reminders_page={{ arrived_orders_reminders.previous_page_number }}"
-                                        class="btn btn-default">
-                                    Previous
-                                </a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ arrived_orders_reminders.number }} of {{ arrived_orders_reminders.paginator.num_pages }}.
-                            </span>
-
-                            {% if arrived_orders_reminders.has_next %}
-                                <a href="?arrived_orders_reminders_page={{ arrived_orders_reminders.next_page_number }}"
-                                        class="btn btn-default inline">
-                                    Next
-                                </a>
-                            {% endif %}
-                        </span>
-                    </div>
-                    <form method="GET"
-                            class="form-inline"
-                            style="display: inline-block;">
-                        <div class="form-group">
-                            Rows per Page:
-                            <input type="number"
-                                    id="arrived_orders_reminders_rows_per_page"
-                                    name="arrived_orders_reminders_rows_per_page"
-                                    class="form-control"
-                                    value="{{ arrived_orders_reminders.rows_per_page }}" />
-                        </div>
-                        <button type="submit" class="btn">Paginate</button>
-                    </form>
-                {% endcomment %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=arrived_orders_reminders rows_per_page=arrived_orders_reminders_rows_per_page page_var='arrived_orders_reminders_page' rows_per_page_var='arrived_orders_reminders_rows_per_page' %}
                 {% else %}
                     There are no arrived Orders.
                 {% endif %}

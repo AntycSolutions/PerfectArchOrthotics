@@ -213,6 +213,18 @@ class Reminders(generic.TemplateView):
                 'itemhistory_set',
             ).filter(reminder_filter, created_filter, insurance_filter)
         )
+        unpaid_claims_reminders_rows_per_page = views_utils._get_paginate_by(
+            self.request, 'unpaid_claims_reminders_rows_per_page'
+        )
+        context['unpaid_claims_reminders_rows_per_page'] = (
+            unpaid_claims_reminders_rows_per_page
+        )
+        unpaid_claims_reminders = views_utils._paginate(
+            self.request,
+            unpaid_claims_reminders,
+            'unpaid_claims_reminders_page',
+            unpaid_claims_reminders_rows_per_page
+        )
         context['unpaid_claims_reminders'] = unpaid_claims_reminders
 
         self._find_arrived_orders()
@@ -222,6 +234,18 @@ class Reminders(generic.TemplateView):
                 'order__claimant__client',
                 'order__claimant__dependent',
             ).filter(reminder_filter, created_filter)
+        )
+        arrived_orders_reminders_rows_per_page = views_utils._get_paginate_by(
+            self.request, 'arrived_orders_reminders_rows_per_page'
+        )
+        context['arrived_orders_reminders_rows_per_page'] = (
+            arrived_orders_reminders_rows_per_page
+        )
+        arrived_orders_reminders = views_utils._paginate(
+            self.request,
+            arrived_orders_reminders,
+            'arrived_orders_reminders_page',
+            arrived_orders_reminders_rows_per_page
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 
