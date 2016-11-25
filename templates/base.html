@@ -3,8 +3,11 @@
 {% load static %}
 {% load pipeline %}
 {% load fallback_tags %}
+{% load template_utils %}
 {% load session_security_tags %}
 {% load i18n l10n %}
+
+{% get_app_settings 'pipeline' as pipeline_settings %}
 
 {% block meta %}
     {{ block.super }}
@@ -96,6 +99,20 @@
         {{ block.super }}
 
         {% pipeline_css_shim 'base' 'bootstrap_css' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_bootstrap3_overlay_libraries %}
+        [
+            'bootstrap_css',
+            {% if pipeline_settings.settings.PIPELINE_ENABLED %}
+                'base_all_css',
+            {% else %}
+                'base_css',
+                'sticky_footer_css',
+            {% endif %}
+        ]
     {% endblock %}
 </script>
 
