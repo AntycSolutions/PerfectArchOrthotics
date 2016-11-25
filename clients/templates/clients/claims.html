@@ -9,22 +9,6 @@
 {% block title %} - Claims{% endblock %}
 
 <script type="text/javascript">
-    {% block fallback_load %}
-        {{ block.super }}
-
-        {% javascript 'claims' %}
-    {% endblock %}
-</script>
-
-<script type="text/javascript">
-    {% block fallback_shim %}
-        {{ block.super }}
-
-        'claims_all_js': ['jQuery'],
-    {% endblock %}
-</script>
-
-<script type="text/javascript">
     {% block fallback_ready %}
         {{ block.super }}
 

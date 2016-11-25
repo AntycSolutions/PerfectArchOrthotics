@@ -299,6 +299,8 @@
 
 {% block content %}
 
+    {% csrf_token %}
+
     <div class="page-header"><h1>Reminders</h1></div>
 
     {% include 'utils/snippets/messages.html' %}
