@@ -12,7 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.template.loader import get_template
-from django.template import Context
 from django.contrib import messages
 from django.db.models import Sum, Case, When, Q
 from django.core import urlresolvers
@@ -110,7 +109,10 @@ def invoice_view(request, claim_id):
 
 
 def _invoice(claim_id):
-    claim = Claim.objects.get(id=claim_id)
+    try:
+        claim = Claim.objects.get(id=claim_id)
+    except Claim.DoesNotExist:
+        raise http.Http404("No Claim matches that ID")
     patient = claim.patient
     invoice = None
     try:
@@ -154,7 +156,10 @@ def insurance_letter_view(request, claim_id):
 
 
 def _insurance_letter(claim_id):
-    claim = Claim.objects.get(id=claim_id)
+    try:
+        claim = Claim.objects.get(id=claim_id)
+    except Claim.DoesNotExist:
+        raise http.Http404("No Claim matches that ID")
     patient = claim.patient
     insurance_letter = None
     try:
@@ -183,7 +188,10 @@ def proof_of_manufacturing_view(request, claim_id):
 
 
 def _proof_of_manufacturing(claim_id):
-    claim = Claim.objects.get(id=claim_id)
+    try:
+        claim = Claim.objects.get(id=claim_id)
+    except Claim.DoesNotExist:
+        raise http.Http404("No Claim matches that ID")
     proof_of_manufacturing = None
     try:
         proof_of_manufacturing = claim.proofofmanufacturing
@@ -252,11 +260,14 @@ def fillOutProofOfManufacturingView(request, claim_id):
 
 @login_required
 def claimView(request, claim_id):
-    claim = Claim.objects.select_related(
-        'patient', 'insurance'
-    ).prefetch_related(
-        'claimcoverage_set__claimitem_set__item__itemhistory_set'
-    ).get(id=claim_id)
+    try:
+        claim = Claim.objects.select_related(
+            'patient', 'insurance'
+        ).prefetch_related(
+            'claimcoverage_set__claimitem_set__item__itemhistory_set'
+        ).get(id=claim_id)
+    except Claim.DoesNotExist:
+        raise http.Http404("No Claim matches that ID")
 
     context = {
         'claim': claim,
@@ -588,16 +599,19 @@ def insuranceSearchView(request):
 
 @login_required
 def clientView(request, client_id):
-    client = Client.objects.select_related(
-        'referred_by',
-        'person_ptr'
-    ).prefetch_related(
-        'insurance_set__coverage_set',
-        'dependent_set__person_ptr__referred_set',
-        'person_ptr__referred_set'
-    ).get(
-        id=client_id
-    )
+    try:
+        client = Client.objects.select_related(
+            'referred_by',
+            'person_ptr'
+        ).prefetch_related(
+            'insurance_set__coverage_set',
+            'dependent_set__person_ptr__referred_set',
+            'person_ptr__referred_set'
+        ).get(
+            id=client_id
+        )
+    except Client.DoesNotExist:
+        raise http.Http404("No Client matches that ID")
     dependents = client.dependent_set.all()
     person_pk_list = [client.pk]
 
@@ -855,7 +869,10 @@ def add_client(request):
 
 @login_required
 def editClientView(request, client_id):
-    client = Client.objects.get(id=client_id)
+    try:
+        client = Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        raise http.Http404("No Client matches that ID")
     if request.method == 'POST':
         client_form = ClientForm(request.POST, instance=client)
         if client_form.is_valid():
@@ -891,8 +908,14 @@ def editClientView(request, client_id):
 def editDependentsView(request, client_id, dependent_id):
     context = {}
 
-    client = Client.objects.get(id=client_id)
-    dependent = client.dependent_set.get(id=dependent_id)
+    try:
+        client = Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        raise http.Http404("No Client matches that ID")
+    try:
+        dependent = client.dependent_set.get(id=dependent_id)
+    except Dependent.DoesNotExist:
+        raise http.Http404("No Dependent matches that ID")
     if request.method == 'POST':
         dependent_form = DependentForm(request.POST, instance=dependent)
         if dependent_form.is_valid():
@@ -922,15 +945,17 @@ def editDependentsView(request, client_id, dependent_id):
 def add_new_dependent(request, client_id):
     context = {}
 
-    client = Client.objects.get(id=client_id)
+    try:
+        client = Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        raise http.Http404("No Client matches that ID")
     if request.method == 'POST':
         form = DependentForm(request.POST)
 
         if form.is_valid():
             saved = form.save(commit=False)
 
-            client = Client.objects.get(id=client_id)
-            saved.primary = client
+            saved.primary_id = client.pk
             saved.save()
             return redirect('client', client_id)
     else:
@@ -963,8 +988,7 @@ def add_dependent(request, client_id):
         if form.is_valid():
             saved = form.save(commit=False)
 
-            client = Client.objects.get(id=client_id)
-            saved.primary = client
+            saved.primary_id = client_id
             saved.save()
 
             if request.POST['submit'] == "Create and proceed":
