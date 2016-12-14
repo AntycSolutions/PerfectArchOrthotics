@@ -42,10 +42,12 @@ class Reminders(generic.TemplateView):
                         claim=claim, created=now_date
                     )
                 )
+        # create new unpaid claims reminders
         reminders_models.UnpaidClaimReminder.objects.bulk_create(
             new_unpaid_claims_reminders
         )
 
+        # update old unpaid claims reminders
         reminders_models.UnpaidClaimReminder.objects.filter(
             claim__claimcoverage__actual_paid_date__isnull=True,
             created__lte=timezone.localtime(three_weeks_ago).date()
@@ -54,6 +56,27 @@ class Reminders(generic.TemplateView):
             result='',
             created=now_date
         )
+
+        possibly_paid_claims_reminders = (
+            reminders_models.UnpaidClaimReminder.objects.filter(
+                claim__claimcoverage__actual_paid_date__isnull=False
+            )
+            .prefetch_related(
+                'claim__claimcoverage_set'
+            )
+        )
+        for possibly_paid_claims_reminder in possibly_paid_claims_reminders:
+            is_paid = True
+            claimcoverages = (
+                possibly_paid_claims_reminder.claim.claimcoverage_set.all()
+            )
+            for claimcoverage in claimcoverages:
+                if claimcoverage.actual_paid_date is None:
+                    is_paid = False
+                    break
+            if is_paid:
+                # delete unneeded unpaid claims reminders
+                possibly_paid_claims_reminder.delete()
 
     def _find_arrived_orders(self):
         one_week = datetime.timedelta(weeks=1)
@@ -77,10 +100,12 @@ class Reminders(generic.TemplateView):
                         order=order, created=now_date
                     )
                 )
+        # create new arrived order reminders
         reminders_models.OrderArrivedReminder.objects.bulk_create(
             new_arrived_orders_reminders
         )
 
+        # update old arrived order reminders
         reminders_models.OrderArrivedReminder.objects.filter(
             order__dispensed_date__isnull=True,
             created__lte=timezone.localtime(one_week_ago).date()
@@ -89,6 +114,11 @@ class Reminders(generic.TemplateView):
             result='',
             created=now_date
         )
+
+        # delete unneeded arrived order reminders
+        reminders_models.OrderArrivedReminder.objects.filter(
+            order__dispensed_date__isnull=False
+        ).delete()
 
     def _find_claims_without_orders(self):
         now = timezone.now()
@@ -122,10 +152,12 @@ class Reminders(generic.TemplateView):
                         claim=claim, created=now_date
                     )
                 )
+        # create new claims without orders reminders
         reminders_models.ClaimOrderReminder.objects.bulk_create(
             new_claims_without_orders_reminders
         )
 
+        # delete unneeded claims without orders reminders
         reminders_models.ClaimOrderReminder.objects.filter(
             claim__coverageorder__order_type=ORTHOTICS
         ).delete()
