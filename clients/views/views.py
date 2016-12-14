@@ -840,19 +840,11 @@ def add_client(request):
         form = ClientForm(request.POST)
 
         if form.is_valid():
-            saved = form.save(commit=True)
+            client = form.save()
 
-            form = DependentForm()
-            return redirect('add_dependent', saved.id)
+            return redirect('add_dependent', client.id)
     else:
         form = ClientForm()
-        queryset = form.fields['referred_by'].queryset
-        queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-            }
-        ).order_by('lower_first_name')
-        form.fields['referred_by'].queryset = queryset
 
     cancel_url = urlresolvers.reverse('client_list')
 
@@ -881,13 +873,6 @@ def editClientView(request, client_id):
             return redirect('client', saved.id)
     else:
         client_form = ClientForm(instance=client)
-        queryset = client_form.fields['referred_by'].queryset
-        queryset = queryset.extra(
-            select={
-                'lower_first_name': 'lower(first_name)'
-            }
-        ).order_by('lower_first_name')
-        client_form.fields['referred_by'].queryset = queryset
 
     cancel_url = urlresolvers.reverse(
         'client', kwargs={'client_id': client.pk}
@@ -916,19 +901,22 @@ def editDependentsView(request, client_id, dependent_id):
         dependent = client.dependent_set.get(id=dependent_id)
     except Dependent.DoesNotExist:
         raise http.Http404("No Dependent matches that ID")
+
     if request.method == 'POST':
         dependent_form = DependentForm(request.POST, instance=dependent)
         if dependent_form.is_valid():
-            saved = dependent_form.save(commit=False)
-            saved.primary = client
-            saved.save()
+            dependent = dependent_form.save(commit=False)
+            dependent.primary_id = client_id
+            dependent.save()
+
             return redirect('client', client_id)
 
     else:
         dependent_form = DependentForm(instance=dependent)
 
-    cancel_url = urlresolvers.reverse('client',
-                                      kwargs={'client_id': client.pk})
+    cancel_url = urlresolvers.reverse(
+        'client', kwargs={'client_id': client.pk}
+    )
 
     context = {
         'form': dependent_form,
@@ -949,20 +937,22 @@ def add_new_dependent(request, client_id):
         client = Client.objects.get(id=client_id)
     except Client.DoesNotExist:
         raise http.Http404("No Client matches that ID")
+
     if request.method == 'POST':
         form = DependentForm(request.POST)
 
         if form.is_valid():
             saved = form.save(commit=False)
-
-            saved.primary_id = client.pk
+            saved.primary_id = client_id
             saved.save()
+
             return redirect('client', client_id)
     else:
         form = DependentForm()
 
-    cancel_url = urlresolvers.reverse('client',
-                                      kwargs={'client_id': client.pk})
+    cancel_url = urlresolvers.reverse(
+        'client', kwargs={'client_id': client.pk}
+    )
 
     context = {
         'form': form,
@@ -987,7 +977,6 @@ def add_dependent(request, client_id):
 
         if form.is_valid():
             saved = form.save(commit=False)
-
             saved.primary_id = client_id
             saved.save()
 
@@ -998,11 +987,12 @@ def add_dependent(request, client_id):
                 # This means we want to add another
                 form = DependentForm()
     else:
-        # TODO need to create a formset here isntead of a form
+        # TODO need to create a formset here instead of a form
         form = DependentForm()
 
-    cancel_url = urlresolvers.reverse('client',
-                                      kwargs={'client_id': client_id})
+    cancel_url = urlresolvers.reverse(
+        'client', kwargs={'client_id': client_id}
+    )
 
     create_and_proceed = ('<input class="btn btn-default" type="submit" '
                           'name="submit" value="Create and proceed" />')

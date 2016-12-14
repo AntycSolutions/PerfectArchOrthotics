@@ -18,6 +18,8 @@ class ClientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        referred_by = self.fields['referred_by']
+
         def label_from_instance(obj):
             try:
                 client = clients_models.Dependent.objects.get(
@@ -28,15 +30,20 @@ class ClientForm(forms.ModelForm):
                 )
             except clients_models.Dependent.DoesNotExist:
                 return obj
+        referred_by.label_from_instance = label_from_instance
 
-        self.fields['referred_by'].label_from_instance = label_from_instance
+        queryset = referred_by.queryset.extra(
+            select={
+                'lower_first_name': 'lower(first_name)'
+            }
+        ).order_by('lower_first_name')
+        referred_by.queryset = queryset
 
 
 class DependentForm(forms.ModelForm):
-
     class Meta:
         model = Dependent
-        exclude = ('client',)
+        exclude = ('primary',)
 
 
 class CoverageForm(forms.ModelForm):
