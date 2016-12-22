@@ -33,7 +33,9 @@ if [ -d "$venv" ]; then
 fi
 
 # exclude contenttypes as they are created during migrate
-python3 manage.py dumpdata -e contenttypes > "$idx".json
+python3 manage.py dumpdata \
+    --exclude contenttypes --exclude auth.permission \
+    --indent 4 > "$idx".json
 
 # deactivate the virtual environment
 if [ -d "$venv" ]; then
