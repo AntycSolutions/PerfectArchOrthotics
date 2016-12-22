@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.forms import fields as form_fields
 from django.forms.models import BaseInlineFormSet
 
-from utils.search import get_query
+from simple_search.utils import get_query
 from utils import model_utils, views_utils
 
 from inventory.models import Shoe, ShoeAttributes

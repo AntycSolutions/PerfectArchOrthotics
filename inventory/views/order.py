@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from utils import views_utils
-from utils.search import get_query, get_date_query
+from simple_search.utils import get_query, get_date_query
 
 from clients import models as clients_models
 from inventory import models

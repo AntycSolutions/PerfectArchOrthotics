@@ -8,7 +8,12 @@
     {% include 'utils/snippets/messages.html' %}
     <form method="GET" class="form-inline">
         <div class="form-group inline">
-            <input type="text" id="searchBox" class="form-control search-query" name="q" placeholder="Insurance Search" autofocus />
+            <input type="text"
+                    name="q"
+                    placeholder="Insurance Search"
+                    value="{{ q }}"
+                    autofocus
+                    class="form-control" />
         </div>
         <button type="submit" class="btn">Search</button>
     </form>

@@ -12,6 +12,7 @@ from django.db import models as db_models
 import twilio
 from django_twilio import client as django_twilio_client
 from utils import views_utils
+from simple_search import search
 
 from clients import models as clients_models
 from inventory import models as inventory_models
@@ -215,12 +216,12 @@ class Reminders(generic.TemplateView):
         if result_str in GET and GET[result_str]:
             reminder_filter &= db_models.Q(result=GET[result_str])
 
-        created_filter = views_utils._get_date_filter(
+        created_filter = search.get_date_query(
             self.request,
-            context,
             'filter-created_from',
             'filter-created_to',
-            ['created']
+            ['created'],
+            context=context
         )
 
         insurance_str = filter_prefix + '-insurance'

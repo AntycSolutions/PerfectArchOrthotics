@@ -20,7 +20,7 @@ from django.utils import safestring, timezone
 import xhtml2pdf.pisa as pisa
 from crispy_forms import helper
 
-from utils.search import get_query, get_date_query
+from simple_search.utils import get_query, get_date_query
 from utils import views_utils
 
 from clients.models import Client, Dependent, Claim, Insurance, \
@@ -288,21 +288,21 @@ def clientSearchView(request):
     found_clients = Client.objects.order_by('-id')
     found_dependents = Dependent.objects.order_by('-id')
     if ('q' in request.GET) and request.GET['q'].strip():
-        fields = ['first_name', 'last_name', 'address', 'phone_number',
-                  'employer', 'health_care_number']
         query_string = request.GET['q']
         context['q'] = query_string
 
-        client_query = get_query(query_string, fields)
+        client_fields = [
+            'first_name', 'last_name', 'address', 'phone_number',
+            'employer', 'health_care_number'
+        ]
+        client_query = get_query(query_string, client_fields)
         found_clients = Client.objects.filter(client_query)
 
-        fields = ['first_name', 'last_name',
-                  'employer', 'health_care_number']
-        query_string = request.GET['q']
-        context['q'] = query_string
-
-        client_query = get_query(query_string, fields)
-        found_dependents = Dependent.objects.filter(client_query)
+        dependent_fields = [
+            'first_name', 'last_name', 'employer', 'health_care_number'
+        ]
+        dependent_query = get_query(query_string, dependent_fields)
+        found_dependents = Dependent.objects.filter(dependent_query)
 
     clients_rows_per_page = views_utils._get_paginate_by(
         request, 'clients_rows_per_page'

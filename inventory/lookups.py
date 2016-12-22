@@ -3,7 +3,7 @@ from django.utils.html import escape
 from django.core.urlresolvers import reverse
 
 from inventory import models
-from utils.search import get_query as search_get_query
+from simple_search.utils import get_query as search_get_query
 
 from ajax_select import LookupChannel
 

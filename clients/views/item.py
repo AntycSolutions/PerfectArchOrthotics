@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 
 from utils import views_utils
 
-from utils.search import get_query
+from simple_search.utils import get_query
 from clients.models import Item
 
 

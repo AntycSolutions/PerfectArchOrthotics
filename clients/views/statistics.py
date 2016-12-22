@@ -9,6 +9,7 @@ from django.db.models.functions import Coalesce
 from django.core import urlresolvers
 from django import utils
 
+from simple_search import search
 from utils import views_utils
 from clients import models as clients_models
 from inventory import models as inventory_models
@@ -342,9 +343,10 @@ def _stats():
 
 def _insurance_providers_stats(request):
     # Expected back and number of claims
-    date_queryset = views_utils._date_search(
-        request, ["claim__submitted_datetime"],
-        clients_models.Insurance
+    date_queryset = search.simple_search(
+        request,
+        model=clients_models.Insurance,
+        date_fields=["claim__submitted_datetime"]
     )
     insurances_expected_back = date_queryset.values(
         'provider',
@@ -381,9 +383,10 @@ def _insurance_providers_stats(request):
     )
 
     # Invoices
-    date_queryset = views_utils._date_search(
-        request, ["claim__submitted_datetime"],
-        clients_models.Insurance
+    date_queryset = search.simple_search(
+        request,
+        model=clients_models.Insurance,
+        date_fields=["claim__submitted_datetime"]
     )
     insurances_invoices = date_queryset.values(
         'provider',
@@ -416,9 +419,10 @@ def _insurance_providers_stats(request):
     )
 
     # Amount claimed
-    date_queryset = views_utils._date_search(
-        request, ["claim__submitted_datetime"],
-        clients_models.Insurance
+    date_queryset = search.simple_search(
+        request,
+        model=clients_models.Insurance,
+        date_fields=["claim__submitted_datetime"]
     )
     insurances_amount_claimed = date_queryset.values(
         'provider'
