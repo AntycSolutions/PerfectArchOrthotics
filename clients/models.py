@@ -420,8 +420,12 @@ class Item(models.Model, model_utils.FieldList):
     COVERAGE_TYPES = Coverage.COVERAGE_TYPES
     WOMENS = 'wo'
     MENS = 'me'
-    GENDERS = ((WOMENS, "Women's"),
-               (MENS, "Men's"))
+    UNISEX = 'un'
+    GENDERS = (
+        (WOMENS, "Women's"),
+        (MENS, "Men's"),
+        (UNISEX, "Unisex"),
+    )
 
     coverage_type = models.CharField(
         "Coverage Type", max_length=4, choices=COVERAGE_TYPES)
