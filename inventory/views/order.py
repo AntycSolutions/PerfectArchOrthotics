@@ -249,8 +249,8 @@ class CoverageCreateOrderView(CreateView):
 
         return initial
 
-    def get_form(self, form_class):
-        form = form_class(**self.get_form_kwargs())
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
 
         if 'claim_pk' in self.kwargs:
             choices = ((clients_models.Coverage.ORTHOTICS, 'Orthotics'),)
