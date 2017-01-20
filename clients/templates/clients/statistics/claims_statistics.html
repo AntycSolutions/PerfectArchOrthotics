@@ -237,12 +237,12 @@
                 NA = Non-assignment,
                 EB = Expected Back,
                 AC = Amount Claimed
+                <form method="get">
+                    <input type="text" id="dateFromSearchBox" class="input-medium search-query datepicker" name="df" placeholder="Date From" value="{{ df }}">
+                    <input type="text" id="dateToSearchBox" class="input-medium search-query datepicker" name="dt" placeholder="Date To" value="{{ dt }}">
+                    <input type="submit" class="btn" value="Search">
+                </form>
                 {% if insurances %}
-                    <form method="get">
-                        <input type="text" id="dateFromSearchBox" class="input-medium search-query datepicker" name="df" placeholder="Date From" value="{{ df }}">
-                        <input type="text" id="dateToSearchBox" class="input-medium search-query datepicker" name="dt" placeholder="Date To" value="{{ dt }}">
-                        <input type="submit" class="btn" value="Search">
-                    </form>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
