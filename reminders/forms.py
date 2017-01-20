@@ -12,17 +12,27 @@ class FollowUpForm(forms.ModelForm):
 
 
 class ReminderForm(forms.ModelForm):
-    created_from = forms.DateField()
-    created_to = forms.DateField()
+    reminder_search = forms.CharField()
 
     insurance = forms.CharField()
 
+    created_from = forms.DateField()
+    created_to = forms.DateField()
+
     class Meta:
         model = models.Reminder
-        exclude = ('follow_up', 'created')
+        fields = (
+            'reminder_search',
+            'insurance',
+            'created_from',
+            'created_to',
+            'result'
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields['reminder_search'].widget.attrs.update({'autofocus': True})
 
         self.fields['result'].label += ':'
 

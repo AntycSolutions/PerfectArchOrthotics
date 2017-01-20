@@ -1,0 +1,30 @@
+{% load static %}
+{% load nbsp %}
+
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <h1 style="text-align: center;">Perfect Arch Orthotics</h1>
+        <h2 style="text-align: center;">{{ subject }}</h2>
+        <p>
+            Hi {{ patient }},
+        </p>
+        <p>
+            This is a payment reminder for your account. Please call us.
+        </p>
+        <p>
+            Thank you,
+        </p>
+        <p>
+            -The Perfect Arch Orthotics Team
+        </p>
+        <p style="margin-top: 30px;">
+            {{ address|nbsp|linebreaksbr }}
+        </p>
+        <p style="text-align: center;">
+            <img src="https://perfectarch.ca/static/images/PerfectArchLogo.jpg"
+                    alt="Perfect Arch">
+        </p>
+    </body>
+</html>

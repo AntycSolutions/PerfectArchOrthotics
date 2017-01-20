@@ -311,6 +311,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <form method="GET" class="form-inline" id="filter_form">
+                {% crispy filter_form %}
                 {# manually render follow_up because crispy did it wrong #}
                 <div class="form-group checkbox inline">
                     {% for checkbox in follow_up_form.follow_up %}
@@ -318,7 +319,6 @@
                         <br />
                     {% endfor %}
                 </div>
-                {% crispy filter_form %}
                 <button type="submit" class="btn">Search</button>
             </form>
         </div>

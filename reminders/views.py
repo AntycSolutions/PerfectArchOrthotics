@@ -6,7 +6,7 @@ from django.views import generic
 from django.utils import timezone
 from django.core import urlresolvers, mail
 from django.conf import settings
-from django.template import defaultfilters
+from django.template import loader
 from django.db import models as db_models
 
 import twilio
@@ -231,6 +231,19 @@ class Reminders(generic.TemplateView):
                 claim__insurance__provider=GET[insurance_str]
             )
 
+        claims_reminder_search_filter = search.get_query(
+            self.request,
+            'filter-reminder_search',
+            [
+                'claim__patient__first_name',
+                'claim__patient__last_name',
+                'claim__patient__client__phone_number',
+                'claim__patient__dependent__primary__phone_number',
+                'claim__insurance__provider',
+            ],
+            context=context
+        )
+
         self._find_unpaid_claims()
         unpaid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.select_related(
@@ -244,7 +257,12 @@ class Reminders(generic.TemplateView):
                 # for expected back/amount claimed calcs
                 'claim__claimcoverage_set__claimitem_set__item__'
                 'itemhistory_set',
-            ).filter(reminder_filter, created_filter, insurance_filter)
+            ).filter(
+                reminder_filter,
+                created_filter,
+                insurance_filter,
+                claims_reminder_search_filter,
+            )
         )
         unpaid_claims_reminders_rows_per_page = views_utils._get_paginate_by(
             self.request, 'unpaid_claims_reminders_rows_per_page'
@@ -260,13 +278,29 @@ class Reminders(generic.TemplateView):
         )
         context['unpaid_claims_reminders'] = unpaid_claims_reminders
 
+        arrived_orders_reminder_search_filter = search.get_query(
+            self.request,
+            'filter-reminder_search',
+            [
+                'order__claimant__first_name',
+                'order__claimant__last_name',
+                'order__claimant__client__phone_number',
+                'order__claimant__dependent__primary__phone_number',
+            ],
+            context=context
+        )
+
         self._find_arrived_orders()
         arrived_orders_reminders = (
             reminders_models.OrderArrivedReminder.objects.select_related(
                 # for claimant links
                 'order__claimant__client',
                 'order__claimant__dependent',
-            ).filter(reminder_filter, created_filter)
+            ).filter(
+                reminder_filter,
+                created_filter,
+                arrived_orders_reminder_search_filter,
+            )
         )
         arrived_orders_reminders_rows_per_page = views_utils._get_paginate_by(
             self.request, 'arrived_orders_reminders_rows_per_page'
@@ -288,7 +322,11 @@ class Reminders(generic.TemplateView):
                 # for patient links
                 'claim__patient__client',
                 'claim__patient__dependent'
-            ).filter(created_filter, insurance_filter)
+            ).filter(
+                created_filter,
+                insurance_filter,
+                claims_reminder_search_filter,
+            )
         )
         context['claims_without_orders_reminders'] = (
             claims_without_orders_reminders
@@ -305,15 +343,23 @@ class Reminders(generic.TemplateView):
 
 
 # send_email expects body to end in two newlines: \n\n
-def send_email(client, subject, body, user=None):
+def send_email(client, subject, body, user=None, html_message=None):
     if settings.ENV != 'prod':
-        body += 'ENV: ' + settings.ENV
+        debug = 'ENV: ' + settings.ENV
         if user:
-            body += ' - {}'.format(user)
-        body += '\n\n'
+            debug += ' - {}'.format(user)
+        debug += '\n\n'
+
+        body += debug
+        if html_message:
+            html_message = html_message.replace(
+                '</body>', '<h3>' + debug + '</h3></body>'
+            )
 
     try:
-        mail.send_mail(subject, body, '', [client.email])
+        mail.send_mail(
+            subject, body, '', [client.email], html_message=html_message
+        )
     except smtplib.SMTPRecipientsRefused:
         return (
             'Could not send email to \'{email}\''.format(
@@ -325,7 +371,13 @@ def send_email(client, subject, body, user=None):
 
 
 def send_reminder_email(
-    reminder, client, old_follow_up, subject, body, user=None
+    reminder,
+    client,
+    old_follow_up,
+    subject,
+    body,
+    user=None,
+    html_message=None,
 ):
     EMAIL = reminders_models.Reminder.EMAIL
     sending_email = (
@@ -333,7 +385,9 @@ def send_reminder_email(
     )
     error = ''
     if sending_email:
-        error = send_email(client, subject, body, user=user)
+        error = send_email(
+            client, subject, body, user=user, html_message=html_message
+        )
 
     return error
 
@@ -410,24 +464,29 @@ class UnpaidClaimReminderUpdate(
         error = ''
 
         subject = 'Payment Reminder'
+        address = settings.BILL_TO[0][1]
         body = (
             'Hi {patient},\n'
             '\n'
-            'This is a payment reminder for your Claim '
-            'submitted on {submitted}\n'
+            'This is a payment reminder for your account. '
+            'Please call us.'
             '\n'
-            'Regards,\n'
+            'Thank you,\n'
             '\n'
-            '-Perfect Arch Team\n'
+            '-The Perfect Arch Orthotics Team\n'
             '\n'
             '{address}\n'
             '\n'.format(
                 patient=patient,
-                submitted=defaultfilters.date(
-                    claim.submitted_datetime, "N j, Y, P"
-                ),
-                address=settings.BILL_TO[0][1],
+                address=address,
             )
+        )
+        html_message = loader.render_to_string(
+            'reminders/unpaid_claim_email.html', {
+                'patient': patient,
+                'subject': subject,
+                'address': address,
+            }
         )
         error += send_reminder_email(
             self.object,
@@ -435,19 +494,17 @@ class UnpaidClaimReminderUpdate(
             self.old_follow_up,
             subject,
             body,
-            user=self.request.user
+            user=self.request.user,
+            html_message=html_message,
         )
 
         if error:
             error += '\\n\\n'
 
         body = (
-            'Hi {patient}, this is a payment reminder for your '
-            'Claim submitted on {submitted}'.format(
+            'Hi {patient}, this is a payment reminder for your account. '
+            'Please call Perfect Arch Orthotics. Thank you.'.format(
                 patient=patient,
-                submitted=defaultfilters.date(
-                    claim.submitted_datetime, "N j, Y, P"
-                ),
             )
         )
         error += send_reminder_text_message(
@@ -494,25 +551,30 @@ class OrderArrivedReminderUpdate(
         client = claimant.get_client()
         error = ''
 
-        subject = 'Payment Reminder'
+        subject = 'Order Reminder'
+        address = settings.BILL_TO[0][1]
         body = (
             'Hi {claimant},\n'
             '\n'
-            'This is a reminder that your Order '
-            'arrived on {arrived}, and is available for pickup.\n'
+            'This is a reminder that your Order has arrived. '
+            'Please call us.\n'
             '\n'
-            'Regards,\n'
+            'Thank you,\n'
             '\n'
-            '-Perfect Arch Team\n'
+            '-The Perfect Arch Orthotics Team\n'
             '\n'
             '{address}\n'
             '\n'.format(
                 claimant=claimant,
-                arrived=defaultfilters.date(
-                    order.arrived_date, "N j, Y"
-                ),
-                address=settings.BILL_TO[0][1],
+                address=address,
             )
+        )
+        html_message = loader.render_to_string(
+            'reminders/order_arrived_email.html', {
+                'claimant': claimant,
+                'subject': subject,
+                'address': address,
+            }
         )
         error += send_reminder_email(
             self.object,
@@ -520,19 +582,17 @@ class OrderArrivedReminderUpdate(
             self.old_follow_up,
             subject,
             body,
-            user=self.request.user
+            user=self.request.user,
+            html_message=html_message,
         )
 
         if error:
             error += '\\n\\n'
 
         body = (
-            'Hi {claimant}, this is a reminder that your '
-            'Order arrived on {arrived}, and is available for pickup.'.format(
+            'Hi {claimant}, this is a reminder that your Order has arrived. '
+            'Please call Perfect Arch Orthotics. Thank you.'.format(
                 claimant=claimant,
-                arrived=defaultfilters.date(
-                    order.arrived_date, "N j, Y"
-                ),
             )
         )
         error += send_reminder_text_message(
