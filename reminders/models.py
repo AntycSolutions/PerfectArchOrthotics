@@ -16,11 +16,13 @@ class Reminder(models.Model, model_utils.FieldList):
     TEXT = 't'
     EMAIL = 'e'
     CALL = 'c'
+    COMPLETED = 'o'
     FOLLOW_UP_TYPES = (
         (REQUIRED, 'Required'),
         (TEXT, 'Text'),
         (EMAIL, 'Email'),
         (CALL, 'Call'),
+        (COMPLETED, 'Completed'),
     )
     follow_up = multiselectfield.MultiSelectField(
         choices=FOLLOW_UP_TYPES, default=REQUIRED
@@ -125,6 +127,21 @@ class OrderArrivedReminder(Reminder):
         )
         fields.update({"number": number})
 
+        modal_btn = fields['modal_btn']
+        logs = ''
+        for log in self.orderarrivedmessagelog_set.all():
+            if logs:
+                logs += ','
+            created = defaultfilters.date(
+                timezone.localtime(log.created), "N j, Y, P"
+            )
+            logs += '{{"type":"{}","created":"{}"}}'.format(
+                log.get_msg_type_display(), created
+            )
+        modal_btn.field.attrs = {
+            'data-logs': '[{}]'.format(logs)
+        }
+
         return fields
 
 
@@ -224,6 +241,21 @@ class UnpaidClaimReminder(Reminder):
         )
         fields.update({"number": number})
 
+        modal_btn = fields['modal_btn']
+        logs = ''
+        for log in self.unpaidclaimmessagelog_set.all():
+            if logs:
+                logs += ','
+            created = defaultfilters.date(
+                timezone.localtime(log.created), "N j, Y, P"
+            )
+            logs += '{{"type":"{}","created":"{}"}}'.format(
+                log.get_msg_type_display(), created
+            )
+        modal_btn.field.attrs = {
+            'data-logs': '[{}]'.format(logs)
+        }
+
         return fields
 
 
@@ -274,6 +306,37 @@ class ClaimOrderReminder(models.Model, model_utils.FieldList):
         fields['claim'].value.get_str = get_str
 
         return fields
+
+
+class MessageLog(models.Model):
+    TEXT = 't'
+    EMAIL = 'e'
+    CALL = 'c'
+    MSG_TYPES = (
+        (TEXT, 'Text'),
+        (EMAIL, 'Email'),
+        (CALL, 'Call'),
+    )
+    msg_type = models.CharField(max_length=1, choices=MSG_TYPES)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class OrderArrivedMessageLog(MessageLog):
+    order_arrived_reminder = models.ForeignKey(
+        OrderArrivedReminder, on_delete=models.SET_NULL,
+        null=True
+    )
+
+
+class UnpaidClaimMessageLog(MessageLog):
+    unpaid_claim_reminder = models.ForeignKey(
+        UnpaidClaimReminder, on_delete=models.SET_NULL,
+        null=True
+    )
 
 
 auditlog.register(OrderArrivedReminder)

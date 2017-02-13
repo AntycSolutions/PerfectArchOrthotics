@@ -94,6 +94,7 @@
         var EMAIL = 'e';
         var TEXT = 't';
         var CALL = 'c';
+        var COMPLETED = 'o';
 
         var NO_ANSWER = 'n';
         var VOICEMAIL = 'v';
@@ -124,6 +125,9 @@
             }
             if (value_in_list(follow_up, 'Call')) {
                 follow_up_vals.push(CALL);
+            }
+            if (value_in_list(follow_up, 'Completed')) {
+                follow_up_vals.push(COMPLETED);
             }
             if (!follow_up_vals) {
                 throw new Error('Missing follow up value');
@@ -162,6 +166,22 @@
 
             modal.find('#' + model_name + '_pk').val(pk);
 
+            var logs = btn.data('logs') || [];
+            var logs_tbody = modal.find('#' + model_name + '_logs');
+            logs_tbody.html('');
+            for (var i = 0; i < logs.length; ++i) {
+                var log = logs[i];
+                logs_tbody.append(
+                    $('<tr>').append(
+                        $('<td>').text(log.type)
+                    ).append(
+                        $('<td>').text(log.created)
+                    )
+                );
+            }
+            var table_div = logs_tbody.parent().parent();
+            logs.length ? table_div.show() : table_div.hide();
+
             // hide options
             if (benefits_lookup[pk] == ASSIGNMENT) {
                 var text = modal.find('input[value="' + TEXT + '"]');
@@ -184,6 +204,11 @@
         $('#orderarrivedreminder_modal').on(
             'show.bs.modal', reminder_modal_init
         );
+
+        var months = [
+            'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.',
+            'Sep.', 'Oct.', 'Nov.', 'Dec.',
+        ];
 
         var reminder_save = function() {
             var form_id = $(this).attr('form-id');
@@ -249,9 +274,52 @@
                     if (value_in_list(follow_up, CALL)) {
                         follow_up_vals.push('Call');
                     }
+                    if (value_in_list(follow_up, COMPLETED)) {
+                        follow_up_vals.push('Completed');
+                    }
+                    if (!follow_up_vals.length) {
+                        // defaults to Required
+                    }
                     $('#' + model_name + '_' + pk + '_follow_up').html(
                         follow_up_vals.join(',<br />')
                     );
+
+                    var calling = (
+                        value_in_list(follow_up, CALL) &&
+                        !value_in_list(old_follow_up, CALL)
+                    );
+                    if (sending_text || sending_email || calling) {
+                        var logs = $(
+                            '#' + model_name + '_' + pk + '_modal_btn'
+                        ).data('logs');
+
+                        var d = new Date();
+                        var now = (
+                            months[d.getMonth()] + ' ' +
+                            d.getDate() + ', ' +
+                            d.getFullYear() + ', ' +
+                            (d.getHours() % 12 || 12) + ':' + // 24 -> 12
+                            ('0' + d.getMinutes()).slice(-2) + ' ' + // 0 pad
+                            ((d.getHours() >= 12) ? 'p.m.' : 'a.m.')
+                        );
+
+                        var type = '';
+                        if (sending_text) {
+                            type = 'Text';
+                            logs.push({"type": type, "created": now});
+                        }
+                        if (sending_email) {
+                            type = 'Email';
+                            logs.push({"type": type, "created": now});
+                        }
+                        if (calling) {
+                            type = 'Call';
+                            logs.push({"type": type, "created": now});
+                        }
+                        if (!type) {
+                            throw new Error('Unhandled message type');
+                        }
+                    }
 
                     if (result === NO_ANSWER) {
                         result = 'No answer';
@@ -261,6 +329,9 @@
                     }
                     else if (result === '') {
                         // pass
+                    }
+                    else {
+                        throw new Error('Unhandled result: ' + result);
                     }
                     $('#' + model_name + '_' + pk + '_result').text(result);
 
@@ -459,6 +530,18 @@
                                 id="model_name"
                                 value="unpaidclaimreminder" />
                     </form>
+                    <div class="table-responsive" style="display: none;">
+                        <table class="table">
+                            <caption>Message Logs</caption>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Sent</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unpaidclaimreminder_logs"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button"
@@ -495,6 +578,18 @@
                                 id="model_name"
                                 value="orderarrivedreminder" />
                     </form>
+                    <div class="table-responsive" style="display: none;">
+                        <table class="table">
+                            <caption>Message Logs</caption>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Sent</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderarrivedreminder_logs"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button"

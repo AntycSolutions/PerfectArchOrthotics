@@ -48,12 +48,15 @@ class Reminders(generic.TemplateView):
             new_unpaid_claims_reminders
         )
 
+        REQUIRED = reminders_models.Reminder.REQUIRED
+        COMPLETED = reminders_models.Reminder.COMPLETED
+
         # update old unpaid claims reminders
         reminders_models.UnpaidClaimReminder.objects.filter(
             claim__claimcoverage__actual_paid_date__isnull=True,
             created__lte=timezone.localtime(three_weeks_ago).date()
         ).update(
-            follow_up=reminders_models.Reminder.REQUIRED,
+            follow_up=REQUIRED,
             result='',
             created=now_date
         )
@@ -61,8 +64,9 @@ class Reminders(generic.TemplateView):
         possibly_paid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.filter(
                 claim__claimcoverage__actual_paid_date__isnull=False
-            )
-            .prefetch_related(
+            ).exclude(
+                follow_up__contains=COMPLETED
+            ).prefetch_related(
                 'claim__claimcoverage_set'
             )
         )
@@ -76,8 +80,14 @@ class Reminders(generic.TemplateView):
                     is_paid = False
                     break
             if is_paid:
-                # delete unneeded unpaid claims reminders
-                possibly_paid_claims_reminder.delete()
+                # complete unpaid claims reminder
+                is_required = (
+                    REQUIRED in possibly_paid_claims_reminder.follow_up
+                )
+                if is_required:
+                    possibly_paid_claims_reminder.follow_up.remove(REQUIRED)
+                possibly_paid_claims_reminder.follow_up.append(COMPLETED)
+                possibly_paid_claims_reminder.save()
 
     def _find_arrived_orders(self):
         one_week = datetime.timedelta(weeks=1)
@@ -106,20 +116,33 @@ class Reminders(generic.TemplateView):
             new_arrived_orders_reminders
         )
 
+        REQUIRED = reminders_models.Reminder.REQUIRED
+        COMPLETED = reminders_models.Reminder.COMPLETED
+
         # update old arrived order reminders
         reminders_models.OrderArrivedReminder.objects.filter(
             order__dispensed_date__isnull=True,
             created__lte=timezone.localtime(one_week_ago).date()
         ).update(
-            follow_up=reminders_models.Reminder.REQUIRED,
+            follow_up=REQUIRED,
             result='',
             created=now_date
         )
 
-        # delete unneeded arrived order reminders
-        reminders_models.OrderArrivedReminder.objects.filter(
-            order__dispensed_date__isnull=False
-        ).delete()
+        uncompleted_order_arrived_reminders = (
+            reminders_models.OrderArrivedReminder.objects.filter(
+                order__dispensed_date__isnull=False
+            ).exclude(
+                follow_up__contains=COMPLETED
+            )
+        )
+        for order_arrived_reminder in uncompleted_order_arrived_reminders:
+            # complete arrived order reminder
+            is_required = REQUIRED in order_arrived_reminder.follow_up
+            if is_required:
+                order_arrived_reminder.follow_up.remove(REQUIRED)
+            order_arrived_reminder.follow_up.append(COMPLETED)
+            order_arrived_reminder.save()
 
     def _find_claims_without_orders(self):
         now = timezone.now()
@@ -255,8 +278,11 @@ class Reminders(generic.TemplateView):
                 'claim__insurance__main_claimant__dependent',
             ).prefetch_related(
                 # for expected back/amount claimed calcs
-                'claim__claimcoverage_set__claimitem_set__item__'
-                'itemhistory_set',
+                (
+                    'claim__claimcoverage_set__claimitem_set__item__'
+                    'itemhistory_set'
+                ),
+                'unpaidclaimmessagelog_set',
             ).filter(
                 reminder_filter,
                 created_filter,
@@ -296,6 +322,8 @@ class Reminders(generic.TemplateView):
                 # for claimant links
                 'order__claimant__client',
                 'order__claimant__dependent',
+            ).prefetch_related(
+                'orderarrivedmessagelog_set',
             ).filter(
                 reminder_filter,
                 created_filter,
@@ -388,6 +416,19 @@ def send_reminder_email(
         error = send_email(
             client, subject, body, user=user, html_message=html_message
         )
+        if not error:
+            if isinstance(reminder, reminders_models.OrderArrivedReminder):
+                reminders_models.OrderArrivedMessageLog.objects.create(
+                    order_arrived_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.EMAIL
+                )
+            elif isinstance(reminder, reminders_models.UnpaidClaimReminder):
+                reminders_models.UnpaidClaimMessageLog.objects.create(
+                    unpaid_claim_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.EMAIL
+                )
+            else:
+                raise Exception('Unhandled Reminder type: ' + type(reminder))
 
     return error
 
@@ -432,6 +473,19 @@ def send_reminder_text_message(
     error = ''
     if sending_text:
         error = send_text_message(client, body, user=user)
+        if not error:
+            if isinstance(reminder, reminders_models.OrderArrivedReminder):
+                reminders_models.OrderArrivedMessageLog.objects.create(
+                    order_arrived_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.TEXT
+                )
+            elif isinstance(reminder, reminders_models.UnpaidClaimReminder):
+                reminders_models.UnpaidClaimMessageLog.objects.create(
+                    unpaid_claim_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.TEXT
+                )
+            else:
+                raise Exception('Unhandled Reminder type: ' + type(reminder))
 
     return error
 
@@ -521,6 +575,16 @@ class UnpaidClaimReminderUpdate(
             )
             response.status_code = 400
 
+        CALL = reminders_models.Reminder.CALL
+        calling = (
+            CALL in self.object.follow_up and CALL not in self.old_follow_up
+        )
+        if calling:
+            reminders_models.UnpaidClaimMessageLog.objects.create(
+                unpaid_claim_reminder=self.object,
+                msg_type=reminders_models.MessageLog.CALL
+            )
+
         return response
 
 
@@ -608,5 +672,15 @@ class OrderArrivedReminderUpdate(
                 b'}', ', "error": "{}"}}'.format(error).encode()
             )
             response.status_code = 400
+
+        CALL = reminders_models.Reminder.CALL
+        calling = (
+            CALL in self.object.follow_up and CALL not in self.old_follow_up
+        )
+        if calling:
+            reminders_models.OrderArrivedMessageLog.objects.create(
+                order_arrived_reminder=self.object,
+                msg_type=reminders_models.MessageLog.CALL
+            )
 
         return response
