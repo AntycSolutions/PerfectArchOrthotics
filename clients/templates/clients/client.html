@@ -14,6 +14,10 @@
         {{ block.super }}
 
         {% stylesheet 'client' %}
+
+        {% javascript 'client' %}
+
+        js_reverse: '/jsreverse/',
     {% endblock %}
 </script>
 
@@ -22,6 +26,8 @@
         {{ block.super }}
 
         {% pipeline_css_shim 'client' 'bootstrap_css' %}
+
+        {% pipeline_js_shim 'client' 'jQuery' %}
     {% endblock %}
 </script>
 
@@ -41,15 +47,23 @@
         else if (id) {
             location.hash = id;
         }
+
+        var benefits_lookup = {
+            {% for unpaid_claims_reminder in unpaid_claims_reminders %}
+                '{{ unpaid_claims_reminder.pk }}': '{{ unpaid_claims_reminder.claim.insurance.benefits }}',
+            {% endfor %}
+        };
+
+        reminders_init(benefits_lookup);
     {% endblock %}
 </script>
 
 {% block content %}
 
-    <h1>
-        {{ client.full_name }}
-    </h1>
+    <h1>{{ client.full_name }}</h1>
+
     {% include 'utils/snippets/messages.html' %}
+
     <div>
         <a href="{% url 'claim_create' client.id %}?reset" class="btn btn-primary inline">
             Create Claim
@@ -64,7 +78,9 @@
             Create Adjustment Order
         </a>
     </div>
+
     <br />
+
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
@@ -290,66 +306,131 @@
                 </a>
             </div>
         </div>
-        <div id="notes" class="panel-body collapse in">
-            <div class="row">
-                <div class="col-lg-7">
-                    <div class="form-horizontal form-static">
-                        {% if client.note_set.exists %}
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style="min-width: 200px;">
-                                                Created
-                                            </th>
-                                            <th>
-                                                Notes
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for note in client.note_set.all %}
+        <div id="notes" class="collapse in">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="form-horizontal form-static">
+                            {% if client.note_set.exists %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    <p>
-                                                        {{ note.created }}
-                                                    </p>
-                                                    <a class="btn btn-default crud" href="">
-                                                        Update
-                                                    </a>
-                                                    <br />
-                                                    <a class="btn btn-danger crud" href="">
-                                                        Delete
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    {{ note.notes|nbsp_double|linebreaksbr }}
-                                                </td>
+                                                <th style="min-width: 200px;">
+                                                    Created
+                                                </th>
+                                                <th>
+                                                    Notes
+                                                </th>
                                             </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="form-group">
-                                <div class="col-lg-9 col-lg-offset-3">
-                                    <p class="form-control-static">
-                                        There are no Notes.
-                                    </p>
+                                        </thead>
+                                        <tbody>
+                                            {% for note in client.note_set.all %}
+                                                <tr>
+                                                    <td>
+                                                        <p>
+                                                            {{ note.created }}
+                                                        </p>
+                                                        <a class="btn btn-default crud" href="">
+                                                            Update
+                                                        </a>
+                                                        <br />
+                                                        <a class="btn btn-danger crud" href="">
+                                                            Delete
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        {{ note.notes|nbsp_double|linebreaksbr }}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
-                        {% endif %}
-                    </div>{# ./form-horizontal #}
-                </div>{# ./col-lg-7 #}
-                <div class="col-lg-5">
-                    <form method="POST">
-                        {% crispy note_form %}
-                        <button name="note_submit" type="submit" class="btn btn-primary">
-                            Add Note
-                        </button>
-                    </form>
-                </div>{# ./col-lg-5 #}
+                            {% else %}
+                                <div class="form-group">
+                                    <div class="col-lg-9 col-lg-offset-3">
+                                        <p class="form-control-static">
+                                            There are no Notes.
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>{# ./form-horizontal #}
+                    </div>{# ./col-lg-7 #}
+                    <div class="col-lg-5">
+                        <form method="POST">
+                            {% crispy note_form %}
+                            <button name="note_submit" type="submit" class="btn btn-primary">
+                                Add Note
+                            </button>
+                        </form>
+                    </div>{# ./col-lg-5 #}
+                </div>
             </div>
+            <hr>
+            <div class="panel-body">
+                <div class="col-lg-6">
+                    {% if unpaid_claim_message_logs %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <caption style="margin-left: 8px;">
+                                    Unpaid Claim message logs
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Sent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in unpaid_claim_message_logs %}
+                                        <tr>
+                                            <td>{{ log.get_msg_type_display }}</td>
+                                            <td>{{ log.created }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if unpaid_claim_message_logs %}
+                        {% include 'utils/snippets/pagination.html' with page_obj=unpaid_claim_message_logs rows_per_page=unpaid_claim_message_logs_rows_per_page page_var='unpaid_claim_message_logs_page' rows_per_page_var='unpaid_claim_message_logs_rows_per_page' %}
+                    {% else %}
+                        There are no Unpaid Claim message logs.
+                    {% endif %}
+                </div>{# /.col-lg-6 #}
+                <div class="col-lg-6">
+                    {% if order_arrived_message_logs %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <caption style="margin-left: 8px;">
+                                    Order Arrived message logs
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Sent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in order_arrived_message_logs %}
+                                        <tr>
+                                            <td>{{ log.get_msg_type_display }}</td>
+                                            <td>{{ log.created }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if order_arrived_message_logs %}
+                        {% include 'utils/snippets/pagination.html' with page_obj=order_arrived_message_logs rows_per_page=order_arrived_message_logs_rows_per_page page_var='order_arrived_message_logs_page' rows_per_page_var='order_arrived_message_logs_rows_per_page' %}
+                    {% else %}
+                        There are no Order Arrived message logs.
+                    {% endif %}
+                </div>{# /.col-lg-6 #}
+            </div>{# /.panel-body #}
         </div>
     </div>
 
@@ -820,5 +901,73 @@
             {% endif %}
         </div>
     </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
+                <a href="#toggle_reminders"
+                        data-toggle="collapse"
+                        data-target="#reminders">
+                    Reminders
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="reminders" class="collapse">
+            {% if unpaid_claims_reminders %}
+                <div class="panel-body">
+                    <h4>Unpaid Claims</h4>
+                </div>
+                {% if unpaid_claims_reminders %}
+                    {% with object_list=unpaid_claims_reminders model_name="unpaidclaimreminder" %}
+                        {% include 'utils/generics/list_table.html' %}
+                    {% endwith %}
+                {% endif %}
+            {% endif %}
+            <div class="panel-body">
+                {% if unpaid_claims_reminders %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=unpaid_claims_reminders rows_per_page=unpaid_claims_reminders_rows_per_page page_var='unpaid_claims_reminders_page' rows_per_page_var='unpaid_claims_reminders_rows_per_page' %}
+                {% else %}
+                    There are no unpaid Claims.
+                {% endif %}
+            </div>
+            {% if arrived_orders_reminders %}
+                <div class="panel-body">
+                    <h4>Arrived Orders</h4>
+                </div>
+                {% if arrived_orders_reminders %}
+                    {% with object_list=arrived_orders_reminders model_name="orderarrivedreminder" %}
+                        {% include 'utils/generics/list_table.html' %}
+                    {% endwith %}
+                {% endif %}
+            {% endif %}
+            <div class="panel-body">
+                {% if arrived_orders_reminders %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=arrived_orders_reminders rows_per_page=arrived_orders_reminders_rows_per_page page_var='arrived_orders_reminders_page' rows_per_page_var='arrived_orders_reminders_rows_per_page' %}
+                {% else %}
+                    There are no arrived Orders.
+                {% endif %}
+            </div>
+            {% if claims_without_orders_reminders %}
+                <div class="panel-body">
+                    <h4>Claims without Orders</h4>
+                </div>
+                {% if claims_without_orders_reminders %}
+                    {% with object_list=claims_without_orders_reminders model_name="claimorderreminder" %}
+                        {% include 'utils/generics/list_table.html' %}
+                    {% endwith %}
+                {% endif %}
+            {% endif %}
+            <div class="panel-body">
+                {% if claims_without_orders_reminders %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=claims_without_orders_reminders rows_per_page=claims_without_orders_reminders_rows_per_page page_var='claims_without_orders_reminders_page' rows_per_page_var='claims_without_orders_reminders_rows_per_page' %}
+                {% else %}
+                    There are no Claims without Orders.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% include 'reminders/snippets/reminder_modals.html' %}
 
 {% endblock content %}

@@ -1,9 +1,9 @@
-import datetime
+
 import smtplib
 import json
 
 from django.views import generic
-from django.utils import timezone
+
 from django.core import urlresolvers, mail
 from django.conf import settings
 from django.template import loader
@@ -15,176 +15,12 @@ from utils import views_utils
 from simple_search import search
 
 from clients import models as clients_models
-from inventory import models as inventory_models
-from . import models as reminders_models, forms
+
+from . import models as reminders_models, forms, utils
 
 
 class Reminders(generic.TemplateView):
     template_name = "reminders/reminders.html"
-
-    def _find_unpaid_claims(self):
-        three_weeks = datetime.timedelta(weeks=3)
-        now = timezone.now()
-        now_date = timezone.localtime(now).date()
-        three_weeks_ago = now - three_weeks
-
-        claims = clients_models.Claim.objects.prefetch_related(
-            'unpaidclaimreminder_set',
-        ).filter(
-            claimcoverage__actual_paid_date__isnull=True,
-            submitted_datetime__lte=three_weeks_ago,
-        ).distinct()
-
-        new_unpaid_claims_reminders = []
-        for claim in claims:
-            if not claim.unpaidclaimreminder_set.exists():
-                new_unpaid_claims_reminders.append(
-                    reminders_models.UnpaidClaimReminder(
-                        claim=claim, created=now_date
-                    )
-                )
-        # create new unpaid claims reminders
-        reminders_models.UnpaidClaimReminder.objects.bulk_create(
-            new_unpaid_claims_reminders
-        )
-
-        REQUIRED = reminders_models.Reminder.REQUIRED
-        COMPLETED = reminders_models.Reminder.COMPLETED
-
-        # update old unpaid claims reminders
-        reminders_models.UnpaidClaimReminder.objects.filter(
-            claim__claimcoverage__actual_paid_date__isnull=True,
-            created__lte=timezone.localtime(three_weeks_ago).date()
-        ).update(
-            follow_up=REQUIRED,
-            result='',
-            created=now_date
-        )
-
-        possibly_paid_claims_reminders = (
-            reminders_models.UnpaidClaimReminder.objects.filter(
-                claim__claimcoverage__actual_paid_date__isnull=False
-            ).exclude(
-                follow_up__contains=COMPLETED
-            ).prefetch_related(
-                'claim__claimcoverage_set'
-            )
-        )
-        for possibly_paid_claims_reminder in possibly_paid_claims_reminders:
-            is_paid = True
-            claimcoverages = (
-                possibly_paid_claims_reminder.claim.claimcoverage_set.all()
-            )
-            for claimcoverage in claimcoverages:
-                if claimcoverage.actual_paid_date is None:
-                    is_paid = False
-                    break
-            if is_paid:
-                # complete unpaid claims reminder
-                is_required = (
-                    REQUIRED in possibly_paid_claims_reminder.follow_up
-                )
-                if is_required:
-                    possibly_paid_claims_reminder.follow_up.remove(REQUIRED)
-                possibly_paid_claims_reminder.follow_up.append(COMPLETED)
-                possibly_paid_claims_reminder.save()
-
-    def _find_arrived_orders(self):
-        one_week = datetime.timedelta(weeks=1)
-        now = timezone.now()
-        now_date = timezone.localtime(now).date()
-        one_week_ago = now - one_week
-
-        orders = inventory_models.CoverageOrder.objects.prefetch_related(
-            'orderarrivedreminder_set',
-        ).filter(
-            order_type=clients_models.Coverage.ORTHOTICS,
-            dispensed_date__isnull=True,
-            arrived_date__lte=one_week_ago,
-        )
-
-        new_arrived_orders_reminders = []
-        for order in orders:
-            if not order.orderarrivedreminder_set.exists():
-                new_arrived_orders_reminders.append(
-                    reminders_models.OrderArrivedReminder(
-                        order=order, created=now_date
-                    )
-                )
-        # create new arrived order reminders
-        reminders_models.OrderArrivedReminder.objects.bulk_create(
-            new_arrived_orders_reminders
-        )
-
-        REQUIRED = reminders_models.Reminder.REQUIRED
-        COMPLETED = reminders_models.Reminder.COMPLETED
-
-        # update old arrived order reminders
-        reminders_models.OrderArrivedReminder.objects.filter(
-            order__dispensed_date__isnull=True,
-            created__lte=timezone.localtime(one_week_ago).date()
-        ).update(
-            follow_up=REQUIRED,
-            result='',
-            created=now_date
-        )
-
-        uncompleted_order_arrived_reminders = (
-            reminders_models.OrderArrivedReminder.objects.filter(
-                order__dispensed_date__isnull=False
-            ).exclude(
-                follow_up__contains=COMPLETED
-            )
-        )
-        for order_arrived_reminder in uncompleted_order_arrived_reminders:
-            # complete arrived order reminder
-            is_required = REQUIRED in order_arrived_reminder.follow_up
-            if is_required:
-                order_arrived_reminder.follow_up.remove(REQUIRED)
-            order_arrived_reminder.follow_up.append(COMPLETED)
-            order_arrived_reminder.save()
-
-    def _find_claims_without_orders(self):
-        now = timezone.now()
-        now_date = timezone.localtime(now).date()
-        one_day_ago = now - datetime.timedelta(days=1)
-
-        ORTHOTICS = clients_models.Coverage.ORTHOTICS
-        cutoff = (
-            inventory_models.CoverageOrder.ORDERS_TIED_TO_CLAIMS_START_DATETIME
-        )
-        has_orthotics = (
-            db_models.Q(
-                coverages__coverage_type=ORTHOTICS
-            ) |
-            db_models.Q(
-                claimcoverage__items__coverage_type=ORTHOTICS
-            )
-        )
-        claims = clients_models.Claim.objects.filter(
-            has_orthotics,
-            coverageorder=None,
-            submitted_datetime__lte=one_day_ago,
-            submitted_datetime__gte=cutoff
-        )
-
-        new_claims_without_orders_reminders = []
-        for claim in claims:
-            if not claim.claimorderreminder_set.exists():
-                new_claims_without_orders_reminders.append(
-                    reminders_models.ClaimOrderReminder(
-                        claim=claim, created=now_date
-                    )
-                )
-        # create new claims without orders reminders
-        reminders_models.ClaimOrderReminder.objects.bulk_create(
-            new_claims_without_orders_reminders
-        )
-
-        # delete unneeded claims without orders reminders
-        reminders_models.ClaimOrderReminder.objects.filter(
-            claim__coverageorder__order_type=ORTHOTICS
-        ).delete()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -267,7 +103,7 @@ class Reminders(generic.TemplateView):
             context=context
         )
 
-        self._find_unpaid_claims()
+        utils._find_unpaid_claims()
         unpaid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.select_related(
                 # for patient links
@@ -316,7 +152,7 @@ class Reminders(generic.TemplateView):
             context=context
         )
 
-        self._find_arrived_orders()
+        utils._find_arrived_orders()
         arrived_orders_reminders = (
             reminders_models.OrderArrivedReminder.objects.select_related(
                 # for claimant links
@@ -344,7 +180,7 @@ class Reminders(generic.TemplateView):
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 
-        self._find_claims_without_orders()
+        utils._find_claims_without_orders()
         claims_without_orders_reminders = (
             reminders_models.ClaimOrderReminder.objects.select_related(
                 # for patient links

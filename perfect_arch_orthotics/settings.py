@@ -279,6 +279,17 @@ PIPELINE = {
             },
         },
         # clients
+        'client': {
+            'source_filenames': (
+                'utils/jquery_utils/ajax.js',
+                'reminders/reminders.js',
+            ),
+            'output_filename': 'js/client_all.js',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'client_all_js',
+            },
+        },
         'insurance': {
             'source_filenames': (
                 'clients/js/insurance.js',
@@ -304,6 +315,7 @@ PIPELINE = {
         'reminders': {
             'source_filenames': (
                 'utils/jquery_utils/ajax.js',
+                'reminders/reminders.js',
             ),
             'output_filename': 'js/reminders_all.js',
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',

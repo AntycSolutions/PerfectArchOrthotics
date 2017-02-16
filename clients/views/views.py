@@ -29,6 +29,11 @@ from clients import models as clients_models
 from inventory import models as inventory_models
 from clients.forms.forms import ClientForm, DependentForm
 from clients.forms import forms as clients_forms
+from reminders import (
+    models as reminders_models,
+    forms as reminders_forms,
+    utils as reminders_utils
+)
 
 
 # TODO: split into multiple views
@@ -599,12 +604,13 @@ def insuranceSearchView(request):
 
 @login_required
 def clientView(request, client_id):
+    context = {}
+
     try:
         client = Client.objects.select_related(
             'referred_by',
             'person_ptr'
         ).prefetch_related(
-            'insurance_set__coverage_set',
             'dependent_set__person_ptr__referred_set',
             'person_ptr__referred_set'
         ).get(
@@ -612,12 +618,15 @@ def clientView(request, client_id):
         )
     except Client.DoesNotExist:
         raise http.Http404("No Client matches that ID")
+    context['client'] = client
     dependents = client.dependent_set.all()
     person_pk_list = [client.pk]
 
     orders = []
     if client.order_set.exists():
         orders.append(_order_info(client, request))
+    context['orders'] = orders
+
     spouse = None
     children = []
     for dependent in dependents:
@@ -628,6 +637,8 @@ def clientView(request, client_id):
         person_pk_list.append(dependent.pk)
         if dependent.order_set.exists():
             orders.append(_order_info(dependent, request))
+    context['spouse'] = spouse
+    context['children'] = children
 
     insurances = Insurance.objects.select_related(
         'main_claimant__client',
@@ -664,6 +675,7 @@ def clientView(request, client_id):
                 )
     if invalid_coverages:
         insurances = None
+    context['insurances'] = insurances
 
     claims = Claim.objects.select_related(
         'patient__client',
@@ -671,7 +683,9 @@ def clientView(request, client_id):
         'insurance'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
-        'claimcoverage_set__coverage'
+        'claimcoverage_set__coverage',
+        'claimcoverage_set__items',
+        'coverages'
     ).filter(
         patient_id__in=person_pk_list
     )
@@ -683,6 +697,7 @@ def clientView(request, client_id):
         expected_back__sum=Sum('expected_back'),
     )
     client_total_expected_back = totals['expected_back__sum'] or 0
+    context['client_total_expected_back'] = client_total_expected_back
 
     client_total_amount_claimed = 0
     pending_client_total_amount_claimed = 0
@@ -695,6 +710,10 @@ def clientView(request, client_id):
                 else:
                     pending_client_total_amount_claimed += \
                         amounts['unit_price']
+    context['client_total_amount_claimed'] = client_total_amount_claimed
+    context['pending_client_total_amount_claimed'] = (
+        pending_client_total_amount_claimed
+    )
 
     totals = ClaimCoverage.objects.filter(
         actual_paid_date__isnull=True,
@@ -703,6 +722,9 @@ def clientView(request, client_id):
         expected_back__sum=Sum('expected_back'),
     )
     pending_client_total_expected_back = totals['expected_back__sum'] or 0
+    context['pending_client_total_expected_back'] = (
+        pending_client_total_expected_back
+    )
 
     total = inventory_models.ShoeOrder.objects.filter(
         claimant_id__in=person_pk_list
@@ -718,21 +740,19 @@ def clientView(request, client_id):
     coverage_order_cost = total['coverage_order_cost'] or 0
 
     # Paginate Claims
-    page = request.GET.get('claims_page')
-    paginator = Paginator(claims.order_by('-submitted_datetime'), 5)
-    try:
-        claims = paginator.page(page)
-    except PageNotAnInteger:
-        claims = paginator.page(1)
-    except EmptyPage:
-        claims = paginator.page(paginator.num_pages)
+    claims = views_utils._paginate(
+        request, claims.order_by('-submitted_datetime'), 'claims_page', 5
+    )
+    context['client_claims'] = claims
 
     client_expected_back = (
         client_total_expected_back + pending_client_total_expected_back
     )
+    context['client_expected_back'] = client_expected_back
     client_cost = (
         shoe_order_cost + coverage_order_cost
     )
+    context['client_cost'] = client_cost
 
     biomechanical_gaits = \
         clients_models.BiomechanicalGait.objects.select_related(
@@ -741,14 +761,139 @@ def clientView(request, client_id):
         ).filter(
             patient_id__in=person_pk_list
         )
+    context['biomechanical_gaits'] = biomechanical_gaits
+
+    # Reminders
+    reminders_utils._find_unpaid_claims()
+    unpaid_claims_reminders = (
+        reminders_models.UnpaidClaimReminder.objects.select_related(
+            # for patient links
+            'claim__patient__client',
+            'claim__patient__dependent',
+            # for benefits lookup
+            'claim__insurance__main_claimant__client',
+            'claim__insurance__main_claimant__dependent',
+        ).prefetch_related(
+            # for expected back/amount claimed calcs
+            (
+                'claim__claimcoverage_set__claimitem_set__item__'
+                'itemhistory_set'
+            ),
+            'unpaidclaimmessagelog_set',
+        ).filter(
+            claim__patient_id__in=person_pk_list
+        )
+    )
+    unpaid_claims_reminders_rows_per_page = views_utils._get_paginate_by(
+        request, 'unpaid_claims_reminders_rows_per_page', context=context
+    )
+    unpaid_claims_reminders = views_utils._paginate(
+        request,
+        unpaid_claims_reminders,
+        'unpaid_claims_reminders_page',
+        unpaid_claims_reminders_rows_per_page
+    )
+    context['unpaid_claims_reminders'] = unpaid_claims_reminders
+    reminders_utils._find_arrived_orders()
+    arrived_orders_reminders = (
+        reminders_models.OrderArrivedReminder.objects.select_related(
+            # for claimant links
+            'order__claimant__client',
+            'order__claimant__dependent',
+        ).prefetch_related(
+            'orderarrivedmessagelog_set',
+        ).filter(
+            order__claimant_id__in=person_pk_list
+        )
+    )
+    arrived_orders_reminders_rows_per_page = views_utils._get_paginate_by(
+        request, 'arrived_orders_reminders_rows_per_page', context=context
+    )
+    arrived_orders_reminders = views_utils._paginate(
+        request,
+        arrived_orders_reminders,
+        'arrived_orders_reminders_page',
+        arrived_orders_reminders_rows_per_page
+    )
+    context['arrived_orders_reminders'] = arrived_orders_reminders
+    reminders_utils._find_claims_without_orders()
+    claims_without_orders_reminders = (
+        reminders_models.ClaimOrderReminder.objects.select_related(
+            # for patient links
+            'claim__patient__client',
+            'claim__patient__dependent',
+        ).filter(
+            claim__patient_id__in=person_pk_list
+        )
+    )
+    claims_without_orders_reminders_rows_per_page = (
+        views_utils._get_paginate_by(
+            request,
+            'claims_without_orders_reminders_rows_per_page',
+            context=context
+        )
+    )
+    claims_without_orders_reminders = views_utils._paginate(
+        request,
+        claims_without_orders_reminders,
+        'claims_without_orders_reminders_page',
+        claims_without_orders_reminders_rows_per_page
+    )
+    context['claims_without_orders_reminders'] = (
+        claims_without_orders_reminders
+    )
+
+    # Reminders Forms
+    unpaid_claim_reminder_form = (
+        reminders_forms.UnpaidClaimReminderForm(prefix="unpaidclaimreminder")
+    )
+    context['unpaid_claim_reminder_form'] = unpaid_claim_reminder_form
+    order_arrived_reminder_form = (
+        reminders_forms.OrderArrivedReminderForm(prefix="orderarrivedreminder")
+    )
+    context['order_arrived_reminder_form'] = order_arrived_reminder_form
+
+    # Message Logs
+    unpaid_claim_message_logs = (
+        reminders_models.UnpaidClaimMessageLog.objects.filter(
+            unpaid_claim_reminder__claim__patient_id__in=person_pk_list
+        ).order_by('-created')
+    )
+    unpaid_claim_message_logs_rows_per_page = views_utils._get_paginate_by(
+        request, 'unpaid_claim_message_logs_rows_per_page', context=context
+    )
+    unpaid_claim_message_logs = views_utils._paginate(
+        request,
+        unpaid_claim_message_logs,
+        'unpaid_claim_message_logs_page',
+        unpaid_claim_message_logs_rows_per_page
+    )
+    context['unpaid_claim_message_logs'] = unpaid_claim_message_logs
+    order_arrived_message_logs = (
+        reminders_models.OrderArrivedMessageLog.objects.filter(
+            order_arrived_reminder__order__claimant_id__in=person_pk_list
+        ).order_by('-created')
+    )
+    order_arrived_message_logs_rows_per_page = views_utils._get_paginate_by(
+        request, 'order_arrived_message_logs_rows_per_page', context=context
+    )
+    order_arrived_message_logs = views_utils._paginate(
+        request,
+        order_arrived_message_logs,
+        'order_arrived_message_logs_page',
+        order_arrived_message_logs_rows_per_page
+    )
+    context['order_arrived_message_logs'] = order_arrived_message_logs
 
     # Forms
     if request.method == 'GET':
+        # Referral Form
         try:
             referral_form = clients_forms.ReferralForm(client)
         except clients_forms.ReferralForm.EmptyClaimsQuerySet:
             referral_form = None
 
+        # Note Form
         note_form = clients_forms.NoteForm()
     elif request.method == 'POST':
         if 'referral_submit' in request.POST:
@@ -769,29 +914,12 @@ def clientView(request, client_id):
         return http.HttpResponseRedirect(
             urlresolvers.reverse('client', args=[client_id])
         )
+    context['referral_form'] = referral_form
+    context['note_form'] = note_form
 
-    context = {
-        'client': client,
-        'insurances': insurances,
-        'client_claims': claims,
-        'client_total_amount_claimed': client_total_amount_claimed,
-        'client_total_expected_back': client_total_expected_back,
-        'pending_client_total_amount_claimed':
-            pending_client_total_amount_claimed,
-        'pending_client_total_expected_back':
-            pending_client_total_expected_back,
-        'client_expected_back': client_expected_back,
-        'client_cost': client_cost,
-        'margin': client_expected_back - client_cost,
-        'orders': orders,
-        'spouse': spouse,
-        'children': children,
-        'dependent_class': Dependent,
-        'referral_form': referral_form,
-        'note_form': note_form,
-        'now': timezone.now(),
-        'biomechanical_gaits': biomechanical_gaits,
-    }
+    context['margin'] = client_expected_back - client_cost
+    context['dependent_class'] = Dependent
+    context['now'] = timezone.now()
 
     return render(request, 'clients/client.html', context)
 

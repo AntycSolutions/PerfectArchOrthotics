@@ -1,0 +1,96 @@
+
+<div id="unpaidclaimreminder_modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">Update Reminder</h4>
+            </div>
+            <div class="modal-body">
+                <form id="unpaidclaimreminder_form"
+                        class="form-horizontal">
+                    {% include 'utils/generics/form.html' with form=unpaid_claim_reminder_form %}
+                    <input type="hidden" id="unpaidclaimreminder_pk" />
+                    <input type="hidden"
+                            id="model_name"
+                            value="unpaidclaimreminder" />
+                </form>
+                <div class="table-responsive" style="display: none;">
+                    <table class="table">
+                        <caption>Message Logs</caption>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unpaidclaimreminder_logs"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button"
+                        id="unpaidclaimreminder_save"
+                        form-id="#unpaidclaimreminder_form"
+                        class="btn btn-primary">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="orderarrivedreminder_modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">Update Reminder</h4>
+            </div>
+            <div class="modal-body">
+                <form id="orderarrivedreminder_form"
+                        class="form-horizontal">
+                    {% include 'utils/generics/form.html' with form=order_arrived_reminder_form %}
+                    <input type="hidden" id="orderarrivedreminder_pk" />
+                    <input type="hidden"
+                            id="model_name"
+                            value="orderarrivedreminder" />
+                </form>
+                <div class="table-responsive" style="display: none;">
+                    <table class="table">
+                        <caption>Message Logs</caption>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderarrivedreminder_logs"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button"
+                        id="orderarrivedreminder_save"
+                        form-id="#orderarrivedreminder_form"
+                        class="btn btn-primary">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

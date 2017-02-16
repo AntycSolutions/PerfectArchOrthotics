@@ -547,6 +547,19 @@ class Claim(models.Model, model_utils.FieldList):
     # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage
 
     def has_orthotics(self):
+        # check if prefetch_related has been called to avoid extra db queries
+        if 'claimcoverage' in self._prefetched_objects_cache:
+            for claimcoverage in self.claimcoverage_set.all():
+                if 'items' in claimcoverage._prefetched_objects_cache:
+                    for item in claimcoverage.items.all():
+                        if item.coverage_type == Coverage.ORTHOTICS:
+                            return True
+        if 'coverages' in self._prefetched_objects_cache:
+            for coverage in self.coverages.all():
+                if coverage.coverage_type == Coverage.ORTHOTICS:
+                    return True
+
+        # prefetch_related wasn't used, query db
         has_orthotics = (
             self.coverages.filter(
                 coverage_type=Coverage.ORTHOTICS

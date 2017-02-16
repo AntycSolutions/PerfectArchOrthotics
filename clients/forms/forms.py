@@ -198,5 +198,7 @@ class NoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields['notes'].widget.attrs['rows'] = 5
+
         self.helper = helper.FormHelper(self)
         self.helper.form_tag = False
