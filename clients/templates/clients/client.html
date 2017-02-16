@@ -54,7 +54,14 @@
             {% endfor %}
         };
 
-        reminders_init(benefits_lookup);
+        window.reminders = window.reminders || {};
+        var reminders_init = window.reminders.reminders_init;
+        if ($.isFunction(reminders_init)) {
+            reminders_init(benefits_lookup);
+        }
+        else {
+            throw new Error('Could not load reminders');
+        }
     {% endblock %}
 </script>
 
@@ -907,13 +914,13 @@
             <div class="panel-title pull-left">
                 <a href="#toggle_reminders"
                         data-toggle="collapse"
-                        data-target="#reminders">
+                        data-target="#reminders_panel">
                     Reminders
                     <span class="caret"></span>
                 </a>
             </div>
         </div>
-        <div id="reminders" class="collapse">
+        <div id="reminders_panel" class="collapse">
             {% if unpaid_claims_reminders %}
                 <div class="panel-body">
                     <h4>Unpaid Claims</h4>

@@ -90,7 +90,14 @@
             {% endfor %}
         };
 
-        reminders_init(benefits_lookup);
+        window.reminders = window.reminders || {};
+        var reminders_init = window.reminders.reminders_init;
+        if ($.isFunction(reminders_init)) {
+            reminders_init(benefits_lookup);
+        }
+        else {
+            throw new Error('Could not load reminders');
+        }
     {% endblock %}
 </script>
 
