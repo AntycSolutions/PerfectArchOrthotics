@@ -8,10 +8,10 @@
         <h1 style="text-align: center;">Perfect Arch Orthotics</h1>
         <h2 style="text-align: center;">{{ subject }}</h2>
         <p>
-            Hi {{ patient }},
+            Hi {{ recipient }},
         </p>
         <p>
-            This is a payment reminder for your account. Please call us.
+            {% block content %}{% endblock %}
         </p>
         <p>
             Thank you,
@@ -22,9 +22,26 @@
         <p style="margin-top: 30px;">
             {{ address|nbsp|linebreaksbr }}
         </p>
+        <table style="margin-top: 10px;">
+            <caption>Hours:</caption>
+            <tr>
+                <td>Monday - Friday</td>
+                <td style="padding-left: 5px;">10:30 AM - 7 PM</td>
+            </tr>
+                <td>Saturday</td>
+                <td style="padding-left: 5px;">11 AM - 5 PM</td>
+            </tr>
+            <tr>
+                <td>Sunday</td>
+                <td style="padding-left: 5px;">Closed</td>
+            </tr>
+        </table>
         <p style="text-align: center;">
             <img src="https://perfectarch.ca/static/images/PerfectArchLogo.jpg"
                     alt="Perfect Arch">
+        </p>
+        <p>
+            This is an automated message, do not reply to this email.
         </p>
     </body>
 </html>

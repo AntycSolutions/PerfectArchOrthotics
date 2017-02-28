@@ -3,7 +3,6 @@ import smtplib
 import json
 
 from django.views import generic
-
 from django.core import urlresolvers, mail
 from django.conf import settings
 from django.template import loader
@@ -359,21 +358,28 @@ class UnpaidClaimReminderUpdate(
             'Hi {patient},\n'
             '\n'
             'This is a payment reminder for your account. '
-            'Please call us.'
+            'Please call us at (587) 400-4588.'
             '\n'
             'Thank you,\n'
             '\n'
             '-The Perfect Arch Orthotics Team\n'
-            '\n'
+            '\n\n'
             '{address}\n'
+            '\n'
+            'Hours:\n'
+            'Monday - Friday, 10:30 AM - 7 PM\n'
+            'Saturday, 11 AM - 5 PM\n'
+            'Sunday, Closed\n'
+            '\n'
+            'This is an automated message, do not reply to this email.\n'
             '\n'.format(
                 patient=patient,
                 address=address,
             )
         )
         html_message = loader.render_to_string(
-            'reminders/unpaid_claim_email.html', {
-                'patient': patient,
+            'reminders/emails/unpaid_claim.html', {
+                'recipient': patient,
                 'subject': subject,
                 'address': address,
             }
@@ -392,8 +398,11 @@ class UnpaidClaimReminderUpdate(
             error += '\\n\\n'
 
         body = (
-            'Hi {patient}, this is a payment reminder for your account. '
-            'Please call Perfect Arch Orthotics. Thank you.'.format(
+            'Hi {patient}, this is a payment reminder for your account with '
+            'Perfect Arch Orthotics.\n\n'
+            'This is an automated message, do not reply or call this number, '
+            'please call us at (587) 400-4588 instead. '
+            'Thank you.'.format(
                 patient=patient,
             )
         )
@@ -457,21 +466,28 @@ class OrderArrivedReminderUpdate(
             'Hi {claimant},\n'
             '\n'
             'This is a reminder that your Order has arrived. '
-            'Please call us.\n'
+            'Please call us at (587) 400-4588.\n'
             '\n'
             'Thank you,\n'
             '\n'
             '-The Perfect Arch Orthotics Team\n'
-            '\n'
+            '\n\n'
             '{address}\n'
+            '\n'
+            'Hours:\n'
+            'Monday - Friday, 10:30 AM - 7 PM\n'
+            'Saturday, 11 AM - 5 PM\n'
+            'Sunday, Closed\n'
+            '\n'
+            'This is an automated message, do not reply to this email.\n'
             '\n'.format(
                 claimant=claimant,
-                address=address,
+                address=address
             )
         )
         html_message = loader.render_to_string(
-            'reminders/order_arrived_email.html', {
-                'claimant': claimant,
+            'reminders/emails/order_arrived.html', {
+                'recipient': claimant,
                 'subject': subject,
                 'address': address,
             }
@@ -490,8 +506,11 @@ class OrderArrivedReminderUpdate(
             error += '\\n\\n'
 
         body = (
-            'Hi {claimant}, this is a reminder that your Order has arrived. '
-            'Please call Perfect Arch Orthotics. Thank you.'.format(
+            'Hi {claimant}, this is a reminder that your Order has arrived '
+            'at Perfect Arch Orthotics.\n\n'
+            'This is an automated message, do not reply or call this number, '
+            'please call us at (587) 400-4588 instead. '
+            'Thank you.'.format(
                 claimant=claimant,
             )
         )

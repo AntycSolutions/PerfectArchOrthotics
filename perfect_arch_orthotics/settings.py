@@ -321,6 +321,10 @@ PIPELINE = {
             'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
             'extra_context': {
                 'fallback_key': 'reminders_all_js',
+                'debug_fallback_keys': {
+                    STATIC_URL + 'utils/jquery_utils/ajax.js': 'ajax_js',
+                    STATIC_URL + 'reminders/reminders.js': 'reminders_js',
+                },
             },
         },
     },
