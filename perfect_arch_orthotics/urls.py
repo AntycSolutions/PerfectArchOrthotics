@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.views.generic import base
 from django.contrib import admin
+from django.contrib.contenttypes import models as contenttypes_models
+from django.contrib.auth import models as auth_models
 
 from ajax_select import urls as ajax_select_urls
 from session_security import urls as session_security_urls
@@ -17,6 +19,10 @@ from reminders import urls as reminders_urls
 
 
 admin.autodiscover()
+# for debugging, auditlog LogEntry lookup, generic relation lookup
+admin.site.register(contenttypes_models.ContentType)
+# Unused, don't display
+admin.site.unregister(auth_models.Group)
 
 
 urlpatterns = [

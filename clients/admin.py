@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
+
 from django.core import urlresolvers
 from django.utils import safestring
+
 
 from clients.models import Client, Insurance, Claim, Dependent, \
     Coverage, Person, Invoice, Item, InsuranceLetter, \
@@ -112,6 +113,3 @@ admin.site.register(clients_models.Referral)
 admin.site.register(clients_models.Receipt)
 admin.site.register(clients_models.CreditDivisor)
 admin.site.register(clients_models.Note)
-
-# Unused, don't display
-admin.site.unregister(Group)
