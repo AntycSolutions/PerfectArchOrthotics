@@ -267,9 +267,11 @@ def fillOutProofOfManufacturingView(request, claim_id):
 def claimView(request, claim_id):
     try:
         claim = Claim.objects.select_related(
-            'patient', 'insurance'
+            'insurance', 'patient__client', 'patient__dependent__primary'
         ).prefetch_related(
-            'claimcoverage_set__claimitem_set__item__itemhistory_set'
+            'claimcoverage_set__claimitem_set__item__itemhistory_set',
+            'claimcoverage_set__coverage',
+            'coverageorder_set'
         ).get(id=claim_id)
     except Claim.DoesNotExist:
         raise http.Http404("No Claim matches that ID")
@@ -438,7 +440,8 @@ def _found_claims(request, context):
         'patient__dependent__primary'
     ).prefetch_related(
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
-        'claimcoverage_set__coverage'
+        'claimcoverage_set__coverage',
+        'coverageorder_set'
     ).order_by(
         '-submitted_datetime'
     )
