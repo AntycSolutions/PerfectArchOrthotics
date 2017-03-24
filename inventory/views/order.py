@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from utils import views_utils
-from simple_search.utils import get_query, get_date_query
+from simple_search import search
 
 from clients import models as clients_models
 from inventory import models
@@ -100,70 +100,20 @@ class ListOrderView(ListView):
             'adjustmentorder'
         )
 
-        if ('q' in self.request.GET) and self.request.GET['q'].strip():
-            fields = ['claimant__first_name', 'claimant__last_name',
-                      'description',
-                      'coverageorder__vendor',
-                      'shoeorder__shoe_attributes__shoe__brand']
-            query_string = self.request.GET['q']
-            order_query = get_query(query_string, fields)
-            if queryset:
-                queryset = queryset.filter(order_query)
-            else:
-                queryset = models.Order.objects.filter(order_query)
-
-        if ('order_type' in self.request.GET
-                and self.request.GET['order_type'].strip()):
-            fields = ['order_type']
-            query_string = self.request.GET['order_type']
-            order_query = get_query(query_string, fields, exact=True)
-            if queryset:
-                queryset = queryset.filter(order_query)
-            else:
-                queryset = models.Order.objects.filter(order_query)
-
-        if (('df' in self.request.GET) and self.request.GET['df'].strip()
-                and ('dt' in self.request.GET)
-                and self.request.GET['dt'].strip()):
-            date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
-            query_date_from_string = self.request.GET['df']
-            query_date_to_string = self.request.GET['dt']
-            order_query = get_date_query(query_date_from_string,
-                                         query_date_to_string, date_fields)
-            if order_query:
-                if queryset:
-                    queryset = queryset.filter(order_query)
-                else:
-                    queryset = models.Order.objects.filter(order_query)
-            else:
-                messages.add_message(self.request, messages.WARNING,
-                                     "Invalid date. Please use MM/DD/YYYY.")
-        elif ('df' in self.request.GET) and self.request.GET['df'].strip():
-            date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
-            query_date_from_string = self.request.GET['df']
-            order_query = get_date_query(query_date_from_string,
-                                         None, date_fields)
-            if order_query:
-                if queryset:
-                    queryset = queryset.filter(order_query)
-                else:
-                    queryset = models.Order.objects.filter(order_query)
-            else:
-                messages.add_message(self.request, messages.WARNING,
-                                     "Invalid date. Please use MM/DD/YYYY.")
-        elif ('dt' in self.request.GET) and self.request.GET['dt'].strip():
-            date_fields = ['ordered_date', 'arrived_date', 'dispensed_date']
-            query_date_to_string = self.request.GET['dt']
-            order_query = get_date_query(None,
-                                         query_date_to_string, date_fields)
-            if order_query:
-                if queryset:
-                    queryset = queryset.filter(order_query)
-                else:
-                    queryset = models.Order.objects.filter(order_query)
-            else:
-                messages.add_message(self.request, messages.WARNING,
-                                     "Invalid date. Please use MM/DD/YYYY.")
+        search_fields = [
+            'claimant__first_name',
+            'claimant__last_name',
+            'description',
+            'coverageorder__vendor',
+            'shoeorder__shoe_attributes__shoe__brand',
+            'order_type',
+            'ordered_date',
+            'arrived_date',
+            'dispensed_date',
+        ]
+        queryset = search.simple_search(
+            self.request, queryset=queryset, fields=search_fields
+        )
 
         return queryset.distinct().extra(
             select={
