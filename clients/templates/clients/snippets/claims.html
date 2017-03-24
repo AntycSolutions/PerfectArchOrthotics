@@ -106,12 +106,33 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        {% if claim.has_orthotics %}
-                            <a href="{% url 'coverage_order_claim_create' person_pk=claim.patient.pk claim_pk=claim.pk %}"
-                                    class="btn btn-primary">
-                                Create an Orthotics Order
-                            </a>
-                        {% endif %}
+                        <div class="pull-left">
+                            {% if claim.has_orthotics %}
+                                <a href="{% url 'coverage_order_claim_create' person_pk=claim.patient.pk claim_pk=claim.pk %}"
+                                        class="btn btn-primary">
+                                    Create an Orthotics Order
+                                </a>
+                            {% endif %}
+                            {% with orthotics_orders=claim.coverageorder_set.all %}
+                                {% if orthotics_orders %}
+                                    <ul>
+                                        <li style="margin-top: 10px;">
+                                            Orthotics Orders:
+                                            <ul>
+                                                {% for orthotics_order in orthotics_orders %}
+                                                    <li>
+                                                        <a href="{{ orthotics_order.get_absolute_url }}">
+                                                            {{ orthotics_order.quantity }}
+                                                            {{ orthotics_order.vendor }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
                         <ul class="pull-right">
                             <li>
                                 Coverages:

@@ -279,6 +279,25 @@
                     Create an Orthotics Order
                 </a>
             {% endif %}
+            {% with orthotics_orders=claim.coverageorder_set.all %}
+                {% if orthotics_orders %}
+                    <ul>
+                        <li style="margin-top: 10px;">
+                            Orthotics Orders:
+                            <ul>
+                                {% for orthotics_order in orthotics_orders %}
+                                    <li>
+                                        <a href="{{ orthotics_order.get_absolute_url }}">
+                                            {{ orthotics_order.quantity }}
+                                            {{ orthotics_order.vendor }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
+            {% endwith %}
         </div>
         <div class="panel-footer">
             <div>
