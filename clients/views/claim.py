@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core import urlresolvers
-from django.core.files import storage
+from django.core.files import storage, uploadedfile
 from django.conf import settings
 from django.utils.translation import ugettext as trans
 from django.utils import safestring
@@ -18,7 +18,7 @@ from django.contrib import messages
 from formtools.wizard import views as wizard_views, forms as wizard_forms
 
 from utils import views_utils
-from utils.forms import widgets as utils_widgets
+from utils.wizard import views as utils_wizard_views
 
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage
@@ -341,10 +341,9 @@ class CreateProofOfManufacturingView(CreateView):
         return self.success_url
 
 
-class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
-    file_storage = storage.FileSystemStorage(
-        path.join(settings.MEDIA_ROOT, 'temp')
-    )
+class CreateClaimWizard(
+    utils_wizard_views.FileStorageNamedUrlSessionWizardView
+):
     INFO = 'info'
     COVERAGES = 'coverages'
     form_list = (
@@ -352,7 +351,6 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
         (COVERAGES, claim_forms.ClaimCoverageFormFormSet),
     )
     template_name = 'utils/generics/wizard.html'
-    storage_name = 'utils.wizard.storage.MultiFileSessionStorage'
 
     class SkippedStepException(BaseException):
         pass
@@ -365,6 +363,7 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
 
         context['save_text'] = 'create'
         context['model_name'] = Claim._meta.verbose_name
+        context['form_id'] = 'claim_form'
         context['form_type'] = 'multipart/form-data'
         client = Client.objects.get(id=self.kwargs['client_id'])
         context['parent'] = {
@@ -498,148 +497,58 @@ class CreateClaimWizard(wizard_views.NamedUrlSessionWizardView):
 
             return shortcuts.redirect(self.get_step_url(self.steps.first))
 
-    def post(self, *args, **kwargs):
-        """
-        This method handles POST requests.
-        The wizard will render either the current step (if form validation
-        wasn't successful), the next step (if the current step was stored
-        successful) or the done view (if no more steps are available)
-        """
-        # Look for a wizard_goto_step element in the posted data which
-        # contains a valid step name. If one was found, render the requested
-        # form. (This makes stepping back a lot easier).
-        wizard_goto_step = self.request.POST.get('wizard_goto_step', None)
-        if wizard_goto_step and wizard_goto_step in self.get_form_list():
-            return self.render_goto_step(wizard_goto_step)
-
-        # Check if form was refreshed
-        management_form = wizard_forms.ManagementForm(
-            self.request.POST, prefix=self.prefix
-        )
-        if not management_form.is_valid():
-            raise forms.ValidationError(
-                trans('ManagementForm data is missing or has been tampered.'),
-                code='missing_management_form',
-            )
-
-        form_current_step = management_form.cleaned_data['current_step']
-        if (form_current_step != self.steps.current and
-                self.storage.current_step is not None):
-            # form refreshed, change current step
-            self.storage.current_step = form_current_step
-
-        new_files = self.request.FILES
-        old_files = self.storage.current_step_files
-        files = {}
-        if old_files:
-            # combine new/old files as a user can be clearing old files and/or
-            #  uploading new files
-            for step_field_name in old_files:
-                found = False
-                for field_name in new_files:
-                    if step_field_name in field_name:
-                        files[step_field_name] = (
-                            old_files[step_field_name] +
-                            new_files.getlist(field_name)
-                        )
-                        found = True
-                        break
-                if not found:
-                    files[step_field_name] = old_files[step_field_name]
-        else:
-            for field_name in new_files:
-                if 'claim_package' in field_name:
-                    files['claim_package'] = new_files.getlist(field_name)
-                else:
-                    files[field_name] = new_files.getlist(field_name)
-
-        # get the form for the current step
-        form = self.get_form(data=self.request.POST, files=files)
-
-        # and try to validate
-        if form.is_valid():
-            if old_files:
-                for field in form:
-                    if isinstance(field.field, forms.FileField):
-                        field_name = field.name
-
-                        if field_name not in old_files:
-                            continue
-
-                        both = itertools.zip_longest(
-                            form.cleaned_data[field_name],
-                            old_files[field_name]
-                        )
-                        to_remove = []
-                        for i, (_file, initial_datum) in enumerate(both):
-                            if _file is None or _file == initial_datum:
-                                continue
-                            elif _file is False:
-                                to_remove.append(initial_datum)
-
-                                # clear checkbox data
-                                field_widget_name = \
-                                    field.html_name + '_{}'.format(i)
-                                widget = field.field.widget.widgets[i]
-                                widget_name = widget.clear_checkbox_name(
-                                    field_widget_name
-                                )
-                                form.data[widget_name] = ''
-                                # close and delete temp file
-                                if not initial_datum.closed:
-                                    initial_datum.close()
-                                self.file_storage.delete(initial_datum.name)
-                        for remove in to_remove:
-                            # remove file
-                            form.files[field_name].remove(remove)
-
-            step_files = self.process_step_files(form)
-
-            # if the form is valid, store the cleaned data and files.
-            self.storage.set_step_data(self.steps.current,
-                                       self.process_step(form))
-            self.storage.set_step_files(self.steps.current,
-                                        step_files)
-
-            # check if the current step is the last step
-            if self.steps.current == self.steps.last:
-                # no more steps, render done view
-                return self.render_done(form, **kwargs)
-            else:
-                # proceed to the next step
-                return self.render_next_step(form)
-        else:
-            if self.steps.current == self.INFO:
-                # form wasn't saved, files were lost
-                new_widget = utils_widgets.ConfirmMultiFileMultiWidget(
-                    form_id="update_claim_form",  # html
-                    form=self,
-                    field_name='claim_package',
-                    file_count=0
-                )
-                form.fields['claim_package'].widget = new_widget
-
-                form.initial['claim_package'] = {}
-
-        return self.render(form)
-
     def done(self, form_list, form_dict, **kwargs):
         claim_form = form_dict[self.INFO]
         claim_coverage_claim_item_form = form_dict[self.COVERAGES]
 
         claim = claim_form.save()
 
-        # ClaimForm save doesn't handle form wizard files
-        files = claim_form.cleaned_data['claim_package']
-        for _file in files:
-            if _file:
-                # use get_or_create in case of update
-                clients_models.ClaimAttachment.objects.get_or_create(
-                    attachment=_file, claim=claim
-                )
-
         claim_coverage_claim_item_form.instance = claim
         claim_coverage_claim_item_form.save()
+
+        # has to be here just in case we need to clear new files
+        LAST_INITIAL = object()
+        both = itertools.zip_longest(
+            claim_form.cleaned_data['claim_package'],
+            claim_form.initial['claim_package'],
+            fillvalue=LAST_INITIAL
+        )
+        for _file, initial_datum in both:
+            if _file is None:
+                raise Exception(
+                    'MultiFile: _file is None, '
+                    'initial_datum: {}'.format(initial_datum)
+                )
+            elif _file == initial_datum:
+                if isinstance(_file, uploadedfile.UploadedFile):
+                    # form wizard files are temporarily uploaded
+                    clients_models.ClaimAttachment.objects.create(
+                        attachment=_file, claim=claim
+                    )
+                else:
+                    # no change
+                    continue
+            elif _file is False:
+                if isinstance(initial_datum, uploadedfile.UploadedFile):
+                    # form wizard files are temporarily uploaded
+                    if not initial_datum.closed:
+                        initial_datum.close()
+                    self.file_storage.delete(initial_datum.name)
+                else:
+                    clients_models.ClaimAttachment.objects.get(
+                        attachment=initial_datum, claim=claim
+                    ).delete()
+            elif initial_datum is LAST_INITIAL:
+                raise Exception(
+                    'MultiFile: initial_datum is LAST_INITIAL, '
+                    'cleaned_data len does not match initial len, '
+                    '_file: {}'.format(_file)
+                )
+            else:
+                raise Exception(
+                    'MultiFile: Exception, ',
+                    '_file: {}, initial_datum: {}'.format(_file, initial_datum)
+                )
 
         return HttpResponseRedirect(reverse(
             'claim', kwargs={'claim_id': claim.id}
@@ -658,6 +567,7 @@ class UpdateClaimWizard(CreateClaimWizard):
         context['save_text'] = 'update'
         context['model_name'] = Claim._meta.verbose_name
         context['form_type'] = 'multipart/form-data'
+        context['form_id'] = 'claim_form'
         client = Client.objects.get(
             pk=self.instance.patient.get_client().pk
         )

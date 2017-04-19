@@ -20,6 +20,7 @@ class CreditTestCase(test.TestCase):
         clients_models.Coverage.objects.create(
             insurance=insurance,
             claimant=client,
+            period=clients_models.Coverage.CALENDAR_YEAR,
         )
         clients_models.Claim.objects.create(
             patient=client,

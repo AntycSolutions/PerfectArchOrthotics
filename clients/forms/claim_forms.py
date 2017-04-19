@@ -1,5 +1,3 @@
-import itertools
-
 from django import forms
 from django.forms import models as forms_models
 
@@ -28,7 +26,7 @@ class ClaimForm(forms.ModelForm):
     claim_package = utils_fields.MultiFileField(
         label="Claim Package",
         required=False,
-        max_file_size=3.0 * 1024 * 1024  # mb*kb*b,
+        max_file_size=7.0 * 1024 * 1024  # mb*kb*b,
     )
 
     class Meta:
@@ -47,33 +45,24 @@ class ClaimForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        file_list = []
-        if self.instance.claimattachment_set.exists():
-            file_list = [
-                claim_attachment.attachment
-                for claim_attachment in self.instance.claimattachment_set.all()
-            ]
+        file_list = [
+            claim_attachment.attachment
+            for claim_attachment in self.instance.claimattachment_set.all()
+        ]
         files = kwargs.get('files', None)
-        if files:
-            # files require attr url to be displayed
+        if files:  # value can be set to None
+            # temp files (UploadedFile) require attr url to be displayed
             for key in files:
-                if 'claim_package' in key:
-                    if hasattr(files, 'getlist'):
-                        _file_value = files.getlist(key)
-                    else:
-                        _file_value = files.get(key)
-                    if isinstance(_file_value, list):
-                        for _file in _file_value:
-                            _file.url = 'media/temp/' + _file.name
-                            file_list.append(_file)
-                    else:
-                        _file = _file_value
-                        _file.url = 'media/temp/' + _file.name
+                if 'claim_package' == key:
+                    _file_list = files.get(key)
+                    for _file in _file_list:
+                        # /media/temp/ (from CreateClaimWizard.file_storage)
+                        _file.url = '/media/temp/' + _file.name
                         file_list.append(_file)
         claim_package = self.fields['claim_package']
         claim_package.widget = \
-            utils_widgets.ConfirmMultiFileMultiWidget(
-                form_id="update_claim_form",  # html
+            utils_widgets.ConfirmClearableMultiFileMultiWidget(
+                form_id="claim_form",  # html
                 form=self,
                 field_name='claim_package',
                 file_count=len(file_list)
@@ -111,30 +100,6 @@ class ClaimForm(forms.ModelForm):
                     obj.provider, obj.main_claimant.full_name())
         )
         insurance.widget.attrs['class'] = 'insurance_trigger'
-
-    def save(self, commit=True):
-        instance = super().save(commit)
-
-        LAST_INITIAL = object()
-        both = itertools.zip_longest(self.cleaned_data['claim_package'],
-                                     self.initial['claim_package'],
-                                     fillvalue=LAST_INITIAL)
-        for _file, initial_datum in both:
-            if _file is None or _file == initial_datum:
-                continue
-            elif _file is False:
-                models.ClaimAttachment.objects.get(
-                    attachment=initial_datum, claim=instance
-                ).delete()
-            elif initial_datum is LAST_INITIAL:
-                for _new_file in _file:
-                    models.ClaimAttachment.objects.create(
-                        attachment=_new_file, claim=instance
-                    )
-            else:
-                raise Exception("Unknown Exception during MultiFile save.")
-
-        return instance
 
 
 class ClaimCoverageInlineFormSet(utils_forms.MinimumNestedFormSet):
