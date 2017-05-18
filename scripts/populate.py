@@ -4,6 +4,8 @@ import time
 
 from django.utils import timezone
 
+# TODO: this is out of date, but do we really need it?
+
 
 def populate():
     clients()
