@@ -53,6 +53,11 @@ urlpatterns = [
     url(r'^raise_exception/$',
         utils_views.raise_exception,
         name='raise_exception'),
+    url(
+        r'^js_reporter/$',
+        utils_views.js_reporter,
+        name='js_reporter'
+    ),
 
     url(r'^session_security/', include(session_security_urls)),
     url(r'^jsreverse/$', django_js_reverse_views.urls_js, name='js_reverse'),

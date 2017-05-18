@@ -3,10 +3,27 @@
 {% load pipeline %}
 {% load crispy_forms_tags %}
 {% load template_utils %}
+{% load fallback_tags %}
 
 {% get_app_settings 'pipeline' as pipeline_settings %}
 
 {% block title %} - Claims{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        {% javascript 'claims' %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        {% pipeline_js_shim 'claims' 'jQuery' %}
+    {% endblock %}
+</script>
 
 <script type="text/javascript">
     {% block fallback_ready %}
@@ -45,6 +62,10 @@
                     $stats_msg.fadeOut();
                 }
                 else {
+                    $.post(
+                        "{% url 'js_reporter' %}",
+                        {'url': url, 'json': JSON.stringify(data)}
+                    );
                     window.alert(
                         'Something went wrong...'
                     );
@@ -70,6 +91,12 @@
                 if (!msg.length) {
                     msg = 'Something went wrong...';
                 }
+
+                $.post(
+                    "{% url 'js_reporter' %}",
+                    {'url': url, 'json': JSON.stringify(json)}
+                );
+
                 window.alert(msg);
             });
         });
