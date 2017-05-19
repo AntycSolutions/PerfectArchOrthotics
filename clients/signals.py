@@ -93,13 +93,24 @@ def shoeorder_pre_save(sender, instance, **kwargs):
         return
 
     try:
-        sender.objects.get(pk=instance.pk)
+        obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:  # created
-        update_credit(
-            -instance.shoe_attributes.shoe.credit_value,
-            instance.claimant.get_client()
-        )
-    # else:  # updated, do nothing
+        if not instance.returned_date:
+            update_credit(
+                -instance.shoe_attributes.shoe.credit_value,
+                instance.claimant.get_client()
+            )
+    else:  # updated
+        if instance.returned_date and not obj.returned_date:
+            update_credit(
+                instance.shoe_attributes.shoe.credit_value,
+                instance.claimant.get_client()
+            )
+        elif not instance.returned_date and obj.returned_date:
+            update_credit(
+                -instance.shoe_attributes.shoe.credit_value,
+                instance.claimant.get_client()
+            )
 
 
 def coverageorder_and_adjustmentorder_pre_save(sender, instance, **kwargs):
@@ -124,10 +135,11 @@ def coverageorder_and_adjustmentorder_pre_save(sender, instance, **kwargs):
 
 
 def shoeorder_post_delete(sender, instance, **kwargs):
-    update_credit(
-        instance.shoe_attributes.shoe.credit_value,
-        instance.claimant.get_client()
-    )
+    if not instance.returned_date:
+        update_credit(
+            instance.shoe_attributes.shoe.credit_value,
+            instance.claimant.get_client()
+        )
 
 
 def coverageorder_and_adjustmentorder_post_delete(sender, instance, **kwargs):
@@ -178,10 +190,11 @@ def shoe_pre_save(sender, instance, **kwargs):
         if obj.credit_value != instance.credit_value:
             for shoeattributes in instance.shoeattributes_set.all():
                 for shoeorder in shoeattributes.shoeorder_set.all():
-                    update_credit(
-                        -(instance.credit_value - obj.credit_value),
-                        shoeorder.claimant.get_client()
-                    )
+                    if not shoeorder.returned_date:
+                        update_credit(
+                            -(instance.credit_value - obj.credit_value),
+                            shoeorder.claimant.get_client()
+                        )
 
 
 def update_credit(amount, client):

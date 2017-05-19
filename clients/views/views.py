@@ -1,4 +1,3 @@
-# Python
 import os
 import io
 import collections
@@ -9,7 +8,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import http, forms
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.template.loader import get_template
 from django.contrib import messages
@@ -730,7 +728,8 @@ def clientView(request, client_id):
     )
 
     total = inventory_models.ShoeOrder.objects.filter(
-        claimant_id__in=person_pk_list
+        claimant_id__in=person_pk_list,
+        returned_date__isnull=True,
     ).aggregate(
         shoe_order_cost=Sum('shoe_attributes__shoe__cost')
     )

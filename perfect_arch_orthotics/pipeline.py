@@ -99,6 +99,17 @@ PIPELINE = {
                 'fallback_key': 'claim_all_css',
             },
         },
+        # inventory
+        'order_list': {
+            'source_filenames': (
+                'inventory/css/order_list.css',
+            ),
+            'output_filename': 'css/order_list_all.css',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'order_list_all_css',
+            },
+        },
         # reminders
         'reminders': {
             'source_filenames': (

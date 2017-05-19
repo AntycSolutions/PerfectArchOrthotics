@@ -1,5 +1,4 @@
 from django import forms
-from django.utils import safestring
 
 from clients import models as clients_models
 from inventory import models
@@ -20,6 +19,7 @@ class ShoeOrderForm(forms.ModelForm):
             ordered_date = cleaned_data['ordered_date']
             dispensed_date = cleaned_data['dispensed_date']
             customer_ordered_date = cleaned_data['customer_ordered_date']
+            returned_date = cleaned_data['returned_date']
 
             new_shoe_order = (
                 customer_ordered_date and
@@ -70,6 +70,11 @@ class ShoeOrderForm(forms.ModelForm):
                     )
                 )
 
+            if not dispensed_date and returned_date:
+                raise forms.ValidationError(
+                    'You cannot return a Shoe that has not been dispensed.'
+                )
+
     def __init__(self, *args, **kwargs):
         super(ShoeOrderForm, self).__init__(*args, **kwargs)
 
@@ -78,6 +83,18 @@ class ShoeOrderForm(forms.ModelForm):
             select={'lower_first_name': 'lower(first_name)'}
         ).order_by('lower_first_name')
         self.fields['claimant'].queryset = queryset
+
+        self.fields['description'].widget.attrs['rows'] = 5
+
+        self.fields['ordered_date'].help_text = 'Adds 1 to inventory'
+        self.fields['arrived_date'].help_text = 'Does not affect inventory'
+        self.fields['dispensed_date'].help_text = 'Subtracts 1 from inventory'
+        self.fields['customer_ordered_date'].help_text = (
+            'Does not affect inventory'
+        )
+        self.fields['returned_date'].help_text = (
+            "Adds 1 to inventory and refunds Client's Credit"
+        )
 
     class Meta:
         model = models.ShoeOrder

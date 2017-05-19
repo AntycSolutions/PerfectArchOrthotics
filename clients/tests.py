@@ -317,3 +317,107 @@ class CreditTestCase(test.TestCase):
         client = clients_models.Client.objects.get(first_name='Test Client')
 
         self.assertEqual(client.credit2, 0)
+
+    def test_shoeorder_create_returned_date(self):
+        client = clients_models.Client.objects.get(first_name='Test Client')
+        self.assertEqual(client.credit2, 0)
+
+        shoe = inventory_models.Shoe.objects.create(
+            name='Test Shoe',
+            credit_value=1,
+        )
+        shoeattributes = inventory_models.ShoeAttributes.objects.create(
+            shoe=shoe,
+        )
+        inventory_models.ShoeOrder.objects.create(
+            claimant=client,
+            shoe_attributes=shoeattributes,
+            returned_date=self.now,
+        )
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+    def test_shoe_change_credit_value_returned_date(self):
+        client = clients_models.Client.objects.get(first_name='Test Client')
+        self.assertEqual(client.credit2, 0)
+
+        shoe = inventory_models.Shoe.objects.create(
+            name='Test Shoe',
+            credit_value=1,
+        )
+        shoeattributes = inventory_models.ShoeAttributes.objects.create(
+            shoe=shoe,
+        )
+        inventory_models.ShoeOrder.objects.create(
+            claimant=client,
+            shoe_attributes=shoeattributes,
+            returned_date=self.now,
+        )
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+        shoe.credit_value = 2
+        shoe.save()
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+    def test_shoeorder_shoe_delete_returned_date(self):
+        client = clients_models.Client.objects.get(first_name='Test Client')
+        self.assertEqual(client.credit2, 0)
+
+        shoe = inventory_models.Shoe.objects.create(
+            name='Test Shoe',
+            credit_value=1,
+        )
+        shoeattributes = inventory_models.ShoeAttributes.objects.create(
+            shoe=shoe,
+        )
+        inventory_models.ShoeOrder.objects.create(
+            claimant=client,
+            shoe_attributes=shoeattributes,
+            returned_date=self.now,
+        )
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+        shoe.delete()
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+    def test_shoeorder_update_returned_date(self):
+        client = clients_models.Client.objects.get(first_name='Test Client')
+        self.assertEqual(client.credit2, 0)
+
+        shoe = inventory_models.Shoe.objects.create(
+            name='Test Shoe',
+            credit_value=1,
+        )
+        shoeattributes = inventory_models.ShoeAttributes.objects.create(
+            shoe=shoe,
+        )
+        shoeorder = inventory_models.ShoeOrder.objects.create(
+            claimant=client,
+            shoe_attributes=shoeattributes,
+        )
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, -1)
+
+        shoeorder.returned_date = self.now
+        shoeorder.save()
+
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, 0)
+
+        shoeorder.returned_date = None
+        shoeorder.save()
+
+        client = clients_models.Client.objects.get(first_name='Test Client')
+
+        self.assertEqual(client.credit2, -1)

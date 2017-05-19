@@ -91,6 +91,9 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
             ordered_date__isnull=True  # without
         ).count()
 
+    def returned(self):
+        return self.shoeorder_set.filter(returned_date__isnull=False).count()
+
     class Meta:
         unique_together = (('shoe', 'size'),)
         verbose_name_plural = "Shoe attributes"
@@ -109,9 +112,11 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         #     {"dispensed": dispensed_field}
         # )
 
+        returned = self.returned()
+
         quantity = self.Field(
             fields['quantity'].field,
-            self.quantity - dispensed
+            self.quantity - dispensed + returned
         )
         fields.update(
             {"quantity": quantity}
@@ -248,11 +253,28 @@ class Order(models.Model, model_utils.FieldList):
                     value = ""
 
                 shoe_field = self.Field(
-                    self.PseudoForeignKey("Customer Ordered Date"), value
+                    self.PseudoField("Customer Ordered Date"), value
                 )
 
                 reordered_fields.update(
                     {"customer_ordered_date": shoe_field}
+                )
+            elif k == 'dispensed_date':
+                if self.order_type == self.SHOE:
+                    try:
+                        order = self.shoeorder
+                        value = order.returned_date
+                    except ShoeOrder.DoesNotExist:
+                        value = ""
+                else:
+                    value = ""
+
+                shoe_field = self.Field(
+                    self.PseudoField("Returned Date"), value
+                )
+
+                reordered_fields.update(
+                    {"returned_date": shoe_field}
                 )
 
         return reordered_fields
@@ -265,6 +287,8 @@ class Order(models.Model, model_utils.FieldList):
 
 class ShoeOrder(Order):
     customer_ordered_date = models.DateField(blank=True, null=True)
+
+    returned_date = models.DateField(blank=True, null=True)
 
     shoe_attributes = models.ForeignKey(
         ShoeAttributes, verbose_name="Shoe")
@@ -365,16 +389,16 @@ class AdjustmentOrder(Order):
 
 
 """
-Reports:
-1)how much shoes that is in inventory
-- separate by Brands, style, sku
-2)how much money is invested in inventory
--separate by brands, style, sku
-3)Best sellers
-4)best sizes sellers
-5)size curve
-6) low inventory notifications
-- sent by notification can be sent by email
+    Reports:
+    1)how much shoes that is in inventory
+    - separate by Brands, style, sku
+    2)how much money is invested in inventory
+    -separate by brands, style, sku
+    3)Best sellers
+    4)best sizes sellers
+    5)size curve
+    6) low inventory notifications
+    - sent by notification can be sent by email
 """
 
 auditlog.register(Shoe)

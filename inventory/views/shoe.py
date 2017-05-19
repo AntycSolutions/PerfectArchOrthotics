@@ -106,6 +106,8 @@ class CreateShoeView(CreateView):
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
         context['cancel_url'] = reverse('shoe_list')
 
+        context['form'].fields['description'].widget.attrs['rows'] = 5
+
         return context
 
     def get_success_url(self):
@@ -363,6 +365,8 @@ class UpdateShoeView(UpdateView):
         context['inline_model_name_plural'] = \
             ShoeAttributes._meta.verbose_name_plural
         context['cancel_url'] = self.object.get_absolute_url()
+
+        context['form'].fields['description'].widget.attrs['rows'] = 5
 
         return context
 

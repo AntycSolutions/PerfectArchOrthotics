@@ -50,7 +50,11 @@ def inventory_csv(request):
     for shoe in shoes:
         shoe_attributes = []
         for shoe_attribute in shoe.shoeattributes_set.all():
-            quantity = shoe_attribute.quantity - shoe_attribute.dispensed()
+            quantity = (
+                shoe_attribute.quantity -
+                shoe_attribute.dispensed() +
+                shoe_attribute.returned()
+            )
             shoe_attributes += [shoe_attribute.size, quantity]
 
         writer.writerow([

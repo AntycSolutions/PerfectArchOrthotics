@@ -23,8 +23,8 @@ class ListOrderView(ListView):
     def get_paginate_by(self, queryset):
         if self.request.session.get('rows_per_page', False):
             self.paginate_by = self.request.session['rows_per_page']
-        if ('rows_per_page' in self.request.GET
-                and self.request.GET['rows_per_page'].strip()):
+        if ('rows_per_page' in self.request.GET and
+                self.request.GET['rows_per_page'].strip()):
             self.paginate_by = self.request.GET['rows_per_page']
             self.request.session['rows_per_page'] = self.paginate_by
 
@@ -61,6 +61,7 @@ class ListOrderView(ListView):
             'rows_per_page', self.paginate_by)
         context['search'] = True
         context['datesearch'] = True
+        context['css_url'] = 'order_list'
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
@@ -78,9 +79,9 @@ class ListOrderView(ListView):
         Select = collections.namedtuple('Select', ['label', 'options'])
         order_types = []
         for order_type in models.Order.ORDER_TYPES:
-            if ("order_type" in self.request.GET
-                    and self.request.GET["order_type"].strip()
-                    and self.request.GET["order_type"] == order_type[0]):
+            if ("order_type" in self.request.GET and
+                    self.request.GET["order_type"].strip() and
+                    self.request.GET["order_type"] == order_type[0]):
                 order_types.append(Option(order_type[0], order_type[1], True))
             else:
                 order_types.append(Option(order_type[0], order_type[1], False))
