@@ -280,20 +280,30 @@ class Coverage(models.Model):
     COMPRESSION_STOCKINGS = "cs"
     ORTHOPEDIC_SHOES = "os"
     BACK_SUPPORT = "bs"
-    COVERAGE_TYPES = ((ORTHOTICS, "Orthotics"),
-                      (COMPRESSION_STOCKINGS, "Compression Stockings"),
-                      (ORTHOPEDIC_SHOES, "Orthopedic Shoes"),
-                      (BACK_SUPPORT, "Back Support"))
+    KNEE_BRACE = 'kb'
+    WRIST_BRACE = 'wb'
+    ANKLE_BRACE = 'ab'
+    COVERAGE_TYPES = (
+        (ORTHOTICS, "Orthotics"),
+        (COMPRESSION_STOCKINGS, "Compression Stockings"),
+        (ORTHOPEDIC_SHOES, "Orthopedic Shoes"),
+        (BACK_SUPPORT, "Back Support"),
+        (KNEE_BRACE, "Knee Brace"),
+        (WRIST_BRACE, "Wrist Brace"),
+        (ANKLE_BRACE, "Ankle Brace"),
+    )
     BENEFIT_YEAR = 1
     CALENDAR_YEAR = 2
     TWELVE_ROLLING_MONTHS = 12
     TWENTY_FOUR_ROLLING_MONTHS = 24
     THIRTY_SIX_ROLLING_MONTHS = 36
-    PERIODS = ((TWELVE_ROLLING_MONTHS, "12 Rolling Months"),
-               (TWENTY_FOUR_ROLLING_MONTHS, "24 Rolling Months"),
-               (THIRTY_SIX_ROLLING_MONTHS, "36 Rolling Months"),
-               (BENEFIT_YEAR, "Benefit Year"),
-               (CALENDAR_YEAR, "Calendar Year"))
+    PERIODS = (
+        (TWELVE_ROLLING_MONTHS, "12 Rolling Months"),
+        (TWENTY_FOUR_ROLLING_MONTHS, "24 Rolling Months"),
+        (THIRTY_SIX_ROLLING_MONTHS, "36 Rolling Months"),
+        (BENEFIT_YEAR, "Benefit Year"),
+        (CALENDAR_YEAR, "Calendar Year"),
+    )
 
     insurance = models.ForeignKey(
         Insurance, verbose_name="Insurance")
