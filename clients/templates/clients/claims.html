@@ -66,19 +66,23 @@
                         "{% url 'js_reporter' %}",
                         {'url': url, 'json': JSON.stringify(data)}
                     );
+
                     window.alert(
                         'Something went wrong...'
                     );
                 }
             }).fail(function(xhr) {
+                var response = xhr.responseText;
                 var json = {};
                 try {
-                    json = JSON.parse(xhr.responseText);
+                    json = JSON.parse(response);
+                    response = '';
                 }
                 catch (e) {
                     // pass
                     console.log('Could not parse json');
                 }
+
                 var msg = '';
                 if ('error' in json) {
                     msg = json['error'];
@@ -88,13 +92,18 @@
                         msg += json[key] + '\n';
                     }
                 }
+
                 if (!msg.length) {
                     msg = 'Something went wrong...';
                 }
 
                 $.post(
                     "{% url 'js_reporter' %}",
-                    {'url': url, 'json': JSON.stringify(json)}
+                    {
+                        'url': url,
+                        'json': JSON.stringify(json),
+                        'response': response,
+                    }
                 );
 
                 window.alert(msg);
