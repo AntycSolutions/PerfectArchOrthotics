@@ -497,6 +497,14 @@ class CreateClaimWizard(
 
             return shortcuts.redirect(self.get_step_url(self.steps.first))
 
+    def post(self, *args, **kwargs):
+        try:
+            return super().post(*args, **kwargs)
+        except self.SkippedStepException:
+            self.storage.current_step = self.steps.first
+
+            return shortcuts.redirect(self.get_step_url(self.steps.first))
+
     def done(self, form_list, form_dict, **kwargs):
         claim_form = form_dict[self.INFO]
         claim_coverage_claim_item_form = form_dict[self.COVERAGES]
