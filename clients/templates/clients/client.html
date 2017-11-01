@@ -62,6 +62,32 @@
         else {
             throw new Error('Could not load reminders');
         }
+
+        {% for note in client.note_set.all %}
+            $('#{{ note.id }}_note_delete').on('click', function() {
+                var c = window.confirm(
+                    'Delete "' + '{{ note.notes|escapejs }}"?'
+                );
+                if (c) {
+                    $(
+                        '<form method="POST">' +
+                        '<input name="csrfmiddlewaretoken" value="' +
+                        $('input[name="csrfmiddlewaretoken"]').val() +
+                        '">' +
+                        '<input name="delete_note_id" value="{{ note.id }}">' +
+                        '</form>'
+                    ).appendTo($(document.body)).submit();
+                }
+            });
+        {% endfor %}
+        $('#note-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var id = button.data('id');
+            var note = button.data('note');
+            var modal = $(this);
+            modal.find('#id_notes').val(note);
+            modal.find('#note_id').val(id);
+        });
     {% endblock %}
 </script>
 
@@ -304,6 +330,43 @@
         </div>
     </div>
 
+    <div id="note-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                        >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Update Note</h4>
+                </div>
+                <form method="POST">
+                    <div class="modal-body">
+                        {% crispy note_form %}
+                        <input type="hidden" name="note_id" id="note_id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit"
+                            name="note_submit"
+                            class="btn btn-primary pull-left"
+                            >
+                            Update
+                        </button>
+                        <button type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal"
+                            >
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
@@ -338,13 +401,22 @@
                                                         <p>
                                                             {{ note.created }}
                                                         </p>
-                                                        <a class="btn btn-default crud" href="">
+                                                        <button type="button"
+                                                            class="btn btn-default crud"
+                                                            data-toggle="modal"
+                                                            data-target="#note-modal"
+                                                            data-id="{{ note.id }}"
+                                                            data-note="{{ note.notes }}"
+                                                            >
                                                             Update
-                                                        </a>
+                                                        </button>
                                                         <br />
-                                                        <a class="btn btn-danger crud" href="">
+                                                        <button type="button"
+                                                            class="btn btn-danger crud"
+                                                            id="{{ note.id }}_note_delete"
+                                                            >
                                                             Delete
-                                                        </a>
+                                                        </button>
                                                     </td>
                                                     <td>
                                                         {{ note.notes|nbsp_double|linebreaksbr }}

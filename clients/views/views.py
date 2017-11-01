@@ -907,11 +907,22 @@ def clientView(request, client_id):
                 referral_form.save_m2m()
 
         if 'note_submit' in request.POST:
-            note_form = clients_forms.NoteForm(request.POST)
+            if 'note_id' in request.POST:
+                instance = clients_models.Note.objects.get(
+                    id=request.POST['note_id']
+                )
+            else:
+                instance = None
+            note_form = clients_forms.NoteForm(request.POST, instance=instance)
             if note_form.is_valid():
                 note = note_form.save(commit=False)
                 note.client = client
                 note.save()
+
+        if 'delete_note_id' in request.POST:
+            clients_models.Note.objects.get(
+                id=request.POST['delete_note_id']
+            ).delete()
 
         return http.HttpResponseRedirect(
             urlresolvers.reverse('client', args=[client_id])
