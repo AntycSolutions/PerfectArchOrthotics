@@ -11,7 +11,7 @@ from ajax_select import make_ajax_field
 class ShoeOrderForm(forms.ModelForm):
     shoe_attributes = make_ajax_field(
         models.ShoeOrder, 'shoe_attributes', 'shoe',
-        show_help_text=True
+        show_help_text=True, plugin_options={'delay': 500, 'minLength': 2}
     )
 
     def clean(self):
@@ -79,6 +79,13 @@ class ShoeOrderForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ShoeOrderForm, self).__init__(*args, **kwargs)
+
+        self.fields['shoe_attributes'].help_text = (
+            'Shoe must have Shoe Attributes to be searched'
+        )
+        self.fields['shoe_attributes'].widget.help_text += (
+            ' Type at least 2 letters'
+        )
 
         queryset = self.fields['claimant'].queryset
         queryset = queryset.extra(

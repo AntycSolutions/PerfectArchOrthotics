@@ -1,3 +1,4 @@
+from django.db import models as db_models
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
@@ -20,6 +21,16 @@ class ShoeLookup(LookupChannel):
         query = search_get_query(q, fields)
         queryset = models.ShoeAttributes.objects.select_related(
             'shoe'
+        ).prefetch_related(
+            db_models.Prefetch(
+                'shoeorder_set',
+                # dispensed date with ordered date does not count as it implies
+                # +1 for ordered and -1 for dispensed
+                queryset=models.ShoeOrder.objects.filter(
+                    dispensed_date__isnull=False,  # with
+                    ordered_date__isnull=True  # without
+                )
+            )
         ).filter(query)
 
         return queryset
@@ -35,8 +46,11 @@ class ShoeLookup(LookupChannel):
             result += "SKU: %s " % (obj.shoe.sku)
         if obj.shoe.colour:
             result += "Colour: %s " % (obj.shoe.colour)
-        result += "Size: %s Quantity: %s" % (obj.size,
-                                             obj.quantity - obj.dispensed())
+
+        dispensed = len(obj.shoeorder_set.all())  # uses Prefetch above
+        result += "Size: %s Quantity: %s" % (
+            obj.size, obj.quantity - dispensed
+        )
 
         result = escape(force_text(result))
 
