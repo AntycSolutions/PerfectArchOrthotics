@@ -1,3 +1,5 @@
+import collections
+
 from django import forms
 
 from clients import models as clients_models
@@ -96,6 +98,29 @@ class ShoeOrderForm(forms.ModelForm):
             "Adds 1 to inventory and refunds Client's Credit"
         )
 
+    def order_fields(self, field_order):
+        if not field_order:
+            field_order = self.fields
+
+        fields = collections.OrderedDict()
+        for key in field_order:
+            if key == 'customer_ordered_date':
+                continue
+
+            try:
+                fields[key] = self.fields.get(key)
+            except KeyError:  # ignore unknown fields
+                pass
+
+            if key == 'description':
+                fields['customer_ordered_date'] = self.fields.get(
+                    'customer_ordered_date'
+                )
+
+        fields.update(self.fields)  # add remaining fields in original order
+
+        self.fields = fields
+
     class Meta:
         model = models.ShoeOrder
         exclude = ('order_type',)
@@ -127,6 +152,29 @@ class CoverageOrderForm(forms.ModelForm):
             choices.remove((models.Order.ADJUSTMENT, "Adjustment"))
             choices.remove((clients_models.Coverage.ORTHOTICS, 'Orthotics'))
         order_type.choices = choices
+
+    def order_fields(self, field_order):
+        if not field_order:
+            field_order = self.fields
+
+        fields = collections.OrderedDict()
+        for key in field_order:
+            if key == 'customer_ordered_date':
+                continue
+
+            try:
+                fields[key] = self.fields.get(key)
+            except KeyError:  # ignore unknown fields
+                pass
+
+            if key == 'description':
+                fields['customer_ordered_date'] = self.fields.get(
+                    'customer_ordered_date'
+                )
+
+        fields.update(self.fields)  # add remaining fields in original order
+
+        self.fields = fields
 
     class Meta:
         model = models.CoverageOrder

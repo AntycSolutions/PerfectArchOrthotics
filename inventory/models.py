@@ -249,15 +249,21 @@ class Order(models.Model, model_utils.FieldList):
                         value = order.customer_ordered_date
                     except ShoeOrder.DoesNotExist:
                         value = ""
+                elif self.order_type in dict(self.COVERAGE_TYPES):
+                    try:
+                        order = self.coverageorder
+                        value = order.customer_ordered_date
+                    except CoverageOrder.DoesNotExist:
+                        value = ""
                 else:
                     value = ""
 
-                shoe_field = self.Field(
+                field = self.Field(
                     self.PseudoField("Customer Ordered Date"), value
                 )
 
                 reordered_fields.update(
-                    {"customer_ordered_date": shoe_field}
+                    {"customer_ordered_date": field}
                 )
             elif k == 'dispensed_date':
                 if self.order_type == self.SHOE:
@@ -321,6 +327,8 @@ class ShoeOrder(Order):
 
 
 class CoverageOrder(Order):
+    customer_ordered_date = models.DateField(blank=True, null=True)
+
     claim = models.ForeignKey(clients_models.Claim, blank=True, null=True)
 
     quantity = models.IntegerField(
@@ -342,7 +350,6 @@ class CoverageOrder(Order):
 
         fields.pop('order_ptr')
         fields.pop('shoe')
-        fields.pop('customer_ordered_date')
 
         if self.order_type != clients_models.Coverage.ORTHOTICS:
             fields.pop('claim')
