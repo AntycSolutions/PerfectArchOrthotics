@@ -269,10 +269,34 @@ def claimView(request, claim_id):
         ).prefetch_related(
             'claimcoverage_set__claimitem_set__item__itemhistory_set',
             'claimcoverage_set__coverage',
-            'coverageorder_set'
+            'coverageorder_set',
+            'insurance__coverage_set'
         ).get(id=claim_id)
     except Claim.DoesNotExist:
         raise http.Http404("No Claim matches that ID")
+
+    invalid_coverages = False
+    for coverage in claim.insurance.coverage_set.all():
+        is_BENEFIT_YEAR = (
+            coverage.period == clients_models.Coverage.BENEFIT_YEAR
+        )
+        if is_BENEFIT_YEAR and coverage.period_date is None:
+            invalid_coverages = True
+            messages.add_message(
+                request,
+                messages.ERROR,
+                safestring.mark_safe(
+                    "One of {}'s Coverages is set to Benefit Year "
+                    "but does not have a Period Date set. Please "
+                    "<a href='{}'>Click here to edit it</a> ".format(
+                        coverage.claimant,
+                        urlresolvers.reverse(
+                            'insurance_update',
+                            kwargs={'insurance_id': coverage.insurance.pk}
+                        )
+                    )
+                )
+            )
 
     context = {
         'claim': claim,
@@ -281,6 +305,7 @@ def claimView(request, claim_id):
         'claim_item_class': ClaimItem,
         'item_class': Item,
         'now': timezone.now(),
+        'invalid_coverages': invalid_coverages,
     }
 
     return render(request, 'clients/claim.html', context)
