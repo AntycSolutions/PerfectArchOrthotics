@@ -14,6 +14,31 @@ def index(request):
 
 
 def inventory_csv(request):
+    '''
+        Restore backup from May 1, <year> to snapshot.perfectarch.ca
+
+        Comment out auditlog tracking
+
+        Load this view
+
+        To get the total in-stock and total cost, run the following in shell:
+
+        from inventory import models
+        shoes=models.Shoe.objects.prefetch_related('shoeattributes_set')
+        cost = 0
+        quantity_total = 0
+        for shoe in shoes:
+            quantity = 0
+            for shoe_attribute in shoe.shoeattributes_set.all():
+                quantity += (
+                    shoe_attribute.quantity -
+                    shoe_attribute.dispensed() +
+                    shoe_attribute.returned()
+                )
+            quantity_total += quantity
+            cost += quantity * shoe.cost
+    '''
+
     # Create the HttpResponse object with the appropriate CSV header.
     response = http.HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="inventory.csv"'
