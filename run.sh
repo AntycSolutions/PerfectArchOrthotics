@@ -1,1 +1,2 @@
-python3 manage.py runserver 0.0.0.0:8080
+source activate.sh
+python manage.py runserver 0.0.0.0:8080
