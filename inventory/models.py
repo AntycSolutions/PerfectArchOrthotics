@@ -333,8 +333,9 @@ class CoverageOrder(Order):
 
     quantity = models.IntegerField(
         "Quantity", default=0)
-    credit_value = models.IntegerField(
-        "Credit Value", default=0)
+    credit_value = models.DecimalField(
+        "Credit Value", max_digits=3, decimal_places=2, default=Decimal(0.00)
+    )
     vendor = models.CharField(
         "Vendor", max_length=32)
 
