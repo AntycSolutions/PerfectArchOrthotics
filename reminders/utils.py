@@ -108,11 +108,14 @@ def _find_arrived_orders(persons=None):
     now_date = timezone.localtime(now).date()
     one_week_ago = now - one_week
 
+    coverage_types_list = dict(
+        inventory_models.CoverageOrder.COVERAGE_TYPES
+    ).keys()
     orders = inventory_models.CoverageOrder.objects.prefetch_related(
         'orderarrivedreminder_set',
     ).filter(
         claimants_filter,
-        order_type=clients_models.Coverage.ORTHOTICS,
+        order_type__in=coverage_types_list,
         dispensed_date__isnull=True,
         arrived_date__lte=one_week_ago
     )
