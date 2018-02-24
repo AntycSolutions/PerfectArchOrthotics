@@ -91,6 +91,10 @@
         {% if request.user.is_authenticated and settings.ENV != 'devl' %}
             {% javascript 'base' %}
         {% endif %}
+
+        {# avoid collision with jQuery.ui.datepicker #}
+        'jQuery.fn.datepicker2': "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js",
+        'bootstrap-datepicker-css': "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.min.css",
     {% endblock %}
 </script>
 
@@ -99,6 +103,10 @@
         {{ block.super }}
 
         {% pipeline_css_shim 'base' 'bootstrap_css' %}
+
+        {# avoid collision with jQuery.ui.datepicker and override it #}
+        'jQuery.fn.datepicker2': ['jQuery.ui'],
+        'bootstrap-datepicker-css': ['bootstrap_css'],
     {% endblock %}
 </script>
 

@@ -151,6 +151,7 @@ UTILS = {
     },
     'GENERICS': {
         'base_template': 'base.html',
+        'date_format': 'mm/dd/yyyy',
     }
 }
 
