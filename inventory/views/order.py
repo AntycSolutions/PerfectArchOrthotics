@@ -6,6 +6,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from utils import views_utils
 from simple_search import search
@@ -61,7 +62,7 @@ class ListOrderView(ListView):
             'rows_per_page', self.paginate_by)
         context['search'] = True
         context['datesearch'] = True
-        context['css_url'] = 'order_list'
+        context['css_url'] = staticfiles.static('inventory/css/order_list.css')
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
