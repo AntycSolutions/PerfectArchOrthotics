@@ -26,7 +26,10 @@ class ClaimForm(forms.ModelForm):
     claim_package = utils_fields.MultiFileField(
         label="Claim Package",
         required=False,
-        max_file_size=7.0 * 1024 * 1024  # mb*kb*b,
+        max_file_size=7.0 * 1024 * 1024,  # mb*kb*b
+        help_text=(
+            'Hold Ctrl (on Windows) or Cmd (on a Mac) to select multiple files'
+        )
     )
 
     class Meta:
