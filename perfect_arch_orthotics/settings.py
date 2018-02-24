@@ -49,6 +49,9 @@ DJANGO_CONTEXT_PROCESSORS = [
     'django.template.context_processors.request',
     'django.contrib.messages.context_processors.messages',
 ]
+THIRD_PARTY_CONTEXT_PROCESSORS = [
+    'utils.context_processors.site'
+]
 LOCAL_CONTEXT_PROCESSORS = [
     'perfect_arch_orthotics.context_processors.site',
 ]
@@ -60,8 +63,11 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors':
-                DJANGO_CONTEXT_PROCESSORS + LOCAL_CONTEXT_PROCESSORS,
+            'context_processors': (
+                DJANGO_CONTEXT_PROCESSORS +
+                LOCAL_CONTEXT_PROCESSORS +
+                THIRD_PARTY_CONTEXT_PROCESSORS
+            ),
         },
     },
 ]
@@ -132,11 +138,20 @@ AJAX_LOOKUP_CHANNELS = {
 
 # Django Utils
 UTILS = {
-    'fallback': True,
-    'bootstrap3': True,
-    'font_awesome': True,
-    'jquery_ui': True,
-    'pipeline': True,
+    'MODELS': {
+        'db_per_page_store': True,
+        'session_per_page_store': False,
+    },
+    'BASE': {
+        'fallback': True,
+        'bootstrap3': True,
+        'font_awesome': True,
+        'jquery_ui': True,
+        'pipeline': True,
+    },
+    'GENERICS': {
+        'base_template': 'base.html',
+    }
 }
 
 # Django Debug Toolbar
