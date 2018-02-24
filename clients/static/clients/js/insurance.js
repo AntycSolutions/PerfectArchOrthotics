@@ -7,11 +7,11 @@
 
         // console.log(period_value, form, form_count, period_date);
         if (period_value == '1') {
-            // parent is col parent is form-group
-            period_date.parent().parent().show();
+            // parent is input-group parent is col parent is form-group
+            period_date.parent().parent().parent().show();
         }
         else {
-            period_date.parent().parent().hide();
+            period_date.parent().parent().parent().hide();
         }
     }
 
@@ -23,6 +23,6 @@
         period.change(function() {
             display_period_date($(this).val(), form, form_count);
         });
-    }
+    };
 
 }(window.generic_template = window.generic_template || {}));
