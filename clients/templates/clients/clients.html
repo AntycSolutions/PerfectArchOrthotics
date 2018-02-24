@@ -34,6 +34,7 @@
                         <th>Gender</th>
                         <th>Credit</th>
                         <th>Employer</th>
+                        <th>Created</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,6 +51,7 @@
                     <td>{{ client.get_gender_display }}</td>
                     <td>{{ client.credit2 }}</td>
                     <td>{{client.employer}}</td>
+                    <td>{{ client.created }}</td>
                     </tr>
             {% endfor %}
                 </tbody>
