@@ -321,16 +321,17 @@ def clientSearchView(request):
         query_string = request.GET['q']
         context['q'] = query_string
 
-        client_fields = [
-            'first_name', 'last_name', 'address', 'phone_number',
-            'employer', 'health_care_number'
+        person_fields = [
+            'first_name', 'last_name', 'health_care_number', 'employer'
+        ]
+
+        client_fields = person_fields + [
+            'address', 'phone_number', 'cell_number', 'email'
         ]
         client_query = get_query(query_string, client_fields)
         found_clients = Client.objects.filter(client_query)
 
-        dependent_fields = [
-            'first_name', 'last_name', 'employer', 'health_care_number'
-        ]
+        dependent_fields = person_fields
         dependent_query = get_query(query_string, dependent_fields)
         found_dependents = Dependent.objects.filter(dependent_query)
 
