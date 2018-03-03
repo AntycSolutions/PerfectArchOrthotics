@@ -198,43 +198,7 @@
             {% endif %}
             <div class="panel-body">
                 {% if claims_without_orders_reminders %}
-                {% comment %}
-                    <!-- Pagination stuff -->
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if claims_without_orders_reminders.has_previous %}
-                                <a href="?claims_without_orders_reminders_page={{ claims_without_orders_reminders.previous_page_number }}"
-                                        class="btn btn-default">
-                                    Previous
-                                </a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ claims_without_orders_reminders.number }} of {{ claims_without_orders_reminders.paginator.num_pages }}.
-                            </span>
-
-                            {% if claims_without_orders_reminders.has_next %}
-                                <a href="?claims_without_orders_reminders_page={{ claims_without_orders_reminders.next_page_number }}"
-                                        class="btn btn-default inline">
-                                    Next
-                                </a>
-                            {% endif %}
-                        </span>
-                    </div>
-                    <form method="GET"
-                            class="form-inline"
-                            style="display: inline-block;">
-                        <div class="form-group">
-                            Rows per Page:
-                            <input type="number"
-                                    id="claims_without_orders_reminders_rows_per_page"
-                                    name="claims_without_orders_reminders_rows_per_page"
-                                    class="form-control"
-                                    value="{{ claims_without_orders_reminders.rows_per_page }}" />
-                        </div>
-                        <button type="submit" class="btn">Paginate</button>
-                    </form>
-                {% endcomment %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=claims_without_orders_reminders rows_per_page=claims_without_orders_reminders_rows_per_page page_var='claims_without_orders_reminders_page' rows_per_page_var='claims_without_orders_reminders_rows_per_page' %}
                 {% else %}
                     There are no Claims without Orders.
                 {% endif %}

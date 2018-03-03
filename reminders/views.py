@@ -101,6 +101,7 @@ class Reminders(generic.TemplateView):
             context=context
         )
 
+        # Unpaid Claims
         utils._find_unpaid_claims()
         unpaid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.select_related(
@@ -150,6 +151,7 @@ class Reminders(generic.TemplateView):
             context=context
         )
 
+        # Arrived Orders
         utils._find_arrived_orders()
         arrived_orders_reminders = (
             reminders_models.OrderArrivedReminder.objects.select_related(
@@ -178,6 +180,7 @@ class Reminders(generic.TemplateView):
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 
+        # Claims without Orders
         utils._find_claims_without_orders()
         claims_without_orders_reminders = (
             reminders_models.ClaimOrderReminder.objects.select_related(
@@ -189,6 +192,20 @@ class Reminders(generic.TemplateView):
                 insurance_filter,
                 claims_reminder_search_filter,
             )
+        )
+        claims_without_orders_reminders_rows_per_page = (
+            views_utils._get_paginate_by(
+                self.request, 'claims_without_orders_reminders_rows_per_page'
+            )
+        )
+        context['claims_without_orders_reminders_rows_per_page'] = (
+            claims_without_orders_reminders_rows_per_page
+        )
+        claims_without_orders_reminders = views_utils._paginate(
+            self.request,
+            claims_without_orders_reminders,
+            'claims_without_orders_reminders_page',
+            claims_without_orders_reminders_rows_per_page
         )
         context['claims_without_orders_reminders'] = (
             claims_without_orders_reminders

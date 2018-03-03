@@ -17,12 +17,14 @@ class Reminder(models.Model, model_utils.FieldList):
     EMAIL = 'e'
     CALL = 'c'
     COMPLETED = 'o'
+    DELETED = 'd'
     FOLLOW_UP_TYPES = (
         (REQUIRED, 'Required'),
         (TEXT, 'Text'),
         (EMAIL, 'Email'),
         (CALL, 'Call'),
         (COMPLETED, 'Completed'),
+        (DELETED, 'Deleted'),
     )
     follow_up = multiselectfield.MultiSelectField(
         choices=FOLLOW_UP_TYPES, default=REQUIRED

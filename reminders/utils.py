@@ -53,12 +53,15 @@ def _find_unpaid_claims(persons=None):
 
     REQUIRED = reminders_models.Reminder.REQUIRED
     COMPLETED = reminders_models.Reminder.COMPLETED
+    DELETED = reminders_models.Reminder.DELETED
 
     # update old unpaid claims reminders
     reminders_models.UnpaidClaimReminder.objects.filter(
         claims_filter,
         claim__claimcoverage__actual_paid_date__isnull=True,
         created__lte=timezone.localtime(three_weeks_ago).date()
+    ).exclude(
+        follow_up__contains=DELETED
     ).update(
         follow_up=REQUIRED,
         result='',
@@ -135,12 +138,15 @@ def _find_arrived_orders(persons=None):
 
     REQUIRED = reminders_models.Reminder.REQUIRED
     COMPLETED = reminders_models.Reminder.COMPLETED
+    DELETED = reminders_models.Reminder.DELETED
 
     # update old arrived order reminders
     reminders_models.OrderArrivedReminder.objects.filter(
         orders_filter,
         order__dispensed_date__isnull=True,
         created__lte=timezone.localtime(one_week_ago).date()
+    ).exclude(
+        follow_up__contains=DELETED
     ).update(
         follow_up=REQUIRED,
         result='',
