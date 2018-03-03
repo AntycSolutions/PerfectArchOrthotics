@@ -299,6 +299,13 @@ class ShoeOrder(Order):
     shoe_attributes = models.ForeignKey(
         ShoeAttributes, verbose_name="Shoe")
 
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.claimant_id,
+        }
+
     def get_all_fields(self):
         fields = super(ShoeOrder, self).get_all_fields()
 
@@ -346,6 +353,13 @@ class CoverageOrder(Order):
         timezone.datetime(2016, 11, 24)
     )
 
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.claimant_id,
+        }
+
     def get_all_fields(self):
         fields = super(CoverageOrder, self).get_all_fields()
 
@@ -371,6 +385,13 @@ class CoverageOrder(Order):
 class AdjustmentOrder(Order):
     credit_value = models.DecimalField(
         "Credit Value", max_digits=3, decimal_places=2, default=Decimal(0.00))
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.claimant_id,
+        }
 
     def get_all_fields(self):
         fields = super(AdjustmentOrder, self).get_all_fields()

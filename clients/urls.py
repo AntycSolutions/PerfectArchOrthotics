@@ -2,6 +2,8 @@ from django.conf import urls
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 
+from rest_framework import routers
+
 from clients.views import views
 from clients.views.insurance import UpdateInsuranceView, DeleteInsuranceView, \
     CreateInsuranceView
@@ -15,6 +17,7 @@ from clients.views.claim import DeleteClaimView, \
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
 from clients.views import statistics, dependent, receipt, claim, biomechanical
+from . import api
 
 
 report_patterns = [
@@ -219,6 +222,11 @@ pdf_patterns = [
         name='receipt'),
 ]
 
+router = routers.DefaultRouter()
+router.register(
+    r'clients', api.ClientModelViewSet, 'client'
+)
+
 # TODO: make this not gross
 urlpatterns = [
     url(r'^$',
@@ -288,4 +296,5 @@ urlpatterns = [
         login_required(statistics.InventoryOrdersStatistics.as_view()),
         name='inventory_orders_statistics'),
     url(r'^reports/', include(report_patterns)),
+    urls.url(r'^api/', urls.include(router.urls)),
 ]

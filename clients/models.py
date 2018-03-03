@@ -195,6 +195,13 @@ class Note(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.client_id,
+        }
+
     def __str__(self):
         return '{} - {} - Client ID: {}'.format(
             self.notes, self.created, self.client_id
@@ -210,6 +217,13 @@ class Dependent(Person):
     primary = models.ForeignKey(Client)
     relationship = models.CharField(
         "Relationship", max_length=4, choices=RELATIONSHIPS)
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.primary_id,
+        }
 
     def get_absolute_url(self):
         url = '{}?toggle=dependents#dependent_{}'.format(
@@ -254,6 +268,13 @@ class Insurance(models.Model):
 
     # ForeignKey
     # Coverage
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.main_claimant_id,
+        }
 
     def get_absolute_url(self):
         url = '{}?toggle=insurances#insurance_{}'.format(
@@ -331,6 +352,13 @@ class Coverage(models.Model):
     # Claim
     # ForeignKey
     # ClaimCoverage
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.claimant_id,
+        }
 
     def _get_start_end_period_dates(self, submitted_datetime=None):
         if not submitted_datetime:
@@ -555,6 +583,13 @@ class Claim(models.Model, model_utils.FieldList):
 
     # ForeignKey
     # Invoice, InsuranceLetter, ProofOfManufacturing, ClaimCoverage
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.patient_id,
+        }
 
     def has_orthotics(self):
         # check if prefetch_related has been called to avoid extra db queries
@@ -1541,6 +1576,13 @@ class BiomechanicalGait(models.Model, model_utils.FieldList):
 
     signature_date = models.DateField(blank=True, null=True)
 
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.patient_id,
+        }
+
     def get_absolute_url(self):
         url = '{}?toggle=biomechanical_gaits#biomechanical_gait_{}'.format(
             urlresolvers.reverse(
@@ -1815,6 +1857,13 @@ class Referral(models.Model):
         decimal_places=2,
         default=decimal.Decimal(0.00)
     )
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.client_id,
+        }
 
     def __str__(self):
         return "Credit Value: {} - Client ID: {}".format(
