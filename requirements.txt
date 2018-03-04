@@ -17,6 +17,6 @@ piexif==1.0.3
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
 git+https://github.com/AntycSolutions/xhtml2pdf
 html5lib==1.0b8  # xhtml2pdf requirement is out of date
-git+https://github.com/AntycSolutions/utils@v0.8.33
+git+https://github.com/AntycSolutions/utils@v0.8.34
 git+https://github.com/AntycSolutions/django-accounts@v0.2
 git+https://github.com/Solanar/django-simple-search@v0.1.10
