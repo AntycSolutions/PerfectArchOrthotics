@@ -1,0 +1,55 @@
+
+<style type="text/css">
+    .timestamp {
+        /* content width */
+        width: 1%;
+        white-space: nowrap;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <a href="#toggle_history"
+                data-toggle="collapse"
+                data-target="#history_panel"
+                >
+                History
+                <span class="caret"></span>
+                <span id="history_msg"></span>
+            </a>
+        </div>
+    </div>
+    <div id="history_panel" class="collapse">
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {% if settings.DEBUG %}<th>id</th>{% endif %}
+                            <th>Model</th>
+                            <th>Action</th>
+                            <th>Changes</th>
+                            <th>Timestamp</th>
+                            <th>Actor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="history_item" style="display: none;">
+                            {% if settings.DEBUG %}
+                                <td class="id"></td>
+                            {% endif %}
+                            <td class="content_type"></td>
+                            <td class="get_action_display"></td>
+                            <td class="changes"></td>
+                            <td class="timestamp"></td>
+                            <td class="actor"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-history-msg" style="display: none;">
+                There is no History for this {{ model_name }}.
+            </div>
+        </div>
+    </div>
+</div>

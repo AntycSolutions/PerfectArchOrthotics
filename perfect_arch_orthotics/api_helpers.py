@@ -9,7 +9,8 @@ from rest_framework import serializers, decorators, response
 
 from auditlog import models as auditlog_models
 
-from clients import models
+from clients import models as clients_models
+from inventory import models as inventory_models
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -78,29 +79,44 @@ class LogEntrySerializer(serializers.ModelSerializer):
         # I don't like this but it works...
         model_class = obj.content_type.model_class()
         lookup = None
-        if model_class == models.Client:
+        person_models = [
+            clients_models.Person,
+            clients_models.Client,
+            clients_models.Dependent
+        ]
+        order_models = [
+            inventory_models.Order,
+            inventory_models.ShoeOrder,
+            inventory_models.CoverageOrder,
+            inventory_models.AdjustmentOrder
+        ]
+        if model_class in person_models:
             if field == 'gender':
-                lookup = dict(models.Client.GENDERS)
-        #     elif field == 'marital_status':
-        #         lookup = dict(membership_models.Member.MARITAL_STATUS)
-        #     elif field == 'languages_spoken':
-        #         lookup = dict(membership_models.Member.LANGUAGES_SPOKEN)
-        #     elif field == 'aboriginal_group':
-        #         lookup = dict(membership_models.Member.ABORIGINAL_GROUP)
-        #     elif field == 'location':
-        #         lookup = dict(membership_models.Member.RESERVE_CHOICES)
-        #     elif field == 'driver_license_reason':
-        #         lookup = dict(membership_models.Member.LICENSE_REASON)
-        #     elif field == 'driver_license_type':
-        #         lookup = dict(membership_models.Member.LICENSE_TYPE)
-        #     elif field == 'transportation_mode':
-        #         lookup = dict(membership_models.Member.TRANSPORTATION_MODE)
-        # elif model_class == membership_models.Phone:
-        #     if field == 'number_type':
-        #         lookup = dict(membership_models.Phone.PHONE_CHOICES)
-        # elif model_class == membership_models.Address:
-        #     if field == 'location_type':
-        #         lookup = dict(membership_models.Address.ADDRESS_CHOICES)
+                lookup = dict(clients_models.Client.GENDERS)
+
+        if model_class == clients_models.Dependent:
+            if field == 'relationship':
+                lookup = dict(clients_models.Dependent.RELATIONSHIPS)
+        elif model_class == clients_models.Insurance:
+            if field == 'category':
+                lookup = dict(clients_models.Insurance.BENEFITS)
+        elif model_class == clients_models.Coverage:
+            if field == 'coverage_type':
+                lookup = dict(clients_models.Coverage.COVERAGE_TYPES)
+            elif field == 'period':
+                lookup = dict(clients_models.Coverage.PERIODS)
+        elif model_class == inventory_models.Shoe:
+            if field == 'category':
+                lookup = dict(inventory_models.Shoe.CATEGORIES)
+            elif field == 'availability':
+                lookup = dict(inventory_models.Shoe.AVAILABILITIES)
+        elif model_class == inventory_models.ShoeAttributes:
+            if field == 'size':
+                lookup = dict(inventory_models.ShoeAttributes.SIZES)
+
+        if model_class in order_models:
+            if field == 'order_type':
+                lookup = dict(inventory_models.Order.ORDER_TYPES)
 
         if lookup:
             return self._get_lookup_values(lookup, old, new)

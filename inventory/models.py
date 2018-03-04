@@ -65,7 +65,6 @@ class Shoe(models.Model, model_utils.FieldList):
 
 
 class ShoeAttributes(models.Model, model_utils.FieldList):
-
     """
         Women's 5-11 [halfs]
         Men's 7-14 [halfs]
@@ -82,6 +81,13 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         "Size", max_length=4, choices=SIZES)
     quantity = models.IntegerField(
         "Quantity", default=0)
+
+    def get_additional_data(self):
+        # track shoe_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'shoe_id': self.shoe_id,
+        }
 
     def dispensed(self):
         # dispensed date with ordered date does not count as it implies
@@ -300,10 +306,11 @@ class ShoeOrder(Order):
         ShoeAttributes, verbose_name="Shoe")
 
     def get_additional_data(self):
-        # track client_id so we can look it up via auditlog
+        # track client_id, shoe_id so we can look it up via auditlog
         # update api_helpers.HistoryMixin if this changes
         return {
             'client_id': self.claimant_id,
+            'shoe_id': self.shoe_attributes.shoe_id,
         }
 
     def get_all_fields(self):

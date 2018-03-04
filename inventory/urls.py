@@ -1,10 +1,14 @@
+from django.conf import urls
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 from django.views.generic import base
 
+from rest_framework import routers
+
 from inventory.views import views
 from inventory.views import shoe
 from inventory.views import order
+from . import api
 
 
 adjustment_order_patterns = [
@@ -113,7 +117,13 @@ shoe_patterns = [
         name='shoe_create'),
 ]
 
+router = routers.DefaultRouter()
+router.register(
+    r'shoes', api.ShoeModelViewSet, 'shoe'
+)
+
 urlpatterns = [
     url(r'^shoe/', include(shoe_patterns)),
     url(r'^order/', include(order_patterns)),
+    urls.url(r'^api/', urls.include(router.urls)),
 ]

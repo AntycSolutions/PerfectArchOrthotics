@@ -209,7 +209,7 @@ class ListShoeView(ListView):
 
 
 class DetailShoeView(DetailView):
-    template_name = "utils/generics/detail.html"
+    template_name = "inventory/shoe_detail.html"
     model = Shoe
 
     def get_context_data(self, **kwargs):

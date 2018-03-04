@@ -1,0 +1,12 @@
+{% extends 'utils/generics/detail.html' %}
+
+{% block fallback_ready %}
+    {{ block.super }}
+
+    var url = "{% url 'shoe-history' pk=object.pk %}";
+    {% include 'partials/history.js' %}
+{% endblock %}
+
+{% block after_content %}
+    {% include 'partials/history.html' %}
+{% endblock %}
