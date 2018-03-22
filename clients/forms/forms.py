@@ -155,6 +155,9 @@ class ReceiptForm(forms.ModelForm):
                 # am/pm -> AM/PM
                 "style": "text-transform: uppercase; float: none;"
             },
+            div_attrs={
+                'class': 'input-group',
+            }
         )
     )
 
