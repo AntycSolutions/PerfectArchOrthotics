@@ -65,11 +65,15 @@
         var providers = {{ provider_choices|safe }};
 
         $(document).ready(function() {
-            $(".dateinput").datepicker({
-                changeMonth: true,
-                changeYear: true,
-                yearRange: year_range,
-            });
+            var options = {
+                format: '{{ settings.UTILS.GENERICS.date_format }}',
+                autoclose: true,
+                todayHighlight: true,
+                clearBtn: true,
+                startDate: '-100y',
+                zIndexOffset: 1030,
+            };
+            $('.dateinput').datepicker(options);
 
             $('#id_filter-insurance').typeahead(
                 {
