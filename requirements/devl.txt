@@ -2,3 +2,4 @@
 #  cli.py line 284 needs to be fixed: 'c = dict(c.items() |' (for py3 support)
 bpython==0.14.2
 django-debug-toolbar==1.6
+fabric3==1.14.post1
