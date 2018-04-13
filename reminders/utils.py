@@ -120,7 +120,7 @@ def _find_arrived_orders(persons=None):
         claimants_filter,
         order_type__in=coverage_types_list,
         dispensed_date__isnull=True,
-        arrived_date__lte=one_week_ago
+        arrived_date__isnull=False
     )
 
     new_arrived_orders_reminders = []
