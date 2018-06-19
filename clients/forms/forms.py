@@ -3,7 +3,7 @@ from django.forms.models import inlineformset_factory
 from django.template import defaultfilters
 
 from bootstrap3_datetime import widgets as bs3_widgets
-from crispy_forms import helper, layout, bootstrap
+from crispy_forms import helper
 
 from clients.models import Client, Dependent, Coverage, \
     Invoice, InsuranceLetter, Laboratory, ProofOfManufacturing, Person
