@@ -111,6 +111,19 @@ class ReferralForm(forms.ModelForm):
 
         return claims_queryset
 
+    def _remove_credited_claims(self, claims_queryset, client):
+        claims = clients_models.Referral.objects.prefetch_related(
+            'claims'
+        ).filter(client=client).values_list('claims', flat=True)
+
+        clients = clients_models.Claim.objects.filter(
+            id__in=claims).values_list('patient', flat=True)
+
+        claims_queryset = claims_queryset.exclude(
+            patient__in=clients)
+
+        return claims_queryset
+
     def __init__(self, client, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -133,11 +146,9 @@ class ReferralForm(forms.ModelForm):
                 dependent.person_ptr, claims_queryset
             )
 
-        claims = clients_models.Referral.objects.prefetch_related(
-            'claims'
-        ).filter(client=client).values_list('claims', flat=True)
         if claims_queryset:
-            claims_queryset = claims_queryset.exclude(id__in=claims)
+            claims_queryset = self._remove_credited_claims(
+                claims_queryset, client)
 
         if not claims_queryset:
             raise self.EmptyClaimsQuerySet
