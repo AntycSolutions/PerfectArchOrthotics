@@ -52,26 +52,25 @@ class Item(models.Model, model_utils.FieldList):
             if timezone.is_naive(datetime):
                 datetime = timezone.make_aware(datetime)
 
-            item_histories_before = []
+            # current                  c     -> use current
+            # current + before         c+b   -> use current
+            # current + before + after c+b+a -> use min after
+            # current + after          c+a   -> use min after
             item_histories_after = []
             for item_history in item_histories:
-                if item_history.created <= datetime:
-                    item_histories_before.append(item_history)
-                else:
+                if item_history.created > datetime:
                     item_histories_after.append(item_history)
 
-            if item_histories_before:
-                item_history = max(
-                    item_histories_before, key=operator.attrgetter('created')
-                )
-            else:
+            if item_histories_after:  # c+b+a or c+a
                 item_history = min(
                     item_histories_after, key=operator.attrgetter('created')
                 )
-
-            unit_price = item_history.unit_price
-            cost = item_history.cost
-        else:
+                unit_price = item_history.unit_price
+                cost = item_history.cost
+            else:  # c+b
+                unit_price = self.unit_price
+                cost = self.cost
+        else:  # c
             unit_price = self.unit_price
             cost = self.cost
 

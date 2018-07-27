@@ -238,9 +238,7 @@ class CoverageCreateOrderView(CreateView):
         context['model_name'] = self.model._meta.verbose_name
         context['indefinite_article'] = 'an'
         context['cancel_url'] = reverse('order_list')
-        context['js_url'] = staticfiles.static(
-            'inventory/js/coverage_order.js'
-        )
+        context['js_url'] = 'coverage_order'
 
         return context
 
@@ -412,9 +410,7 @@ class CoverageUpdateOrderView(UpdateView):
         context['cancel_url'] = reverse(
             'coverage_order_detail', kwargs={'pk': self.object.pk}
         )
-        context['js_url'] = staticfiles.static(
-            'inventory/js/coverage_order.js'
-        )
+        context['js_url'] = 'coverage_order'
 
         return context
 
