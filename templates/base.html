@@ -95,6 +95,10 @@
         {# avoid collision with jQuery.ui.datepicker #}
         'jQuery.fn.datepicker2': "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js",
         'bootstrap-datepicker-css': "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.min.css",
+
+        'jquery-select2-css': 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css',
+        'jquery-select2-theme-css': 'https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css',
+        'jQuery.fn.select2': 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.min.js',
     {% endblock %}
 </script>
 
@@ -107,6 +111,10 @@
         {# avoid collision with jQuery.ui.datepicker and override it #}
         'jQuery.fn.datepicker2': ['jQuery.ui'],
         'bootstrap-datepicker-css': ['bootstrap_css'],
+
+        'jQuery.fn.select2': ['jQuery.ui'],
+        'jquery-select2-css': ['bootstrap_css'],
+        'jquery-select2-theme-css': ['jquery-select2-css'],
     {% endblock %}
 </script>
 

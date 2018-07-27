@@ -10,3 +10,8 @@ body {
      */
     z-index: 3 !important;
 }
+
+.select2-container--bootstrap .select2-selection.select2-selection--single {
+    height: 38px;
+    padding-top: 8px;
+}

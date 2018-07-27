@@ -4,7 +4,10 @@ from django.forms import models as forms_models
 from bootstrap3_datetime import widgets as bs3_widgets
 
 from utils.forms import (
-    fields as utils_fields, widgets as utils_widgets, forms as utils_forms
+    fields as utils_fields,
+    widgets as utils_widgets,
+    forms as utils_forms,
+    form_utils as utils_form_utils
 )
 
 from clients import models
@@ -144,10 +147,30 @@ class ClaimItemInlineFormSet(utils_forms.MinimumInlineFormSet):
         return form
 
 
+class ClaimItemModelForm(forms.ModelForm):
+    class Meta:
+        model = models.ClaimItem
+        fields = '__all__'
+
+    class Media:
+        js = (
+            utils_form_utils.MediaStr(
+                'clients/js/claim.js',
+                shim=['jQuery.fn.select2']
+            ),
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['item'].widget.attrs = {'class': 'item-select'}
+
+
 ClaimCoverageFormFormSet = utils_forms.minimum_nestedformset_factory(
     models.Claim, models.ClaimCoverage,
     forms_models.inlineformset_factory(
         models.ClaimCoverage, models.ClaimItem,
+        form=ClaimItemModelForm,
         formset=ClaimItemInlineFormSet, extra=1, fields='__all__',
     ),
     minimum_name="Coverage", minimum_name_nested="Item",
