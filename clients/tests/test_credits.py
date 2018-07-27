@@ -9,22 +9,21 @@ class CreditTestCase(test.TestCase):
 
     def setUp(self):
         self.now = timezone.now()
-
-        client = clients_models.Client.objects.create(
+        self.client = clients_models.Client.objects.create(
             first_name='Test Client',
         )
-        insurance = clients_models.Insurance.objects.create(
-            main_claimant=client,
+        self.insurance = clients_models.Insurance.objects.create(
+            main_claimant=self.client,
             provider='Test Insurance',
         )
-        clients_models.Coverage.objects.create(
-            insurance=insurance,
-            claimant=client,
+        self.coverage = clients_models.Coverage.objects.create(
+            insurance=self.insurance,
+            claimant=self.client,
             period=clients_models.Coverage.CALENDAR_YEAR,
         )
-        clients_models.Claim.objects.create(
-            patient=client,
-            insurance=insurance,
+        self.claim = clients_models.Claim.objects.create(
+            patient=self.client,
+            insurance=self.insurance,
             submitted_datetime=self.now,
         )
 
@@ -35,16 +34,14 @@ class CreditTestCase(test.TestCase):
         )
 
     def test_claimcoverage_none(self):
-        client = clients_models.Client.objects.get(first_name='Test Client')
-        self.assertEqual(client.credit2, 0)
+        self.assertEqual(self.client.credit2, 0)
 
     def test_claimcoverage_create(self):
-        client = clients_models.Client.objects.get(first_name='Test Client')
-        self.assertEqual(client.credit2, 0)
+        self.assertEqual(self.client.credit2, 0)
 
         clients_models.ClaimCoverage.objects.create(
-            claim=clients_models.Claim.objects.get(patient=client),
-            coverage=clients_models.Coverage.objects.get(claimant=client),
+            claim=self.claim,
+            coverage=self.coverage,
             actual_paid_date=self.now,
             expected_back=150,
         )
@@ -267,53 +264,6 @@ class CreditTestCase(test.TestCase):
         self.assertEqual(client.credit2, -1)
 
         coverageorder.delete()
-        client = clients_models.Client.objects.get(first_name='Test Client')
-
-        self.assertEqual(client.credit2, 0)
-
-    def test_referral_create(self):
-        client = clients_models.Client.objects.get(first_name='Test Client')
-        self.assertEqual(client.credit2, 0)
-
-        clients_models.Referral.objects.create(
-            client=client,
-            credit_value=1,
-        )
-        client = clients_models.Client.objects.get(first_name='Test Client')
-
-        self.assertEqual(client.credit2, 1)
-
-    def test_referral_change_credit_value(self):
-        client = clients_models.Client.objects.get(first_name='Test Client')
-        self.assertEqual(client.credit2, 0)
-
-        referral = clients_models.Referral.objects.create(
-            client=client,
-            credit_value=1,
-        )
-        client = clients_models.Client.objects.get(first_name='Test Client')
-
-        self.assertEqual(client.credit2, 1)
-
-        referral.credit_value = 2
-        referral.save()
-        client = clients_models.Client.objects.get(first_name='Test Client')
-
-        self.assertEqual(client.credit2, 2)
-
-    def test_referral_delete(self):
-        client = clients_models.Client.objects.get(first_name='Test Client')
-        self.assertEqual(client.credit2, 0)
-
-        referral = clients_models.Referral.objects.create(
-            client=client,
-            credit_value=1,
-        )
-        client = clients_models.Client.objects.get(first_name='Test Client')
-
-        self.assertEqual(client.credit2, 1)
-
-        referral.delete()
         client = clients_models.Client.objects.get(first_name='Test Client')
 
         self.assertEqual(client.credit2, 0)

@@ -3,11 +3,11 @@ from django.contrib import admin
 from django.core import urlresolvers
 from django.utils import safestring
 
-
-from clients.models import Client, Insurance, Claim, Dependent, \
+from .models import Client, Insurance, Claim, Dependent, \
     Coverage, Person, Invoice, Item, InsuranceLetter, \
     Laboratory, ProofOfManufacturing, ClaimItem, ClaimCoverage, ClaimAttachment
-from clients import models as clients_models
+
+from . import models as clients_models
 
 
 class DependentInline(admin.TabularInline):
