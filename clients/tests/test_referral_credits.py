@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from clients.models import Client, Referral, Claim, Insurance, Coverage
+from clients.forms.forms import ReferralForm
 
 
 class ReferralCreditsTestCase(TestCase):
@@ -53,7 +54,7 @@ class ReferralCreditsTestCase(TestCase):
         self.assertEqual(client.credit2, 0)
 
     def _setup_test_data(self):
-        referredClient = Client.objects.create(
+        referred_client = Client.objects.create(
             first_name="Referred Man",
             referred_by=self.client
             )
@@ -67,7 +68,7 @@ class ReferralCreditsTestCase(TestCase):
             period=Coverage.CALENDAR_YEAR,
         )
         Claim.objects.create(
-            patient=referredClient,
+            patient=referred_client,
             insurance=insurance,
             submitted_datetime=timezone.now())
         Referral.objects.create(
@@ -75,8 +76,6 @@ class ReferralCreditsTestCase(TestCase):
             credit_value=1)
 
     def test_cannot_receive_credit_for_duplicate_referral(self):
-        from clients.forms.forms import ReferralForm
-
         self._setup_test_data()
 
         claims_queryset = Claim.objects.none()
@@ -88,5 +87,5 @@ class ReferralCreditsTestCase(TestCase):
         self.assertFalse(
             ReferralForm._remove_credited_claims(
                 ReferralForm,
-                claims_queryset, 
+                claims_queryset,
                 self.client).exists())
