@@ -40,7 +40,15 @@ class ClaimForm(forms.ModelForm):
 
     class Meta:
         model = models.Claim
-        exclude = ('coverages',)
+        exclude = ('coverages', 'insurance',)
+
+    class Media:
+        js = (
+            utils_form_utils.MediaStr(
+                'clients/js/claim.js',
+                shim=['jQuery.fn.select2']
+            ),
+        )
 
     def __init__(self, *args, **kwargs):
         client_id = kwargs.pop('client_id', None)
@@ -96,10 +104,11 @@ class ClaimForm(forms.ModelForm):
                 else "Child - %s" % obj.full_name()
         )
 
-        insurance = self.fields['insurance']
-        insurance.queryset = models.Insurance.objects.filter(
-            main_claimant__pk__in=patients)
-        insurance.label_from_instance = (
+        insurances = self.fields['insurances']
+        insurances.queryset = models.Insurance.objects.filter(
+            main_claimant__pk__in=patients
+        )
+        insurances.label_from_instance = (
             lambda obj:
                 "%s - Spouse - %s" % (
                     obj.provider,
@@ -108,7 +117,26 @@ class ClaimForm(forms.ModelForm):
                 else "%s - Client - %s" % (
                     obj.provider, obj.main_claimant.full_name())
         )
-        insurance.widget.attrs['class'] = 'insurance_trigger'
+        insurances.widget.attrs['class'] = 'insurance_trigger'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        patient = cleaned_data.get('patient')
+        insurances = cleaned_data.get('insurances', [])
+        has_coverage = False
+        for insurance in insurances:
+            coverages = insurance.coverage_set.all()
+            for coverage in coverages:
+                if coverage.claimant_id == patient.id:
+                    has_coverage = True
+                    break
+        if insurances and not has_coverage:
+            raise forms.ValidationError(
+                'No Coverage for {} found in the selected Insurances'.format(
+                    patient
+                )
+            )
 
 
 class ClaimCoverageInlineFormSet(utils_forms.MinimumNestedFormSet):
@@ -155,7 +183,7 @@ class ClaimItemModelForm(forms.ModelForm):
     class Media:
         js = (
             utils_form_utils.MediaStr(
-                'clients/js/claim.js',
+                'clients/js/claim_item.js',
                 shim=['jQuery.fn.select2']
             ),
         )

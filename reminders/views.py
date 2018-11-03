@@ -96,7 +96,7 @@ class Reminders(generic.TemplateView):
                 'claim__patient__last_name',
                 'claim__patient__client__phone_number',
                 'claim__patient__dependent__primary__phone_number',
-                'claim__insurance__provider',
+                'claim__insurances__provider',
             ],
             context=context
         )
@@ -108,10 +108,10 @@ class Reminders(generic.TemplateView):
                 # for patient links
                 'claim__patient__client',
                 'claim__patient__dependent',
-                # for benefits lookup
-                'claim__insurance__main_claimant__client',
-                'claim__insurance__main_claimant__dependent',
             ).prefetch_related(
+                # for benefits lookup
+                'claim__insurances__main_claimant__client',
+                'claim__insurances__main_claimant__dependent',
                 # for expected back/amount claimed calcs
                 (
                     'claim__claimcoverage_set__claimitem_set__item__'

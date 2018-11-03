@@ -154,6 +154,9 @@ def insurance_letter_view(request, claim_id):
             'underline': underline,
             'notunderline': notunderline,
             'address': settings.BILL_TO[0][1],
+            'three_d_laser_scan': claim.insurances.filter(
+                three_d_laser_scan=True
+            ).exists(),
         }
     )
 
@@ -241,7 +244,10 @@ def fillOutInsuranceLetterView(request, claim_id):
         'claim': claim,
         'insurance_letter': insurance_letter,
         'underline': underline,
-        'notunderline': notunderline
+        'notunderline': notunderline,
+        'three_d_laser_scan': claim.insurances.filter(
+            three_d_laser_scan=True
+        ).exists(),
     }
 
     return render(request, 'clients/make_insurance_letter.html', context)
@@ -265,38 +271,39 @@ def fillOutProofOfManufacturingView(request, claim_id):
 def claimView(request, claim_id):
     try:
         claim = Claim.objects.select_related(
-            'insurance', 'patient__client', 'patient__dependent__primary'
+            'patient__client', 'patient__dependent__primary'
         ).prefetch_related(
+            'insurances__coverage_set',
             'claimcoverage_set__claimitem_set__item__itemhistory_set',
             'claimcoverage_set__coverage',
-            'coverageorder_set',
-            'insurance__coverage_set'
+            'coverageorder_set'
         ).get(id=claim_id)
     except Claim.DoesNotExist:
         raise http.Http404("No Claim matches that ID")
 
     invalid_coverages = False
-    for coverage in claim.insurance.coverage_set.all():
-        is_BENEFIT_YEAR = (
-            coverage.period == clients_models.Coverage.BENEFIT_YEAR
-        )
-        if is_BENEFIT_YEAR and coverage.period_date is None:
-            invalid_coverages = True
-            messages.add_message(
-                request,
-                messages.ERROR,
-                safestring.mark_safe(
-                    "One of {}'s Coverages is set to Benefit Year "
-                    "but does not have a Period Date set. Please "
-                    "<a href='{}'>Click here to edit it</a> ".format(
-                        coverage.claimant,
-                        urlresolvers.reverse(
-                            'insurance_update',
-                            kwargs={'insurance_id': coverage.insurance.pk}
+    for insurance in claim.insurances.all():
+        for coverage in insurance.coverage_set.all():
+            is_BENEFIT_YEAR = (
+                coverage.period == clients_models.Coverage.BENEFIT_YEAR
+            )
+            if is_BENEFIT_YEAR and coverage.period_date is None:
+                invalid_coverages = True
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    safestring.mark_safe(
+                        "One of {}'s Coverages is set to Benefit Year "
+                        "but does not have a Period Date set. Please "
+                        "<a href='{}'>Click here to edit it</a> ".format(
+                            coverage.claimant,
+                            urlresolvers.reverse(
+                                'insurance_update',
+                                kwargs={'insurance_id': coverage.insurance.pk}
+                            )
                         )
                     )
                 )
-            )
 
     context = {
         'claim': claim,
@@ -459,10 +466,10 @@ def _payment_type(request, context_dict, found_claims):
 def _found_claims(request, context):
     # Start from all, drilldown to q df dt
     found_claims = Claim.objects.select_related(
-        'insurance',
         'patient__client',
         'patient__dependent__primary'
     ).prefetch_related(
+        'insurances',
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
         'claimcoverage_set__coverage',
         'coverageorder_set'
@@ -473,7 +480,7 @@ def _found_claims(request, context):
     # Query, Date From, Date To
     if ('q' in request.GET) and request.GET['q'].strip():
         fields = ['patient__first_name', 'patient__last_name',
-                  'insurance__provider', 'patient__employer']
+                  'insurances__provider', 'patient__employer']
         query_string = request.GET['q']
         context['q'] = query_string
         claim_query = get_query(query_string, fields)
@@ -508,14 +515,14 @@ def claims_search_stats(request):
     ).aggregate(
         non_assignment_expected_back=Sum(Case(
             When(
-                claim__insurance__benefits='na',
+                claim__insurances__benefits='na',
                 then='expected_back',
             ),
             default=0,
         )),
         assignment_expected_back=Sum(Case(
             When(
-                Q(claim__insurance__benefits='a') &
+                Q(claim__insurances__benefits='a') &
                 Q(actual_paid_date__isnull=False),
                 then='expected_back',
             ),
@@ -523,7 +530,7 @@ def claims_search_stats(request):
         )),
         pending_assignment_expected_back=Sum(Case(
             When(
-                Q(claim__insurance__benefits='a') &
+                Q(claim__insurances__benefits='a') &
                 Q(actual_paid_date__isnull=True),
                 then='expected_back',
             ),
@@ -544,9 +551,8 @@ def claims_search_stats(request):
     # amount looks up the Item's historical value, so we can't do this is an
     #  aggregate
     for amount_claimed_claim in found_claims:
-        benefits = amount_claimed_claim.insurance.benefits
-
         for claimcoverage in amount_claimed_claim.claimcoverage_set.all():
+            benefits = claimcoverage.coverage.insurance.benefits
             for claimitem in claimcoverage.claimitem_set.all():
                 if benefits == Insurance.ASSIGNMENT:
                     assignment_amount_claimed += claimitem.unit_price_amount()
@@ -706,9 +712,9 @@ def clientView(request, client_id):
 
     claims = Claim.objects.select_related(
         'patient__client',
-        'patient__dependent__primary',
-        'insurance'
+        'patient__dependent__primary'
     ).prefetch_related(
+        'insurances',
         'claimcoverage_set__claimitem_set__item__itemhistory_set',
         'claimcoverage_set__coverage',
         'claimcoverage_set__items',
@@ -798,10 +804,10 @@ def clientView(request, client_id):
             # for patient links
             'claim__patient__client',
             'claim__patient__dependent',
-            # for benefits lookup
-            'claim__insurance__main_claimant__client',
-            'claim__insurance__main_claimant__dependent',
         ).prefetch_related(
+            # for benefits lookup
+            'claim__insurances__main_claimant__client',
+            'claim__insurances__main_claimant__dependent',
             # for expected back/amount claimed calcs
             (
                 'claim__claimcoverage_set__claimitem_set__item__'

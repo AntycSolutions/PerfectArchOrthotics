@@ -18,7 +18,7 @@
                     Patient
                 </th>
                 <th>
-                    Provider
+                    Provider(s)
                 </th>
                 <th>
                     Employer
@@ -70,7 +70,9 @@
                         </a>
                     </td>
                     <td>
-                        {{ claim.insurance.provider }}
+                        {% for insurance in claim.insurances.all %}
+                            {{ insurance.provider }}{% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
                     </td>
                     <td>
                         {{ claim.patient.employer }}

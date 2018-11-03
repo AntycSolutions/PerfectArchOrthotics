@@ -213,9 +213,10 @@ def old_arrived_date_orders_report(request):
 
 def _stats():
     revenue_claims = clients_models.Claim.objects.select_related(
-        'insurance',
         'patient__client',
         'patient__dependent__primary',
+    ).prefetch_related(
+        'insurances',
     ).annotate(
         invoice_revenue=(
             Coalesce(F('invoice__payment_made'), 0) +
@@ -224,7 +225,7 @@ def _stats():
         expected_back_revenue=Sum(
             Case(
                 When(
-                    Q(insurance__benefits='a') &
+                    Q(insurances__benefits='a') &
                     Q(claimcoverage__actual_paid_date__isnull=False),
                     then='claimcoverage__expected_back',
                 ),
@@ -272,37 +273,47 @@ def _stats():
                 outstanding_claim.total_amount -
                 revenue_claim.total_revenue
             )
-            if revenue_claim.insurance.benefits == 'na':
+            has_na = False
+            has_a = False
+            for insurance in revenue_claim.insurances.all():
+                if insurance.benefits == 'na':
+                    has_na = True
+                elif insurance.benefits == 'a':
+                    has_a = True
+            if has_na:
                 outstanding_non_assignment_clients_set.add(
                     revenue_claim.patient_id
                 )
-            elif revenue_claim.insurance.benefits == 'a':
+            if has_a:
                 outstanding_assignment_clients_set.add(
                     revenue_claim.patient_id
                 )
-            else:
+            if not has_na and not has_a:
                 raise Exception(
-                    'Unhandled benefit type for %s. (%s %s)' % (
-                        revenue_claim.insurance,
-                        revenue_claim.insurance.benefits,
-                        revenue_claim.insurance.get_benefits_display()
+                    'Unhandled benefit type for %s' % (
+                        revenue_claim,
                     )
                 )
         elif outstanding_claim.total_amount < revenue_claim.total_revenue:
             claims_greater_list.append(revenue_claim)
 
-        if revenue_claim.insurance.benefits == 'na':
+        has_na = False
+        has_a = False
+        for insurance in revenue_claim.insurances.all():
+            if insurance.benefits == 'na':
+                has_na = True
+            elif insurance.benefits == 'a':
+                has_a = True
+        if has_na:
             non_assignment_invoice_revenue += \
                 revenue_claim.invoice_revenue
-        elif revenue_claim.insurance.benefits == 'a':
+        if has_a:
             assignment_invoice_revenue += \
                 revenue_claim.invoice_revenue
-        else:
+        if not has_na and not has_a:
             raise Exception(
-                'Unhandled benefit type for %s. (%s %s)' % (
-                    revenue_claim.insurance,
-                    revenue_claim.insurance.benefits,
-                    revenue_claim.insurance.get_benefits_display()
+                'Unhandled benefit type for %s' % (
+                    revenue_claim,
                 )
             )
 

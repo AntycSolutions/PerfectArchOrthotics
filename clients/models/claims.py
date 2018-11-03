@@ -19,8 +19,7 @@ from .items import Item
 class Claim(models.Model, model_utils.FieldList):
     patient = models.ForeignKey(
         Person, verbose_name="Patient")
-    insurance = models.ForeignKey(
-        Insurance, verbose_name="Insurance")
+    insurances = models.ManyToManyField(Insurance)
 
     coverages = models.ManyToManyField(
         Coverage, verbose_name="Coverages",
@@ -99,20 +98,24 @@ class Claim(models.Model, model_utils.FieldList):
         return Totals(total_amount_claimed, total_quantity_claimed)
 
     def expected_back_revenue(self):
-        if self.insurance.benefits == 'a':
-            claimcoverages = self.claimcoverage_set.aggregate(
-                expected_back=Sum(Case(
-                    When(
-                        actual_paid_date__isnull=False,
-                        then='expected_back',
-                    ),
-                    default=0,
-                )),
-            )
+        expected_back = 0
+        for insurance in self.insurances.all():
+            if insurance.benefits == 'a':
+                claimcoverages = self.claimcoverage_set.filter(
+                    coverage__insurance_id=insurance.pk
+                ).aggregate(
+                    expected_back=Sum(Case(
+                        When(
+                            actual_paid_date__isnull=False,
+                            then='expected_back',
+                        ),
+                        default=0,
+                    )),
+                )
 
-            return (claimcoverages['expected_back'] or 0)
+                expected_back += claimcoverages['expected_back'] or 0
 
-        return 0
+        return expected_back
 
     def get_all_fields(self):
         fields = super().get_all_fields()
@@ -150,8 +153,10 @@ class Claim(models.Model, model_utils.FieldList):
         except AttributeError:
             submitted_datetime = None
 
-        return "{} - Person ID: {} - Insurance ID: {}".format(
-            submitted_datetime, self.patient_id, self.insurance_id
+        return "{} - Person ID: {} - Insurance IDs: {}".format(
+            submitted_datetime,
+            self.patient_id,
+            self.insurances.values_list('pk', flat=True)
         )
 
 

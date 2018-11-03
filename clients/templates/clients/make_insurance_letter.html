@@ -727,16 +727,16 @@
                         {% endif %}
                     </tr>
                     <tr>
-                        {% if claim.insurance.three_d_laser_scan %}
+                        {% if three_d_laser_scan %}
                             <td colspan="5">
                                 <table><tr>
                                 <td style="{{ underline }}">
-                                {{ claim.insurance.three_d_laser_scan|yesno:"X, " }}
+                                {{ three_d_laser_scan|yesno:"X, " }}
                                 </td>
                                 <td style="{{ notunderline }}">
                                 &nbsp;
                                 <strong>
-                                {% verbose_field_name claim.insurance "three_d_laser_scan" %}
+                                {% verbose_field_name claim.insurances.model "three_d_laser_scan" %}
                                 </strong>
                                 </td>
                                 </tr></table>

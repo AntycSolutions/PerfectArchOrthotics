@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    $('.item-select').select2({theme: 'bootstrap'});
+    $('#id_info-insurances').select2({theme: 'bootstrap'});
 });

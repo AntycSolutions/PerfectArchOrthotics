@@ -167,18 +167,19 @@ class UnpaidClaimReminder(Reminder):
     def clean(self):
         claim = self.claim
 
-        is_ASSIGNMENT = (
-            claim.insurance.benefits ==
-            clients_models.Insurance.ASSIGNMENT
-        )
+        # remove is_ASSIGNMENT check as Claims can have both benefits
+        # is_ASSIGNMENT = (
+        #     claim.insurance.benefits ==
+        #     clients_models.Insurance.ASSIGNMENT
+        # )
         sending_text = Reminder.TEXT in self.follow_up
         sending_email = Reminder.EMAIL in self.follow_up
-        following_up = sending_text or sending_email
-        if is_ASSIGNMENT and following_up:
-            raise exceptions.ValidationError({
-                'follow_up':
-                    'You cannot send a text or email to Assignment Benefits',
-            })
+        # following_up = sending_text or sending_email
+        # if is_ASSIGNMENT and following_up:
+        #     raise exceptions.ValidationError({
+        #         'follow_up':
+        #             'You cannot send a text or email to Assignment Benefits',
+        #     })
 
         client = claim.patient.get_client()
         if sending_email and not client.email:

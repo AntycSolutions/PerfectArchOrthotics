@@ -58,11 +58,13 @@
                 </div>
                 <div class="form-group">
                     <label class="col-lg-2 control-label">
-                        {% verbose_field_name claim "insurance" %} {% verbose_field_name claim.insurance "provider" %}
+                        Insurance Provider(s)
                     </label>
                     <div class="col-lg-10">
                         <p class="form-control-static">
-                            {{ claim.insurance.provider }}
+                            {% for insurance in claim.insurances.all %}
+                                {{ insurance.provider }}{% if not forloop.last %},{% endif %}
+                            {% endfor %}
                         </p>
                     </div>
                 </div>

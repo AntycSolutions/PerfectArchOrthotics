@@ -398,7 +398,7 @@ class CreateClaimWizard(
             submitted_datetime = datetime.strptime(
                 submitted_datetime_str, '%Y-%m-%d %I:%M %p'
             )
-            insurance_id = info_data.get('info-insurance')
+            insurance_ids = info_data.getlist('info-insurances')
             patient_id = info_data.get('info-patient')
 
             coverages = Coverage.objects.select_related(
@@ -406,8 +406,15 @@ class CreateClaimWizard(
             ).prefetch_related(
                 'claimcoverage_set__claimitem_set'
             ).filter(
-                insurance_id=insurance_id, claimant_id=patient_id
+                insurance_id__in=insurance_ids, claimant_id=patient_id
             )
+            if not coverages:
+                messages.add_message(
+                    self.request, messages.ERROR,
+                    'No Coverages found for {}'.format(
+                        clients_models.Person.objects.get(pk=patient_id)
+                    )
+                )
             for coverage in coverages:
                 requires_period_date = (
                     coverage.period == Coverage.BENEFIT_YEAR and

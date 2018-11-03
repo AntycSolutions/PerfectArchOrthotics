@@ -11,6 +11,7 @@
         var VOICEMAIL = 'v';
 
         var ASSIGNMENT = 'a';
+        var NON_ASSIGNMENT = 'na';
 
         var value_in_list = function(list, value) {
             return list.indexOf(value) !== -1;
@@ -94,7 +95,18 @@
             logs.length ? table_div.show() : table_div.hide();
 
             // hide options
-            if (benefits_lookup[pk] == ASSIGNMENT) {
+            var benefits = benefits_lookup[pk];
+            var isAllAssignment = true;
+            var isAllNonAssignment = true;
+            for (i = 0; i < benefits.length; ++i) {
+                var benefit = benefits[i];
+                if (benefit === NON_ASSIGNMENT) {
+                    isAllAssignment = false;
+                } else if (benefit == ASSIGNMENT) {
+                    isAllNonAssignment = false;
+                }
+            }
+            if (isAllAssignment) {
                 var text = modal.find('input[value="' + TEXT + '"]');
                 text.prop('checked', false);
                 text.parent().hide();
@@ -103,6 +115,12 @@
                 email.parent().hide();
             }
             else {
+                if (!isAllNonAssignment) {
+                    window.alert(
+                        'This Claim contains Insurances with both ' +
+                        'Assignment and Non-assignment benefits'
+                    );
+                }
                 var text = modal.find('input[value="' + TEXT + '"]');
                 text.parent().show();
                 var email = modal.find('input[value="' + EMAIL + '"]');

@@ -90,7 +90,10 @@
 
         var benefits_lookup = {
             {% for unpaid_claims_reminder in unpaid_claims_reminders %}
-                '{{ unpaid_claims_reminder.pk }}': '{{ unpaid_claims_reminder.claim.insurance.benefits }}',
+                '{{ unpaid_claims_reminder.pk }}':
+                    [{% for insurance in unpaid_claims_reminder.claim.insurances.all %}
+                        '{{ insurance.benefits }}',
+                    {% endfor %}],
             {% endfor %}
         };
 

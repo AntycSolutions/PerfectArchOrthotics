@@ -809,16 +809,16 @@
                     </td>
                 </tr>
             {% endif %}
-            {% if claim.insurance.three_d_laser_scan %}
+            {% if three_d_laser_scan %}
                 <tr>
                     <td colspan="1" valign="top">
                         <table><tr><td style="{{ underline }}">
                         {# This needs the &nbsp; plus safe for the border to appear #}
-                        {{ claim.insurance.three_d_laser_scan|yesno:"X,&nbsp;"|safe }}
+                        {{ three_d_laser_scan|yesno:"X,&nbsp;"|safe }}
         				</td></tr></table>
                     </td>
                     <td colspan="19">
-                        <strong>{% verbose_field_name claim.insurance "three_d_laser_scan" %}:</strong> Using Sharp Shape 3-Dimensional scanner to capture the foot in a non-weightbearing position with the subtalar joint in neutral. The Sharp Shape 3-Dimmensional data was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+                        <strong>{% verbose_field_name claim.insurances.model "three_d_laser_scan" %}:</strong> Using Sharp Shape 3-Dimensional scanner to capture the foot in a non-weightbearing position with the subtalar joint in neutral. The Sharp Shape 3-Dimmensional data was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
                     </td>
                 </tr>
             {% endif %}
