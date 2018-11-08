@@ -155,7 +155,7 @@ class ClaimItemModelForm(forms.ModelForm):
     class Media:
         js = (
             utils_form_utils.MediaStr(
-                'clients/js/claim.js',
+                'clients/js/claim_item.js',
                 shim=['jQuery.fn.select2']
             ),
         )
