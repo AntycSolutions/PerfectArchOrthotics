@@ -1,3 +1,11 @@
 $(document).ready(function() {
-    $('.item-select').select2({theme: 'bootstrap'});
+    $('#forms .item-select').select2({theme: 'bootstrap'});
 });
+
+function add_nested_callback() {
+    $('#forms .item-select').select2({theme: 'bootstrap'});
+}
+
+function add_callback() {
+    $('#forms .item-select').select2({theme: 'bootstrap'});
+}
