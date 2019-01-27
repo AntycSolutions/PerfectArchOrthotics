@@ -67,13 +67,15 @@ class Shoe(models.Model, model_utils.FieldList):
 class ShoeAttributes(models.Model, model_utils.FieldList):
     """
         Women's 5-11 [halfs]
-        Men's 7-14 [halfs]
+        Men's 7-18 [halfs]
         Junior 3-6.5 [halfs]
         Kids 9-3 (9, 10, 11, 12, 13, 1, 2, 3)
     """
-    SIZE_RANGE = range(30, 141, 5)  # Use 141 to include 140
-    SIZES = [("1", "1"), ("2", "2")] + [("%g" % (i / 10),
-                                         "%g" % (i / 10)) for i in SIZE_RANGE]
+    SIZE_RANGE = range(30, 181, 5)  # Use 181 to include 180
+    SIZES = (
+        [("1", "1"), ("2", "2")] +
+        [("%g" % (i / 10), "%g" % (i / 10)) for i in SIZE_RANGE]
+    )
 
     shoe = models.ForeignKey(
         Shoe, verbose_name="Shoe")
