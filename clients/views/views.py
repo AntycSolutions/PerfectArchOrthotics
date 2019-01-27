@@ -120,9 +120,10 @@ def _invoice(claim_id):
     invoice = None
     try:
         invoice = claim.invoice
+        invoice_number = invoice.invoice_number
     except clients_models.Invoice.DoesNotExist:
-        pass
-    invoice_number = "{0:04d}".format(claim.id)
+        invoice_number = claim.id
+    invoice_number = "{0:04d}".format(invoice_number)
 
     return claim, patient, invoice, invoice_number
 

@@ -67,7 +67,7 @@ class InvoiceForm(forms.ModelForm):
 
     class Meta:
         model = Invoice
-        exclude = ('claim',)
+        exclude = ('claim', 'invoice_number',)
 
 
 class InsuranceLetterForm(forms.ModelForm):

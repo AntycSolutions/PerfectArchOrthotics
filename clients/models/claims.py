@@ -363,6 +363,7 @@ class Invoice(models.Model):
     claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
+    invoice_number = models.PositiveIntegerField(blank=True, null=True)
     invoice_date = models.DateField(
         "Invoice Date",
         blank=True, null=True)
@@ -403,6 +404,14 @@ class Invoice(models.Model):
         return urlresolvers.reverse_lazy(
             'fillOutInvoice', kwargs={'claim_id': self.claim.id}
         )
+
+    def save(self, *args, **kwargs):
+        if not self.invoice_number:
+            # this used to just be the claim.id field
+            self.invoice_number = Invoice.objects.aggregate(
+                sum=models.Max('invoice_number')
+            )['sum'] + 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "{} - Claim ID: {}".format(self.invoice_date, self.claim_id)
