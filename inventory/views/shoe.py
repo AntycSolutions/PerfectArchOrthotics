@@ -222,11 +222,11 @@ class DetailShoeView(DetailView):
         context['inline_model_name'] = ShoeAttributes._meta.verbose_name
         context['lazy'] = True
 
-        clients = []
+        clients = set()
         for shoeattribute in context['object'].shoeattributes_set.all():
             for shoeorder in shoeattribute.shoeorder_set.all():
                 if shoeorder.dispensed_date:
-                    clients.append(shoeorder.claimant)
+                    clients.add(shoeorder.claimant)
         context['clients'] = clients
 
         return context
