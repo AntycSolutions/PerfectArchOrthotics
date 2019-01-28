@@ -15,7 +15,7 @@
 
         var value_in_list = function(list, value) {
             return list.indexOf(value) !== -1;
-        }
+        };
 
         var get_follow_up_vals = function(model_name, pk) {
             if (typeof model_name === 'undefined' && typeof pk === 'undefined') {
@@ -46,7 +46,7 @@
             }
 
             return follow_up_vals;
-        }
+        };
 
         var reminder_modal_init = function(event) {
             var btn = $(event.relatedTarget);
@@ -98,6 +98,14 @@
             var benefits = benefits_lookup[pk];
             var isAllAssignment = true;
             var isAllNonAssignment = true;
+            var text = modal.find('input[value="' + TEXT + '"]');
+            var email = modal.find('input[value="' + EMAIL + '"]');
+            if (!benefits) {
+                text.parent().show();
+                email.parent().show();
+                // orderarrived not tied to Insurance, cannot get benefits
+                return;
+            }
             for (i = 0; i < benefits.length; ++i) {
                 var benefit = benefits[i];
                 if (benefit === NON_ASSIGNMENT) {
@@ -107,10 +115,8 @@
                 }
             }
             if (isAllAssignment) {
-                var text = modal.find('input[value="' + TEXT + '"]');
                 text.prop('checked', false);
                 text.parent().hide();
-                var email = modal.find('input[value="' + EMAIL + '"]');
                 email.prop('checked', false);
                 email.parent().hide();
             }
@@ -121,12 +127,10 @@
                         'Assignment and Non-assignment benefits'
                     );
                 }
-                var text = modal.find('input[value="' + TEXT + '"]');
                 text.parent().show();
-                var email = modal.find('input[value="' + EMAIL + '"]');
                 email.parent().show();
             }
-        }
+        };
         $('#unpaidclaimreminder_modal').on(
             'show.bs.modal', reminder_modal_init
         );
