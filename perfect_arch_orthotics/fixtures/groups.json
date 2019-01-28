@@ -1,0 +1,58 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.group",
+        "fields": {
+            "name": "All"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.group",
+        "fields": {
+            "name": "Reminders"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.group",
+        "fields": {
+            "name": "Claims"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.group",
+        "fields": {
+            "name": "Insurances"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "auth.group",
+        "fields": {
+            "name": "Items"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "auth.group",
+        "fields": {
+            "name": "Inventory"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "auth.group",
+        "fields": {
+            "name": "Orders"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "auth.group",
+        "fields": {
+            "name": "Statistics"
+        }
+    }
+]

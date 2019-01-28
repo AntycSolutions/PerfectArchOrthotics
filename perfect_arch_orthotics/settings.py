@@ -68,6 +68,9 @@ TEMPLATES = [
                 LOCAL_CONTEXT_PROCESSORS +
                 THIRD_PARTY_CONTEXT_PROCESSORS
             ),
+            'libraries': {
+                'groups': 'perfect_arch_orthotics.templatetags.groups',
+            },
         },
     },
 ]

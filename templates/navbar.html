@@ -1,3 +1,4 @@
+{% load groups %}
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -12,19 +13,36 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar">
             {% if user.is_authenticated %}
+                {% get_groups user as user_groups %}
                 <ul class="nav navbar-nav">
-                    <li>
-                        <a href="{% url 'reminders:reminders' %}">Reminders</a>
-                    </li>
-                    <li><a href="{% url 'client_list' %}">Clients</a></li>
-                    <li><a href="{% url 'claims' %}">Claims</a></li>
-                    <li><a href="{% url 'insurance' %}">Insurances</a></li>
-                    <li><a href="{% url 'item_list' %}">Items</a></li>
-                    <li><a href="{% url 'shoe_list' %}">Inventory</a></li>
-                    <li><a href="{% url 'order_list' %}">Orders</a></li>
+                    {% if groups.Reminders in user_groups %}
+                        <li>
+                            <a href="{% url 'reminders:reminders' %}">
+                                Reminders
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if groups.Clients in user_groups %}
+                        <li><a href="{% url 'client_list' %}">Clients</a></li>
+                    {% endif %}
+                    {% if groups.Claims in user_groups %}
+                        <li><a href="{% url 'claims' %}">Claims</a></li>
+                    {% endif %}
+                    {% if groups.Insurances in user_groups %}
+                        <li><a href="{% url 'insurance' %}">Insurances</a></li>
+                    {% endif %}
+                    {% if groups.Items in user_groups %}
+                        <li><a href="{% url 'item_list' %}">Items</a></li>
+                    {% endif %}
+                    {% if groups.Inventory in user_groups %}
+                        <li><a href="{% url 'shoe_list' %}">Inventory</a></li>
+                    {% endif %}
+                    {% if groups.Orders in user_groups %}
+                        <li><a href="{% url 'order_list' %}">Orders</a></li>
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    {% if perms.clients.view_statistics %}
+                    {% if perms.clients.view_statistics or groups.Statistics in user_groups %}
                         <li class="dropdown">
                             <a href="#"
                                     class="dropdown-toggle"

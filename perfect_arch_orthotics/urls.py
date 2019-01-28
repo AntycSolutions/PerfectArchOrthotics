@@ -21,8 +21,6 @@ from reminders import urls as reminders_urls
 admin.autodiscover()
 # for debugging, auditlog LogEntry lookup, generic relation lookup
 admin.site.register(contenttypes_models.ContentType)
-# Unused, don't display
-admin.site.unregister(auth_models.Group)
 
 
 urlpatterns = [
