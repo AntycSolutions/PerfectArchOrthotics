@@ -1,0 +1,49 @@
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <a href="#toggle_client_list"
+                data-toggle="collapse"
+                data-target="#client_list_panel"
+                >
+                Client List
+                <span class="caret"></span>
+            </a>
+        </div>
+    </div>
+    <div id="client_list_panel" class="collapse in">
+        <div class="panel-body">
+            {% if clients %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <caption>This Shoe has been dispensed to:</caption>
+                        <thead>
+                            <tr>
+                                {% if settings.DEBUG %}<th>id</th>{% endif %}
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                                <tr>
+                                    {% if settings.DEBUG %}
+                                        <td>{{ client.id }}</td>
+                                    {% endif %}
+                                    <td>
+                                        <a href="{{ client.get_absolute_url }}">
+                                            {{ client }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div>
+                    This Shoe has not been dispensed to any Clients.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
