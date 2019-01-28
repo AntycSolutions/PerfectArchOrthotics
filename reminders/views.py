@@ -481,8 +481,9 @@ class OrderArrivedReminderUpdate(
         body = (
             'Hi {claimant},\n'
             '\n'
-            'This is a reminder that your Order has arrived. '
-            'Please call us at (587) 400-4588.\n'
+            'This is a reminder that your {type} Order has arrived. '
+            'Please kindly call us at (587) 400-4588 to schedule an'
+            ' appointment to ensure availability.\n'
             '\n'
             'Thank you,\n'
             '\n'
@@ -497,12 +498,14 @@ class OrderArrivedReminderUpdate(
             '\n'
             'This is an automated message, do not reply to this email.\n'
             '\n'.format(
+                type=order.get_order_type_display(),
                 claimant=claimant,
-                address=address
+                address=address,
             )
         )
         html_message = loader.render_to_string(
             'reminders/emails/order_arrived.html', {
+                'type': order.get_order_type_display(),
                 'recipient': claimant,
                 'subject': subject,
                 'address': address,
@@ -522,12 +525,13 @@ class OrderArrivedReminderUpdate(
             error += '\\n\\n'
 
         body = (
-            'Hi {claimant}, this is a reminder that your Order has arrived '
-            'at Perfect Arch Orthotics.\n\n'
-            'This is an automated message, do not reply or call this number, '
-            'please call us at (587) 400-4588 instead. '
-            'Thank you.'.format(
-                claimant=claimant,
+            'Hi {claimant}, this is a reminder that your {type} Order has'
+            ' arrived at Perfect Arch Orthotics.\n\n'
+            'This is an automated message, do not reply or call this number. '
+            'Please kindly call us at (587) 400-4588 to schedule an'
+            ' appointment to ensure availability.'
+            ''.format(
+                type=order.get_order_type_display(), claimant=claimant
             )
         )
         error += send_reminder_text_message(
