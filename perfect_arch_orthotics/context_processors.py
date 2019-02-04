@@ -7,6 +7,7 @@ def site(request):
         'groups': {
             'All': 'All',
             'Reminders': 'Reminders',
+            'Clients': 'Clients',
             'Claims': 'Claims',
             'Insurances': 'Insurances',
             'Items': 'Items',

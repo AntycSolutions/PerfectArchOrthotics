@@ -17,39 +17,46 @@
         "pk": 3,
         "model": "auth.group",
         "fields": {
-            "name": "Claims"
+            "name": "Clients"
         }
     },
     {
         "pk": 4,
         "model": "auth.group",
         "fields": {
-            "name": "Insurances"
+            "name": "Claims"
         }
     },
     {
         "pk": 5,
         "model": "auth.group",
         "fields": {
-            "name": "Items"
+            "name": "Insurances"
         }
     },
     {
         "pk": 6,
         "model": "auth.group",
         "fields": {
-            "name": "Inventory"
+            "name": "Items"
         }
     },
     {
         "pk": 7,
         "model": "auth.group",
         "fields": {
-            "name": "Orders"
+            "name": "Inventory"
         }
     },
     {
         "pk": 8,
+        "model": "auth.group",
+        "fields": {
+            "name": "Orders"
+        }
+    },
+    {
+        "pk": 9,
         "model": "auth.group",
         "fields": {
             "name": "Statistics"
