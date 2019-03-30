@@ -1,4 +1,4 @@
-Django==1.9.11
+Django==1.9.13
 django-ajax-selects==1.6.1
 django-crispy-forms==1.6.0
 django-easy-pdf==0.1.0
