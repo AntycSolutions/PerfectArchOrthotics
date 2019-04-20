@@ -189,6 +189,33 @@
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
+                <a href="#toggle_benefits_reminders"
+                        data-toggle="collapse"
+                        data-target="#benefits_reminders">
+                    Benefits Rollovers
+                    <span class="caret"></span>
+                </a>
+            </div>
+        </div>
+        <div id="benefits_reminders" class="collapse in">
+            {% if benefits_reminders %}
+                {% with object_list=benefits_reminders model_name="benefitsreminder" %}
+                    {% include 'utils/generics/list_table.html' %}
+                {% endwith %}
+            {% endif %}
+            <div class="panel-body">
+                {% if benefits_reminders %}
+                    {% include 'utils/snippets/pagination.html' with page_obj=benefits_reminders rows_per_page=benefits_reminders_rows_per_page page_var='benefits_reminders_page' rows_per_page_var='benefits_reminders_rows_per_page' %}
+                {% else %}
+                    There are no benefits rollovers.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="panel-title pull-left">
                 <a href="#toggle_claims_without_orders_reminders"
                         data-toggle="collapse"
                         data-target="#claims_without_orders_reminders">

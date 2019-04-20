@@ -84,7 +84,7 @@ class Person(models.Model):
         except Dependent.DoesNotExist:
             pass
 
-        raise Exception('Person is not tied to a Client.')
+        raise Exception('Person is not tied to a Client: {}'.format(self.id))
 
     def __str__(self):
         return self.full_name()

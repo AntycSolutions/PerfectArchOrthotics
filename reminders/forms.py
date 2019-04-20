@@ -52,3 +52,9 @@ class OrderArrivedReminderForm(forms.ModelForm):
     class Meta:
         model = models.OrderArrivedReminder
         exclude = ('order', 'created',)
+
+
+class BenefitsReminderForm(forms.ModelForm):
+    class Meta:
+        model = models.BenefitsReminder
+        exclude = ('client', 'coverages', 'created',)

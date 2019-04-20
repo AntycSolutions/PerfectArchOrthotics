@@ -137,6 +137,9 @@
         $('#orderarrivedreminder_modal').on(
             'show.bs.modal', reminder_modal_init
         );
+        $('#benefitsreminder_modal').on(
+            'show.bs.modal', reminder_modal_init
+        );
 
         var months = [
             'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.',
@@ -282,7 +285,7 @@
                 }
                 catch (e) {
                     // pass
-                    console.log('Could not parse json');
+                    console.log('Could not parse json: ' + xhr.responseText);
                 }
                 var msg = '';
                 if ('error' in json) {
@@ -298,9 +301,10 @@
                 }
                 window.alert(msg);
             });
-        }
+        };
         $('#unpaidclaimreminder_save').on('click', reminder_save);
         $('#orderarrivedreminder_save').on('click', reminder_save);
-    }
+        $('#benefitsreminder_save').on('click', reminder_save);
+    };
 
 }(window.reminders = window.reminders || {}));

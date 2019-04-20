@@ -20,9 +20,18 @@ orderreminder_urls = [
     ),
 ]
 
+benefitsreminder_urls = [
+    urls.url(
+        r'^update/(?P<pk>\d+)/$',
+        decorators.login_required(views.BenefitsReminderUpdate.as_view()),
+        name='benefitsreminder_update'
+    ),
+]
+
 api_urls = [
     urls.url(r'^claimreminder/', urls.include(claimreminder_urls)),
     urls.url(r'^orderreminder/', urls.include(orderreminder_urls)),
+    urls.url(r'^benefitsreminder/', urls.include(benefitsreminder_urls)),
 ]
 
 urlpatterns = [

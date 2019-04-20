@@ -6,6 +6,7 @@ from django.core import urlresolvers, mail
 from django.conf import settings
 from django.template import loader
 from django.db import models as db_models
+from django.core import management
 
 import twilio
 from django_twilio import client as django_twilio_client
@@ -180,6 +181,47 @@ class Reminders(generic.TemplateView):
         )
         context['arrived_orders_reminders'] = arrived_orders_reminders
 
+        benefits_reminder_search_filter = search.get_query(
+            self.request,
+            'filter-reminder_search',
+            [
+                'client__first_name',
+                'client__last_name',
+                'client__client__phone_number',
+                'client__dependent__primary__phone_number',
+            ],
+            context=context
+        )
+
+        # Benefits Rollovers
+        # TODO put this into cron
+        management.call_command('benefits_reminder')
+        benefits_reminders = (
+            reminders_models.BenefitsReminder.objects.select_related(
+                # for claimant links
+                'client',
+            ).prefetch_related(
+                'benefitsmessagelog_set',
+            ).filter(
+                reminder_filter,
+                created_filter,
+                benefits_reminder_search_filter,
+            )
+        )
+        benefits_reminders_rows_per_page = views_utils._get_paginate_by(
+            self.request, 'benefits_reminders_rows_per_page'
+        )
+        context['benefits_reminders_rows_per_page'] = (
+            benefits_reminders_rows_per_page
+        )
+        benefits_reminders = views_utils._paginate(
+            self.request,
+            benefits_reminders,
+            'benefits_reminders_page',
+            benefits_reminders_rows_per_page
+        )
+        context['benefits_reminders'] = benefits_reminders
+
         # Claims without Orders
         utils._find_claims_without_orders()
         claims_without_orders_reminders = (
@@ -216,6 +258,9 @@ class Reminders(generic.TemplateView):
         )
         context['order_arrived_reminder_form'] = (
             forms.OrderArrivedReminderForm(prefix="orderarrivedreminder")
+        )
+        context['benefits_reminder_form'] = (
+            forms.BenefitsReminderForm(prefix="benefitsreminder")
         )
 
         return context
@@ -276,6 +321,11 @@ def send_reminder_email(
             elif isinstance(reminder, reminders_models.UnpaidClaimReminder):
                 reminders_models.UnpaidClaimMessageLog.objects.create(
                     unpaid_claim_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.EMAIL
+                )
+            elif isinstance(reminder, reminders_models.BenefitsReminder):
+                reminders_models.BenefitsMessageLog.objects.create(
+                    benefits_reminder=reminder,
                     msg_type=reminders_models.MessageLog.EMAIL
                 )
             else:
@@ -555,6 +605,114 @@ class OrderArrivedReminderUpdate(
         if calling:
             reminders_models.OrderArrivedMessageLog.objects.create(
                 order_arrived_reminder=self.object,
+                msg_type=reminders_models.MessageLog.CALL
+            )
+
+        return response
+
+
+class BenefitsReminderUpdate(
+    views_utils.AjaxResponseMixin, generic.UpdateView
+):
+    template_name = 'reminders/reminders.html'
+    model = reminders_models.BenefitsReminder
+    form_class = forms.BenefitsReminderForm
+    success_url = urlresolvers.reverse_lazy('reminders:reminders')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # store old folllow_up so we can compare later
+        self.old_follow_up = self.object.follow_up
+
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        client = self.object.client
+        error = ''
+
+        subject = 'Benefits Rollover'
+        address = settings.BILL_TO[0][1]
+        body = (
+            'Hi {client},\n'
+            '\n'
+            'This is a reminder that your Benefits have rolled over. '
+            'Please kindly call us at (587) 400-4588 to schedule an'
+            ' appointment to ensure availability.\n'
+            '\n'
+            'Thank you,\n'
+            '\n'
+            '-The Perfect Arch Orthotics Team\n'
+            '\n\n'
+            '{address}\n'
+            '\n'
+            'Hours:\n'
+            'Monday - Friday, 10:30 AM - 7 PM\n'
+            'Saturday, 11 AM - 5 PM\n'
+            'Sunday, Closed\n'
+            '\n'
+            'This is an automated message, do not reply to this email.\n'
+            '\n'.format(
+                client=client,
+                address=address,
+            )
+        )
+        html_message = loader.render_to_string(
+            'reminders/emails/benefits_rollover.html', {
+                'recipient': client,
+                'subject': subject,
+                'address': address,
+            }
+        )
+        error += send_reminder_email(
+            self.object,
+            client,
+            self.old_follow_up,
+            subject,
+            body,
+            user=self.request.user,
+            html_message=html_message,
+        )
+
+        if error:
+            error += '\\n\\n'
+
+        body = (
+            'Hi {client}, this is a reminder that your Benefits have rolled'
+            ' over.\n\n'
+            'This is an automated message, do not reply or call this number. '
+            'Please kindly call us at (587) 400-4588 to schedule an'
+            ' appointment to ensure availability.'
+            ''.format(
+                client=client
+            )
+        )
+        error += send_reminder_text_message(
+            self.object,
+            client,
+            self.old_follow_up,
+            body,
+            user=self.request.user
+        )
+
+        if error:
+            response.content = response.content.replace(
+                b'}', ', "error": "{}"}}'.format(error).encode()
+            )
+            response.status_code = 400
+
+        CALL = reminders_models.Reminder.CALL
+        calling = (
+            CALL in self.object.follow_up and CALL not in self.old_follow_up
+        )
+        if calling:
+            reminders_models.BenefitsMessageLog.objects.create(
+                benefits_reminder=self.object,
                 msg_type=reminders_models.MessageLog.CALL
             )
 

@@ -94,3 +94,52 @@
         </div>
     </div>
 </div>
+
+
+<div id="benefitsreminder_modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">Update Reminder</h4>
+            </div>
+            <div class="modal-body">
+                <form id="benefitsreminder_form"
+                        class="form-horizontal">
+                    {% include 'utils/generics/form.html' with form=benefits_reminder_form %}
+                    <input type="hidden" id="benefitsreminder_pk" />
+                    <input type="hidden"
+                            id="model_name"
+                            value="benefitsreminder" />
+                </form>
+                <div class="table-responsive" style="display: none;">
+                    <table class="table">
+                        <caption>Message Logs</caption>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="benefitsreminder_logs"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-default"
+                        data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button"
+                        id="benefitsreminder_save"
+                        form-id="#benefitsreminder_form"
+                        class="btn btn-primary">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

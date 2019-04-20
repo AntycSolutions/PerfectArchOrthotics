@@ -311,6 +311,67 @@ class ClaimOrderReminder(models.Model, model_utils.FieldList):
         return fields
 
 
+class BenefitsReminder(Reminder, model_utils.FieldList):
+    client = models.ForeignKey(clients_models.Client)
+    coverages = models.ManyToManyField(clients_models.Coverage)
+
+    def get_all_fields(self):
+        fields = super().get_all_fields()
+
+        client = self.client
+        phone_number = client.phone_number
+        cell_number = client.cell_number
+        if phone_number:
+            phone_number = 'Phone: {}<br />'.format(phone_number)
+        if cell_number:
+            cell_number = 'Cell: {}'.format(cell_number)
+        number = self.Field(
+            model_utils.FieldList.PseudoField("number"),
+            safestring.mark_safe(
+                '{}{}'.format(phone_number, cell_number)
+            )
+        )
+        fields.update({"number": number})
+
+        coverages = ''
+        for coverage in self.coverages.all():
+            if coverages:
+                coverages += '<br>'
+            coverages += '<a href="{}">{} - {}</a>'.format(
+                coverage.get_absolute_url(),
+                coverage.claimant,
+                coverage.get_coverage_type_display()
+            )
+        coverages_field = self.Field(
+            model_utils.FieldList.PseudoField("Coverages"),
+            safestring.mark_safe(coverages)
+        )
+        fields.update({"coverages": coverages_field})
+
+        modal_btn = fields['modal_btn']
+        logs = ''
+        for log in self.benefitsmessagelog_set.all():
+            if logs:
+                logs += ','
+            created = defaultfilters.date(
+                timezone.localtime(log.created), "N j, Y, P"
+            )
+            logs += '{{"type":"{}","created":"{}"}}'.format(
+                log.get_msg_type_display(), created
+            )
+        modal_btn.field.attrs = {
+            'data-logs': '[{}]'.format(logs)
+        }
+
+        return fields
+
+    def __str__(self):
+        created = defaultfilters.date(
+            self.created, "N j, Y"
+        )
+        return '[{}] {}'.format(created, self.client)
+
+
 class MessageLog(models.Model):
     TEXT = 't'
     EMAIL = 'e'
@@ -342,6 +403,14 @@ class UnpaidClaimMessageLog(MessageLog):
     )
 
 
+class BenefitsMessageLog(MessageLog):
+    benefits_reminder = models.ForeignKey(
+        BenefitsReminder, on_delete=models.SET_NULL,
+        null=True
+    )
+
+
 auditlog.register(OrderArrivedReminder)
 auditlog.register(UnpaidClaimReminder)
+auditlog.register(BenefitsReminder)
 auditlog.register(ClaimOrderReminder)

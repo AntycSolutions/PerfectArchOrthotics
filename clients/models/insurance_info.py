@@ -214,8 +214,20 @@ class Coverage(models.Model):
                 'period_date': msg,
             })
 
+    def get_absolute_url(self):
+        url = '{}?toggle=insurances#insurance_{}'.format(
+            urlresolvers.reverse(
+                'client',
+                kwargs={'client_id': self.claimant.get_client().pk}
+            ),
+            self.insurance.pk
+        )
+
+        return url
+
     def __str__(self):
-        return "{} - Insurance ID: {} - Person ID: {}".format(
+        return "[{}] {} - Insurance ID: {} - Person ID: {}".format(
+            self.pk,
             self.get_coverage_type_display(),
             self.insurance_id,
             self.claimant_id
