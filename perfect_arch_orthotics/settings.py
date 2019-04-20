@@ -1,5 +1,6 @@
 # perfect_arch_orthotics settings
 
+import sys
 import platform
 from os import path
 
@@ -196,6 +197,8 @@ PIPELINE['YUGLIFY_BINARY'] = (
 )
 
 # Project
+
+TESTING = sys.argv[1:2] == ['test']
 
 PROFILING = False
 
