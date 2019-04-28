@@ -385,6 +385,11 @@ def send_reminder_text_message(
                     unpaid_claim_reminder=reminder,
                     msg_type=reminders_models.MessageLog.TEXT
                 )
+            elif isinstance(reminder, reminders_models.BenefitsReminder):
+                reminders_models.BenefitsMessageLog.objects.create(
+                    benefits_reminder=reminder,
+                    msg_type=reminders_models.MessageLog.TEXT
+                )
             else:
                 raise Exception('Unhandled Reminder type: ' + type(reminder))
 
