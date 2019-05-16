@@ -2,12 +2,10 @@
 
 # make this runnable
 # chmod +x reminders.sh
-# add to crontab -e
 # run every hour
-'''
-# Every hour
-0 * * * * /home/airith/public_html/perfectarch.antyc.ca/PerfectArchOrthotics/scripts/reminders.sh
-'''
+# add to crontab -e
+# # Every hour
+# 0 * * * * /home/airith/public_html/perfectarch.antyc.ca/PerfectArchOrthotics/scripts/reminders.sh
 
 # find all Reminders
 
