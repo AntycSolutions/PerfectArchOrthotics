@@ -30,7 +30,6 @@ from clients.forms import forms as clients_forms
 from reminders import (
     models as reminders_models,
     forms as reminders_forms,
-    utils as reminders_utils
 )
 
 
@@ -799,7 +798,6 @@ def clientView(request, client_id):
     context['biomechanical_gaits'] = biomechanical_gaits
 
     # Reminders
-    reminders_utils._find_unpaid_claims()
     unpaid_claims_reminders = (
         reminders_models.UnpaidClaimReminder.objects.select_related(
             # for patient links
@@ -829,7 +827,6 @@ def clientView(request, client_id):
         unpaid_claims_reminders_rows_per_page
     )
     context['unpaid_claims_reminders'] = unpaid_claims_reminders
-    reminders_utils._find_arrived_orders()
     arrived_orders_reminders = (
         reminders_models.OrderArrivedReminder.objects.select_related(
             # for claimant links
@@ -851,7 +848,6 @@ def clientView(request, client_id):
         arrived_orders_reminders_rows_per_page
     )
     context['arrived_orders_reminders'] = arrived_orders_reminders
-    reminders_utils._find_claims_without_orders()
     claims_without_orders_reminders = (
         reminders_models.ClaimOrderReminder.objects.select_related(
             # for patient links

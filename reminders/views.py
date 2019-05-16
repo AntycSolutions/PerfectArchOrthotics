@@ -6,7 +6,6 @@ from django.core import urlresolvers, mail
 from django.conf import settings
 from django.template import loader
 from django.db import models as db_models
-from django.core import management
 
 import twilio
 from django_twilio import client as django_twilio_client
@@ -15,7 +14,7 @@ from simple_search import search
 
 from clients import models as clients_models
 
-from . import models as reminders_models, forms, utils
+from . import models as reminders_models, forms
 
 
 class Reminders(generic.TemplateView):
@@ -103,7 +102,6 @@ class Reminders(generic.TemplateView):
         )
 
         # Unpaid Claims
-        utils._find_unpaid_claims()
         unpaid_claims_reminders = (
             reminders_models.UnpaidClaimReminder.objects.select_related(
                 # for patient links
@@ -153,7 +151,6 @@ class Reminders(generic.TemplateView):
         )
 
         # Arrived Orders
-        utils._find_arrived_orders()
         arrived_orders_reminders = (
             reminders_models.OrderArrivedReminder.objects.select_related(
                 # for claimant links
@@ -194,8 +191,6 @@ class Reminders(generic.TemplateView):
         )
 
         # Benefits Rollovers
-        # TODO put this into cron
-        management.call_command('benefits_reminder')
         benefits_reminders = (
             reminders_models.BenefitsReminder.objects.select_related(
                 # for claimant links
@@ -223,7 +218,6 @@ class Reminders(generic.TemplateView):
         context['benefits_reminders'] = benefits_reminders
 
         # Claims without Orders
-        utils._find_claims_without_orders()
         claims_without_orders_reminders = (
             reminders_models.ClaimOrderReminder.objects.select_related(
                 # for patient links

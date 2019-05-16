@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# send benefits reminders to Clients
+# find all Reminders
 
 file=`realpath ${BASH_SOURCE[0]}`
 proj_dir=`dirname $(dirname $file)`
@@ -12,7 +12,7 @@ if [[ "$venv" == "0" ]]; then
 fi
 
 manage="$proj_dir/manage.py"
-python $manage benefits_reminder
+python $manage reminders
 
 if [[ "$venv" == "0" ]]; then
     deactivate
