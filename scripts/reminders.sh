@@ -5,7 +5,7 @@
 # run every hour
 # add to crontab -e
 # # Every hour
-# 0 * * * * /home/airith/public_html/perfectarch.antyc.ca/PerfectArchOrthotics/scripts/reminders.sh
+# 0 * * * * /home/<user>/<url>/PerfectArchOrthotics/scripts/reminders.sh
 
 # find all Reminders
 
