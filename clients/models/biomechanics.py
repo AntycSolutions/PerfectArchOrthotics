@@ -582,3 +582,160 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
 
     def __str__(self):
         return "Claim ID: {}".format(self.claim_id)
+
+
+class Biomechanical(models.Model, model_utils.FieldList):
+    patient = models.ForeignKey(Person)
+
+    provider = models.CharField(max_length=128)
+
+    tight_calf_muscle = models.BooleanField(default=False)
+    good_ankle_rom = models.BooleanField(
+        verbose_name='good ankle ROM', default=False
+    )
+    spider_veins = models.BooleanField(default=False)
+    shin_splint = models.BooleanField(default=False)
+
+    heel_fat_pad_syndrome = models.BooleanField(default=False)
+    plantar_fascitis = models.BooleanField(default=False)
+    achilles_tendonitis = models.BooleanField(default=False)
+    haglund = models.BooleanField(default=False)
+
+    forefoot_valgus = models.BooleanField(default=False)
+    forefoot_varus = models.BooleanField(default=False)
+    falling_transverse_arch = models.BooleanField(default=False)
+    metatarsalgia = models.BooleanField(default=False)
+    morton_neuroma = models.BooleanField(default=False)
+
+    hallux_valgus = models.BooleanField(default=False)
+    hallux_rigidus_limitus = models.BooleanField(
+        verbose_name='hallux rigidus / limitus', default=False
+    )
+    first_ray_plantar_flexed = models.BooleanField(
+        verbose_name='1st ray plantar-flexed', default=False
+    )
+    first_ray_dorsi_flexed = models.BooleanField(
+        verbose_name='1st ray dorsi-flexed', default=False
+    )
+    bunion_bunionette = models.BooleanField(
+        verbose_name='bunion / bunionette', default=False
+    )
+
+    overlapping = models.BooleanField(default=False)
+    hammer_toes = models.BooleanField(default=False)
+    fungus = models.BooleanField(default=False)
+    morton_foot = models.BooleanField(default=False)
+    fifth_toe_varus = models.BooleanField(
+        verbose_name='5th toe varus', default=False
+    )
+
+    pronated_ankle = models.BooleanField(default=False)
+    neutral = models.BooleanField(default=False)
+    supinated_ankle = models.BooleanField(default=False)
+
+    low_medial_arch = models.BooleanField(default=False)
+    medium_medial_arch = models.BooleanField(default=False)
+    high_medial_arch = models.BooleanField(default=False)
+
+    heel_valgus = models.BooleanField(default=False)
+    heel_rectus = models.BooleanField(default=False)
+    heel_varus = models.BooleanField(default=False)
+
+    genu_valgum = models.BooleanField(default=False)
+    straight_knees = models.BooleanField(default=False)
+    genu_varum = models.BooleanField(default=False)
+
+    varicose = models.BooleanField(default=False)
+    leg_length_discrepancy = models.BooleanField(default=False)
+    swelling = models.BooleanField(default=False)
+
+    narrow_gait = models.BooleanField(
+        verbose_name=(
+            'Narrow Gait / Cross Over Gait.'
+            ' Propels from 1st Metatarsal'
+        ),
+        default=False
+    )
+    toe_in_gait = models.BooleanField(
+        verbose_name='Toe-In Gait Propels Through Midstance', default=False
+    )
+    toe_out_gait = models.BooleanField(
+        verbose_name='Toe-Out Gait Propels Off Medial Hallux', default=False
+    )
+    neutral_gait = models.BooleanField(
+        verbose_name=(
+            'Neutral Gait Propels of 2nd and'
+            ' 3rd MTH Pronation Through Midstance'
+        ),
+        default=False
+    )
+    medial_heel_pivot = models.BooleanField(
+        verbose_name='Medial Heel Pivot Narrow Heel Base', default=False
+    )
+    abducted_gait = models.BooleanField(
+        verbose_name=(
+            'Abducted Gait Propels From Central MTH'
+            ' Pronates Through Propultion'
+        ),
+        default=False
+    )
+
+    pes_cavus = models.BooleanField(default=False)
+    mild_pes_platus = models.BooleanField(default=False)
+    neutral_foot = models.BooleanField(default=False)
+    moderate_pes_planus = models.BooleanField(default=False)
+    abductovarus_forefoot = models.BooleanField(default=False)
+    pes_planovalgus = models.BooleanField(default=False)
+
+    plaster_moulding = models.BooleanField(default=False)
+    foam_box = models.BooleanField(default=False)
+    three_d_laser_scan = models.BooleanField(default=False)
+
+    high_density_eva = models.BooleanField(default=False)
+    dual_density_eva = models.BooleanField(default=False)
+    rigid_polyethylene = models.BooleanField(default=False)
+
+    full = models.BooleanField(default=False)
+    sulcus = models.BooleanField(default=False)
+    two_3_length = models.BooleanField(default=False)
+
+    leather = models.BooleanField(default=False)
+    poron_ppt = models.BooleanField(default=False)
+    eva_38 = models.BooleanField(default=False)
+    spenco = models.BooleanField(default=False)
+    mild = models.BooleanField(default=False)
+    good = models.BooleanField(default=False)
+
+    lateral_ff = models.BooleanField(default=False)
+    medial_rf = models.BooleanField(default=False)
+    rf_post = models.BooleanField(default=False)
+    medial_rf_post_heel_cup = models.BooleanField(default=False)
+    medial_rf_post_medial_ff_post_heel_lift = models.BooleanField(
+        default=False
+    )
+    medial_rf_post_medial_ff_posting_heel_cup = models.BooleanField(
+        default=False
+    )
+
+    date = models.DateField()
+
+    def get_additional_data(self):
+        # track client_id so we can look it up via auditlog
+        # update api_helpers.HistoryMixin if this changes
+        return {
+            'client_id': self.patient_id,
+        }
+
+    def get_absolute_url(self):
+        # TODO
+        url = '{}?toggle=biomechanical_gaits#biomechanical_gait_{}'.format(
+            urlresolvers.reverse(
+                'client', kwargs={'client_id': self.patient.get_client().pk}
+            ),
+            self.pk
+        )
+
+        return url
+
+    def __str__(self):
+        return "{} - Patient ID: {}".format(self.provider, self.patient_id)
