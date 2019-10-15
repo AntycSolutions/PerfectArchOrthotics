@@ -14,7 +14,7 @@ twilio==5.6.0
 django-twilio==0.8.0
 piexif==1.0.3
 
-git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker
+git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker@v2.4
 git+https://github.com/AntycSolutions/xhtml2pdf
 html5lib==1.0b8  # xhtml2pdf requirement is out of date
 git+https://github.com/AntycSolutions/utils@v0.8.39
