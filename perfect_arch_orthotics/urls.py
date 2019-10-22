@@ -51,6 +51,7 @@ urlpatterns = [
     url(r'^raise_exception/$',
         utils_views.raise_exception,
         name='raise_exception'),
+    url(r'^ver/$', views.git_commit),
     url(
         r'^js_reporter/$',
         utils_views.js_reporter,
