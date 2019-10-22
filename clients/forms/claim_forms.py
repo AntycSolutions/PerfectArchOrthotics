@@ -229,6 +229,28 @@ class BiomechanicalGaitModelForm(forms.ModelForm):
         self.fields['patient'].widget = forms.Select(choices=person_pks)
 
 
+class BiomechanicalGait2ModelForm(forms.ModelForm):
+    class Meta:
+        model = models.BiomechanicalGait2
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        client_pk = kwargs.pop('client_pk', None)
+
+        super().__init__(*args, **kwargs)
+
+        if not client_pk:
+            client_pk = self.instance.patient.get_client().pk
+
+        client = models.Client.objects.get(pk=client_pk)
+        dependents = client.dependent_set.all()
+        person_pks = [(client_pk, client.full_name())]
+        for dependent in dependents:
+            person_pks.append((dependent.pk, dependent.full_name()))
+
+        self.fields['patient'].widget = forms.Select(choices=person_pks)
+
+
 class BiomechanicalFootModelForm(forms.ModelForm):
     class Meta:
         model = models.BiomechanicalFoot

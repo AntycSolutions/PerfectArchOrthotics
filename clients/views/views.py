@@ -796,6 +796,14 @@ def clientView(request, client_id):
             patient_id__in=person_pk_list
         )
     context['biomechanical_gaits'] = biomechanical_gaits
+    biomechanical_gaits_2 = \
+        clients_models.BiomechanicalGait2.objects.select_related(
+            'patient__client',
+            'patient__dependent__primary'
+        ).filter(
+            patient_id__in=person_pk_list
+        )
+    context['biomechanical_gaits_2'] = biomechanical_gaits_2
 
     # Reminders
     unpaid_claims_reminders = (

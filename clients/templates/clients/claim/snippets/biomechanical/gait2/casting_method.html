@@ -1,0 +1,79 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                CASTING METHOD & PEDORTHIC TREATMENT
+            </th>
+        </tr>
+    </thead>
+</table>
+<table>
+    <thead>
+        <tr>
+            <th>Casting Method Tri-Dimensional</th>
+            <th>Material Used</th>
+            <th>Length</th>
+            <th>Cover</th>
+            <th>Metatarsal Pad</th>
+            <th>Footwear / Modification</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ form.plaster_moulding|as_crispy_field }}</td>
+            <td>{{ form.high_density_eva|as_crispy_field }}</td>
+            <td>{{ form.full|as_crispy_field }}</td>
+            <td>{{ form.leather|as_crispy_field }}</td>
+            <td>{{ form.mild|as_crispy_field }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{{ form.foam_box|as_crispy_field }}</td>
+            <td>{{ form.dual_density_eva|as_crispy_field }}</td>
+            <td>{{ form.sulcus|as_crispy_field }}</td>
+            <td>{{ form.poron_ppt|as_crispy_field }}</td>
+            <td>{{ form.good|as_crispy_field }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{{ form.three_d_laser_scan|as_crispy_field }}</td>
+            <td>{{ form.rigid_polyethylene|as_crispy_field }}</td>
+            <td>{{ form.two_3_length|as_crispy_field }}</td>
+            <td>{{ form.eva_38|as_crispy_field }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ form.spenco|as_crispy_field }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <thead>
+        <tr>
+            <th colspan="6"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ form.lateral_ff|as_crispy_field }}</td>
+            <td>{{ form.medial_rf|as_crispy_field }}</td>
+            <td>{{ form.rf_post|as_crispy_field }}</td>
+            <td>{{ form.medial_rf_post_heel_cup|as_crispy_field }}</td>
+            <td>
+                {{ form.medial_rf_post_medial_ff_post_heel_lift|as_crispy_field }}
+            </td>
+            <td>
+                {{ form.medial_rf_post_medial_ff_posting_heel_cup|as_crispy_field }}
+            </td>
+        </tr>
+    </tbody>
+</table>

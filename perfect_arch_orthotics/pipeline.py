@@ -61,6 +61,22 @@ PIPELINE = {
                 },
             },
         },
+        'biomechanical_gait_2': {
+            'source_filenames': (
+                'clients/css/biomechanical_gait_2.css',
+                'utils/css/typeahead.css',
+            ),
+            'output_filename': 'css/biomechanical_gait_2_all.css',
+            'template_name': 'utils/snippets/pipeline_fallback_css_js.html',
+            'extra_context': {
+                'fallback_key': 'biomechanical_gait_2_all_css',
+                'debug_fallback_keys': {
+                    STATIC_URL + 'clients/css/biomechanical_gait_2.css':
+                        'biomechanical_gait_2_css',
+                    STATIC_URL + 'utils/css/typeahead.css': 'typeahead_css',
+                },
+            },
+        },
         'insurance': {
             'source_filenames': (
                 'clients/css/insurance.css',

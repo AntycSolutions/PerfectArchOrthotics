@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load field_utils %}
+{% load crispy_forms_tags %}
+{% load update_attrs %}
+{% load pipeline %}
+{% load fallback_tags %}
+
+{% block title %} - {{ save_text|title }} {{ model_name|title }}{% endblock %}
+
+<script type="text/javascript">
+    {% block fallback_load %}
+        {{ block.super }}
+
+        {% stylesheet 'biomechanical_gait_2' %}
+
+        'jQuery.fn.typeahead': [
+            '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/{{ settings.VERSIONS.typeahead_js }}/typeahead.jquery.min.js',
+            "{% static 'utils/js/typeahead.jquery.min.js' %}"
+        ],
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_shim %}
+        {{ block.super }}
+
+        {% pipeline_css_shim 'biomechanical_gait_2' 'bootstrap_css' %}
+
+        'jQuery.fn.typeahead': ['jQuery'],
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    {% block fallback_ready %}
+        {{ block.super }}
+
+        {% now 'Y' as current_year %}
+        var year_range = "{{ current_year|add:"-100" }}:{{ current_year|add:"5" }}";
+
+        var providers = {{ provider_choices|safe }};
+
+        $(document).ready(function() {
+            var options = {
+                format: '{{ settings.UTILS.GENERICS.date_format }}',
+                autoclose: true,
+                todayHighlight: true,
+                clearBtn: true,
+                startDate: '-100y',
+                zIndexOffset: 1030,
+            };
+            $('.datepicker').datepicker(options);
+
+            $('#id_provider').typeahead(
+                {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+                },
+                {
+                    name: 'provider',
+                    source: startstringMatcher(providers),
+                }
+            );
+        });
+    {% endblock %}
+</script>
+
+{% block content %}
+
+    <h1>{{ save_text|title }} {{ model_name|title }}</h1>
+
+    {% include 'utils/snippets/messages.html' %}
+
+    <style>
+        td .form-group {
+            margin-bottom: 0px;
+        }
+        table {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .checkbox {
+            min-height: auto;
+            padding-top: auto;
+        }
+        .gait2-border {
+            border: 1px solid black;
+            border-radius: 15px 0 15px 0;
+            border-collapse: separate;
+        }
+    </style>
+    <form id="{{ save_text }}_{{ model_name }}_form" class="form-horizontal" method="POST" enctype="{{ form_type }}">
+        {% csrf_token %}
+        <div class="row">
+            <fieldset class="col-lg-12">
+                <div class="form-group">
+                    <label class="control-label">
+                        <h5>{{ model_name|title }}</h5>
+                    </label>
+                </div>
+                <div class="form-group" style="color: #a94442;">
+                    {{ form.errors }}
+                </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td colspan="10" style="vertical-align: top;">
+                                {% include 'clients/claim/snippets/biomechanical/gait2/patient_section.html' %}
+                                <table class="gait2-border">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="table_header">
+                                                PATIENT HISTORY
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="vertical-align: top;">
+                                                {{ form.patient_history|as_crispy_field }}
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <img src="{% static 'images/feet_bones.png' %}" width='150' />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="gait2-border">
+                                    <tr>
+                                        <td>
+                                            {% include 'clients/claim/snippets/biomechanical/gait2/biomechanical_evaluation.html' %}
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="gait2-border">
+                                    <tr>
+                                        <td>
+                                            {% include 'clients/claim/snippets/biomechanical/gait2/casting_method.html' %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group{% if form.date.errors %} has-error{% endif %}">
+                            <label class="control-label" for="{{ form.date.auto_id }}">
+                                {{ form.date.label }}{% if form.date.field.required %}*{% endif %}
+                            </label>
+                            {{ form.date|update_attrs:"class: form-control datepicker" }}
+                            {% if form.date.help_text %}
+                                <span class="help-block">
+                                    {{ form.date.help_text }}
+                                </span>
+                            {% endif %}
+                            {% if form.date.errors %}
+                                <span class="help-block">
+                                    {{ form.date.errors }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary" name="submit">
+                            {{ save_text|title }}
+                        </button>
+                        <a href="{{ cancel_url }}" class="btn btn-default">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block body_scripts %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        var startstringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+                var matches, substringRegex;
+
+                // an array that will be populated with substring matches
+                matches = [];
+
+                // regex used to determine if a string contains the substring `q`
+                substrRegex = new RegExp('^' + q, 'i');
+
+                // iterate through the pool of strings and for any string that
+                // contains the substring `q`, add it to the `matches` array
+                $.each(strs, function(i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+
+                cb(matches);
+            };
+        };
+    </script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                BIOMECHANICAL EVALUATION
+            </th>
+        </tr>
+    </thead>
+</table>
+<div><strong>Non Weight-Bearing Evaluation:</strong></div>
+<table>
+    <thead>
+        <tr>
+            <th>Calf</th>
+            <th>Rear Foot</th>
+            <th>Forefoot</th>
+            <th>Big Toe</th>
+            <th>Lesser Toes</th>
+            <th>Callous Signs</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ form.tight_calf_muscle|as_crispy_field }}</td>
+            <td>{{ form.heel_fat_pad_syndrome|as_crispy_field }}</td>
+            <td>{{ form.forefoot_valgus|as_crispy_field }}</td>
+            <td>{{ form.hallux_valgus|as_crispy_field }}</td>
+            <td>{{ form.overlapping|as_crispy_field }}</td>
+            <td rowspan="6">
+                <img alt="Callous Signs" src="{% static 'images/callous_signs.png' %}" width="103">
+            </td>
+        </tr>
+        <tr>
+            <td>{{ form.good_ankle_rom|as_crispy_field }}</td>
+            <td>{{ form.plantar_fascitis|as_crispy_field }}</td>
+            <td>{{ form.forefoot_varus|as_crispy_field }}</td>
+            <td>{{ form.hallux_rigidus_limitus|as_crispy_field }}</td>
+            <td>{{ form.hammer_toes|as_crispy_field }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.spider_veins|as_crispy_field }}</td>
+            <td>{{ form.achilles_tendonitis|as_crispy_field }}</td>
+            <td>{{ form.falling_transverse_arch|as_crispy_field }}</td>
+            <td>{{ form.first_ray_plantar_flexed|as_crispy_field }}</td>
+            <td>{{ form.fungus|as_crispy_field }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.shin_splint|as_crispy_field }}</td>
+            <td>{{ form.haglund|as_crispy_field }}</td>
+            <td>{{ form.metatarsalgia|as_crispy_field }}</td>
+            <td>{{ form.first_ray_dorsi_flexed|as_crispy_field }}</td>
+            <td>{{ form.morton_foot|as_crispy_field }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>{{ form.morton_neuroma|as_crispy_field }}</td>
+            <td>{{ form.bunion_bunionette|as_crispy_field }}</td>
+            <td>{{ form.fifth_toe_varus|as_crispy_field }}</td>
+        </tr>
+        <tr>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+    </tbody>
+</table>
+<div><strong>Weight-Bearing Evaluation:</strong></div>
+<table>
+    <thead>
+        <tr>
+            <th colspan="6"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ form.pronated_ankle|as_crispy_field }}</td>
+            <td>{{ form.low_medial_arch|as_crispy_field }}</td>
+            <td>{{ form.heel_valgus|as_crispy_field }}</td>
+            <td>{{ form.genu_valgum|as_crispy_field }}</td>
+            <td>{{ form.varicose|as_crispy_field }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{{ form.neutral|as_crispy_field }}</td>
+            <td>{{ form.medium_medial_arch|as_crispy_field }}</td>
+            <td>{{ form.heel_rectus|as_crispy_field }}</td>
+            <td>{{ form.straight_knees|as_crispy_field }}</td>
+            <td>{{ form.leg_length_discrepancy|as_crispy_field }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{{ form.supinated_ankle|as_crispy_field }}</td>
+            <td>{{ form.high_medial_arch|as_crispy_field }}</td>
+            <td>{{ form.heel_varus|as_crispy_field }}</td>
+            <td>{{ form.genu_varum|as_crispy_field }}</td>
+            <td>{{ form.swelling|as_crispy_field }}</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<div><strong>Gait Analysis:</strong></div>
+<table>
+    <thead>
+        <tr>
+            <th colspan="6"></th>
+        </tr>
+    </thead>
+    <tbody class="top_valign">
+        <tr>
+            <td>{{ form.narrow_gait|as_crispy_field }}</td>
+            <td>{{ form.toe_in_gait|as_crispy_field }}</td>
+            <td>{{ form.toe_out_gait|as_crispy_field }}</td>
+            <td>{{ form.neutral_gait|as_crispy_field }}</td>
+            <td>{{ form.medial_heel_pivot|as_crispy_field }}</td>
+            <td>{{ form.abducted_gait|as_crispy_field }}</td>
+        </tr>
+    </tbody>
+</table>
+<div><strong>Foot Type:</strong></div>
+<table>
+    <thead>
+        <tr>
+            <th colspan="6"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ form.pes_cavus|as_crispy_field }}</td>
+            <td>{{ form.mild_pes_platus|as_crispy_field }}</td>
+            <td>{{ form.neutral_foot|as_crispy_field }}</td>
+            <td>{{ form.moderate_pes_planus|as_crispy_field }}</td>
+            <td>{{ form.abductovarus_forefoot|as_crispy_field }}</td>
+            <td>{{ form.pes_planovalgus|as_crispy_field }}</td>
+        </tr>
+    </tbody>
+</table>

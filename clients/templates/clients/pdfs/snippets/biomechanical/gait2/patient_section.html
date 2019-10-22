@@ -1,0 +1,91 @@
+{% load static %}
+
+<table style="border: 1px solid #ccc; border-collapse: separate;">
+    <thead>
+        <tr>
+            <th colspan="5" class="table_header" style="border-radius: inherit;">
+                PATIENT SECTION (We might share the information on this form with your physician and your insurance)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="padding-top: 2px;">
+            <td colspan="2">
+                First Name
+                <br>
+                {{ biomechanical_gait.patient.first_name }}
+            </td>
+            <td colspan="2">
+                Last Name
+                <br>
+                {{ biomechanical_gait.patient.last_name }}
+            </td>
+            <td>
+                Birthdate
+                <br>
+                {{ biomechanical_gait.patient.birth_date }}
+            </td>
+        </tr>
+        <tr style="padding-top: 2px;">
+            <td colspan="3">
+                Address
+                <br>
+                {{ biomechanical_gait.patient.get_client.address }}
+            </td>
+            <td>
+                City
+                <br>
+                {{ biomechanical_gait.patient.get_client.city }}
+            </td>
+            <td>
+                Postal
+                <br>
+                {{ biomechanical_gait.patient.get_client.postal_code }}
+            </td>
+        </tr>
+        <tr style="padding-top: 2px;">
+            <td>
+                Phone
+                <br>
+                {{ biomechanical_gait.patient.get_client.phone_number }}
+            </td>
+            <td>
+                Alt.Phone
+                <br>
+                {{ biomechanical_gait.patient.get_client.cell_number }}
+            </td>
+            <td colspan="3">
+                Email
+                <br>
+                {{ biomechanical_gait.patient.get_client.email }}
+            </td>
+        </tr>
+        <tr style="padding-top: 2px;">
+            <td>
+                Height
+                <br>
+                {{ biomechanical_gait.height }}
+            </td>
+            <td>
+                Weight
+                <br>
+                {{ biomechanical_gait.weight }}
+            </td>
+            <td>
+                Shoe Size
+                <br>
+                {{ biomechanical_gait.shoe_size }}
+            </td>
+            <td>
+                Sex
+                <br>
+                {{ biomechanical_gait.patient.gender }}
+            </td>
+            <td>
+                Insurance
+                <br>
+                {{ biomechanical_gait.provider }}
+            </td>
+        </tr>
+    </tbody>
+</table>

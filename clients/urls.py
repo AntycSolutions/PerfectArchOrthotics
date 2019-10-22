@@ -106,6 +106,28 @@ biomechanical_gait_patterns = [
         name='biomechanical_gait_pdf'
     ),
 ]
+biomechanical_gait_2_patterns = [
+    urls.url(
+        r'^create/(?P<client_pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalGait2Create.as_view()),
+        name='biomechanical_gait_2_create'
+    ),
+    urls.url(
+        r'^update/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalGait2Update.as_view()),
+        name='biomechanical_gait_2_update'
+    ),
+    urls.url(
+        r'^delete/(?P<pk>\w+)/$',
+        login_required(biomechanical.BiomechanicalGait2Delete.as_view()),
+        name='biomechanical_gait_2_delete'
+    ),
+    urls.url(
+        r'^pdf/(?P<pk>\w+)/$',
+        login_required(biomechanical.biomechanical_gait_2_pdf),
+        name='biomechanical_gait_2_pdf'
+    ),
+]
 biomechanical_foot_patterns = [
     urls.url(
         r'^create/(?P<claim_pk>\w+)/$',
@@ -130,6 +152,7 @@ biomechanical_foot_patterns = [
 ]
 biomechanical_patterns = [
     url(r'^gait/', include(biomechanical_gait_patterns)),
+    url(r'^gait2/', include(biomechanical_gait_2_patterns)),
     url(r'^foot/', include(biomechanical_foot_patterns)),
 ]
 

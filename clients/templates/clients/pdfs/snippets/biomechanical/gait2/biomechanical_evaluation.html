@@ -1,0 +1,483 @@
+{% load static %}
+{% load verbose_name %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                BIOMECHANICAL EVALUATION
+            </th>
+        </tr>
+    </thead>
+</table>
+<div><strong>Non Weight-Bearing Evaluation:</strong></div>
+<table>
+    <tr>
+        <td colspan="9">
+            <table>
+                <thead>
+                    <tr style="font-weight: bold;">
+                        <td>Calf</td>
+                        <td>Rear Foot</td>
+                        <td>Forefoot</td>
+                        <td>Big Toe</td>
+                        <td>Lesser Toes</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.tight_calf_muscle %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'tight_calf_muscle' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.heel_fat_pad_syndrome %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'heel_fat_pad_syndrome' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.forefoot_valgus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'forefoot_valgus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.hallux_valgus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'hallux_valgus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.overlapping %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'overlapping' %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.good_ankle_rom %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'good_ankle_rom' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.plantar_fascitis %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'plantar_fascitis' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.forefoot_varus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'forefoot_varus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.hallux_rigidus_limitus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'hallux_rigidus_limitus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.hammer_toes %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'hammer_toes' %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.spider_veins %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'spider_veins' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.achilles_tendonitis %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'achilles_tendonitis' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.falling_transverse_arch %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'falling_transverse_arch' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.first_ray_plantar_flexed %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'first_ray_plantar_flexed' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.fungus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'fungus' %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.shin_splint %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'shin_splint' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.haglund %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'haglund' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.metatarsalgia %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'metatarsalgia' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.first_ray_dorsi_flexed %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'first_ray_dorsi_flexed' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.morton_foot %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'morton_foot' %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            {% if biomechanical_gait.morton_neuroma %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'morton_neuroma' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.bunion_bunionette %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'bunion_bunionette' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.fifth_toe_varus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'fifth_toe_varus' %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td rowspan="2" style="vertical-align: top; width: 113px;">
+            <strong>Callous&nbsp;Signs</strong>
+            <br>
+            <img alt="Callous Signs" src="{% static 'images/callous_signs.png' %}" width="113">
+        </td>
+    </tr>
+    <tr>
+        <td colspan="9">
+            <table>
+                <thead>
+                    <td colspan="2"><strong>Weight-Bearing Evaluation:</strong></td>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.pronated_ankle %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'pronated_ankle' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.low_medial_arch %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'low_medial_arch' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.heel_valgus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'heel_valgus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.genu_valgum %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'genu_valgum' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.varicose %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'varicose' %}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.neutral %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'neutral' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.medium_medial_arch %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;Medium&nbsp;medial&nbsp;arch
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.heel_rectus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'heel_rectus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.straight_knees %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'straight_knees' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.leg_length_discrepancy %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;Leg&nbsp;Length&nbsp;Discrepancy
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if biomechanical_gait.supinated_ankle %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'supinated_ankle' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.high_medial_arch %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'high_medial_arch' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.heel_varus %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'heel_varus' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.genu_varum %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'genu_varum' %}
+                        </td>
+                        <td>
+                            {% if biomechanical_gait.swelling %}
+                                <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                            {% else %}
+                                <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                            {% endif %}
+                            &nbsp;{% verbose_field_name biomechanical_gait 'swelling' %}
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+<div><strong>Gait Analysis:</strong></div>
+<table>
+    <tbody>
+        <tr>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.narrow_gait %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'narrow_gait' %}
+            </td>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.toe_in_gait %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'toe_in_gait' %}
+            </td>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.toe_out_gait %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'toe_out_gait' %}
+            </td>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.neutral_gait %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'neutral_gait' %}
+            </td>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.medial_heel_pivot %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'medial_heel_pivot' %}
+            </td>
+            <td style="vertical-align: top;">
+                {% if biomechanical_gait.abducted_gait %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'abducted_gait' %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div><strong>Foot Type:</strong></div>
+<table>
+    <tbody>
+        <tr>
+            <td>
+                {% if biomechanical_gait.pes_cavus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'pes_cavus' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.mild_pes_platus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'mild_pes_platus' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.neutral_foot %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'neutral_foot' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.moderate_pes_planus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'moderate_pes_planus' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.abductovarus_forefoot %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'abductovarus_forefoot' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.pes_planovalgus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'pes_planovalgus' %}
+            </td>
+        </tr>
+    </tbody>
+</table>

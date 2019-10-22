@@ -856,6 +856,31 @@
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
+            <div class="panel-title pull-left" style="padding-top: 7.5px;">
+                <a href="#toggle_biomechanical_gaits_2" data-toggle="collapse" data-target="#biomechanical_gaits_2">
+                    Biomechanical Gait 2 Examination Forms
+                    <span class="caret"></span>
+                </a>
+            </div>
+            <div class="btn-group pull-right">
+                <a href="{% url 'biomechanical_gait_2_create' client.pk %}" class="btn btn-default">
+                    Add Biomechanical Gait 2
+                </a>
+            </div>
+        </div>
+        <div id="biomechanical_gaits_2" class="panel-body collapse">
+            {% if biomechanical_gaits_2 %}
+                {% include 'clients/snippets/biomechanical_gaits_2.html' %}
+            {% else %}
+                <p>
+                    There are no Biomechanical Gaits 2 for this Client currently.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
                 <a href="#toggle_claims" data-toggle="collapse" data-target="#claims">
                     Claims

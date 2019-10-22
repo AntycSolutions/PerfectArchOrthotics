@@ -1,6 +1,8 @@
 from auditlog.registry import auditlog
 
-from .biomechanics import BiomechanicalFoot, BiomechanicalGait
+from .biomechanics import (
+    BiomechanicalFoot, BiomechanicalGait, BiomechanicalGait2
+)
 from .claims import Claim, ClaimAttachment, ClaimCoverage, ClaimItem, \
     ProofOfManufacturing, Receipt, Invoice
 from .clients import Person, Client, Dependent, Note
@@ -27,6 +29,7 @@ auditlog.register(ClaimItem)
 auditlog.register(InsuranceLetter)
 auditlog.register(ProofOfManufacturing)
 auditlog.register(BiomechanicalGait)
+auditlog.register(BiomechanicalGait2)
 auditlog.register(BiomechanicalFoot)
 auditlog.register(Laboratory)
 auditlog.register(Referral)

@@ -1,0 +1,51 @@
+
+<style type="text/css">
+    .bio_crud:not(:last-child) {
+        width: 86px;
+        margin-bottom: 5px;
+    }
+    .bio_crud:last-child {
+        width: 86px;
+    }
+</style>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Patient</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for biomechanical_gait in biomechanical_gaits_2 %}
+                <tr>
+                    {# from computed when width < 102 #}
+                    <td style="width: 102px;">
+                        <a id="biomechanical_gait_2_{{ biomechanical_gait.pk }}" class="anchor"></a>
+                        <a target="_blank" href="{% url 'biomechanical_gait_2_pdf' pk=biomechanical_gait.pk %}" class="btn btn-info bio_crud">
+                            Generate
+                        </a>
+                        <br />
+                        <a href="{% url 'biomechanical_gait_2_update' biomechanical_gait.pk %}" class="btn btn-default bio_crud">
+                            Update
+                        </a>
+                        <br />
+                        <a href="{% url 'biomechanical_gait_2_delete' biomechanical_gait.pk %}" class="btn btn-danger bio_crud">
+                            Delete
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ biomechanical_gait.patient.get_absolute_url }}">
+                            {{ biomechanical_gait.patient.full_name }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ biomechanical_gait.date }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

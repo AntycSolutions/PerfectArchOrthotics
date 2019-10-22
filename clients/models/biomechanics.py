@@ -584,10 +584,16 @@ class BiomechanicalFoot(models.Model, model_utils.FieldList):
         return "Claim ID: {}".format(self.claim_id)
 
 
-class Biomechanical(models.Model, model_utils.FieldList):
+class BiomechanicalGait2(models.Model, model_utils.FieldList):
     patient = models.ForeignKey(Person)
 
-    provider = models.CharField(max_length=128)
+    provider = models.CharField('Insurance', max_length=128)
+
+    weight = models.CharField(max_length=10, blank=True)
+    height = models.CharField(max_length=10, blank=True)
+    shoe_size = models.CharField(max_length=5, blank=True)
+
+    patient_history = models.TextField(blank=True)
 
     tight_calf_muscle = models.BooleanField(default=False)
     good_ankle_rom = models.BooleanField(
@@ -689,32 +695,47 @@ class Biomechanical(models.Model, model_utils.FieldList):
 
     plaster_moulding = models.BooleanField(default=False)
     foam_box = models.BooleanField(default=False)
-    three_d_laser_scan = models.BooleanField(default=False)
+    three_d_laser_scan = models.BooleanField('3D Laser Scan', default=False)
 
-    high_density_eva = models.BooleanField(default=False)
-    dual_density_eva = models.BooleanField(default=False)
-    rigid_polyethylene = models.BooleanField(default=False)
+    high_density_eva = models.BooleanField(
+        'High Density EVA 55 Duro', default=False
+    )
+    dual_density_eva = models.BooleanField(
+        'Dual Density EVA 55/35', default=False
+    )
+    rigid_polyethylene = models.BooleanField(
+        'Rigid Polyethylene RC500', default=False
+    )
 
     full = models.BooleanField(default=False)
     sulcus = models.BooleanField(default=False)
-    two_3_length = models.BooleanField(default=False)
+    two_3_length = models.BooleanField('2/3', default=False)
 
     leather = models.BooleanField(default=False)
-    poron_ppt = models.BooleanField(default=False)
-    eva_38 = models.BooleanField(default=False)
+    poron_ppt = models.BooleanField('Poron PPT', default=False)
+    eva_38 = models.BooleanField('EVA 38 duro', default=False)
     spenco = models.BooleanField(default=False)
+
     mild = models.BooleanField(default=False)
     good = models.BooleanField(default=False)
 
-    lateral_ff = models.BooleanField(default=False)
-    medial_rf = models.BooleanField(default=False)
-    rf_post = models.BooleanField(default=False)
-    medial_rf_post_heel_cup = models.BooleanField(default=False)
+    lateral_ff = models.BooleanField(
+        'Lateral FF Post Lateral RF Post', default=False
+    )
+    medial_rf = models.BooleanField(
+        'Medial RF Post Lateral FF Post', default=False
+    )
+    rf_post = models.BooleanField(
+        'RF Post Heel Cup Medium Arch', default=False
+    )
+    medial_rf_post_heel_cup = models.BooleanField(
+        'Medial RF Post Heel Cup', default=False
+    )
     medial_rf_post_medial_ff_post_heel_lift = models.BooleanField(
-        default=False
+        'Medial RF Post Medial FF Post Heel Lift', default=False
     )
     medial_rf_post_medial_ff_posting_heel_cup = models.BooleanField(
-        default=False
+        'Medial RF Post Medial FF Posting Heel Cup', default=False
     )
 
     date = models.DateField()
@@ -727,8 +748,7 @@ class Biomechanical(models.Model, model_utils.FieldList):
         }
 
     def get_absolute_url(self):
-        # TODO
-        url = '{}?toggle=biomechanical_gaits#biomechanical_gait_{}'.format(
+        url = '{}?toggle=biomechanical_gaits_2#biomechanical_gait_2_{}'.format(
             urlresolvers.reverse(
                 'client', kwargs={'client_id': self.patient.get_client().pk}
             ),

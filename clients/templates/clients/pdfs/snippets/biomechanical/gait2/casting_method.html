@@ -1,0 +1,221 @@
+{% load static %}
+{% load verbose_name %}
+
+<table>
+    <thead>
+        <tr>
+            <th class="table_header">
+                CASTING METHOD & PEDORTHIC TREATMENT
+            </th>
+        </tr>
+    </thead>
+</table>
+<table>
+    <thead>
+        <tr style="font-weight: bold;">
+            <td style="width: 125px;">Casting Method Tri-Dimensional</td>
+            <td style="width: 175px;">Material Used</td>
+            <td style="width: 75px;">Length</td>
+            <td style="width: 100px;">Cover</td>
+            <td style="width: 125px;">Metatarsal Pad</td>
+            <td style="width: 175px;">Footwear&nbsp;/&nbsp;Modification</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                {% if biomechanical_gait.plaster_moulding %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'plaster_moulding' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.high_density_eva %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'high_density_eva' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.full %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'full' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.leather %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'leather' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.mild %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'mild' %}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                {% if biomechanical_gait.foam_box %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'foam_box' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.dual_density_eva %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'dual_density_eva' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.sulcus %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'sulcus' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.poron_ppt %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'poron_ppt' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.good %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'good' %}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                {% if biomechanical_gait.three_d_laser_scan %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'three_d_laser_scan' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.rigid_polyethylene %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'rigid_polyethylene' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.two_3_length %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'two_3_length' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.eva_38 %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'eva_38' %}
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                {% if biomechanical_gait.spenco %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'spenco' %}
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<table>
+    <tbody>
+        <tr>
+            <td>
+                {% if biomechanical_gait.lateral_ff %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'lateral_ff' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.medial_rf %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'medial_rf' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.rf_post %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'rf_post' %}
+            </td>
+            <td>
+                {% if biomechanical_gait.medial_rf_post_heel_cup %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'medial_rf_post_heel_cup' %}
+            </td>
+            <td>
+
+                {% if biomechanical_gait.medial_rf_post_medial_ff_post_heel_lift %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'medial_rf_post_medial_ff_post_heel_lift' %}
+
+            </td>
+            <td>
+
+                {% if biomechanical_gait.medial_rf_post_medial_ff_posting_heel_cup %}
+                    <img src="{% static 'images/checked_box.png' %}" width="6.5" height="6.5">
+                {% else %}
+                    <img src="{% static 'images/unchecked_box.png' %}" width="6.5" height="6.5">
+                {% endif %}
+                &nbsp;{% verbose_field_name biomechanical_gait 'medial_rf_post_medial_ff_posting_heel_cup' %}
+
+            </td>
+        </tr>
+    </tbody>
+</table>
