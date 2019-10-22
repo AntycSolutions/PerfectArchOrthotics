@@ -5,7 +5,6 @@ from django.db import models as db_models
 from django.shortcuts import render
 
 from inventory import models as inventory_models
-from perfect_arch_orthotics import utils
 
 
 def index(request):
@@ -97,9 +96,3 @@ def inventory_csv(request):
         ] + shoe_attributes)
 
     return response
-
-
-def git_commit(request):
-    branch, commit_hash = utils.get_git_info()
-
-    return http.JsonResponse({'branch': branch, 'commit': commit_hash})
