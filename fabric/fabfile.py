@@ -13,9 +13,6 @@ prod_hosts = (
 all_hosts = prod_hosts + dev_host
 
 
-env.user = 'airith'
-
-
 @api.hosts(all_hosts)
 def update_all():
     update_server()
@@ -33,13 +30,15 @@ def update_prod():
 
 def update_server():
     if env.host == 'perfectarch.ca':
+        env.user = 'perfectarch'
+        path = '{}/PerfectArchOrthotics'
+    elif env.host == 'perfectarch.antyc.ca':
+        env.user = 'airith'
+        path = 'public_html/{}/PerfectArchOrthotics'
+    else:
         raise Exception('Unhandled')
 
-    with context_managers.cd(
-        'public_html/{}/PerfectArchOrthotics'.format(
-            env.host
-        )
-    ):
+    with context_managers.cd(path.format(env.host)):
         api.run('git pull -q')
 
         with api.prefix('source ../venv_perfect_arch/bin/activate'):
@@ -48,4 +47,4 @@ def update_server():
             api.run('python manage.py migrate -v 0')
             api.run('python manage.py collectstatic -v 0 --noinput')
 
-    api.sudo('service apache2 restart')
+    api.sudo('service apache2 reload')
