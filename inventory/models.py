@@ -100,7 +100,9 @@ class ShoeAttributes(models.Model, model_utils.FieldList):
         ).count()
 
     def returned(self):
-        return self.shoeorder_set.filter(returned_date__isnull=False).count()
+        return self.shoeorder_set.filter(
+            returned_date__isnull=False  # with
+        ).count()
 
     class Meta:
         unique_together = (('shoe', 'size'),)

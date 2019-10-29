@@ -24,12 +24,20 @@ class ShoeLookup(LookupChannel):
         ).prefetch_related(
             db_models.Prefetch(
                 'shoeorder_set',
-                # dispensed date with ordered date does not count as it implies
-                # +1 for ordered and -1 for dispensed
+                # see dispensed() in clients_models.ShoeAttributes
                 queryset=models.ShoeOrder.objects.filter(
                     dispensed_date__isnull=False,  # with
                     ordered_date__isnull=True  # without
-                )
+                ),
+                to_attr='dispensed_set'
+            ),
+            db_models.Prefetch(
+                'shoeorder_set',
+                # see returned() in clients_models.ShoeAttributes
+                queryset=models.ShoeOrder.objects.filter(
+                    returned_date__isnull=False  # with
+                ),
+                to_attr='returned_set'
             )
         ).filter(query)
 
@@ -47,9 +55,14 @@ class ShoeLookup(LookupChannel):
         if obj.shoe.colour:
             result += "Colour: %s " % (obj.shoe.colour)
 
-        dispensed = len(obj.shoeorder_set.all())  # uses Prefetch above
+        if hasattr(obj, 'dispensed_set'):  # use prefetch above
+            dispensed = len(obj.dispensed_set)
+            returned = len(obj.returned_set)
+        else:
+            dispensed = obj.dispensed()
+            returned = obj.returned()
         result += "Size: %s Quantity: %s" % (
-            obj.size, obj.quantity - dispensed
+            obj.size, obj.quantity - dispensed + returned
         )
 
         result = escape(force_text(result))

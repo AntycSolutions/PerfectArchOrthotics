@@ -34,8 +34,14 @@ class ShoeOrderForm(forms.ModelForm):
             # shoe needs to have been either ordered, dispensed, or
             #  ordered and dispensed
 
+            real_quantity = (
+                shoe_attributes.quantity -
+                shoe_attributes.dispensed() +
+                shoe_attributes.returned()
+            )
+
             dispensed_date_required = (
-                (shoe_attributes and shoe_attributes.quantity > 0) and
+                real_quantity > 0 and
                 not dispensed_date and
                 not ordered_date
             )
@@ -47,7 +53,7 @@ class ShoeOrderForm(forms.ModelForm):
                 )
 
             ordered_date_required = (
-                (shoe_attributes and shoe_attributes.quantity <= 0) and
+                real_quantity <= 0 and
                 not dispensed_date and
                 not ordered_date
             )
@@ -59,9 +65,10 @@ class ShoeOrderForm(forms.ModelForm):
                 )
 
             not_in_stock = (
-                (shoe_attributes and shoe_attributes.quantity <= 0) and
+                real_quantity <= 0 and
                 dispensed_date and
-                not ordered_date
+                not ordered_date and
+                not returned_date
             )
             if not_in_stock:
                 raise forms.ValidationError(

@@ -4,6 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from django.views.generic import TemplateView
+from django.db import models as db_models
 from django.db.models import Count, Sum, F, Q, Case, When, Prefetch
 from django.db.models.functions import Coalesce
 from django.core import urlresolvers
@@ -121,21 +122,30 @@ class InventoryOrdersStatistics(views_utils.PermissionMixin, TemplateView):
         shoe_attributes_list = shoe_attributes_objects.select_related(
             'shoe'
         ).prefetch_related(
-            Prefetch(
+            db_models.Prefetch(
                 'shoeorder_set',
                 # see dispensed() in clients_models.ShoeAttributes
                 queryset=inventory_models.ShoeOrder.objects.filter(
                     dispensed_date__isnull=False,  # with
                     ordered_date__isnull=True  # without
                 ),
-                to_attr="dispensed_set"
+                to_attr='dispensed_set'
+            ),
+            db_models.Prefetch(
+                'shoeorder_set',
+                # see returned() in clients_models.ShoeAttributes
+                queryset=inventory_models.ShoeOrder.objects.filter(
+                    returned_date__isnull=False  # with
+                ),
+                to_attr='returned_set'
             )
         )
         for shoe_attributes in shoe_attributes_list:
-            # use prefetched .dispensed_set instead of .dispensed() which
-            #  would result in a lot of queries
+            # use prefetch above
             actual_quantity = (
-                shoe_attributes.quantity - len(shoe_attributes.dispensed_set)
+                shoe_attributes.quantity -
+                len(shoe_attributes.dispensed_set) +
+                len(shoe_attributes.returned_set)
             )
             total_in_stock += actual_quantity
             total_cost_of_inventory += (

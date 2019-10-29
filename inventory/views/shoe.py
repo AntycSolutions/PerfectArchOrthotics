@@ -260,7 +260,8 @@ class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
                                 label="Quantity",
                                 initial=(
                                     form.instance.quantity -
-                                    form.instance.dispensed()
+                                    form.instance.dispensed() +
+                                    form.instance.returned()
                                 )
                             )
                         }
@@ -272,7 +273,7 @@ class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
         new_quantity = form.cleaned_data['new_quantity']
 
         obj = form.save(commit=commit)
-        obj.quantity = new_quantity + obj.dispensed()
+        obj.quantity = new_quantity + obj.dispensed() - obj.returned()
         if commit:
             obj.save()
 
