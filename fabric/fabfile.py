@@ -14,21 +14,21 @@ all_hosts = prod_hosts + dev_host
 
 
 @api.hosts(all_hosts)
-def update_all():
-    update_server()
+def update_all(branch=''):
+    update_server(branch=branch)
 
 
 @api.hosts(dev_host)
-def update_dev():
-    update_server()
+def update_dev(branch=''):
+    update_server(branch=branch)
 
 
 @api.hosts(prod_hosts)
-def update_prod():
-    update_server()
+def update_prod(branch=''):
+    update_server(branch=branch)
 
 
-def update_server():
+def update_server(branch=''):
     if env.host == 'perfectarch.ca':
         env.user = 'perfectarch'
         path = '{}/PerfectArchOrthotics'
@@ -40,6 +40,8 @@ def update_server():
 
     with context_managers.cd(path.format(env.host)):
         api.run('git pull -q')
+        if branch:
+            api.run('git checkout {}'.format(branch))
 
         with api.prefix('source ../venv_perfect_arch/bin/activate'):
             # without -q we get unicode issues
