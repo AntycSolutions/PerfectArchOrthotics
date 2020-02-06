@@ -47,6 +47,10 @@ def update_server(branch=''):
             # without -q we get unicode issues
             api.run('pip install -q -r requirements.txt')
             api.run('python manage.py migrate -v 0')
+            api.run(
+                'python manage.py loaddata -v 0'
+                ' perfect_arch_orthotics/fixtures/groups.json'
+            )
             api.run('python manage.py collectstatic -v 0 --noinput')
 
     api.sudo('service apache2 reload')
