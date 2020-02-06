@@ -362,8 +362,7 @@ class CreateProofOfManufacturingView(mixins.UserPassesTestMixin, CreateView):
 
 
 class CreateClaimWizard(
-    utils_wizard_views.FileStorageNamedUrlSessionWizardView,
-    mixins.UserPassesTestMixin,
+    utils_wizard_views.FileStorageNamedUrlSessionWizardView
 ):
     INFO = 'info'
     COVERAGES = 'coverages'
@@ -378,9 +377,6 @@ class CreateClaimWizard(
 
     class MissingPeriodDateException(BaseException):
         pass
-
-    def test_func(self):
-        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -500,6 +496,8 @@ class CreateClaimWizard(
         )
 
     def get(self, *args, **kwargs):
+        if not tt_groups.check_groups(self.request.user, 'Edit'):
+            return shortcuts.redirect('/')
         try:
             return super().get(*args, **kwargs)
         except self.SkippedStepException:
@@ -529,6 +527,8 @@ class CreateClaimWizard(
             return shortcuts.redirect(self.get_step_url(self.steps.first))
 
     def post(self, *args, **kwargs):
+        if not tt_groups.check_groups(self.request.user, 'Edit'):
+            return shortcuts.redirect('/')
         try:
             return super().post(*args, **kwargs)
         except self.SkippedStepException:
@@ -596,9 +596,6 @@ class CreateClaimWizard(
 
 class UpdateClaimWizard(CreateClaimWizard):
     instance = None
-
-    def test_func(self):
-        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         # skip CreateClaimWizard's context
