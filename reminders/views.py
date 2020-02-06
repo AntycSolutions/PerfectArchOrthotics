@@ -6,12 +6,14 @@ from django.core import urlresolvers, mail
 from django.conf import settings
 from django.template import loader
 from django.db import models as db_models
+from django.contrib.auth import mixins
 
 import twilio
 from django_twilio import client as django_twilio_client
 from utils import views_utils
 from simple_search import search
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients import models as clients_models
 
 from . import models as reminders_models, forms
@@ -391,12 +393,17 @@ def send_reminder_text_message(
 
 
 class UnpaidClaimReminderUpdate(
-    views_utils.AjaxResponseMixin, generic.UpdateView
+    mixins.UserPassesTestMixin,
+    views_utils.AjaxResponseMixin,
+    generic.UpdateView,
 ):
     template_name = 'reminders/reminders.html'
     model = reminders_models.UnpaidClaimReminder
     form_class = forms.UnpaidClaimReminderForm
     success_url = urlresolvers.reverse_lazy('reminders:reminders')
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -499,12 +506,17 @@ class UnpaidClaimReminderUpdate(
 
 
 class OrderArrivedReminderUpdate(
-    views_utils.AjaxResponseMixin, generic.UpdateView
+    mixins.UserPassesTestMixin,
+    views_utils.AjaxResponseMixin,
+    generic.UpdateView,
 ):
     template_name = 'reminders/reminders.html'
     model = reminders_models.OrderArrivedReminder
     form_class = forms.OrderArrivedReminderForm
     success_url = urlresolvers.reverse_lazy('reminders:reminders')
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -611,12 +623,17 @@ class OrderArrivedReminderUpdate(
 
 
 class BenefitsReminderUpdate(
-    views_utils.AjaxResponseMixin, generic.UpdateView
+    mixins.UserPassesTestMixin,
+    views_utils.AjaxResponseMixin,
+    generic.UpdateView,
 ):
     template_name = 'reminders/reminders.html'
     model = reminders_models.BenefitsReminder
     form_class = forms.BenefitsReminderForm
     success_url = urlresolvers.reverse_lazy('reminders:reminders')
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()

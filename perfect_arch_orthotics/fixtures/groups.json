@@ -89,5 +89,12 @@
         "fields": {
             "name": "Shoe_Info"
         }
+    },
+    {
+        "pk": 14,
+        "model": "auth.group",
+        "fields": {
+            "name": "Edit"
+        }
     }
 ]

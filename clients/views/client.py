@@ -1,16 +1,21 @@
 from django.core import urlresolvers
 from django.views.generic.edit import CreateView, DeleteView
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.models import Client
 from clients.forms.forms import ClientForm
 
 
-class CreateClientView(CreateView):
+class CreateClientView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'clients/client/create_client.html'
     model = Client
     form_class = ClientForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_success_url(self):
         client_id = self.object.id
@@ -20,12 +25,17 @@ class CreateClientView(CreateView):
         return self.success_url
 
 
-class DeleteClientView(views_utils.PermissionMixin, DeleteView):
+class DeleteClientView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = Client
     slug_field = "id"
     slug_url_kwarg = "client_id"
     success_url = urlresolvers.reverse_lazy('client_list')
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

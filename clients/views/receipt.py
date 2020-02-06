@@ -4,18 +4,23 @@ from django import http
 from django.views import generic
 from django.conf import settings
 from django.core import urlresolvers
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.views import views
 from clients.forms import forms
 from clients import models
 
 
-class ReceiptCreate(generic.CreateView):
+class ReceiptCreate(mixins.UserPassesTestMixin, generic.CreateView):
     model = models.Receipt
     form_class = forms.ReceiptForm
     template_name = 'utils/generics/create.html'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,10 +70,13 @@ class ReceiptDetail(generic.DetailView):
         return context
 
 
-class ReceiptUpdate(generic.UpdateView):
+class ReceiptUpdate(mixins.UserPassesTestMixin, generic.UpdateView):
     model = models.Receipt
     form_class = forms.ReceiptForm
     template_name = 'utils/generics/update.html'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,9 +87,16 @@ class ReceiptUpdate(generic.UpdateView):
         return context
 
 
-class ReceiptDelete(views_utils.PermissionMixin, generic.DeleteView):
+class ReceiptDelete(
+    mixins.UserPassesTestMixin,
+    views_utils.PermissionMixin,
+    generic.DeleteView,
+):
     model = models.Receipt
     template_name = 'utils/generics/delete.html'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

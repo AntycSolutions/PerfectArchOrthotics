@@ -1024,6 +1024,9 @@ def _order_info(person, request):
 
 @login_required
 def add_client(request):
+    has_edit = tt_groups.check_groups(request.user, 'Edit')
+    if not has_edit:
+        return redirect('/')
     if request.method == 'POST':
         form = ClientForm(request.POST)
 
@@ -1049,6 +1052,9 @@ def add_client(request):
 
 @login_required
 def editClientView(request, client_id):
+    has_edit = tt_groups.check_groups(request.user, 'Edit')
+    if not has_edit:
+        return redirect('/')
     try:
         client = Client.objects.get(id=client_id)
     except Client.DoesNotExist:
@@ -1079,6 +1085,10 @@ def editClientView(request, client_id):
 
 @login_required
 def editDependentsView(request, client_id, dependent_id):
+    has_edit = tt_groups.check_groups(request.user, 'Edit')
+    if not has_edit:
+        return redirect('/')
+
     context = {}
 
     try:
@@ -1119,6 +1129,10 @@ def editDependentsView(request, client_id, dependent_id):
 
 @login_required
 def add_new_dependent(request, client_id):
+    has_edit = tt_groups.check_groups(request.user, 'Edit')
+    if not has_edit:
+        return redirect('/')
+
     context = {}
 
     try:
@@ -1155,6 +1169,10 @@ def add_new_dependent(request, client_id):
 
 @login_required
 def add_dependent(request, client_id):
+    has_edit = tt_groups.check_groups(request.user, 'Edit')
+    if not has_edit:
+        return redirect('/')
+
     context = {}
 
     if request.method == 'POST':

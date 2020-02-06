@@ -7,6 +7,7 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.staticfiles.templatetags import staticfiles
+from django.contrib.auth import mixins
 
 from utils import views_utils
 from simple_search import search
@@ -144,10 +145,13 @@ class ListOrderView(ListView):
         )
 
 
-class ShoeCreateOrderView(CreateView):
+class ShoeCreateOrderView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = models.ShoeOrder
     form_class = forms.ShoeOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -195,10 +199,13 @@ class ShoeCreateOrderView(CreateView):
         return self.success_url
 
 
-class CoverageCreateOrderView(CreateView):
+class CoverageCreateOrderView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = models.CoverageOrder
     form_class = forms.CoverageOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -255,10 +262,13 @@ class CoverageCreateOrderView(CreateView):
         return self.success_url
 
 
-class AdjustmentCreateOrderView(CreateView):
+class AdjustmentCreateOrderView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = models.AdjustmentOrder
     form_class = forms.AdjustmentOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -341,10 +351,13 @@ class AdjustmentDetailOrderView(DetailView):
         return context
 
 
-class ShoeUpdateOrderView(UpdateView):
+class ShoeUpdateOrderView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = models.ShoeOrder
     form_class = forms.ShoeOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -384,10 +397,13 @@ class ShoeUpdateOrderView(UpdateView):
         return self.success_url
 
 
-class CoverageUpdateOrderView(UpdateView):
+class CoverageUpdateOrderView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = models.CoverageOrder
     form_class = forms.CoverageOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -427,10 +443,13 @@ class CoverageUpdateOrderView(UpdateView):
         return self.success_url
 
 
-class AdjustmentUpdateOrderView(UpdateView):
+class AdjustmentUpdateOrderView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = models.AdjustmentOrder
     form_class = forms.AdjustmentOrderForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -468,9 +487,14 @@ class AdjustmentUpdateOrderView(UpdateView):
         return self.success_url
 
 
-class ShoeDeleteOrderView(views_utils.PermissionMixin, DeleteView):
+class ShoeDeleteOrderView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = models.ShoeOrder
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -494,9 +518,14 @@ class ShoeDeleteOrderView(views_utils.PermissionMixin, DeleteView):
         return self.success_url
 
 
-class CoverageDeleteOrderView(views_utils.PermissionMixin, DeleteView):
+class CoverageDeleteOrderView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = models.CoverageOrder
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -520,9 +549,14 @@ class CoverageDeleteOrderView(views_utils.PermissionMixin, DeleteView):
         return self.success_url
 
 
-class AdjustmentDeleteOrderView(views_utils.PermissionMixin, DeleteView):
+class AdjustmentDeleteOrderView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = models.AdjustmentOrder
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

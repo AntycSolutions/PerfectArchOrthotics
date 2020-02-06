@@ -5,18 +5,23 @@ from django import shortcuts
 from django.views import generic
 from django.conf import settings
 from django.core import urlresolvers
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients import models as clients_models
 from clients.views import views as clients_views
 from clients.forms import claim_forms
 
 
-class BiomechanicalGaitCreate(generic.CreateView):
+class BiomechanicalGaitCreate(mixins.UserPassesTestMixin, generic.CreateView):
     model = clients_models.BiomechanicalGait
     template_name = 'clients/claim/biomechanical_gait.html'
     form_class = claim_forms.BiomechanicalGaitModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -57,10 +62,13 @@ class BiomechanicalGaitCreate(generic.CreateView):
         return context
 
 
-class BiomechanicalGaitUpdate(generic.UpdateView):
+class BiomechanicalGaitUpdate(mixins.UserPassesTestMixin, generic.UpdateView):
     model = clients_models.BiomechanicalGait
     template_name = 'clients/claim/biomechanical_gait.html'
     form_class = claim_forms.BiomechanicalGaitModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,9 +98,16 @@ class BiomechanicalGaitUpdate(generic.UpdateView):
         return context
 
 
-class BiomechanicalGaitDelete(views_utils.PermissionMixin, generic.DeleteView):
+class BiomechanicalGaitDelete(
+    mixins.UserPassesTestMixin,
+    views_utils.PermissionMixin,
+    generic.DeleteView,
+):
     model = clients_models.BiomechanicalGait
     template_name = 'utils/generics/delete.html'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -149,10 +164,13 @@ def biomechanical_gait_pdf(request, pk):
     )
 
 
-class BiomechanicalGait2Create(generic.CreateView):
+class BiomechanicalGait2Create(mixins.UserPassesTestMixin, generic.CreateView):
     model = clients_models.BiomechanicalGait2
     template_name = 'clients/claim/biomechanical_gait_2.html'
     form_class = claim_forms.BiomechanicalGait2ModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -193,10 +211,13 @@ class BiomechanicalGait2Create(generic.CreateView):
         return context
 
 
-class BiomechanicalGait2Update(generic.UpdateView):
+class BiomechanicalGait2Update(mixins.UserPassesTestMixin, generic.UpdateView):
     model = clients_models.BiomechanicalGait2
     template_name = 'clients/claim/biomechanical_gait_2.html'
     form_class = claim_forms.BiomechanicalGait2ModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -227,10 +248,13 @@ class BiomechanicalGait2Update(generic.UpdateView):
 
 
 class BiomechanicalGait2Delete(
-    views_utils.PermissionMixin, generic.DeleteView
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, generic.DeleteView
 ):
     model = clients_models.BiomechanicalGait2
     template_name = 'utils/generics/delete.html'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -282,10 +306,13 @@ def biomechanical_gait_2_pdf(request, pk):
     )
 
 
-class BiomechanicalFootCreate(generic.CreateView):
+class BiomechanicalFootCreate(mixins.UserPassesTestMixin, generic.CreateView):
     model = clients_models.BiomechanicalFoot
     template_name = 'clients/claim/biomechanical_foot.html'
     form_class = claim_forms.BiomechanicalFootModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -306,10 +333,13 @@ class BiomechanicalFootCreate(generic.CreateView):
         return http.HttpResponseRedirect(self.get_success_url())
 
 
-class BiomechanicalFootUpdate(generic.UpdateView):
+class BiomechanicalFootUpdate(mixins.UserPassesTestMixin, generic.UpdateView):
     model = clients_models.BiomechanicalFoot
     template_name = 'clients/claim/biomechanical_foot.html'
     form_class = claim_forms.BiomechanicalFootModelForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

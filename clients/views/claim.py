@@ -14,12 +14,14 @@ from django.utils.translation import ugettext as trans
 from django.utils import safestring
 from django.db import utils as db_utils
 from django.contrib import messages
+from django.contrib.auth import mixins
 
 from formtools.wizard import views as wizard_views, forms as wizard_forms
 
 from utils import views_utils
 from utils.wizard import views as utils_wizard_views
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.models import Claim, Invoice, InsuranceLetter, \
     ProofOfManufacturing, Client, Coverage
 from clients import models as clients_models
@@ -34,12 +36,15 @@ class DetailClaimView(DetailView):
     model = Claim
 
 
-class DeleteClaimView(views_utils.PermissionMixin, DeleteView):
+class DeleteClaimView(mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView):
     template_name = 'utils/generics/delete.html'
     model = Claim
     slug_field = "id"
     slug_url_kwarg = "claim_id"
     success_url = urlresolvers.reverse_lazy('claims')
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -58,12 +63,15 @@ class DeleteClaimView(views_utils.PermissionMixin, DeleteView):
         return context
 
 
-class UpdateInvoiceView(UpdateView):
+class UpdateInvoiceView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'clients/claim/update_invoice.html'
     model = Invoice
     form_class = InvoiceForm
     slug_field = "id"
     slug_url_kwarg = "invoice_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,10 +88,13 @@ class UpdateInvoiceView(UpdateView):
         return self.success_url
 
 
-class CreateInvoiceView(CreateView):
+class CreateInvoiceView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'clients/claim/create_invoice.html'
     model = Invoice
     form_class = InvoiceForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,12 +150,15 @@ class CreateInvoiceView(CreateView):
         return self.success_url
 
 
-class UpdateInsuranceLetterView(UpdateView):
+class UpdateInsuranceLetterView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'clients/claim/update_insurance_letter.html'
     model = InsuranceLetter
     form_class = InsuranceLetterForm
     slug_field = "id"
     slug_url_kwarg = "insurance_letter_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -198,10 +212,13 @@ class UpdateInsuranceLetterView(UpdateView):
         return self.success_url
 
 
-class CreateInsuranceLetterView(CreateView):
+class CreateInsuranceLetterView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'clients/claim/create_insurance_letter.html'
     model = InsuranceLetter
     form_class = InsuranceLetterForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -285,10 +302,13 @@ class CreateInsuranceLetterView(CreateView):
         return self.success_url
 
 
-class CreateProofOfManufacturingView(CreateView):
+class CreateProofOfManufacturingView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'clients/claim/create_proof_of_manufacturing.html'
     model = ProofOfManufacturing
     form_class = ProofOfManufacturingForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -342,7 +362,8 @@ class CreateProofOfManufacturingView(CreateView):
 
 
 class CreateClaimWizard(
-    utils_wizard_views.FileStorageNamedUrlSessionWizardView
+    utils_wizard_views.FileStorageNamedUrlSessionWizardView,
+    mixins.UserPassesTestMixin,
 ):
     INFO = 'info'
     COVERAGES = 'coverages'
@@ -357,6 +378,9 @@ class CreateClaimWizard(
 
     class MissingPeriodDateException(BaseException):
         pass
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -572,6 +596,9 @@ class CreateClaimWizard(
 
 class UpdateClaimWizard(CreateClaimWizard):
     instance = None
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         # skip CreateClaimWizard's context

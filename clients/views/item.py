@@ -4,17 +4,22 @@ import collections
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from simple_search.utils import get_query
 from clients.models import Item
 
 
-class CreateItemView(CreateView):
+class CreateItemView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = Item
     fields = '__all__'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super(CreateItemView, self).get_context_data(**kwargs)
@@ -141,10 +146,13 @@ class DetailItemView(DetailView):
         return context
 
 
-class UpdateItemView(UpdateView):
+class UpdateItemView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = Item
     fields = '__all__'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -160,9 +168,14 @@ class UpdateItemView(UpdateView):
         return self.success_url
 
 
-class DeleteItemView(views_utils.PermissionMixin, DeleteView):
+class DeleteItemView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = Item
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

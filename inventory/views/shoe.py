@@ -9,17 +9,22 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 from django.forms import fields as form_fields
 from django.forms.models import BaseInlineFormSet
+from django.contrib.auth import mixins
 
 from simple_search.utils import get_query
 from utils import model_utils, views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from inventory.models import Shoe, ShoeAttributes
 
 
-class CreateShoeView(CreateView):
+class CreateShoeView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = Shoe
     fields = '__all__'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get(self, request, *args, **kwargs):
         self.object = None
@@ -280,10 +285,13 @@ class BaseShoeShoeAttributesFormSet(BaseInlineFormSet):
         return obj
 
 
-class UpdateShoeView(UpdateView):
+class UpdateShoeView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = Shoe
     fields = '__all__'
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -383,9 +391,14 @@ class UpdateShoeView(UpdateView):
         return self.success_url
 
 
-class DeleteShoeView(views_utils.PermissionMixin, DeleteView):
+class DeleteShoeView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = Shoe
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

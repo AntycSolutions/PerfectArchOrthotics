@@ -1,13 +1,20 @@
 from django.views.generic.edit import DeleteView
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients import models as clients_models
 
 
-class DeleteDependentView(views_utils.PermissionMixin, DeleteView):
+class DeleteDependentView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = clients_models.Dependent
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {

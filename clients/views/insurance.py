@@ -2,19 +2,24 @@ from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.core import urlresolvers
 from django.contrib.staticfiles.templatetags import staticfiles
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.models import Insurance, Client, Dependent, Coverage
 from clients.forms import insurance_forms
 
 
-class UpdateInsuranceView(UpdateView):
+class UpdateInsuranceView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'utils/generics/update.html'
     model = Insurance
     form_class = insurance_forms.InsuranceForm
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -75,11 +80,16 @@ class UpdateInsuranceView(UpdateView):
         return self.success_url
 
 
-class DeleteInsuranceView(views_utils.PermissionMixin, DeleteView):
+class DeleteInsuranceView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'utils/generics/delete.html'
     model = Insurance
     slug_field = "id"
     slug_url_kwarg = "insurance_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
@@ -104,10 +114,13 @@ class DeleteInsuranceView(views_utils.PermissionMixin, DeleteView):
         return self.success_url
 
 
-class CreateInsuranceView(CreateView):
+class CreateInsuranceView(mixins.UserPassesTestMixin, CreateView):
     template_name = 'utils/generics/create.html'
     model = Insurance
     form_class = insurance_forms.InsuranceForm
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

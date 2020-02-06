@@ -102,6 +102,8 @@
 
 {% block content %}
 
+    {% csrf_token %}
+
     {% get_groups user as user_groups %}
 
     <h1>{{ client.full_name }}</h1>

@@ -1,18 +1,23 @@
 from django.core import urlresolvers
 from django.views.generic.edit import UpdateView, DeleteView
+from django.contrib.auth import mixins
 
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.models import Coverage
 from clients.forms.forms import CoverageForm
 
 
-class UpdateCoverageView(UpdateView):
+class UpdateCoverageView(mixins.UserPassesTestMixin, UpdateView):
     template_name = 'clients/coverage_type/update_coverage.html'
     model = Coverage
     form_class = CoverageForm
     slug_field = "id"
     slug_url_kwarg = "coverage_type_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_success_url(self):
         if 'client_id' in self.kwargs:
@@ -32,11 +37,16 @@ class UpdateCoverageView(UpdateView):
 
 # TODO: delete? it is unused, need to check permissions when updating insurance
 #  as you can delete coverage there
-class DeleteCoverageView(views_utils.PermissionMixin, DeleteView):
+class DeleteCoverageView(
+    mixins.UserPassesTestMixin, views_utils.PermissionMixin, DeleteView
+):
     template_name = 'clients/coverage_type/delete_coverage.html'
     model = Coverage
     slug_field = "id"
     slug_url_kwarg = "coverage_type_id"
+
+    def test_func(self):
+        return tt_groups.check_groups(self.request.user, 'Edit')
 
     def get_permissions(self):
         permissions = {
