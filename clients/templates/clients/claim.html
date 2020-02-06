@@ -3,6 +3,7 @@
 {% load verbose_name %}
 {% load pipeline %}
 {% load fallback_tags %}
+{% load groups %}
 
 {% block title %} - Claim for {{ claim.patient.full_name }}{% endblock %}
 
@@ -56,28 +57,32 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-lg-2 control-label">
-                        Insurance Provider(s)
-                    </label>
-                    <div class="col-lg-10">
-                        <p class="form-control-static">
-                            {% for insurance in claim.insurances.all %}
-                                {{ insurance.provider }}{% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        </p>
+                {% if groups.Insurance_Info in user_groups %}
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">
+                            Insurance Provider(s)
+                        </label>
+                        <div class="col-lg-10">
+                            <p class="form-control-static">
+                                {% for insurance in claim.insurances.all %}
+                                    {{ insurance.provider }}{% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-2 control-label">
-                        {% verbose_field_name claim.patient "employer" %}
-                    </label>
-                    <div class="col-lg-10">
-                        <p class="form-control-static">
-                            {{ claim.patient.employer }}
-                        </p>
+                {% endif %}
+                {% if groups.Insurance_Info in user_groups %}
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">
+                            {% verbose_field_name claim.patient "employer" %}
+                        </label>
+                        <div class="col-lg-10">
+                            <p class="form-control-static">
+                                {{ claim.patient.employer }}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
                 <div class="form-group">
                     <label class="col-lg-2 control-label">
                         {% verbose_field_name claim "submitted_datetime" %}
@@ -123,16 +128,24 @@
                     <tr>
                         <th>Total Amount Claimed</th>
                         <th>Total Quantity Claimed</th>
-                        <th>Total Expected Back</th>
+                        <th>
+                            {% if groups.Insurance_Info in user_groups %}
+                                Total Expected Back
+                            {% endif %}
+                        </th>
                         {% comment %}
                             <th>Total Max Quantity</th>
                             <th>Total Max Expected Back</th>
                         {% endcomment %}
                         <th>
-                            Total Max Quantity Period
+                            {% if groups.Insurance_Info in user_groups %}
+                                Total Max Quantity Period
+                            {% endif %}
                         </th>
                         <th>
-                            Total Max Expected Back Period
+                            {% if groups.Insurance_Info in user_groups %}
+                                Total Max Expected Back Period
+                            {% endif %}
                         </th>
                     </tr>
                     </thead>
@@ -142,7 +155,11 @@
                             <td>{{ totals.total_amount_claimed }}</td>
                             <td>{{ totals.total_quantity_claimed }}</td>
                         {% endwith %}
-                        <td>{{ claim.total_expected_back }}</td>
+                        <td>
+                            {% if groups.Insurance_Info in user_groups %}
+                                {{ claim.total_expected_back }}
+                            {% endif %}
+                        </td>
                         {% comment %}
                             {% with totals=claim.total_max_expected_back_quantity %}
                                 <td>{{ totals.total_max_quantity }}</td>
@@ -152,10 +169,14 @@
                         {% if not invalid_coverages %}
                             {% with totals=claim.total_max_expected_back_quantity_period %}
                                 <td>
-                                    {{ totals.total_max_quantity }}
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        {{ totals.total_max_quantity }}
+                                    {% endif %}
                                 </td>
                                 <td>
-                                    {{ totals.total_max_expected_back }}
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        {{ totals.total_max_expected_back }}
+                                    {% endif %}
                                 </td>
                             {% endwith %}
                         {% else %}
@@ -182,19 +203,29 @@
                                 <th>Quantity Remaining</th>
                                 <th>Total Amount</th>
                                 <th>Total Quantity</th>
-                                <th>{% verbose_field_name claim_coverage_class "expected_back" %}</th>
+                                <th>
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        {% verbose_field_name claim_coverage_class "expected_back" %}
+                                    {% endif %}
+                                </th>
                                 {% comment %}
                                     <th>Max Quantity</th>
                                     <th>Max Expected Back</th>
                                 {% endcomment %}
                                 <th>
-                                    Max Quantity Period
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        Max Quantity Period
+                                    {% endif %}
                                 </th>
                                 <th>
-                                    Max Expected Back Period
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        Max Expected Back Period
+                                    {% endif %}
                                 </th>
                                 <th>
-                                    Actual Paid Date
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        Actual Paid Date
+                                    {% endif %}
                                 </th>
                             </tr>
                         </thead>
@@ -213,7 +244,11 @@
                                     <td>{{ totals.total_amount }}</td>
                                     <td>{{ totals.total_quantity }}</td>
                                 {% endwith %}
-                                <td>{{ claim_coverage.expected_back }}</td>
+                                <td>
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        {{ claim_coverage.expected_back }}
+                                    {% endif %}
+                                </td>
                                 {% comment %}
                                     {% with maxes=claim_coverage.max_expected_back_quantity %}
                                         <td>{{ maxes.max_quantity }}</td>
@@ -223,10 +258,14 @@
                                 {% if not invalid_coverages %}
                                     {% with maxes=claim_coverage.max_expected_back_quantity_period %}
                                         <td>
-                                            {{ maxes.max_quantity }}
+                                            {% if groups.Insurance_Info in user_groups %}
+                                                {{ maxes.max_quantity }}
+                                            {% endif %}
                                         </td>
                                         <td>
-                                            {{ maxes.max_expected_back }}
+                                            {% if groups.Insurance_Info in user_groups %}
+                                                {{ maxes.max_expected_back }}
+                                            {% endif %}
                                         </td>
                                     {% endwith %}
                                 {% else %}
@@ -237,7 +276,11 @@
                                         Cannot calculate without Period Date
                                     </td>
                                 {% endif %}
-                                <td>{{ claim_coverage.actual_paid_date }}</td>
+                                <td>
+                                    {% if groups.Insurance_Info in user_groups %}
+                                        {{ claim_coverage.actual_paid_date }}
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="1"><ul class="pull-right"><li>Items:</li></ul></td>

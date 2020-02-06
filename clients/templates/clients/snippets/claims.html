@@ -19,16 +19,22 @@
                     Patient
                 </th>
                 <th>
-                    Provider(s)
+                    {% if groups.Insurance_Info in user_groups %}
+                        Provider(s)
+                    {% endif %}
                 </th>
                 <th>
-                    Employer
+                    {% if groups.Insurance_Info in user_groups %}
+                        Employer
+                    {% endif %}
                 </th>
                 <th>
                     Submitted Datetime
                 </th>
                 <th>
-                    Insurance Paid Date
+                    {% if groups.Insurance_Info in user_groups %}
+                        Insurance Paid Date
+                    {% endif %}
                 </th>
                 <th>
                     Total Amount Claimed
@@ -37,7 +43,9 @@
                     Total Quantity Claimed
                 </th>
                 <th>
-                    Total Expected Back
+                    {% if groups.Insurance_Info in user_groups %}
+                        Total Expected Back
+                    {% endif %}
                 </th>
                 {% comment %}
                     <th>
@@ -100,7 +108,9 @@
                         </td>
                     {% endwith %}
                     <td>
-                        {{ claim.total_expected_back }}
+                        {% if groups.Insurance_Info in user_groups %}
+                            {{ claim.total_expected_back }}
+                        {% endif %}
                     </td>
                     {% comment %}
                         {% with totals=claim.total_max_expected_back_quantity %}
@@ -164,7 +174,9 @@
                                                 Total Quantity
                                             </th>
                                             <th>
-                                                Expected Back
+                                                {% if groups.Insurance_Info in user_groups %}
+                                                    Expected Back
+                                                {% endif %}
                                             </th>
                                             {% comment %}
                                                 <th>
@@ -178,7 +190,9 @@
                                                 Payment Type
                                             </th>
                                             <th>
-                                                Actual Paid Date
+                                                {% if groups.Insurance_Info in user_groups %}
+                                                    Actual Paid Date
+                                                {% endif %}
                                             </th>
                                         </tr>
                                     </thead>
@@ -197,7 +211,9 @@
                                                     </td>
                                                 {% endwith %}
                                                 <td>
-                                                    {{ claim_coverage.expected_back }}
+                                                    {% if groups.Insurance_Info in user_groups %}
+                                                        {{ claim_coverage.expected_back }}
+                                                    {% endif %}
                                                 </td>
                                                 {% comment %}
                                                     {% with maxes=claim_coverage.max_expected_back_quantity %}
