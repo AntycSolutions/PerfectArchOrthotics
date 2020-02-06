@@ -21,6 +21,7 @@ from crispy_forms import helper
 from simple_search.utils import get_query, get_date_query
 from utils import views_utils
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients.models import Client, Dependent, Claim, Insurance, \
     Item, Coverage, ClaimItem, ClaimCoverage
 from clients import models as clients_models
@@ -659,6 +660,9 @@ def clientView(request, client_id):
     if client.order_set.exists():
         orders.append(_order_info(client, request))
     context['orders'] = orders
+    has_shoe_info = tt_groups.check_groups(request.user, 'Shoe_Info')
+    if not has_shoe_info:
+        context['hidden_order_fields'] = ['description']
 
     spouse = None
     children = []
@@ -983,31 +987,37 @@ def _order_info(person, request):
         request, '%s_rows_per_page' % person.pk
     )
 
+    has_shoe_info = tt_groups.check_groups(request.user, 'Shoe_Info')
+    order_set = person.order_set.all().extra(
+        select={
+            'null_both': ' inventory_order.dispensed_date'
+                         ' is null'
+                         ' and inventory_order.ordered_date'
+                         ' is null',
+            'null_dispensed_date': ' inventory_order.dispensed_date'
+                                   ' is null',
+            # 'null_ordered_date': ' inventory_order.ordered_date'
+            #                      ' is null',
+        }
+    ).order_by(
+        'null_both',
+        'null_dispensed_date',
+        '-dispensed_date',
+        '-ordered_date',
+        # '-null_ordered_date',
+    )
+    if not has_shoe_info:
+        order_set = order_set.exclude(order_type=inventory_models.Order.SHOE)
+
     return OrderInfo(
         person.pk,
         person.full_name(),
         views_utils._paginate(
             request,
-            person.order_set.all().extra(
-                select={
-                    'null_both': ' inventory_order.dispensed_date'
-                                 ' is null'
-                                 ' and inventory_order.ordered_date'
-                                 ' is null',
-                    'null_dispensed_date': ' inventory_order.dispensed_date'
-                                           ' is null',
-                    # 'null_ordered_date': ' inventory_order.ordered_date'
-                    #                      ' is null',
-                }
-            ).order_by(
-                'null_both',
-                'null_dispensed_date',
-                '-dispensed_date',
-                '-ordered_date',
-                # '-null_ordered_date',
-            ),
+            order_set,
             '%s_page' % person.pk,
-            rows_per_page),
+            rows_per_page
+        ),
         rows_per_page
     )
 

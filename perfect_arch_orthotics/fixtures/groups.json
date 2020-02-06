@@ -61,5 +61,33 @@
         "fields": {
             "name": "Statistics"
         }
+    },
+    {
+        "pk": 10,
+        "model": "auth.group",
+        "fields": {
+            "name": "Notes"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "auth.group",
+        "fields": {
+            "name": "Referrals"
+        }
+    },
+    {
+        "pk": 12,
+        "model": "auth.group",
+        "fields": {
+            "name": "Insurance_Info"
+        }
+    },
+    {
+        "pk": 13,
+        "model": "auth.group",
+        "fields": {
+            "name": "Shoe_Info"
+        }
     }
 ]

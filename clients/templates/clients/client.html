@@ -6,6 +6,7 @@
 {% load nbsp %}
 {% load pipeline %}
 {% load fallback_tags %}
+{% load groups %}
 
 {% block title %} - {{ client.full_name }}{% endblock %}
 
@@ -100,6 +101,8 @@
 </script>
 
 {% block content %}
+
+    {% get_groups user as user_groups %}
 
     <h1>{{ client.full_name }}</h1>
 
@@ -302,6 +305,7 @@
                                 </h5>
                             </label>
                         </div>
+                        {% if groups.Shoe_Info in user_groups %}
                         <div class="form-group">
                             <label class="col-lg-4 control-label">
                                 Credit
@@ -312,6 +316,8 @@
                                 </p>
                             </div>
                         </div>
+                        {% endif %}
+                        {% if groups.Notes in user_groups %}
                         <div class="form-group">
                             <label class="col-lg-4 control-label">
                                 {% verbose_field_name client "notes" %}
@@ -322,6 +328,7 @@
                                 </p>
                             </div>
                         </div>
+                        {% endif %}
                         <div class="form-group">
                             <label class="col-lg-4 control-label">
                                 {% verbose_field_name client "created" %}
@@ -375,6 +382,7 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    {% if groups.Notes in user_groups %}
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
@@ -520,7 +528,9 @@
             </div>{# /.panel-body #}
         </div>
     </div>
+    {% endif %}
 
+    {% if groups.Referrals in user_groups %}
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
@@ -629,6 +639,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
@@ -808,6 +819,7 @@
         </div>
     </div>
 
+    {% if groups.Insurance_Info in user_groups %}
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left" style="padding-top: 7.5px;">
@@ -828,6 +840,7 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
@@ -982,7 +995,7 @@
             {% if orders %}
                 {% for order_info in orders %}
                     <h5>{{ order_info.name }}</h5>
-                    {% with object_list=order_info.order_set model_name="order" %}
+                    {% with object_list=order_info.order_set model_name="order" hidden_fields=hidden_order_fields %}
                         {% include 'utils/generics/list_table.html' %}
                     {% endwith %}
                     <!-- Pagination stuff -->

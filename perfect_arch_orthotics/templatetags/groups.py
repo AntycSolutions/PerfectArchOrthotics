@@ -17,9 +17,18 @@ class Groups(list):
         )
 
 
-@register.simple_tag
-def get_groups(user):
+def check_groups(user,  group):
+    groups = _get_groups(user)
+    return group in groups
+
+
+def _get_groups(user):
     groups = user.groups.values_list('name', flat=True)
     groups = Groups(user, groups)
 
     return groups
+
+
+@register.simple_tag
+def get_groups(user):
+    return _get_groups(user)

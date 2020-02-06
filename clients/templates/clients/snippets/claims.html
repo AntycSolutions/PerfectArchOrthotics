@@ -1,3 +1,4 @@
+{% load groups %}
 
 <style type="text/css">
     .claim_crud:not(:last-child) {
@@ -70,19 +71,25 @@
                         </a>
                     </td>
                     <td>
-                        {% for insurance in claim.insurances.all %}
-                            {{ insurance.provider }}{% if not forloop.last %}<br>{% endif %}
-                        {% endfor %}
+                        {% if groups.Insurance_Info in user_groups %}
+                            {% for insurance in claim.insurances.all %}
+                                {{ insurance.provider }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </td>
                     <td>
-                        {{ claim.patient.employer }}
+                        {% if groups.Insurance_Info in user_groups %}
+                            {{ claim.patient.employer }}
+                        {% endif %}
                     </td>
                     <td>
                         {{ claim.submitted_datetime }}<br />
                         {{ claim.submitted_datetime|timesince:now }} ago
                     </td>
                     <td{% if not claim.insurance_paid_date %} style="color: red;"{% endif %}>
-                        {{ claim.insurance_paid_date }}
+                        {% if groups.Insurance_Info in user_groups %}
+                            {{ claim.insurance_paid_date }}
+                        {% endif %}
                     </td>
                     {% with totals=claim.total_amount_quantity_claimed %}
                         <td>
@@ -206,7 +213,9 @@
                                                     {{ claim_coverage.get_payment_type_display }}
                                                 </td>
                                                 <td style={% if not claim_coverage.actual_paid_date %}"color: red;"{% else %}"color: green;"{% endif %}>
-                                                    {{ claim_coverage.actual_paid_date }}
+                                                    {% if groups.Insurance_Info in user_groups %}
+                                                        {{ claim_coverage.actual_paid_date }}
+                                                    {% endif %}
                                                 </td>
                                             </tr>
                                         {% endfor %}

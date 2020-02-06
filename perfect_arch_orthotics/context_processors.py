@@ -14,6 +14,10 @@ def site(request):
             'Inventory': 'Inventory',
             'Orders': 'Orders',
             'Statistics': 'Statistics',
+            'Notes': 'Notes',
+            'Referrals': 'Referrals',
+            'Insurance_Info': 'Insurance_Info',
+            'Shoe_Info': 'Shoe_Info',
         },
     }
 

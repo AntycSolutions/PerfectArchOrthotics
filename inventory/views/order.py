@@ -11,6 +11,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from utils import views_utils
 from simple_search import search
 
+from perfect_arch_orthotics.templatetags import groups as tt_groups
 from clients import models as clients_models
 from inventory import models
 from inventory.forms import forms
@@ -63,6 +64,9 @@ class ListOrderView(ListView):
         context['search'] = True
         context['datesearch'] = True
         context['css_url'] = staticfiles.static('inventory/css/order_list.css')
+        has_shoe_info = tt_groups.check_groups(self.request.user, 'Shoe_Info')
+        if not has_shoe_info:
+            context['hidden_fields'] = 'description'
 
         if ('q' in self.request.GET) and self.request.GET['q'].strip():
             query_string = self.request.GET['q']
@@ -101,6 +105,9 @@ class ListOrderView(ListView):
             'coverageorder',
             'adjustmentorder'
         )
+        has_shoe_info = tt_groups.check_groups(self.request.user, 'Shoe_Info')
+        if not has_shoe_info:
+            queryset = queryset.exclude(order_type=models.Order.SHOE)
 
         search_fields = [
             'claimant__first_name',
