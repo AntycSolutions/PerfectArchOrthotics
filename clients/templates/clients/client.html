@@ -306,6 +306,7 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% if groups.Shoe_Info in user_groups or groups.Notes in user_groups or groups.Insurance_Inf in user_groups %}
                         <div class="form-group">
                             <label class="col-lg-4 control-label">
                                 <h5>
@@ -313,6 +314,7 @@
                                 </h5>
                             </label>
                         </div>
+                        {% endif %}
                         {% if groups.Shoe_Info in user_groups %}
                         <div class="form-group">
                             <label class="col-lg-4 control-label">

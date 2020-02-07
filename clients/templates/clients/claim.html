@@ -94,6 +94,7 @@
                         </p>
                     </div>
                 </div>
+                {% if groups.Insurance_Info in user_groups %}
                 <div class="form-group">
                     <label class="col-lg-2 control-label">
                         {% verbose_field_name claim "insurance_paid_date" %}
@@ -120,6 +121,7 @@
                         </ol>
                     </div>
                 </div>
+                {% endif %}
             </div>
             <br />
             <div class="table-responsive">
