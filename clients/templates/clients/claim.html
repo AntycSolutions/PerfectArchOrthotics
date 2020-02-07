@@ -332,7 +332,7 @@
                 <p>There are no Coverages for this Claim.</p>
             {% endif %}
 
-            {% if claim.has_orthotics %}
+            {% if claim.has_orthotics and groups.Insurance_Info in user_groups %}
                 <a href="{% url 'coverage_order_claim_create' person_pk=claim.patient.pk claim_pk=claim.pk %}"
                         class="btn btn-primary inline">
                     Create an Orthotics Order

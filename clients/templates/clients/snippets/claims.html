@@ -126,7 +126,7 @@
                 <tr>
                     <td colspan="5">
                         <div class="pull-left">
-                            {% if claim.has_orthotics %}
+                            {% if claim.has_orthotics and groups.Insurance_Info in user_groups %}
                                 <a href="{% url 'coverage_order_claim_create' person_pk=claim.patient.pk claim_pk=claim.pk %}"
                                         class="btn btn-primary">
                                     Create an Orthotics Order

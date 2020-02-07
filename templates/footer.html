@@ -1,4 +1,7 @@
 {% load active_users %}
+{% load groups %}
+
+{% get_groups user as user_groups %}
 
 {# Footer #}
 <div class="footer">
@@ -10,7 +13,7 @@
             </a>
         </p>
     </div>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and groups.Insurance_Info in user_groups %}
         {# Active users #}
         {% get_active_users as active_users %}
         <div class="pull-right hidden-xs" style="margin-right: 1%; width: 35%;">
