@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% load groups %}
+
+{% get_groups user as user_groups %}
+
 {% block title %} - Clients{% endblock %}
 
 {% block content %}
@@ -32,9 +36,11 @@
                         <th>Phone Number</th>
                         <th>Email</th>
                         <th>Gender</th>
+                        {% if groups.Insurance_Info in user_groups %}
                         <th>Credit</th>
                         <th>Employer</th>
                         <th>Created</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -49,9 +55,11 @@
                     <td>{{client.phone_number}}</td>
                     <td>{{client.email}}</td>
                     <td>{{ client.get_gender_display }}</td>
+                    {% if groups.Insurance_Info in user_groups %}
                     <td>{{ client.credit2 }}</td>
                     <td>{{client.employer}}</td>
                     <td>{{ client.created }}</td>
+                    {% endif %}
                     </tr>
             {% endfor %}
                 </tbody>
