@@ -133,7 +133,7 @@
                                 </a>
                             {% endif %}
                             {% with orthotics_orders=claim.coverageorder_set.all %}
-                                {% if orthotics_orders %}
+                                {% if orthotics_orders and  and groups.Insurance_Info in user_groups %}
                                     <ul>
                                         <li style="margin-top: 10px;">
                                             Orthotics Orders:
