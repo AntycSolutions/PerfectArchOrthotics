@@ -947,6 +947,7 @@
                         {% endif %}
                     </span>
                 </div>
+                {% if groups.Insurance_Info in user_groups %}
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -985,6 +986,7 @@
                         </tbody>
                     </table>
                 </div>
+                {% endif %}
             {% else %}
                 <p>There are no Claims for this Client currently.</p>
             {% endif %}
