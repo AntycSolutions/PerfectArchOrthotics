@@ -701,6 +701,7 @@
                         <tbody>
                             <tr>
                                 <td style="width: 181px;"><!-- from computed when width < 181 -->
+                                    {% if groups.Insurance_Info in user_groups %}
                                     <a href="{% url 'shoe_order_person_create' spouse.id %}" class="btn btn-default spouse-crud">
                                         Add Shoe Order
                                     </a>
@@ -720,6 +721,7 @@
                                     <a href="{% url 'dependent_delete' spouse.id %}" class="btn btn-danger spouse-crud">
                                         Delete
                                     </a>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a class="anchor" id="dependent_{{ spouse.id }}"></a>
@@ -784,6 +786,7 @@
                             {% for child in children %}
                                 <tr>
                                     <td style="width: 181px;"><!-- from computed when width < 181 -->
+                                        {% if groups.Insurance_Info in user_groups %}
                                         <a href="{% url 'shoe_order_person_create' child.id %}" class="btn btn-default child-crud">
                                             Add Shoe Order
                                         </a>
@@ -799,6 +802,7 @@
                                         <a href="{% url 'dependent_delete' child.id %}" class="btn btn-danger child-crud">
                                             Delete
                                         </a>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <a class="anchor" id="dependent_{{ child.id }}"></a>

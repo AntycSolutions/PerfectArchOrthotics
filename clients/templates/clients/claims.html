@@ -231,6 +231,7 @@
         </button>
     </form>
 
+    {% if groups.Insurance_Info in user_groups %}
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="panel-title pull-left">
@@ -298,5 +299,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
 {% endblock content %}
