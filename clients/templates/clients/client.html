@@ -687,6 +687,7 @@
                                 <th>
                                     {% verbose_field_name spouse "gender" %}
                                 </th>
+                                {% if groups.Insurance_Info in user_groups %}
                                 <th>
                                     {% verbose_field_name spouse "health_care_number" %}
                                 </th>
@@ -696,6 +697,7 @@
                                 <th>
                                     {% verbose_field_name spouse "employer" %}
                                 </th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -736,6 +738,7 @@
                                 <td>
                                     {{ spouse.get_gender_display }}
                                 </td>
+                                {% if groups.Insurance_Info in user_groups %}
                                 <td>
                                     {{ spouse.health_care_number }}
                                 </td>
@@ -745,6 +748,7 @@
                                 <td>
                                     {{ spouse.employer }}
                                 </td>
+                                {% endif %}
                             </tr>
                         </tbody>
                     </table>
@@ -773,6 +777,7 @@
                                 <th>
                                     {% verbose_field_name dependent_class "gender" %}
                                 </th>
+                                {% if groups.Insurance_Info in user_groups %}
                                 <th>
                                     {% verbose_field_name dependent_class "health_care_number" %}
                                 </th>
@@ -780,6 +785,7 @@
                                     {% verbose_field_name dependent_class "created" %}
                                 </th>
                                 <th></th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -817,6 +823,7 @@
                                     <td>
                                         {{ child.get_gender_display }}
                                     </td>
+                                    {% if groups.Insurance_Info in user_groups %}
                                     <td>
                                         {{ child.health_care_number }}
                                     </td>
@@ -824,6 +831,7 @@
                                         {{ child.created }}
                                     </td>
                                     <td></td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
