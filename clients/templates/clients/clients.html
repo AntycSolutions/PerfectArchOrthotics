@@ -2,11 +2,11 @@
 
 {% load groups %}
 
-{% get_groups user as user_groups %}
-
 {% block title %} - Clients{% endblock %}
 
 {% block content %}
+
+    {% get_groups user as user_groups %}
 
     <h1>Clients</h1>
     {% include 'utils/snippets/messages.html' %}

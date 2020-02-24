@@ -25,6 +25,8 @@
 
 {% block content %}
 
+    {% get_groups user as user_groups %}
+
     <h1>
         Claim for {{ claim.patient.full_name }}
     </h1>

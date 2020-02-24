@@ -4,6 +4,7 @@
 {% load crispy_forms_tags %}
 {% load template_utils %}
 {% load fallback_tags %}
+{% load groups %}
 
 {% get_app_settings 'pipeline' as pipeline_settings %}
 
@@ -117,6 +118,8 @@
 </script>
 
 {% block content %}
+
+    {% get_groups user as user_groups %}
 
     <h1>
         Claims
