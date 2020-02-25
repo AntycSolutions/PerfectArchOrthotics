@@ -148,15 +148,17 @@
                 Unsupported card method
             {% endif %}
             <div style="text-align: center;">
-                <div style="font-size: 5.5pt; margin-bottom: 10px;">
-                    {% if receipt.card_type == receipt_class.CREDIT %}
-                        CARDHOLDER ACKNOWLEDGES RECEIPT OF GOODS AND/OR SERVICES IN THE AMOUNT OF THE TOTAL SHOWN HEREON
-                    {% elif receipt.card_type == receipt_class.DEBIT %}
-                        I AUTHORIZE THE TRANSFER OF FUNDS FOR THE AMOUNT OF THIS TRANSACTION
-                    {% else %}
-                        Unsupported card type
-                    {% endif %}
-                </div>
+                {% if type == 'MERCHANT' %}
+                    <div style="font-size: 5.5pt; margin-bottom: 10px;">
+                        {% if receipt.card_type == receipt_class.CREDIT %}
+                            CARDHOLDER ACKNOWLEDGES RECEIPT OF GOODS AND/OR SERVICES IN THE AMOUNT OF THE TOTAL SHOWN HEREON
+                        {% elif receipt.card_type == receipt_class.DEBIT %}
+                            I AUTHORIZE THE TRANSFER OF FUNDS FOR THE AMOUNT OF THIS TRANSACTION
+                        {% else %}
+                            Unsupported card type
+                        {% endif %}
+                    </div>
+                {% endif %}
                 <div style="margin-bottom: 15px;">
                     THANK YOU / MERCI
                 </div>
