@@ -72,6 +72,10 @@ class Coverage(models.Model):
     KNEE_BRACE = 'kb'
     WRIST_BRACE = 'wb'
     ANKLE_BRACE = 'ab'
+    TENS_MACHINE = 'tm'
+    SHOULDER_BRACE = 'sb'
+    NECK_BRACE = 'nb'
+    OTHER_MEDICAL_EQUIPMENT = 'om'
     COVERAGE_TYPES = (
         (ORTHOTICS, "Orthotics"),
         (COMPRESSION_STOCKINGS, "Compression Stockings"),
@@ -80,6 +84,10 @@ class Coverage(models.Model):
         (KNEE_BRACE, "Knee Brace"),
         (WRIST_BRACE, "Wrist Brace"),
         (ANKLE_BRACE, "Ankle Brace"),
+        (TENS_MACHINE, 'TENS Machine'),
+        (SHOULDER_BRACE, 'Shoulder Brace'),
+        (NECK_BRACE, 'Neck Brace'),
+        (OTHER_MEDICAL_EQUIPMENT, 'Other Medical Equipment'),
     )
     BENEFIT_YEAR = 1
     CALENDAR_YEAR = 2
