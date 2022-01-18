@@ -104,11 +104,15 @@
     <div id="header_content">
         <div class="header">
             <p class="logo">
-                <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='400px' />
+                {% if logo %}
+                    <img src="{% static logo %}" width='400px' />
+                {% else %}
+                    <br><br><br><br><br><br>
+                {% endif %}
             </p>
             <p>
-                <h1>{{ perfect_arch_name }}</h1>
-                {{ perfect_arch_address|nbsp|linebreaksbr }}
+                <h1>{{ company_name }}</h1>
+                {{ company_address|nbsp|linebreaksbr }}
                 <!-- <p class="header-link">
                     <a class="header-link" href="//perfectarch.ca">perfectarch.ca</a>
                 </p> -->

@@ -93,22 +93,31 @@ def render_to_pdf(request, template_src, context_dict):
 def invoice_view(request, claim_id):
     claim, patient, invoice, invoice_number = _invoice(claim_id)
     bill_to = settings.BILL_TO[0][1]
-    perfect_arch_name = bill_to.split('\n')[0]
-    perfect_arch_address = bill_to.replace(perfect_arch_name + '\n', '')
+    logo = 'images/PerfectArchLogo.jpg'
+    if invoice.company == invoice.PC_MEDICAL:
+        bill_to = settings.BILL_TO[1][1]
+        logo = ''
+    elif invoice.company == invoice.BRACE_AND_BODY:
+        bill_to = settings.BILL_TO[2][1]
+        logo = ''
+    company_name = bill_to.split('\n')[0]
+    company_address = bill_to.replace(company_name + '\n', '')
 
-    return render_to_pdf(request,
-                         'clients/pdfs/invoice.html',
-                         {'pagesize': 'A4',
-                          'claim': claim,
-                          'invoice': invoice,
-                          'invoice_number': invoice_number,
-                          'perfect_arch_name': perfect_arch_name,
-                          'perfect_arch_address': perfect_arch_address,
-                          'item_class': Item,
-                          'claim_item_class': ClaimItem,
-                          # 'insurance_class': Insurance,
-                          'is_prod': request.get_host() == "perfectarch.ca"}
-                         )
+    return render_to_pdf(
+        request,
+        'clients/pdfs/invoice.html',
+        {'pagesize': 'A4',
+         'claim': claim,
+         'invoice': invoice,
+         'invoice_number': invoice_number,
+         'company_name': company_name,
+         'company_address': company_address,
+         'logo': logo,
+         'item_class': Item,
+         'claim_item_class': ClaimItem,
+         # 'insurance_class': Insurance,
+         'is_prod': request.get_host() == "perfectarch.ca"}
+    )
 
 
 def _invoice(claim_id):
@@ -123,7 +132,7 @@ def _invoice(claim_id):
         invoice_number = invoice.invoice_number
     except clients_models.Invoice.DoesNotExist:
         invoice_number = claim.id
-    invoice_number = "{0:04d}".format(invoice_number)
+    invoice_number = "{0:05d}".format(invoice_number)
 
     return claim, patient, invoice, invoice_number
 

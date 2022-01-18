@@ -363,6 +363,18 @@ class Invoice(models.Model):
     claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
+    PERFECT_ARCH = 'pa'
+    PC_MEDICAL = 'pc'
+    BRACE_AND_BODY = 'bb'
+    COMPANIES = (
+        (PERFECT_ARCH, 'Perfect Arch'),
+        (PC_MEDICAL, 'PC Medical'),
+        (BRACE_AND_BODY, 'Brace and Body'),
+    )
+    company = models.CharField(
+        max_length=2, choices=COMPANIES, default=PERFECT_ARCH
+    )
+
     invoice_number = models.PositiveIntegerField(blank=True, null=True)
     invoice_date = models.DateField(
         "Invoice Date",
@@ -408,9 +420,18 @@ class Invoice(models.Model):
     def save(self, *args, **kwargs):
         if not self.invoice_number:
             # this used to just be the claim.id field
-            self.invoice_number = Invoice.objects.aggregate(
+            self.invoice_number = Invoice.objects.filter(
+                company=self.company
+            ).aggregate(
                 sum=models.Max('invoice_number')
             )['sum'] + 1
+            # PERFECT_ARCH starts at 0
+            if self.company == self.PC_MEDICAL:
+                if self.invoice_number < 2000:
+                    self.invoice_number = 2000
+            elif self.company == self.BRACE_AND_BODY:
+                if self.invoice_number < 1122:
+                    self.invoice_number = 1122
         super().save(*args, **kwargs)
 
     def __str__(self):
