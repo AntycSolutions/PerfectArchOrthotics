@@ -137,8 +137,10 @@
 
         <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
         <p class='info'>
-            {% verbose_field_name invoice "dispensed_by" %}:
-            {{ invoice.get_dispensed_by_display }}<br />
+            {% if invoice.company == 'pa' %}
+                {% verbose_field_name invoice "dispensed_by" %}:
+                {{ invoice.get_dispensed_by_display }}<br />
+            {% endif %}
             {% verbose_field_name claim.insurances.model "benefits" %}:
             {% for insurance in claim.insurances.all %}
                 {{ insurance.get_benefits_display }}{% if not forloop.last %},{% endif %}

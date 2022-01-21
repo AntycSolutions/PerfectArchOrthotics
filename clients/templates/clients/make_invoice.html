@@ -34,14 +34,19 @@
         <div class="well">
             <h3>Information</h3>
             <ul>
+                <li>Company:
+                    {{ invoice.get_company_display }}
+                </li>
                 <li>Invoice #:
                     {{ invoice_number }}
                 </li>
                 <li>Invoice Date:
                     {{ invoice.invoice_date }}
-                <li>{% verbose_field_name invoice "dispensed_by" %}:
-                    {{ invoice.get_dispensed_by_display }}
-                </li>
+                {% if invoice.company == 'pa' %}
+                    <li>{% verbose_field_name invoice "dispensed_by" %}:
+                        {{ invoice.get_dispensed_by_display }}
+                    </li>
+                {% endif %}
                 <li>{% verbose_field_name insurance_class "benefits" %}:
                     {% for insurance in claim.insurances.all %}
                         {{ insurance.get_benefits_display }}{% if not forloop.last %},{% endif %}
