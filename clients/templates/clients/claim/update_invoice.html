@@ -22,15 +22,19 @@
             };
             $('.input-group.date').datepicker(options);
             var PERFECT_ARCH = 'pa';
-            function updateDispensedBy() {
+            function filterFields() {
                 if ($('#id_company').val() != PERFECT_ARCH) {
                     $('#id_dispensed_by').parent().parent().hide();
+                    $('#id_deposit').parent().parent().parent().hide();
+                    $('#id_deposit_date').parent().parent().parent().hide();
                 } else {
                     $('#id_dispensed_by').parent().parent().show();
+                    $('#id_deposit').parent().parent().parent().show();
+                    $('#id_deposit_date').parent().parent().parent().show();
                 }
             }
-            updateDispensedBy();
-            $('#id_company').on('change', updateDispensedBy);
+            filterFields();
+            $('#id_company').on('change', filterFields);
         });
     {% endblock %}
 </script>
