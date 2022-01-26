@@ -94,18 +94,21 @@ def invoice_view(request, claim_id):
     claim, patient, invoice, invoice_number = _invoice(claim_id)
     bill_to = settings.BILL_TO[0][1]
     logo = 'images/PerfectArchLogo.jpg'
+    template = 'clients/pdfs/invoice.html'
     if invoice.company == invoice.PC_MEDICAL:
         bill_to = settings.BILL_TO[1][1]
-        logo = ''
+        logo = 'images/PCMedicalLogo.jpg'
+        template = 'clients/pdfs/pc_medical_invoice.html'
     elif invoice.company == invoice.BRACE_AND_BODY:
         bill_to = settings.BILL_TO[2][1]
         logo = ''
+        template = 'clients/pdfs/brace_and_body_invoice.html'
     company_name = bill_to.split('\n')[0]
     company_address = bill_to.replace(company_name + '\n', '')
 
     return render_to_pdf(
         request,
-        'clients/pdfs/invoice.html',
+        template,
         {'pagesize': 'A4',
          'claim': claim,
          'invoice': invoice,

@@ -105,7 +105,13 @@
         <div class="header">
             <p class="logo">
                 {% if logo %}
-                    <img src="{% static logo %}" width='400px' />
+                    <img src="{% static logo %}"
+                    {% if invoice.company == 'pa' %}
+                        width='400px'
+                    {% else %}
+                        width='300px'
+                    {% endif %}
+                    />
                 {% else %}
                     <br><br><br><br><br><br>
                 {% endif %}

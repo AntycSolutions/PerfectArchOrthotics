@@ -1,0 +1,267 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load static %}
+{% load nbsp %}
+{% load verbose_name %}
+
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin: 2cm;
+            margin-top: 3.75cm;
+
+            @frame header {
+                -pdf-frame-content: header_content;
+                /*-pdf-frame-border: 1;*/
+                margin: 2cm;
+                margin-top: 1cm;
+            }
+
+            @frame footer {
+                -pdf-frame-content: footer_content;
+                /*-pdf-frame-border: 1;*/
+                bottom: 3cm;
+                margin: 2.5cm;
+                height: 3cm;
+            }
+        }
+    </style>
+{% endblock layout_style %}
+
+{% block extra_style %}
+    <style type="text/css">
+        html {
+            color: #333333;
+        }
+
+        p {
+            margin: 0 0 6px 0;
+            font-size: 10pt;
+        }
+
+        table {
+            line-height: 140%;
+            margin-bottom: 20px;
+        }
+        table.bordered {
+            border-top: 0.1pt solid #999999;
+            border-bottom: 0.1pt solid #999999;
+        }
+
+        td, th { border: none; }
+        tr { border-bottom: 0.1pt solid #999999; }
+
+        th {
+            font-size: 10pt;
+            border-bottom: 0.1pt solid #999999;
+            padding: 3px 0;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        td {
+            font-size: 10pt;
+            vertical-align: top;
+            padding: 3px 0;
+        }
+
+        td:last-child { padding-bottom: 0; }
+
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .bottom-10 { margin-bottom: 10px; }
+        .bottom-20 { margin-bottom: 20px; }
+
+        .header { color: #7f7f7f; }
+        .header p { font-size: 13px; line-height: 1.5em; }
+        .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
+        .logo { margin-bottom: 20px; margin-left: -25px; }
+        .logo img { zoom: 60%; }
+
+        .recipient { margin-left: 10cm; }
+        .total { margin-left: 11cm; }
+
+        .main h1 {
+            margin: 18px 0 18px 0;
+            font-size: 250%;
+            font-weight: normal;
+            color: #4F81BD;
+        }
+
+        .main h2 {
+            margin: 18px 0 6px 0;
+            font-size: 180%;
+            font-weight: normal;
+        }
+
+        .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
+        .info a { color: #4F81BD; text-decoration: none; }
+
+        .column { float: left; width: 50%; }
+        .row:after { content: ""; display: table; clear: both; }
+    </style>
+{% endblock extra_style %}
+
+{% block page_header %}
+    <div id="header_content">
+        <div class="header">
+            <p class="logo">
+                <table>
+                    <tr style="border-bottom: 0;">
+                        <td>
+                            <img src="{% static logo %}" width='300px'/>
+                        </td>
+                        <td style="text-align: center; margin-left: 200px">
+                            <div style="font-size: 28px;">
+                                INVOICE
+                            </div>
+                            <div style="font-size: 12px; border-bottom: 1px solid grey;">
+                                {{ invoice.invoice_date }}
+                            </div>
+                            <div style="font-size: 12px; border-bottom: 1px solid grey;">
+                                INVOICE NO. {{ invoice_number }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+{% endblock page_header %}
+
+{% block content %}
+
+    <div id="content">
+        <br>
+        <table style="margin-top: 50px; margin-bottom: 10px;">
+            <tr style="border-bottom: 0;">
+                <td style="border-bottom: 1px solid grey; font-size: 12px;">BILL TO</td>
+                <td style="width: 50px;"></td>
+                <td style="border-bottom: 1px solid grey; font-size: 12px;">SHIP TO</td>
+            </tr>
+            <tr style="border-bottom: 0;">
+                <td valign="top" style="font-size: 12px;">
+                    {{ company_name }}<br>
+                    {{ company_address|nbsp|linebreaksbr }}
+                </td>
+                <td></td>
+                <td valign="top" style="font-size: 12px;">
+                    {{ claim.patient.full_name }}<br />
+                    {{ claim.patient.get_client.address }}<br />
+                    {{ claim.patient.get_client.city }}{% if claim.patient.get_client.city and claim.patient.get_client.province %},{% endif %}
+                    {{ claim.patient.get_client.province }} &nbsp;{{ claim.patient.get_client.postal_code }}<br/>
+                </td>
+            </tr>
+        </table>
+
+        <h1>{{ invoice.estimate|yesno:"ESTIMATE:," }}</h1>
+
+        <div class="main">
+            {% if not is_prod %}<h1>Sample Invoice</h1>{% endif %}
+            <table style="margin-bottom: 10px;">
+                <thead>
+                    <tr style="margin: 5px; border: 0;">
+                        <th colspan="2" style="text-align: left; font-size: 12px;">
+                            {% verbose_field_name item_class "product_code" as product_code %}
+                            {{ product_code|upper }}
+                        </th>
+                        <th colspan="5" style="text-align: left; font-size: 12px;">
+                            {% verbose_field_name item_class "description" as description %}
+                            {{ description|upper }}
+                        </th>
+                        <th colspan="1" style="text-align: left; font-size: 12px;">
+                            {% verbose_field_name item_class "unit_price" as unit_price %}
+                            {{ unit_price|upper }}
+                        </th>
+                        <th colspan="1" style="text-align: left; font-size: 12px;">
+                            {% verbose_field_name claim_item_class "quantity" as quantity %}
+                            {{ quantity|upper }}
+                        </th>
+                        <th colspan="1" style="text-align: right; font-size: 12px;">
+                            AMOUNT
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim_coverage in invoice.claim.claimcoverage_set.all %}
+                        {% for claim_item in claim_coverage.claimitem_set.all %}
+                            <tr style="margin: 5px; border-left: 0.1pt solid #999999; border-right: 0.1pt solid #999999;">
+                                <td colspan="2">
+                                    {{ claim_item.item.product_code }}
+                                </td>
+                                <td colspan="5">
+                                    {{ claim_item.item.description }}
+                                </td>
+                                <td colspan="1">
+                                    {{ claim_item.get_unit_price }}
+                                </td>
+                                <td colspan="1" style="border-right: 0.1pt solid #999999;">
+                                    {{ claim_item.quantity }}
+                                </td>
+                                <td colspan="1" style="text-align: right;">
+                                    {{ claim_item.unit_price_amount }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <table style="margin: 5px;">
+                <tbody>
+                    <tr style="border: 0;">
+                        <td colspan="8" style="font-size: 10px;">
+                                {% verbose_field_name invoice "payment_terms" %}:
+                                {{ invoice.get_payment_terms_display }}
+                        </td>
+                        <td colspan="2" style="text-align: right; font-size: 12px;">
+                            TOTAL&nbsp;
+                        </td>
+                        <td colspan="1" style="text-align: right; border-bottom: 0.1pt solid #999999;">
+                            {{ invoice.claim.total_amount_quantity_claimed.total_amount_claimed }}
+                        </td>
+                    </tr>
+                    <tr style="border: 0;">
+                        {% if invoice.payment_date %}
+                            <td colspan="6" style="font-size: 10px;">
+                                {% verbose_field_name invoice "payment_type" %}:
+                                {{ invoice.get_payment_type_display }}
+                            </td>
+                            <td colspan="2" style="text-align: right; font-size: 12px;">
+                                {{ invoice.payment_date }}
+                            </td>
+                        {% else %}
+                            <td colspan="8" style="font-size: 10px;">
+                                {% verbose_field_name invoice "payment_type" %}:
+                                {{ invoice.get_payment_type_display }}
+                            </td>
+                        {% endif %}
+                        <td colspan="2" style="text-align: right; font-size: 12px;">
+                            {% verbose_field_name invoice "payment_made" as payment_made %}{{ payment_made|upper }}&nbsp;
+                        </strong></td>
+                        <td colspan="1" style="text-align: right; border-bottom: 0.1pt solid #999999;">
+                            {{ invoice.payment_made }}
+                        </td>
+                    </tr>
+                    <tr style="border: 0;">
+                        <td colspan="8" style="text-align: center; font-size: 20px;">
+                            THANK YOU
+                        </td>
+                        <td colspan="2" style="text-align: right; font-size: 12px;">
+                            BALANCE&nbsp;
+                        </td>
+                        <td colspan="1" style="text-align: right; background-color: lightgrey; border-bottom: 0.1pt solid #999999;">
+                            {{ invoice.balance }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="footer_content">
+        <p></p>
+    </div>
+
+{% endblock content %}
