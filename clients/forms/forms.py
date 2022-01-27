@@ -67,7 +67,11 @@ class InvoiceForm(forms.ModelForm):
 
     class Meta:
         model = Invoice
-        exclude = ('claim', 'invoice_number',)
+        exclude = ('claim',)
+        help_texts = {
+            'invoice_number':
+                'Leave blank to automatically use the next number'
+        }
 
 
 class InsuranceLetterForm(forms.ModelForm):

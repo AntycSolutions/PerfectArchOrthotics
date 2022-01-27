@@ -375,7 +375,9 @@ class Invoice(models.Model):
         max_length=2, choices=COMPANIES, default=PERFECT_ARCH
     )
 
-    invoice_number = models.PositiveIntegerField(blank=True, null=True)
+    invoice_number = models.PositiveIntegerField(
+        'Invoice Number', blank=True, null=True
+    )
     invoice_date = models.DateField(
         "Invoice Date",
         blank=True, null=True)
