@@ -136,13 +136,16 @@
         <br>
         <table style="margin-top: 50px; margin-bottom: 10px;">
             <tr style="border-bottom: 0;">
-                <td style="border-bottom: 1px solid grey; font-size: 12px;">BILL TO</td>
+                <td style="border-bottom: 1px solid grey; font-size: 12px;">
+                    {{ company_name|upper }}
+                </td>
                 <td style="width: 50px;"></td>
-                <td style="border-bottom: 1px solid grey; font-size: 12px;">SHIP TO</td>
+                <td style="border-bottom: 1px solid grey; font-size: 12px;">
+                    BILL TO / SHIP TO
+                </td>
             </tr>
             <tr style="border-bottom: 0;">
                 <td valign="top" style="font-size: 12px;">
-                    {{ company_name }}<br>
                     {{ company_address|nbsp|linebreaksbr }}
                 </td>
                 <td></td>
