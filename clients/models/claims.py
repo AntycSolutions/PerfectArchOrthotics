@@ -269,7 +269,9 @@ class ClaimCoverage(models.Model):
         totals = self.total_amount_quantity()
         max_expected_back = min(
             self._coverage_claim_amount_remaining_period(),
-            (totals.total_amount * (self.coverage.coverage_percent / 100))
+            (totals.total_amount * (
+                decimal.Decimal(self.coverage.coverage_percent) / 100
+            ))
         )
         max_quantity = totals.total_quantity
 

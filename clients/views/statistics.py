@@ -250,11 +250,11 @@ def _stats():
         'patient__client',
         'patient__dependent__primary',
     ).annotate(
-        total_amount=Sum(
+        total_amount=Sum((
             # TODO: need to use get_unit_price
             Coalesce(F('claimcoverage__claimitem__item__unit_price'), 0) *
             Coalesce(F('claimcoverage__claimitem__quantity'), 0)
-        ),
+        ), output_field=db_models.DecimalField()),
     ).order_by('id')
 
     # annotatations are done via join and not subquery, this duplicates
@@ -462,6 +462,7 @@ def _insurance_providers_stats(request):
                 )
             ),
             default=0,
+            output_field=db_models.DecimalField(),
         )),
         non_assignment_amount_claimed=Sum(Case(
             When(
@@ -477,11 +478,12 @@ def _insurance_providers_stats(request):
                 )
             ),
             default=0,
+            output_field=db_models.DecimalField(),
         )),
     ).annotate(
-        amount_claimed__sum=(
+        amount_claimed__sum=db_models.ExpressionWrapper((
             F('assignment_amount_claimed') + F('non_assignment_amount_claimed')
-        )
+        ), output_field=db_models.DecimalField())
     )
 
     # Combine the 3 above query's results into one

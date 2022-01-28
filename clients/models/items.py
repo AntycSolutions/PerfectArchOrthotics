@@ -1,3 +1,4 @@
+import decimal
 import operator
 
 from django.core import urlresolvers
@@ -31,10 +32,14 @@ class Item(models.Model, model_utils.FieldList):
     # Should be name or changed to TextField
     description = models.CharField(
         "Description", max_length=128)
-    cost = models.IntegerField(
-        "Cost", default=0)
-    unit_price = models.IntegerField(
-        "Retail", default=0)
+    cost = models.DecimalField(
+        'Cost', max_digits=6, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
+    unit_price = models.DecimalField(
+        'Retail', max_digits=6, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
 
     money_fields = ['cost', 'unit_price']
 
