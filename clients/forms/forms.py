@@ -1,6 +1,8 @@
 from django import forms
+from django.db import models as db_models
 from django.forms.models import inlineformset_factory
 from django.template import defaultfilters
+from django.core import exceptions
 
 from bootstrap3_datetime import widgets as bs3_widgets
 from crispy_forms import helper
@@ -68,10 +70,55 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         exclude = ('claim',)
-        help_texts = {
-            'invoice_number':
-                'Leave blank to automatically use the next number'
-        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.perfect_arch_invoice_number = Invoice.objects.filter(
+            company=Invoice.PERFECT_ARCH
+        ).aggregate(
+            max=db_models.Max('invoice_number')
+        )['max'] + 1
+        self.fields['invoice_number'].initial = (
+            self.perfect_arch_invoice_number
+        )
+        self.pc_medical_invoice_number = Invoice.objects.filter(
+            company=Invoice.PC_MEDICAL
+        ).aggregate(
+            max=db_models.Max('invoice_number')
+        )['max'] + 1
+        self.brace_and_body_invoice_number = Invoice.objects.filter(
+            company=Invoice.BRACE_AND_BODY
+        ).aggregate(
+            max=db_models.Max('invoice_number')
+        )['max'] + 1
+
+    def clean(self):
+        cleaned_data = super().clean()
+        invoice_number = cleaned_data['invoice_number']
+        if invoice_number is None:
+            return
+        company = cleaned_data['company']
+        # PERFECT_ARCH starts at 0
+        if company == Invoice.PC_MEDICAL:
+            if invoice_number < 2000:
+                raise exceptions.ValidationError(
+                    'PC Medical invoice no. must be >= 2000'
+                )
+        elif company == Invoice.BRACE_AND_BODY:
+            if invoice_number < 1122:
+                raise exceptions.ValidationError(
+                    'Brace and Body invoice no. must be >= 1122'
+                )
+
+        invoices = Invoice.objects.filter(
+            invoice_number=invoice_number, company=company
+        )
+        if self.instance.id:
+            invoices = invoices.exclude(id=self.instance.id)
+        if invoices.exists():
+            raise exceptions.ValidationError(
+                'Invoice no. for this company already exists'
+            )
 
 
 class InsuranceLetterForm(forms.ModelForm):

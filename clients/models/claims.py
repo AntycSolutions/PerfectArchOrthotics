@@ -393,13 +393,17 @@ class Invoice(models.Model):
         "Payment Terms", max_length=4, choices=PAYMENT_TERMS,
         default=DUE_ON_RECEIPT,
         blank=True)
-    payment_made = models.IntegerField(
-        "Payment Made", default=0)
+    payment_made = models.DecimalField(
+        'Payment Made', max_digits=6, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
     payment_date = models.DateField(
         "Payment Date",
         blank=True, null=True)
-    deposit = models.IntegerField(
-        "Deposit", default=0)
+    deposit = models.DecimalField(
+        'Deposit', max_digits=6, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
     deposit_date = models.DateField(
         "Deposite Date",
         blank=True, null=True)
@@ -427,15 +431,8 @@ class Invoice(models.Model):
             self.invoice_number = Invoice.objects.filter(
                 company=self.company
             ).aggregate(
-                sum=models.Max('invoice_number')
-            )['sum'] + 1
-            # PERFECT_ARCH starts at 0
-            if self.company == self.PC_MEDICAL:
-                if self.invoice_number < 2000:
-                    self.invoice_number = 2000
-            elif self.company == self.BRACE_AND_BODY:
-                if self.invoice_number < 1122:
-                    self.invoice_number = 1122
+                max=models.Max('invoice_number')
+            )['max'] + 1
         super().save(*args, **kwargs)
 
     def __str__(self):
