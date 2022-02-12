@@ -108,8 +108,10 @@
                     <img src="{% static logo %}"
                     {% if invoice.company == 'pa' %}
                         width='400px'
-                    {% else %}
+                    {% elif invoice.company == 'pc' %}
                         width='300px'
+                    {% elif invoice.company == 'bb' %}
+                        width='175px'
                     {% endif %}
                     />
                 {% else %}
