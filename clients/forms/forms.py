@@ -73,6 +73,8 @@ class InvoiceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance.id:
+            return
         self.perfect_arch_invoice_number = (Invoice.objects.filter(
             company=Invoice.PERFECT_ARCH
         ).aggregate(
