@@ -73,24 +73,24 @@ class InvoiceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.perfect_arch_invoice_number = Invoice.objects.filter(
+        self.perfect_arch_invoice_number = (Invoice.objects.filter(
             company=Invoice.PERFECT_ARCH
         ).aggregate(
             max=db_models.Max('invoice_number')
-        )['max'] + 1
+        )['max'] or 0) + 1
         self.fields['invoice_number'].initial = (
             self.perfect_arch_invoice_number
         )
-        self.pc_medical_invoice_number = Invoice.objects.filter(
+        self.pc_medical_invoice_number = (Invoice.objects.filter(
             company=Invoice.PC_MEDICAL
         ).aggregate(
             max=db_models.Max('invoice_number')
-        )['max'] + 1
-        self.brace_and_body_invoice_number = Invoice.objects.filter(
+        )['max'] or 0) + 1
+        self.brace_and_body_invoice_number = (Invoice.objects.filter(
             company=Invoice.BRACE_AND_BODY
         ).aggregate(
             max=db_models.Max('invoice_number')
-        )['max'] + 1
+        )['max'] or 0) + 1
 
     def clean(self):
         cleaned_data = super().clean()

@@ -428,11 +428,11 @@ class Invoice(models.Model):
     def save(self, *args, **kwargs):
         if not self.invoice_number:
             # this used to just be the claim.id field
-            self.invoice_number = Invoice.objects.filter(
+            self.invoice_number = (Invoice.objects.filter(
                 company=self.company
             ).aggregate(
                 max=models.Max('invoice_number')
-            )['max'] + 1
+            )['max'] or 0) + 1
         super().save(*args, **kwargs)
 
     def __str__(self):
