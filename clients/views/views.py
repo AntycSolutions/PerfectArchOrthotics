@@ -101,8 +101,8 @@ def invoice_view(request, claim_id):
         template = 'clients/pdfs/pc_medical_invoice.html'
     elif invoice.company == invoice.BRACE_AND_BODY:
         bill_to = settings.BILL_TO[2][1]
-        logo = 'images/BraceAndBodyLogo.jpg'
-        # template = 'clients/pdfs/brace_and_body_invoice.html'
+        logo = 'images/BraceAndBodyLogo.png'
+        template = 'clients/pdfs/brace_and_body_invoice.html'
     company_name = bill_to.split('\n')[0]
     company_address = bill_to.replace(company_name + '\n', '')
 
