@@ -660,10 +660,15 @@ class BenefitsReminderUpdate(
 
         subject = 'Benefits Rollover'
         address = settings.BILL_TO[0][1]
+        new_year_body = (
+            'It\'s a new year! We would like to remind you that you may'
+            ' be eligible to do a new claim.'
+        )
         body = (
             'Hi {client},\n'
             '\n'
-            'This is a reminder that your Benefits have rolled over. '
+            # 'This is a reminder that your Benefits have rolled over. '
+            '{new_year_body} '
             'Please kindly call us at (587) 400-4588 to schedule an'
             ' appointment to ensure availability.\n'
             '\n'
@@ -681,6 +686,7 @@ class BenefitsReminderUpdate(
             'This is an automated message, do not reply to this email.\n'
             '\n'.format(
                 client=client,
+                new_year_body=new_year_body,
                 address=address,
             )
         )
@@ -705,13 +711,17 @@ class BenefitsReminderUpdate(
             error += '\\n\\n'
 
         body = (
-            'Hi {client}, this is a reminder that your Benefits have rolled'
-            ' over.\n\n'
+            'Hi {client},'
+            ' {new_year_body}'
+            # ' this is a reminder that your Benefits have rolled over.'
+            '\n\n'
+            '-Perfect Arch Team\n'
             'This is an automated message, do not reply or call this number. '
             'Please kindly call us at (587) 400-4588 to schedule an'
             ' appointment to ensure availability.'
             ''.format(
-                client=client
+                client=client,
+                new_year_body=new_year_body,
             )
         )
         error += send_reminder_text_message(
