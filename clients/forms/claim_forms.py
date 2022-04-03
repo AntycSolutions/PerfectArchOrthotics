@@ -13,11 +13,16 @@ from utils.forms import (
 from clients import models
 
 
+class DateTimePicker(bs3_widgets.DateTimePicker):
+    class Media:
+        extend = False  # we inject our own media below with fallbackjs compat
+
+
 class ClaimForm(forms.ModelForm):
     submitted_datetime = forms.DateTimeField(
         label="Submitted Datetime",
         input_formats=['%Y-%m-%d %I:%M %p'],
-        widget=bs3_widgets.DateTimePicker(
+        widget=DateTimePicker(
             options={"format": "YYYY-MM-DD hh:mm a"},
             attrs={
                 "class": "form-control",
@@ -48,7 +53,21 @@ class ClaimForm(forms.ModelForm):
                 'clients/js/claim.js',
                 shim=['jQuery.fn.select2']
             ),
+            utils_form_utils.MediaStr(
+                'bootstrap3_datetime/js/moment.min.js',
+                key='moment',
+            ),
+            utils_form_utils.MediaStr(
+                'bootstrap3_datetime/js/bootstrap-datetimepicker.min.js',
+                key='jQuery.fn.datetimepicker',
+                shim=['jQuery.fn.modal', 'moment']
+            ),
         )
+        css = {
+            'all': (
+                'bootstrap3_datetime/css/bootstrap-datetimepicker.min.css',
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         client_id = kwargs.pop('client_id', None)
@@ -118,6 +137,27 @@ class ClaimForm(forms.ModelForm):
                     obj.provider, obj.main_claimant.full_name())
         )
         insurances.widget.attrs['class'] = 'insurance_trigger'
+
+        # add fallbackjs compat
+        self.fields['submitted_datetime'].widget.js_template = '''
+            <script>
+                (function(window) {
+                    var callback = function() {
+                        fallback.ready(['jQuery.fn.datetimepicker'], function() {
+                            $(function(){
+                                $("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);
+                                $("#%(input_id)s:not([readonly],[disabled])").datetimepicker(%(options)s);
+                            });
+                        });
+                    };
+                    if(window.addEventListener)
+                        window.addEventListener("load", callback, false);
+                    else if (window.attachEvent)
+                        window.attachEvent("onload", callback);
+                    else window.onload = callback;
+                })(window);
+            </script>
+        '''  # noqa
 
     def clean(self):
         cleaned_data = super().clean()
