@@ -97,7 +97,9 @@ class Reminders(generic.TemplateView):
                 'claim__patient__first_name',
                 'claim__patient__last_name',
                 'claim__patient__client__phone_number',
+                'claim__patient__client__cell_number',
                 'claim__patient__dependent__primary__phone_number',
+                'claim__patient__dependent__primary__cell_number',
                 'claim__insurances__provider',
             ],
             context=context
@@ -147,7 +149,9 @@ class Reminders(generic.TemplateView):
                 'order__claimant__first_name',
                 'order__claimant__last_name',
                 'order__claimant__client__phone_number',
+                'order__claimant__client__cell_number',
                 'order__claimant__dependent__primary__phone_number',
+                'order__claimant__dependent__primary__cell_number',
             ],
             context=context
         )
@@ -186,8 +190,10 @@ class Reminders(generic.TemplateView):
             [
                 'client__first_name',
                 'client__last_name',
-                'client__client__phone_number',
+                'client__phone_number',
+                'client__cell_number',
                 'client__dependent__primary__phone_number',
+                'client__dependent__primary__cell_number',
             ],
             context=context
         )
