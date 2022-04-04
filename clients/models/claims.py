@@ -213,8 +213,10 @@ class ClaimCoverage(models.Model):
     items = models.ManyToManyField(
         Item, verbose_name="Items", through="ClaimItem")
 
-    expected_back = models.IntegerField(
-        "Expected Back", default=0)
+    expected_back = models.DecimalField(
+        'Expected Back', max_digits=6, decimal_places=2,
+        default=decimal.Decimal(0.00)
+    )
 
     actual_paid_date = models.DateField(
         "Actual Paid Date",
