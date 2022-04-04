@@ -50,7 +50,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
@@ -65,7 +65,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -80,7 +80,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -90,7 +90,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now()
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -102,13 +102,13 @@ class BenefitsReminderTestCase(test.TestCase):
         )
         self._create_claim(
             coverage,
-            timezone.now()
+            timezone.now() + datetime.timedelta(days=1)
         )
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
@@ -125,7 +125,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -142,7 +142,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -152,7 +152,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now()
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -170,7 +170,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
@@ -187,7 +187,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -204,7 +204,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -214,7 +214,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now()
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -232,7 +232,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
@@ -249,7 +249,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -266,7 +266,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -276,7 +276,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=365 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -294,7 +294,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
@@ -311,7 +311,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -328,7 +328,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -338,7 +338,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=730 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -356,7 +356,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -366,7 +366,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=365 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -380,7 +380,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=365 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -396,7 +396,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now()
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -415,7 +415,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -425,7 +425,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=365 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -434,11 +434,11 @@ class BenefitsReminderTestCase(test.TestCase):
         reminder = models.BenefitsReminder.objects.first()
         reminder.follow_up = models.Reminder.EMAIL
         reminder.created = (
-            timezone.now() - datetime.timedelta(weeks=3 + 1)
+            timezone.now() - datetime.timedelta(weeks=6 + 1)
         ).date()
         reminder.save()
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -457,7 +457,7 @@ class BenefitsReminderTestCase(test.TestCase):
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 0)
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.count()
         self.assertEqual(reminders, 1)
@@ -467,7 +467,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now() - datetime.timedelta(days=365 + 5)
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -478,7 +478,7 @@ class BenefitsReminderTestCase(test.TestCase):
             timezone.now()
         )
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)
@@ -486,10 +486,10 @@ class BenefitsReminderTestCase(test.TestCase):
         self.assertEqual(len(reminders[0].coverages.all()), 0)
 
         claim.delete()
-        reminders[0].created = timezone.now() - datetime.timedelta(weeks=3 + 1)
+        reminders[0].created = timezone.now() - datetime.timedelta(weeks=6 + 1)
         reminders[0].save()
 
-        management.call_command('benefits_reminder')
+        management.call_command('reminders')
 
         reminders = models.BenefitsReminder.objects.all()
         self.assertEqual(len(reminders), 1)

@@ -23,9 +23,9 @@ class CreditTestCase(test.TestCase):
         )
         self.claim = clients_models.Claim.objects.create(
             patient=self.client,
-            insurance=self.insurance,
             submitted_datetime=self.now,
         )
+        self.claim.insurances.add(self.insurance)
 
         clients_models.CreditDivisor.objects.create(
             value=150,

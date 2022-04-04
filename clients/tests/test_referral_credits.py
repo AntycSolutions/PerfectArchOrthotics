@@ -67,10 +67,10 @@ class ReferralCreditsTestCase(TestCase):
             claimant=self.client,
             period=Coverage.CALENDAR_YEAR,
         )
-        Claim.objects.create(
+        claim = Claim.objects.create(
             patient=referred_client,
-            insurance=insurance,
             submitted_datetime=timezone.now())
+        claim.insurances.add(insurance)
         Referral.objects.create(
             client=self.client,
             credit_value=1)
