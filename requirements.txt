@@ -9,9 +9,7 @@ django-session-security==2.4.0
 django-multiselectfield==0.1.4
 django-js-reverse==0.7.2
 djangorestframework==3.6.2
-# dango-twilio works with twilio==5.6.0 but not 6.0.0
-twilio==5.6.0
-django-twilio==0.8.0
+django-twilio==0.9.1
 piexif==1.0.3
 
 git+https://github.com/AntycSolutions/django-bootstrap3-datetimepicker@v2.4
