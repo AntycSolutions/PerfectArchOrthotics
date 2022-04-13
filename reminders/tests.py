@@ -149,7 +149,7 @@ class BenefitsReminderTestCase(test.TestCase):
 
         self._create_claim(
             coverage,
-            timezone.now()
+            timezone.now() + datetime.timedelta(days=1)
         )
 
         management.call_command('reminders')
