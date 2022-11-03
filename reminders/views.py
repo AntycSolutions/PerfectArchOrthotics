@@ -354,7 +354,7 @@ def send_text_message(client, body, user=None):
             from_=settings.DEFAULT_FROM_NUMBER,
             body=body
         )
-    except twilio.TwilioRestException as e:
+    except twilio.rest.exceptions.TwilioRestException as e:
         return (
             'Could not send text message to'
             ' \'{number}\'\\n\\nError: {msg}'.format(
