@@ -661,8 +661,8 @@ class BenefitsReminderUpdate(
         subject = 'Benefits Rollover'
         address = settings.BILL_TO[0][1]
         new_year_body = (
-            'It\'s a new year! We would like to remind you that you may'
-            ' be eligible to do a new claim.'
+            'It\'s the end of the year! We would like to remind you that you'
+            ' may be eligible to do a new claim.'
         )
         body = (
             'Hi {client},\n'
@@ -711,7 +711,7 @@ class BenefitsReminderUpdate(
             error += '\\n\\n'
 
         body = (
-            'Hi {client},'
+            'Hi {client}.'
             ' {new_year_body}'
             # ' this is a reminder that your Benefits have rolled over.'
             '\n\n'
