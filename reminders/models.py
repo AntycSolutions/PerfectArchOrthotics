@@ -321,14 +321,17 @@ class BenefitsReminder(Reminder, model_utils.FieldList):
         client = self.client
         phone_number = client.phone_number
         cell_number = client.cell_number
+        email = client.email
         if phone_number:
-            phone_number = 'Phone: {}<br />'.format(phone_number)
+            phone_number = 'Phone: {}<br>'.format(phone_number)
         if cell_number:
-            cell_number = 'Cell: {}'.format(cell_number)
+            cell_number = 'Cell: {}<br>'.format(cell_number)
+        if email:
+            email = 'Email: {}'.format(email)
         number = self.Field(
-            model_utils.FieldList.PseudoField("number"),
+            model_utils.FieldList.PseudoField("Contact"),
             safestring.mark_safe(
-                '{}{}'.format(phone_number, cell_number)
+                '{}{}{}'.format(phone_number, cell_number, email)
             )
         )
         fields.update({"number": number})
