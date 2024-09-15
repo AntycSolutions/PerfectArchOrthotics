@@ -818,7 +818,7 @@
         				</td></tr></table>
                     </td>
                     <td colspan="19">
-                        <strong>{% verbose_field_name claim.insurances.model "three_d_laser_scan" %}:</strong> Using Sharp Shape 3-Dimensional scanner to capture the foot in a non-weightbearing position with the subtalar joint in neutral. The Sharp Shape 3-Dimmensional data was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+                        <strong>{% verbose_field_name claim.insurances.model "three_d_laser_scan" %}:</strong> Using 3-Dimensional scanner to capture the foot in a non-weightbearing position with the subtalar joint in neutral. The 3-Dimmensional data was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
                     </td>
                 </tr>
             {% endif %}
@@ -844,16 +844,18 @@
         <br><br>
         <table>
             <tr>
-                <td colspan="4"></td>
-                <td colspan="4" style="padding-right: 10px;">
-                    <img src="/media/DSCN2103.png" />
+                <td colspan="2"></td>
+                <td colspan="4" style="padding-left: 5px;">
+                    <img src="/media/DSCN2103.png" width="150">
                 </td>
                 <td colspan="2"></td>
-                <td colspan="5">{{ insurance_letter.signature_date|default:"_______________________" }}</td>
+                <td colspan="5" style="padding-top: 15px;">
+                    {{ insurance_letter.signature_date|default:"_______________________" }}
+                </td>
             </tr>
             <tr><td></td></tr>
             <tr>
-                <td colspan="4"></td>
+                <td colspan="2"></td>
                 <td colspan="4">
                     Danny Mu C. Ped. 4014
                     <br />

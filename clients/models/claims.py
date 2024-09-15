@@ -452,22 +452,6 @@ class ProofOfManufacturing(models.Model):
     class Meta:
         verbose_name_plural = "Proofs of manufacturing"
 
-    def bill_to(self):
-        if self.laboratory != settings.PAOI:
-            bill_to = settings.BILL_TO[0][1]
-        else:
-            bill_to = None
-
-        return bill_to
-
-    def ship_to(self):
-        if self.laboratory != settings.PAOI:
-            ship_to = settings.BILL_TO[0][1]
-        else:
-            ship_to = None
-
-        return ship_to
-
     def laboratory_information(self):
         laboratory_information = \
             self.get_laboratory_display().split('\n')[0]
@@ -495,6 +479,14 @@ class ProofOfManufacturing(models.Model):
             invoice = self.claim.invoice
             if invoice.invoice_date:
                 return invoice.invoice_date - timedelta(weeks=1)
+        except (Claim.DoesNotExist, Invoice.DoesNotExist):
+            pass
+
+    def dispense_date(self):
+        try:
+            invoice = self.claim.invoice
+            if invoice.invoice_date:
+                return invoice.invoice_date
         except (Claim.DoesNotExist, Invoice.DoesNotExist):
             pass
 

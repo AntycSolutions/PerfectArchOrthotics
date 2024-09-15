@@ -289,20 +289,22 @@ def biomechanical_gait_2_pdf(request, pk):
             'patient',
         ).get(pk=pk)
 
+    orthotics_pros_lab = settings.LABORATORIES[5][1]
+    tokens = orthotics_pros_lab.split('\n')
+    address = '\n'.join(tokens[1:3])
+    phone = tokens[5].split(' ', 1)[1]
     context = {
-        'title':
-            "Biomechanical Evaluation, Gait Analysis, & Casting Method",
         'biomechanical_gait': biomechanical_gait,
+        'address': address,
+        'phone': phone,
     }
+
+    # for debugging
     # return shortcuts.render(
-    #     request,
-    #     'clients/pdfs/biomechanical_gait_2.html',
-    #     context
+    #     request, 'clients/pdfs/biomechanical_gait_2.html', context
     # )
     return clients_views.render_to_pdf(
-        request,
-        'clients/pdfs/biomechanical_gait_2.html',
-        context
+        request, 'clients/pdfs/biomechanical_gait_2.html', context
     )
 
 
@@ -378,22 +380,16 @@ def biomechanical_foot_fill_out(request, claim_pk):
 
 def biomechanical_foot_pdf(request, claim_pk):
     claim, biomechanical_foot = _biomechanical_foot(claim_pk)
+    context = {
+        'title': "Biomechanical Foot Examination",
+        'claim': claim,
+        'biomechanical_foot': biomechanical_foot,
+    }
 
+    # for debugging
     # return shortcuts.render(
-    #     request,
-    #     'clients/pdfs/biomechanical_foot.html',
-    #     {
-    #         'title': "Biomechanical Foot Examination",
-    #         'claim': claim,
-    #         'biomechanical_foot': biomechanical_foot,
-    #     }
+    #     request, 'clients/pdfs/biomechanical_foot.html', context
     # )
     return clients_views.render_to_pdf(
-        request,
-        'clients/pdfs/biomechanical_foot.html',
-        {
-            'title': "Biomechanical Foot Examination",
-            'claim': claim,
-            'biomechanical_foot': biomechanical_foot,
-        }
+        request, 'clients/pdfs/biomechanical_foot.html', context
     )

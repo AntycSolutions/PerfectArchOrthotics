@@ -193,6 +193,10 @@ def proof_of_manufacturing_view(request, claim_id):
     claim, proof_of_manufacturing, invoice_number = _proof_of_manufacturing(
         claim_id
     )
+    orthotics_pros_lab = settings.LABORATORIES[5][1]
+    tokens = orthotics_pros_lab.split('\n')
+    address = '\n'.join(tokens[1:3])
+    phone = tokens[5].split(' ', 1)[1]
 
     return render_to_pdf(
         request,
@@ -202,6 +206,8 @@ def proof_of_manufacturing_view(request, claim_id):
             'claim': claim,
             'proof_of_manufacturing': proof_of_manufacturing,
             'invoice_number': invoice_number,
+            'address': address,
+            'phone': phone,
         }
     )
 
@@ -216,7 +222,11 @@ def _proof_of_manufacturing(claim_id):
         proof_of_manufacturing = claim.proofofmanufacturing
     except clients_models.ProofOfManufacturing.DoesNotExist:
         pass
-    invoice_number = "{0:04d}".format(claim.id + 7500)
+
+    invoice_number = (
+        ((proof_of_manufacturing and proof_of_manufacturing.id) or claim.id)
+        + 500  # add 500 to make invoice numbers seem higher
+    )
 
     return claim, proof_of_manufacturing, invoice_number
 

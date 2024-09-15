@@ -108,6 +108,7 @@ admin.site.register(InsuranceLetter, InsuranceLetterAdmin)
 admin.site.register(ProofOfManufacturing)
 admin.site.register(clients_models.BiomechanicalGait)
 admin.site.register(clients_models.BiomechanicalFoot)
+admin.site.register(clients_models.BiomechanicalGait2)
 
 admin.site.register(clients_models.Referral)
 admin.site.register(clients_models.Receipt)

@@ -108,15 +108,27 @@
         <tbody>
             <tr>
                 <td colspan="3">
-                    <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='300' />
+                    <img src="{% static 'images/OrthoticsProsLogo.png' %}" width='300' />
                 </td>
                 <td colspan="7" style="text-align: right; vertical-align: bottom;">
-                    <span style="font-size: 11pt; font-weight: bold;">
-                        BIOMECHANICAL EVALUATION, GAIT
-                        <br>
-                        ANALYSIS, & CASTING METHOD
-                    </span>
-                    {# {{ address|nbsp|linebreaksbr }} #}
+                    <table>
+                        <tr>
+                            <td>
+                                {{ address|nbsp|linebreaksbr }}
+                                <br>
+                                {{ phone }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span style="font-size: 11pt; font-weight: bold;">
+                                    BIOMECHANICAL EVALUATION, GAIT
+                                    <br>
+                                    ANALYSIS, & CASTING METHOD
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </tbody>
@@ -174,10 +186,6 @@
         <tbody>
             <tr>
                 <td colspan="2">
-                    <em style="font-size: 15px;">
-                        Review invoice for dispense date - We fabricate our orthotics in our on-site lab
-                    </em>
-                    <br>
                     <br>
                     Date: {{ biomechanical_gait.date|default:"______________________" }}
                 </td>

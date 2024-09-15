@@ -8,7 +8,7 @@
     <style type="text/css">
         @page {
             size: {{ pagesize|default:"A4" }};
-            margin: 2.5cm;
+            margin: 2cm 2.5cm;
 
             @frame footer_frame { {# static Frame #}
                 -pdf-frame-content: footer_content;
@@ -75,54 +75,43 @@
     <div class="main">
         <table style="border-bottom: 0.5pt solid #000;">
             <tr>
-                <td colspan="7" style="font-size: 200%;">
-                    Manufacturing Invoice
-                </td>
+                <td colspan="7"></td>
                 <td colspan="3" class="text-right">
-                    <img src="{% static 'images/PerfectArchLogo.jpg' %}" width='400px' />
+                    {{ address|nbsp }}
+                    {{ phone|nbsp }}
                 </td>
             </tr>
-            <tr><td></td></tr>
+            <tr>
+                <td colspan="7" valign="bottom" style="font-size: 200%;">
+                    Manufacturing Invoice
+                </td>
+                <td colspan="3" class="text-right" style="margin-right: -40px;">
+                    <img src="{% static 'images/OrthoticsProsLogo.png' %}" width='300px' />
+                </td>
+            </tr>
         </table>
         <br>
         <table>
             <tr>
-                <td colspan="5"></td>
-                <td colspan="3" style="border: 1px solid black;">
-                    &nbsp;
+                <td colspan="6"></td>
+                <td colspan="2">
                     {{ proof_of_manufacturing.proof_of_manufacturing_date_verbose_name }}:
                 </td>
-                <td colspan="2" style="border: 1px solid black;">
-                    &nbsp;{{ proof_of_manufacturing.proof_of_manufacturing_date }}
+                <td colspan="2">
+                    {{ proof_of_manufacturing.proof_of_manufacturing_date }}
                 </td>
             </tr>
             <tr>
-                <td colspan="5"></td>
-                <td colspan="3" style="border: 1px solid black;">
-                    &nbsp;Invoice #</td>
-                <td colspan="2" style="border: 1px solid black;">
-                    &nbsp;{{ invoice_number }}</td>
+                <td colspan="6"></td>
+                <td colspan="2">
+                    Invoice:
+                </td>
+                <td colspan="2">
+                    #{{ invoice_number }}
+                </td>
             </tr>
         </table>
         <br>
-        {% if proof_of_manufacturing.bill_to %}
-            <table style="border: 1px solid black;">
-                <tr>
-                    <td colspan="1" valign="top">
-                        &nbsp;Bill To:</td>
-                    <td colspan="3">
-                        {{ proof_of_manufacturing.bill_to|nbsp|linebreaksbr }}
-                    </td>
-                    <td style="border-right: 1px solid black;"></td>
-                    <td colspan="1" valign="top">
-                        &nbsp;Ship To:</td>
-                    <td colspan="3">
-                        {{ proof_of_manufacturing.ship_to|nbsp|linebreaksbr }}
-                    </td>
-                    <td></td>
-                </tr>
-            </table>
-        {% endif %}
         <table>
             <tr>
                 <td colspan="1">
@@ -177,14 +166,21 @@
                 <td colspan="3" valign="top">
                     <strong>Manufacturing:</strong></td>
                 <td colspan="7">
-                    The Sharp Shape 3-Dimmensional data or 3D Foam impression was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
+                    The 3-Dimmensional scan or 3D Foam impression was taken combined with CAD/CAM software and advanced milling machinery. Technicians design and mold a custom orthotic; copolymer plastic is formed over the positive to create a custom orthotic for the patient's specific correction and symptomatic needs.
                 </td>
             </tr>
             <tr>
                 <td colspan="3" valign="top">
                     <strong>Casting Technique:</strong></td>
                 <td colspan="7">
-                    3D Volumetric Foam Impression / Sharp Shape 3D Scanner and CAD/CAM Technology
+                    3D Volumetric Foam Impression / 3D Scanner and CAD/CAM Technology
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" valign="top">
+                    <strong>Dispense Date:</strong></td>
+                <td colspan="7">
+                    {{ proof_of_manufacturing.dispense_date }}
                 </td>
             </tr>
         </table>
