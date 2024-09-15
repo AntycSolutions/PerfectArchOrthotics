@@ -1,0 +1,24 @@
+{
+  "name": "PerfectArchOrthotics",
+  "version": "1.0.0",
+  "description": "Perfect Arch Orthotics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntycSolutions/PerfectArchOrthotics.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/AntycSolutions/PerfectArchOrthotics/issues"
+  },
+  "homepage": "https://github.com/AntycSolutions/PerfectArchOrthotics#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "jshint": "^2.13.6"
+  }
+}

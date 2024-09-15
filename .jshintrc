@@ -1,0 +1,9 @@
+{
+    "esversion": 11,
+    "maxerr": 150,
+    "unused": "vars",
+    "undef": true,
+    "browser": true,
+    "jquery": true,
+    "devel": true
+}
