@@ -1,0 +1,178 @@
+{% extends "easy_pdf/base.html" %}
+
+{% load static %}
+{% load nbsp %}
+
+{% block layout_style %}
+    {# override layout_style #}
+{% endblock layout_style %}
+
+{% block extra_style %}
+    <style type="text/css">
+        body { font-size: 10pt; line-height: 17.5px; }
+        .text-right { text-align: right; }
+    </style>
+{% endblock extra_style %}
+
+{% block content %}
+
+    <table style="margin-bottom: 20px;">
+        <tbody>
+            <tr class="text_center">
+                <td colspan="5">
+                    <img src="{% static 'images/BlueCrossLogo.png' %}">
+                </td>
+                <td colspan="5" class="text-right">
+                        <span style="font-size: 12pt; font-weight: bold;">
+                            FOOT ORTHOTICS AND
+                            <br>
+                            ORTHOPEDIC SHOE CLAIMS
+                        </span>
+                        <br>
+                        <span style="font-size: 12pt; font-style: italic;">
+                            See page two for medical supply checklist
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        When submitting claims for foot orthotics or orthopedic shoes, <span style="font-weight: bold;">please submit the following information along with your completed claim form and your receipt for products paid in full:</span>
+    </div>
+    <div style="margin-top: 9px;">
+        <span style="font-weight: bold; font-style: italic;">For custom foot orthotics</span>
+    </div>
+    <ul style="font-size: 9pt;">
+        <li>
+            <span style="font-weight: bold;">The fabrication form below</span> must be completed by a podiatrist, chiropodist, physiotherapist, chiropractor, pedorthist or registered orthotist.
+        </li>
+        <li>
+            If your plan requires a physician’s written order, you will also need a copy of a <span style="font-weight: bold;">biomechanical assessment.</span>
+        </li>
+        <li>
+            <ul style="list-style-type: none;">
+                <li class="test">
+                    ◊ <span style="font-style: italic;">The physician’s written order must be supplied by a physician, podiatrist, chiropractor or physiotherapist.</span>
+                </li>
+                <li class="test">
+                    ◊ <span style="font-style: italic;">The biomechanical assessment must be performed by a physician, podiatrist, chiropractor, physiotherapist, registered occupational therapist or registered orthotist.</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <div style="margin-top: 9px;">
+        <span style="font-weight: bold; font-style: italic;">For orthopedic shoes</span>
+    </div>
+    <ul style="font-size: 9pt;">
+        <li>
+            <span style="font-weight: bold;">The fabrication form below</span> must be completed by a podiatrist, pedorthist or registered orthotist.
+        </li>
+        <li>
+            If your plan requires a physician’s written order, you will need a copy of the original prescription from a physician, podiatrist or chiropractor outlining the related medical diagnosis.
+        </li>
+    </ul>
+    <table style="margin-top: 10px;">
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="7" style="margin-left: 15px; margin-right: 5px; border-top: 4px solid black; border-left: 4px solid black; border-bottom: 4px solid black;">
+                <div style="margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Please submit your claim and supporting documents to</span>
+                </div>
+                <div style="margin-top: 0px;">
+                    Alberta Blue Cross<br>
+                    Health Services<br>
+                    10009 108 Street<br>
+                    Edmonton, AB T5J 3C5<br>
+                </div>
+            </td>
+            <td colspan="13"style="padding: 15px 0px; border-top: 4px solid black; border-right: 4px solid black; border-bottom: 4px solid black;">
+                <table style="padding: 3px 10px -5px; border-left: 2px solid black;">
+                    <tr>
+                        <td>
+                            <span style="font-weight: bold;">You can submit your claim and upload your supporting documentation online.</span>
+                            <br>
+                            <span style="font-size: 9pt;">Download the Alberta Blue Cross MyBenefits app or visit <span style="font-weight: bold;">ab.bluecross.ca</span> and click “Sign in” to get started.”</span>
+                            <br><br>
+                            <span style="font-weight: bold;">Questions?</span>
+                            <br>
+                            <span style="font-style: italic; font-size: 8pt;">If you have questions, please contact Customer Services at 780-498-8000 (Edmonton and area) or 1-800-661-6995 (toll free). If you’re a health service provider, please contact Health Provider Services at 780-498-8083 (Edmonton and area) or 1-800-588-1195 (toll free).</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <div style="margin-top: 30px;">
+        <span style="font-size: 12pt; font-weight: bold;">
+            ORTHOTIC AND ORTHOPEDIC SHOE FABRICATION FORM
+        </span>
+        <br>
+        To be completed and signed by the dispensing and/or treating provider.
+    </div>
+    <table style="border: 1.25px solid black; padding: 7.5px;">
+        <tr>
+            <td colspan="2">
+                I hereby certify that the orthopedic shoes/foot orthotics for <span style="font-size: 13pt;">{{ patient.full_name }}</span> (patient’s name) were fabricated using a 3-D volumetric model of the patient’s foot and lower leg, is made of raw materials and is specifically designed for the patient.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                Name of provider <span style="font-size: 13pt;">Danny Mu</span>
+            </td>
+            <td colspan="1">
+                Date <span style="font-size: 13pt;">{{ blue_cross.date }}</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                Provider’s signature <img src="/media/DSCN2103.png" width="150">
+            </td>
+            <td colspan="1">
+                Phone number <span style="font-size: 13pt;">{{ phone }}</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr style="padding-bottom: 0px;">
+                        <td>Type of provider</td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Podiatrist <span style="font-size: 14pt;">&#x274F;</span>
+                        </td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Chiropodist <span style="font-size: 14pt;">&#x274F;</span>
+                        </td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Physiotherapist <span style="font-size: 14pt;">&#x274F;</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Chiropractor <span style="font-size: 14pt;">&#x274F;</span>
+                        </td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Pedorthist <span style="font-size: 14pt;">&#x2611;</span>
+                        </td>
+                        <td style="text-align: right; margin-right: 20px;">
+                            Orthotist <span style="font-size: 14pt;">&#x274F;</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table style="margin-top: 50px;">
+        <tr>
+            <td colspan="7" style="line-height: 10px;">
+                <span style="font-size: 7pt;">®*The Blue Cross symbol and name are registered marks of the Canadian Association of Blue Cross Plans, an association of independent Blue Cross plans. Licensed to ABC Benefits Corporation for use in operating the Alberta Blue Cross Plan. ® † Blue Shield is a registered trade-mark of the Blue Cross Blue Shield Association. ABC 83475 2020/03</span>
+            </td>
+            <td colspan="3" style="text-align: right;">
+                <img width="100" src="{% static 'images/BlueCrossLogoSmall.png' %}">
+            </td>
+        </tr>
+    </table>
+
+{% endblock content %}

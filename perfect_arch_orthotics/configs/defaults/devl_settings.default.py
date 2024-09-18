@@ -55,7 +55,6 @@ DS = 'ds'
 PRACTITIONERS = ()
 
 MOLL = 'moll'
-OOLI = 'ooli'
 AROR = 'aror'
 PAOI = 'paoi'
 # Get from file
@@ -64,7 +63,6 @@ LABORATORIES = ()
 PAOI = 'paoi'
 # Get from file
 BILL_TO = ()
-SHIP_TO = BILL_TO
 
 # Get from file
 DANNY_EMAIL = ''

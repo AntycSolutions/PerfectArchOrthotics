@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% load verbose_name %}
+{% load nbsp %}
+{% load field_utils %}
+
+{% block title %} - Blue Cross for {{ patient.full_name }}{% endblock %}
+
+{% block content %}
+
+    <h1>Claim for {{ patient.full_name }}</h1>
+    {% include 'utils/snippets/messages.html' %}
+    <div>
+        <a class="btn btn-info" href="{% url 'claim' claim.id %}">View</a>
+    </div>
+    <h1>Blue Cross for {{ patient.full_name }}</h1>
+    <div>
+        {% if blue_cross %}
+            <a href="{% url 'blue_cross_update' blue_cross.pk %}" class="btn btn-primary">
+                Update
+            </a>
+        {% else %}
+            <a href="{% url 'blue_cross_create' claim.pk %}" class="btn btn-primary">
+                Create
+            </a>
+        {% endif %}
+    </div>
+    <br>
+    {% if blue_cross %}
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <div class="panel-title">
+                    Information
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+                    {% for name, field_value in blue_cross.get_all_fields.items %}
+                        {% if name == 'id' %}
+                            {# Skip ID #}
+                        {% elif field_value.field|is_foreignkey %}
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">
+                                    {% verbose_field_name blue_cross name %}
+                                </label>
+                                <div class="col-lg-8">
+                                    <p class="form-control-static">
+                                        {% with url=field_value.value.get_absolute_url value=field_value.value.get_str %}
+                                            {% if url %}
+                                                <a href="{{ url }}">
+                                                    {% firstof value field_value.value %}
+                                                </a>
+                                            {% else %}
+                                                {% firstof value field_value.value %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    </p>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">
+                                    {% verbose_field_name blue_cross name %}
+                                </label>
+                                <div class="col-lg-8">
+                                    <p class="form-control-static">
+                                        {{ field_value.value }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'blue_cross_pdf' blue_cross.pk %}" class="btn btn-default">
+            View Blue Cross
+        </a>
+    {% endif %}
+    <br><br>
+
+{% endblock %}

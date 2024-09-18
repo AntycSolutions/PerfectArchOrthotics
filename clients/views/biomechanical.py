@@ -41,22 +41,13 @@ class BiomechanicalGaitCreate(mixins.UserPassesTestMixin, generic.CreateView):
             )
         )
 
-        try:
-            # PostgreSQL
-            providers = list(
-                clients_models.Insurance.objects.all().distinct(
-                    'provider'
-                ).values_list(
-                    'provider', flat=True
-                )
+        providers = list(
+            clients_models.Insurance.objects.all().distinct(
+                'provider'
+            ).values_list(
+                'provider', flat=True
             )
-        except NotImplementedError:
-            # SQLite
-            providers = list(set(
-                clients_models.Insurance.objects.all().values_list(
-                    'provider', flat=True
-                )
-            ))
+        )
         context['provider_choices'] = json.dumps(providers)
 
         return context
@@ -77,22 +68,13 @@ class BiomechanicalGaitUpdate(mixins.UserPassesTestMixin, generic.UpdateView):
         context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = self.object.get_absolute_url()
 
-        try:
-            # PostgreSQL
-            providers = list(
-                clients_models.Insurance.objects.all().distinct(
-                    'provider'
-                ).values_list(
-                    'provider', flat=True
-                )
+        providers = list(
+            clients_models.Insurance.objects.all().distinct(
+                'provider'
+            ).values_list(
+                'provider', flat=True
             )
-        except NotImplementedError:
-            # SQLite
-            providers = list(set(
-                clients_models.Insurance.objects.all().values_list(
-                    'provider', flat=True
-                )
-            ))
+        )
         context['provider_choices'] = json.dumps(providers)
 
         return context
@@ -142,25 +124,18 @@ def biomechanical_gait_pdf(request, pk):
             'patient',
         ).get(pk=pk)
 
+    context = {
+        'biomechanical_gait': biomechanical_gait,
+        'address': settings.BILL_TO[0][1],
+        'email': settings.PERFECT_ARCH_EMAIL,
+    }
+
+    # for debugging
     # return shortcuts.render(
-    #     request,
-    #     'clients/pdfs/biomechanical_gait.html',
-    #     {
-    #         'title': "Bio-mechanical/Gait Examination",
-    #         'biomechanical_gait': biomechanical_gait,
-    #         'address': settings.BILL_TO[0][1],
-    #         'email': settings.DANNY_EMAIL,
-    #     }
+    #     request, 'clients/pdfs/biomechanical_gait.html', context
     # )
     return clients_views.render_to_pdf(
-        request,
-        'clients/pdfs/biomechanical_gait.html',
-        {
-            'title': "Bio-mechanical/Gait Examination",
-            'biomechanical_gait': biomechanical_gait,
-            'address': settings.BILL_TO[0][1],
-            'email': settings.DANNY_EMAIL,
-        }
+        request, 'clients/pdfs/biomechanical_gait.html', context
     )
 
 
@@ -190,22 +165,13 @@ class BiomechanicalGait2Create(mixins.UserPassesTestMixin, generic.CreateView):
             )
         )
 
-        try:
-            # PostgreSQL
-            providers = list(
-                clients_models.Insurance.objects.all().distinct(
-                    'provider'
-                ).values_list(
-                    'provider', flat=True
-                )
+        providers = list(
+            clients_models.Insurance.objects.all().distinct(
+                'provider'
+            ).values_list(
+                'provider', flat=True
             )
-        except NotImplementedError:
-            # SQLite
-            providers = list(set(
-                clients_models.Insurance.objects.all().values_list(
-                    'provider', flat=True
-                )
-            ))
+        )
         context['provider_choices'] = json.dumps(providers)
 
         return context
@@ -226,22 +192,13 @@ class BiomechanicalGait2Update(mixins.UserPassesTestMixin, generic.UpdateView):
         context['model_name'] = self.model._meta.verbose_name
         context['cancel_url'] = self.object.get_absolute_url()
 
-        try:
-            # PostgreSQL
-            providers = list(
-                clients_models.Insurance.objects.all().distinct(
-                    'provider'
-                ).values_list(
-                    'provider', flat=True
-                )
+        providers = list(
+            clients_models.Insurance.objects.all().distinct(
+                'provider'
+            ).values_list(
+                'provider', flat=True
             )
-        except NotImplementedError:
-            # SQLite
-            providers = list(set(
-                clients_models.Insurance.objects.all().values_list(
-                    'provider', flat=True
-                )
-            ))
+        )
         context['provider_choices'] = json.dumps(providers)
 
         return context
@@ -380,11 +337,8 @@ def biomechanical_foot_fill_out(request, claim_pk):
 
 def biomechanical_foot_pdf(request, claim_pk):
     claim, biomechanical_foot = _biomechanical_foot(claim_pk)
-    context = {
-        'title': "Biomechanical Foot Examination",
-        'claim': claim,
-        'biomechanical_foot': biomechanical_foot,
-    }
+
+    context = {'claim': claim, 'biomechanical_foot': biomechanical_foot}
 
     # for debugging
     # return shortcuts.render(

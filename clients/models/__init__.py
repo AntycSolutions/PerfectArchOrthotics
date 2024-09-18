@@ -11,6 +11,7 @@ from .insurance_info import Insurance, Coverage
 from .insurance_letter import InsuranceLetter, Laboratory
 from .items import Item, ItemHistory
 from .referrals import Referral
+from .blue_cross import BlueCross
 
 
 auditlog.register(Person)
@@ -32,6 +33,7 @@ auditlog.register(BiomechanicalGait)
 auditlog.register(BiomechanicalGait2)
 auditlog.register(BiomechanicalFoot)
 auditlog.register(Laboratory)
+auditlog.register(BlueCross)
 auditlog.register(Referral)
 auditlog.register(Receipt)
 auditlog.register(CreditDivisor)

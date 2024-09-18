@@ -64,7 +64,6 @@ PRACTITIONERS = ()
 
 # Get from file
 MOLL = ''
-OOLI = ''
 AROR = ''
 PAOI = ''
 LABORATORIES = ()
@@ -72,4 +71,3 @@ LABORATORIES = ()
 # Get from file
 PAOI = ''
 BILL_TO = ()
-SHIP_TO = BILL_TO

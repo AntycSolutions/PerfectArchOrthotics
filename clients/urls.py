@@ -16,7 +16,9 @@ from clients.views.claim import DeleteClaimView, \
     CreateProofOfManufacturingView
 from .views.item import CreateItemView, ListItemView, DetailItemView, \
     UpdateItemView, DeleteItemView
-from clients.views import statistics, dependent, receipt, claim, biomechanical
+from clients.views import (
+    statistics, dependent, receipt, claim, biomechanical, blue_cross
+)
 from . import api
 
 
@@ -156,6 +158,34 @@ biomechanical_patterns = [
     url(r'^foot/', include(biomechanical_foot_patterns)),
 ]
 
+blue_cross_patterns = [
+    urls.url(
+        r'^create/(?P<claim_pk>\w+)/$',
+        login_required(blue_cross.BlueCrossCreate.as_view()),
+        name='blue_cross_create'
+    ),
+    urls.url(
+        r'^update/(?P<pk>\w+)/$',
+        login_required(blue_cross.BlueCrossUpdate.as_view()),
+        name='blue_cross_update'
+    ),
+    urls.url(
+        r'^delete/(?P<pk>\w+)/$',
+        login_required(blue_cross.BlueCrossDelete.as_view()),
+        name='blue_cross_delete'
+    ),
+    urls.url(
+        r'^fill_out/(?P<claim_pk>\w+)/$',
+        login_required(blue_cross.blue_cross_fill_out),
+        name='blue_cross_fill_out'
+    ),
+    urls.url(
+        r'^pdf/(?P<pk>\w+)/$',
+        login_required(blue_cross.blue_cross_pdf),
+        name='blue_cross_pdf'
+    ),
+]
+
 create_claim_wizard = claim.CreateClaimWizard.as_view(
     url_name='claim_create_step',
     done_step_name='finished'
@@ -237,6 +267,7 @@ claim_patterns = [
         login_required(views.claimView),
         name='claim_detail'
     ),
+    url(r'^blue_cross/', include(blue_cross_patterns)),
 ]
 
 pdf_patterns = [

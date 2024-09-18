@@ -370,10 +370,12 @@ class Invoice(models.Model):
     PERFECT_ARCH = 'pa'
     PC_MEDICAL = 'pc'
     BRACE_AND_BODY = 'bb'
+    ORTHOTICS_PROS = 'op'
     COMPANIES = (
         (PERFECT_ARCH, 'Perfect Arch'),
         (PC_MEDICAL, 'PC Medical'),
         (BRACE_AND_BODY, 'Brace and Body'),
+        (ORTHOTICS_PROS, 'Orthotics Pros'),
     )
     company = models.CharField(
         max_length=2, choices=COMPANIES, default=PERFECT_ARCH

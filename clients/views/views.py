@@ -92,6 +92,7 @@ def render_to_pdf(request, template_src, context_dict):
 
 def invoice_view(request, claim_id):
     claim, patient, invoice, invoice_number = _invoice(claim_id)
+
     bill_to = settings.BILL_TO[0][1]
     logo = 'images/PerfectArchLogo.jpg'
     template = 'clients/pdfs/invoice.html'
@@ -103,6 +104,11 @@ def invoice_view(request, claim_id):
         bill_to = settings.BILL_TO[2][1]
         logo = 'images/BraceAndBodyLogo.png'
         template = 'clients/pdfs/brace_and_body_invoice.html'
+    elif invoice.company == invoice.ORTHOTICS_PROS:
+        bill_to = settings.BILL_TO[3][1]
+        logo = 'images/OrthoticsProsLogo.png'
+        template = 'clients/pdfs/orthotics_pros_invoice.html'
+
     company_name = bill_to.split('\n')[0]
     company_address = bill_to.replace(company_name + '\n', '')
 
@@ -143,6 +149,12 @@ def _invoice(claim_id):
 def insurance_letter_view(request, claim_id):
     claim, patient, insurance_letter = _insurance_letter(claim_id)
 
+    logo = 'images/PerfectArchLogo.jpg'
+    address = settings.BILL_TO[0][1]
+    if insurance_letter.company == insurance_letter.ORTHOTICS_PROS:
+        logo = 'images/OrthoticsProsLogo.png'
+        address = settings.BILL_TO[3][1]
+
     # Because !@#$ xhtml2pdf (putting these in css classes didnt work)
     underline = (
         'border-bottom: 1pt solid #000000;'
@@ -161,16 +173,17 @@ def insurance_letter_view(request, claim_id):
         'clients/pdfs/insurance_letter.html',
         {
             'pagesize': 'A4',
+            'logo': logo,
             'claim': claim,
             'patient': patient,
             'insurance_letter': insurance_letter,
             'underline': underline,
             'notunderline': notunderline,
-            'address': settings.BILL_TO[0][1],
+            'address': address,
             'three_d_laser_scan': claim.insurances.filter(
                 three_d_laser_scan=True
             ).exists(),
-        }
+        },
     )
 
 

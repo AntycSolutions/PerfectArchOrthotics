@@ -65,9 +65,9 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': (
-                DJANGO_CONTEXT_PROCESSORS +
-                LOCAL_CONTEXT_PROCESSORS +
-                THIRD_PARTY_CONTEXT_PROCESSORS
+                DJANGO_CONTEXT_PROCESSORS
+                + LOCAL_CONTEXT_PROCESSORS
+                + THIRD_PARTY_CONTEXT_PROCESSORS
             ),
             'libraries': {
                 'groups': 'perfect_arch_orthotics.templatetags.groups',
@@ -233,9 +233,9 @@ if DEBUG:
     if ENV != 'devl':
         def show_toolbar(request):
             return (
-                hasattr(request, 'user') and
-                not request.is_ajax() and
-                request.user.is_staff
+                hasattr(request, 'user')
+                and not request.is_ajax()
+                and request.user.is_staff
             )
         DEBUG_TOOLBAR_CONFIG.update({
             'SHOW_TOOLBAR_CALLBACK':

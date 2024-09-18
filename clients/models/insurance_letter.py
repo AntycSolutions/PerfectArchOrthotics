@@ -9,6 +9,16 @@ class InsuranceLetter(models.Model):
     claim = models.OneToOneField(
         Claim, verbose_name="Claim")
 
+    PERFECT_ARCH = 'pa'
+    ORTHOTICS_PROS = 'op'
+    COMPANIES = (
+        (PERFECT_ARCH, 'Perfect Arch'),
+        (ORTHOTICS_PROS, 'Orthotics Pros'),
+    )
+    company = models.CharField(
+        max_length=2, choices=COMPANIES, default=PERFECT_ARCH
+    )
+
     practitioner_name = models.CharField(
         "Practitioner Name", max_length=4, choices=settings.PRACTITIONERS,
         default=settings.DM,
