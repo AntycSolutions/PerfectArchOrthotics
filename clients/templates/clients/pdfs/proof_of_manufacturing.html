@@ -25,7 +25,7 @@
         }
 
         table {
-            line-height: 140%;
+            line-height: 130%;
             margin-bottom: 20px;
         }
             table.bordered {
@@ -75,22 +75,21 @@
     <div class="main">
         <table style="border-bottom: 0.5pt solid #000;">
             <tr>
-                <td colspan="7"></td>
-                <td colspan="3" class="text-right">
-                    {{ address|nbsp }}
-                    {{ phone|nbsp }}
+                <td colspan="6"></td>
+                <td colspan="4" class="text-right" style="margin-right: -55px;">
+                    <img src="{% static 'images/OrthoticsProsLogo.png' %}" width="300">
                 </td>
             </tr>
             <tr>
                 <td colspan="7" valign="bottom" style="font-size: 200%;">
                     Manufacturing Invoice
                 </td>
-                <td colspan="3" class="text-right" style="margin-right: -40px;">
-                    <img src="{% static 'images/OrthoticsProsLogo.png' %}" width='300px' />
+                <td colspan="3" class="text-right">
+                    {{ address|nbsp }}
+                    {{ phone|nbsp }}
                 </td>
             </tr>
         </table>
-        <br>
         <table>
             <tr>
                 <td colspan="6"></td>
