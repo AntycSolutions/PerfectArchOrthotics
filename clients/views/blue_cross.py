@@ -116,7 +116,7 @@ def blue_cross_pdf(request, pk):
         'claim',
     ).get(pk=pk)
     patient = blue_cross.claim.patient
-    phone = settings.BILL_TO[0][1].split('\n')[4].replace('Phone: ', '')
+    phone = settings.BILL_TO[3][1].split('\n')[4].replace('Phone: ', '')
 
     context = {'blue_cross': blue_cross, 'patient': patient, 'phone': phone}
 
