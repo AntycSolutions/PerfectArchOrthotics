@@ -440,7 +440,9 @@ class Invoice(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "{} - Claim ID: {}".format(self.invoice_date, self.claim_id)
+        return "{} - {} - Claim ID: {}".format(
+            self.get_company_display(), self.invoice_date, self.claim_id
+        )
 
 
 class ProofOfManufacturing(models.Model):

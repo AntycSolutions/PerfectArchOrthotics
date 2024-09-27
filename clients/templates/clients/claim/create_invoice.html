@@ -24,9 +24,11 @@
             var PERFECT_ARCH = 'pa';
             var PC_MEDICAL = 'pc';
             var BRACE_AND_BODY = 'bb';
+            var ORTHOTICS_PROS = 'op';
             var PERFECT_ARCH_INVOICE_NUMBER = '{{ form.perfect_arch_invoice_number }}';
             var PC_MEDICAL_INVOICE_NUMBER = '{{ form.pc_medical_invoice_number }}';
             var BRACE_AND_BODY_INVOICE_NUMBER = '{{ form.brace_and_body_invoice_number }}';
+            var ORTHOTICS_PROS_INVOICE_NUMBER = '{{ form.orthotics_pros_invoice_number }}';
             function filterFields() {
                 if ($('#id_company').val() != PERFECT_ARCH) {
                     $('#id_dispensed_by').parent().parent().hide();
@@ -44,6 +46,8 @@
                     $('#id_invoice_number').val(PC_MEDICAL_INVOICE_NUMBER);
                 } else if ($('#id_company').val() == BRACE_AND_BODY) {
                     $('#id_invoice_number').val(BRACE_AND_BODY_INVOICE_NUMBER);
+                } else if ($('#id_company').val() == ORTHOTICS_PROS) {
+                    $('#id_invoice_number').val(ORTHOTICS_PROS_INVOICE_NUMBER);
                 }
             }
             filterFields();

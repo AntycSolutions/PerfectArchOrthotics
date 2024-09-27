@@ -93,6 +93,11 @@ class InvoiceForm(forms.ModelForm):
         ).aggregate(
             max=db_models.Max('invoice_number')
         )['max'] or 0) + 1
+        self.orthotics_pros_invoice_number = (Invoice.objects.filter(
+            company=Invoice.ORTHOTICS_PROS
+        ).aggregate(
+            max=db_models.Max('invoice_number')
+        )['max'] or 0) + 1
 
     def clean(self):
         cleaned_data = super().clean()
@@ -110,6 +115,11 @@ class InvoiceForm(forms.ModelForm):
             if invoice_number < 1122:
                 raise exceptions.ValidationError(
                     'Brace and Body invoice no. must be >= 1122'
+                )
+        elif company == Invoice.ORTHOTICS_PROS:
+            if invoice_number < 501:
+                raise exceptions.ValidationError(
+                    'Brace and Body invoice no. must be >= 501'
                 )
 
         invoices = Invoice.objects.filter(
